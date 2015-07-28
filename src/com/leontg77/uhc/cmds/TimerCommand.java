@@ -13,6 +13,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.leontg77.uhc.Main;
+import com.leontg77.uhc.util.DateUtils;
 import com.leontg77.uhc.util.PlayerUtils;
 
 public class TimerCommand implements CommandExecutor, TabCompleter {
@@ -23,7 +24,7 @@ public class TimerCommand implements CommandExecutor, TabCompleter {
 		public void run() {
 			if (countdown) {
 				for (Player online : Bukkit.getServer().getOnlinePlayers()) {
-					PlayerUtils.sendAction(online, message + " " + Main.ticksToString(ticks)); 
+					PlayerUtils.sendAction(online, message + " " + DateUtils.ticksToString(ticks)); 
 				}
 				ticks--;
 				
@@ -34,7 +35,7 @@ public class TimerCommand implements CommandExecutor, TabCompleter {
 							public void run() {
 								if (countdown) {
 									for (Player online : Bukkit.getServer().getOnlinePlayers()) {
-										PlayerUtils.sendAction(online, message + " " + Main.ticksToString(ticks)); 
+										PlayerUtils.sendAction(online, message + " " + DateUtils.ticksToString(ticks)); 
 									}
 									ticks--;
 									
@@ -81,7 +82,7 @@ public class TimerCommand implements CommandExecutor, TabCompleter {
 							public void run() {
 								if (countdown) {
 									for (Player online : Bukkit.getServer().getOnlinePlayers()) {
-										PlayerUtils.sendAction(online, message + " " + Main.ticksToString(ticks)); 
+										PlayerUtils.sendAction(online, message + " " + DateUtils.ticksToString(ticks)); 
 									}
 									ticks--;
 									
