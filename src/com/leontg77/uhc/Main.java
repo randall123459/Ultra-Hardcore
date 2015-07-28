@@ -93,9 +93,6 @@ public class Main extends JavaPlugin {
 	private Settings settings = Settings.getInstance();
 	public static Main plugin;
 	
-	private static final long SECONDS_PER_HOUR = 3600;
-	private static final long SECONDS_PER_MINUTE = 60;
-
 	public static BukkitRunnable countdown;
 	public static Recipe res;
 
@@ -353,31 +350,4 @@ public class Main extends JavaPlugin {
         res = goldenhead;
 		Bukkit.getLogger().info("§a[UHC] Golden heads recipe added.");
 	}
-
-    /**
-     * Converts the seconds to human readable
-     * @param ticks the  number of ticks
-     * @return the human readable version
-     */
-    public static String ticksToString(long ticks) {
-        int hours = (int) Math.floor(ticks / (double) SECONDS_PER_HOUR);
-        ticks -= hours * SECONDS_PER_HOUR;
-        int minutes = (int) Math.floor(ticks / (double)SECONDS_PER_MINUTE);
-        ticks -= minutes * SECONDS_PER_MINUTE;
-        int seconds = (int) ticks;
-
-        StringBuilder output = new StringBuilder();
-        if (hours > 0) {
-            output.append(hours).append('h');
-            if (minutes == 0) {
-            	output.append("0m");
-            }
-        }
-        if (minutes > 0) {
-            output.append(minutes).append('m');
-        }
-        output.append(seconds).append('s');
-
-        return output.toString();
-    }
 }
