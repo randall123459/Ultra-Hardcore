@@ -1,0 +1,118 @@
+name: UHC
+main: com.leontg77.uhc.Main
+version: 1.7.14
+author: LeonTG77
+description: UHC plugin made for Leons UHC
+softdepend: [ProtocolLib]
+
+commands:
+  arena:
+    description: Join the arena.
+    aliases: [a, p]
+  ban:
+    description: Ban a player.
+  pvp:
+    description: Toggle pvp.
+  broadcast:
+    description: Broadcast a message to all players online.
+    aliases: [bc, bcast]
+  butcher:
+    description: Kills all hostile mobs.
+  start:
+    description: Start command.
+  sethealth:
+    description: Set the health of a player.
+  skull:
+    description: Spawn a skull of a player.
+  spread:
+    description: Spreads all players and freezes them.
+  setmaxhealth:
+    description: Set the max health of a player.
+  tps:
+    description: Check the servers tps.
+    aliases: [lag]
+  random:
+    description: Create random teams.
+  clearxp:
+    description: Clear someones xp.
+  clearinv:
+    description: Clear someones inv.
+  feed:
+    description: Feed someone.
+  scenario:
+    description: Enable and disable scenarios
+    aliases: [scen]
+  ac:
+    description: Type in staffchat
+    aliases: [sc]
+  ms:
+    description: Check someones ms
+    aliases: [ping]
+  rules:
+    description: View our rules.
+    aliases: [post, matchpost]
+  heal:
+    description: Heal someone.
+  starttimer:
+    description: Restarts the sidebar timer.
+  end:
+    description: Ends the game.
+  near:
+    description: Check for nearby players.
+  team:
+    description: Team command, check usage.
+    aliases: [party]
+  pm:
+    description: Team chat command.
+  vote:
+    description: Start a vote.
+  kick:
+    description: Kick a player.
+  unban:
+    description: Unban a player.
+  timer:
+    description: Hotbar timer command.
+  timeleft:
+    description: Chec the time left.
+  invsee:
+    description: Opens the targets inventoty.
+  tp:
+    description: Makes you able to teleport as a spectator.
+  list:
+    description: Tells you all the online players.
+  spectate:
+    description: Spectator management.
+    aliases: [spec]
+  setspawn:
+    description: Sets the lobby spawn.
+  helpop:
+    description: If you need help from staff, use this command.
+  whitelist:
+    description: Whitelist command.
+    aliases: [wl]
+  teamloc:
+    description: Tell your location out to your teammates.
+    aliases: [tl]
+  edit:
+    description: Edits signs.
+  gamemode:
+    description: Change your gamemode.
+    aliases: [gm]
+  giveall:
+    description: Give everyone online an item.
+  config:
+    description: Change the configs items.
+  mute:
+    description: Mute management.
+  health:
+    description: View a player's health.
+    aliases: [h]
+  speed:
+    description: Change your spectator fly speed.
+    aliases: [spd]
+  msg:
+    description: Msg a player something secret.
+    aliases: [t, tell, w, whisper, m]
+  reply:
+    description: Reply to your latest msg.
+    aliases: [r]
