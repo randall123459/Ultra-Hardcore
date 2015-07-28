@@ -1,0 +1,707 @@
+#Genie
+#Version 1.0 - Skripted by /u/bitlington
+#Feel Free to Edit
+#Feel Free to Use tidbits without Credit
+
+#Time To Learn Variables HYPE!
+#{genie::isGoing} - If set, the scenario is running
+#{genie::%player%::dead} - If set, the player died
+#{genie::%player%::kills} - How many kills the person is at(Caps at 5)
+#{genie::%player%::wishes} - How many wishes the person has
+
+options:
+	n: &8[&9Genie&8]&r #Change the Name in Brackets
+	perms: Set.Your.Own #Permissions - Ops get all by default
+	command: genie #Scenario Name
+	
+command genie [<text>] [<text>] [<integer>]:
+	trigger:
+	
+		#/genie
+		if arg-1 is not set:
+			message "&7------------------------------------------------"
+			message "{@n} Skripted by: &lBitlington&r &eand Idea from &lShadowlego"
+			message "{@n} Dedicated to &eRobin Williams&r ;_;"
+			message "{@n} You are given 3 wishes, with each kill, access to different wishes."
+			message "{@n} To learn more about wishing &7/genie wishes"
+			message "{@n} To learn more use &7/{@command} help"
+			message "&7------------------------------------------------"
+		
+		#/genie enable
+		else if arg-1 is equal to "enable":
+			if player has permission "{@perms}":
+				if {genie::isGoing} is set:
+					message "&7------------------------------------------------"
+					message "{@n} &cError: It is still &aEnabled."
+					message "&7------------------------------------------------"
+					execute console command "/playsound random.break %command sender% ~ ~ ~ 1 1 1"
+				else:
+					set {genie::isGoing} to true
+					loop all players:
+						set {genie::%loop-player%::wishes} to 3
+						set {genie::%loop-player%::kills} to 0
+						execute console command "/playsound note.harp %loop-player% ~ ~ ~ 1 1 1"
+					broadcast "&7------------------------------------------------"	
+					broadcast "{@n} &aEnabled &7by [&e%command sender%&7]"
+					broadcast "&7------------------------------------------------"
+			else:
+				message "&7------------------------------------------------"
+				message "{@n} &cYou do not have the correct Permissions."
+				message "&7------------------------------------------------"
+				execute console command "/playsound random.break %command sender% ~ ~ ~ 1 1 1"
+		
+		#/genie disable
+		else if arg-1 is equal to "disable":
+			if player has permission "{@perms}":
+				if {genie::isGoing} is not set:
+					message "&7------------------------------------------------"
+					message "{@n} &cError: It is still &lDisabled."
+					message "&7------------------------------------------------"
+					execute console command "/playsound random.break %command sender% ~ ~ ~ 1 1 1"
+				else:
+					delete {genie::*}
+					loop all players:
+						execute console command "/playsound portal.travel %loop-player% ~ ~ ~ 1 1 1"
+					broadcast "&7------------------------------------------------"	
+					broadcast "{@n} &cDisabled &7by [&e%command sender%&7]"
+					broadcast "&7------------------------------------------------"
+			else:
+				message "&7------------------------------------------------"
+				message "{@n} &cYou do not have the correct Permissions."
+				message "&7------------------------------------------------"
+				execute console command "/playsound random.break %command sender% ~ ~ ~ 1 1 1"
+		
+		#/genie toggle
+		else if arg-1 is equal to "toggle":
+			if player has permission "{@perms}":
+				if {genie::isGoing} is set:
+					make the player execute "/genie disable"
+				else:
+					make the player execute "/genie enable"
+			else:
+				message "&7------------------------------------------------"
+				message "{@n} &cYou do not have the correct Permissions."
+				message "&7------------------------------------------------"
+				execute console command "/playsound random.break %command sender% ~ ~ ~ 1 1 1"
+		
+		#/genie wishes [list] [1/2/3/4/5]
+		else if arg-1 is equal to "wishes":
+			if {genie::isGoing} is set:
+				if arg-2 is equal to "list":
+					if arg-3 is not set:
+						message "&7------------------------------------------------"
+						message "{@n} You are at &e%{genie::%command sender%::kills}%&r kills"
+						message "{@n} /genie wishes list 0 &7- 0 Kills"
+						message "{@n} /genie wishes list 1 &7- 1 Kill"
+						message "{@n} /genie wishes list 2 &7- 2 Kills"
+						message "{@n} /genie wishes list 3 &7- 3 Kills"
+						message "{@n} /genie wishes list 4 &7- 4 Kills"
+						message "{@n} /genie wishes list 5 &7- 5+ Kills"
+						message "&7------------------------------------------------"
+					else if arg-3 is equal to 0:	
+						message "{@n} &eTier 0:"
+						message "{@n} Golden Apple &7- /genie wish gapple"
+						message "{@n} Diamond Sword &7- /genie wish dsword"
+						message "{@n} Anvil &7- /genie wish anvil"					
+						message "&7------------------------------------------------"
+					else if arg-3 is equal to 1:	
+						message "{@n} &eTier 1:"
+						message "{@n} Player Head &7- /genie wish head"
+						message "{@n} Tier I Speed Pot &7- /genie wish speed1"
+						message "{@n} Tier I Strength Pot &7- /genie wish strength"				
+						message "&7------------------------------------------------"
+					else if arg-3 is equal to 2:	
+						message "{@n} &eTier 2:"
+						message "{@n} Enchanting Table &7- /genie wish etable"
+						message "{@n} Brewing Stand &7- /genie wish bstand"
+						message "{@n} Fortune III Book &7- /genie wish fortune"					
+						message "&7------------------------------------------------"
+					else if arg-3 is equal to 3:	
+						message "{@n} &eTier 3:"
+						message "{@n} 15 Bookshelves &7- /genie wish bookshelf"
+						message "{@n} 5 Diamond Ore &7- /genie wish dore"
+						message "{@n} Tier II Speed Pot &7- /genie wish speed2"
+						message "{@n} 8 Nether Warts &7- /genie wish netherwart"
+						message "&7------------------------------------------------"
+					else if arg-3 is equal to 4:	
+						message "{@n} &eTier 4:"
+						message "{@n} Tier II Health Pot &7- /genie wish health"
+						message "{@n} 128 Bottles of Enchanting &7- /genie wish ebottle"
+						message "{@n} Glowstone Block &7- /genie wish glowstone"
+						message "{@n} Blaze Rod &7- /genie wish blazerod"					
+						message "&7------------------------------------------------"
+					else if arg-3 is equal to 5:	
+						message "{@n} &eHighest Tier(5+):"
+						message "{@n} 64 Obsidian &7- /genie wish obsidian"
+						message "{@n} 3 Wither Skulls &7- /genie wish skull"
+						message "{@n} 5 Soul Sand &7- /genie wish sand"
+						message "{@n} 8 Gold Ingots &7- /genie wish gold"
+						message "&7------------------------------------------------"
+					else:
+						message "{@n} &cWrong Syntax - use /genie wishes list"
+						message "&7------------------------------------------------"
+						execute console command "/playsound random.break %command sender% ~ ~ ~ 1 1 1"
+				else:	
+					if {genie::%command sender%::wishes} is equal to 0:
+						message "&7------------------------------------------------"
+						message "{@n} &cYou have no more wishes."
+						message "&7------------------------------------------------"
+						execute console command "/playsound random.break %command sender% ~ ~ ~ 1 1 1"
+					else:
+						message "&7------------------------------------------------"
+						message "{@n} You have &e%{genie::%command sender%::wishes}%&r left"
+						message "{@n} You are at &e%{genie::%command sender%::kills}%&r kills"
+						message "{@n} Here is your list:"
+						message "&7------------------------------------------------"
+						
+						if {genie::%command sender%::kills} is equal to 0:
+							message "{@n} &eTier 0:"
+							message "{@n} Golden Apple &7- /genie wish gapple"
+							message "{@n} Diamond Sword &7- /genie wish dsword"
+							message "{@n} Anvil &7- /genie wish anvil"
+							
+						else if {genie::%command sender%::kills} is equal to 1:
+							message "{@n} &eTier 1:"
+							message "{@n} Player Head &7- /genie wish head"
+							message "{@n} Tier I Speed Pot &7- /genie wish speed1"
+							message "{@n} Tier I Strength Pot &7- /genie wish strength"
+							
+						else if {genie::%command sender%::kills} is equal to 2:
+							message "{@n} &eTier 2:"
+							message "{@n} Enchanting Table &7- /genie wish etable"
+							message "{@n} Brewing Stand &7- /genie wish bstand"
+							message "{@n} Fortune III Book &7- /genie wish fortune"
+							
+						else if {genie::%command sender%::kills} is equal to 3:
+							message "{@n} &eTier 3:"
+							message "{@n} 15 Bookshelves &7- /genie wish bookshelf"
+							message "{@n} 5 Diamond Ore &7- /genie wish dore"
+							message "{@n} Tier II Speed Pot &7- /genie wish speed2"
+							message "{@n} 8 Nether Warts &7- /genie wish netherwart"
+							
+						else if {genie::%command sender%::kills} is equal to 4:
+							message "{@n} &eTier 4:"
+							message "{@n} Tier II Health Pot &7- /genie wish health"
+							message "{@n} 128 Bottles of Enchanting &7- /genie wish ebottle"
+							message "{@n} Glowstone Block &7- /genie wish glowstone"
+							message "{@n} Blaze Rod &7- /genie wish blazerod"
+							
+						else:
+							message "{@n} &eHighest Tier(5+):"
+							message "{@n} 64 Obsidian &7- /genie wish obsidian"
+							message "{@n} 3 Wither Skulls &7- /genie wish skull"
+							message "{@n} 5 Soul Sand &7- /genie wish sand"
+							message "{@n} 8 Gold Ingots &7- /genie wish gold"
+						message "{@n} &e/genie wishes list &7- To learn all the other wishes"
+						message "&7------------------------------------------------"
+			else:
+				message "&7------------------------------------------------"
+				message "{@n} &cError: Genie is &lDisabled"
+				message "&7------------------------------------------------"
+				execute console command "/playsound random.break %command sender% ~ ~ ~ 1 1 1"
+				
+		#/genie wish [wish]
+		else if arg-1 is equal to "wish":
+			if {genie::isGoing} is set:
+				if {genie::%command sender%::wishes} is more than 0:
+					if arg-2 is not set:
+						message "&7------------------------------------------------"
+						message "{@n} &cError: Select a wish &7- /genie wishes"
+						message "&7------------------------------------------------"
+					else:
+					
+						#Killstreak 0
+					
+						if arg-2 is equal to "gapple":
+							if {genie::%command sender%::kills} is equal to 0:
+								if player has space for 1 golden apple:
+									remove 1 from {genie::%command sender%::wishes}
+									give player 1 golden apple
+									message "&7------------------------------------------------"
+									message "{@n} You now have &e%{genie::%command sender%::wishes}%&r wishes"
+									message "&7------------------------------------------------"
+									execute console command "/playsound note.harp %command sender% ~ ~ ~ 1 1 1"
+								else:
+									message "&7------------------------------------------------"
+									message "{@n} &cError: You don't have room"
+									message "&7------------------------------------------------"
+									execute console command "/playsound random.break %command sender% ~ ~ ~ 1 1 1"
+							else:
+								message "&7------------------------------------------------"
+								message "{@n} &cError: Incorrect Killstreak &7- /genie wishes"
+								message "&7------------------------------------------------"
+								execute console command "/playsound random.break %command sender% ~ ~ ~ 1 1 1"
+								
+						else if arg-2 is equal to "dsword":
+							if {genie::%command sender%::kills} is equal to 0:
+								if player has space for 1 diamond sword:
+									remove 1 from {genie::%command sender%::wishes}
+									give player 1 diamond sword								
+									message "&7------------------------------------------------"
+									message "{@n} You now have &e%{genie::%command sender%::wishes}%&r wishes"
+									message "&7------------------------------------------------"
+									execute console command "/playsound note.harp %command sender% ~ ~ ~ 1 1 1"
+								else:
+									message "&7------------------------------------------------"
+									message "{@n} &cError: You don't have room"
+									message "&7------------------------------------------------"
+									execute console command "/playsound random.break %command sender% ~ ~ ~ 1 1 1"									
+							else:
+								message "&7------------------------------------------------"
+								message "{@n} &cError: Incorrect Killstreak &7- /genie wishes"
+								message "&7------------------------------------------------"
+								execute console command "/playsound random.break %command sender% ~ ~ ~ 1 1 1"
+								
+						else if arg-2 is equal to "anvil":
+							if {genie::%command sender%::kills} is equal to 0:
+								if player has space for 1 anvil:
+									remove 1 from {genie::%command sender%::wishes}
+									give player 1 anvil	
+									message "&7------------------------------------------------"
+									message "{@n} You now have &e%{genie::%command sender%::wishes}%&r wishes"
+									message "&7------------------------------------------------"
+									execute console command "/playsound note.harp %command sender% ~ ~ ~ 1 1 1"
+								else:
+									message "&7------------------------------------------------"
+									message "{@n} &cError: You don't have room"
+									message "&7------------------------------------------------"
+									execute console command "/playsound random.break %command sender% ~ ~ ~ 1 1 1"									
+							else:
+								message "&7------------------------------------------------"
+								message "{@n} &cError: Incorrect Killstreak &7- /genie wishes"
+								message "&7------------------------------------------------"
+								execute console command "/playsound random.break %command sender% ~ ~ ~ 1 1 1"
+								
+						#Killstreak 1
+						
+						else if arg-2 is equal to "head":
+							if {genie::%command sender%::kills} is equal to 1:
+								if player has space for 1 player head:
+									remove 1 from {genie::%command sender%::wishes}
+									give player 1 player head								
+									message "&7------------------------------------------------"
+									message "{@n} You now have &e%{genie::%command sender%::wishes}%&r wishes"
+									message "&7------------------------------------------------"
+									execute console command "/playsound note.harp %command sender% ~ ~ ~ 1 1 1"
+								else:
+									message "&7------------------------------------------------"
+									message "{@n} &cError: You don't have room"
+									message "&7------------------------------------------------"
+									execute console command "/playsound random.break %command sender% ~ ~ ~ 1 1 1"									
+							else:
+								message "&7------------------------------------------------"
+								message "{@n} &cError: Incorrect Killstreak &7- /genie wishes"
+								message "&7------------------------------------------------"
+								execute console command "/playsound random.break %command sender% ~ ~ ~ 1 1 1"
+								
+						else if arg-2 is equal to "speed1":
+							if {genie::%command sender%::kills} is equal to 1:
+								if player has space for 1 wooden sword:
+									remove 1 from {genie::%command sender%::wishes}
+									give player 1 potion of:8194								
+									message "&7------------------------------------------------"
+									message "{@n} You now have &e%{genie::%command sender%::wishes}%&r wishes"
+									message "&7------------------------------------------------"
+									execute console command "/playsound note.harp %command sender% ~ ~ ~ 1 1 1"
+								else:
+									message "&7------------------------------------------------"
+									message "{@n} &cError: You don't have room"
+									message "&7------------------------------------------------"
+									execute console command "/playsound random.break %command sender% ~ ~ ~ 1 1 1"									
+							else:
+								message "&7------------------------------------------------"
+								message "{@n} &cError: Incorrect Killstreak &7- /genie wishes"
+								message "&7------------------------------------------------"
+								execute console command "/playsound random.break %command sender% ~ ~ ~ 1 1 1"	
+
+						else if arg-2 is equal to "strength":
+							if {genie::%command sender%::kills} is equal to 1:
+								if player has space for 1 wooden sword:
+									remove 1 from {genie::%command sender%::wishes}
+									give player 1 potion of:8201								
+									message "&7------------------------------------------------"
+									message "{@n} You now have &e%{genie::%command sender%::wishes}%&r wishes"
+									message "&7------------------------------------------------"
+									execute console command "/playsound note.harp %command sender% ~ ~ ~ 1 1 1"
+								else:
+									message "&7------------------------------------------------"
+									message "{@n} &cError: You don't have room"
+									message "&7------------------------------------------------"
+									execute console command "/playsound random.break %command sender% ~ ~ ~ 1 1 1"									
+							else:
+								message "&7------------------------------------------------"
+								message "{@n} &cError: Incorrect Killstreak &7- /genie wishes"
+								message "&7------------------------------------------------"
+								execute console command "/playsound random.break %command sender% ~ ~ ~ 1 1 1"
+								
+						#Killstreak 2
+						
+						else if arg-2 is equal to "etable":
+							if {genie::%command sender%::kills} is equal to 2:
+								if player has space for 1 enchantment table:
+									remove 1 from {genie::%command sender%::wishes}
+									give player 1 enchantment table							
+									message "&7------------------------------------------------"
+									message "{@n} You now have &e%{genie::%command sender%::wishes}%&r wishes"
+									message "&7------------------------------------------------"
+									execute console command "/playsound note.harp %command sender% ~ ~ ~ 1 1 1"
+								else:
+									message "&7------------------------------------------------"
+									message "{@n} &cError: You don't have room"
+									message "&7------------------------------------------------"
+									execute console command "/playsound random.break %command sender% ~ ~ ~ 1 1 1"										
+							else:
+								message "&7------------------------------------------------"
+								message "{@n} &cError: Incorrect Killstreak &7- /genie wishes"
+								message "&7------------------------------------------------"
+								execute console command "/playsound random.break %command sender% ~ ~ ~ 1 1 1"	
+								
+						else if arg-2 is equal to "bstand":
+							if {genie::%command sender%::kills} is equal to 2:
+								if player has space for 1 brewing stand:
+									remove 1 from {genie::%command sender%::wishes}
+									give player 1 brewing stand								
+									message "&7------------------------------------------------"
+									message "{@n} You now have &e%{genie::%command sender%::wishes}%&r wishes"
+									message "&7------------------------------------------------"
+									execute console command "/playsound note.harp %command sender% ~ ~ ~ 1 1 1"
+								else:
+									message "&7------------------------------------------------"
+									message "{@n} &cError: You don't have room"
+									message "&7------------------------------------------------"
+									execute console command "/playsound random.break %command sender% ~ ~ ~ 1 1 1"										
+							else:
+								message "&7------------------------------------------------"
+								message "{@n} &cError: Incorrect Killstreak &7- /genie wishes"
+								message "&7------------------------------------------------"
+								execute console command "/playsound random.break %command sender% ~ ~ ~ 1 1 1"									
+
+						else if arg-2 is equal to "fortune":
+							if {genie::%command sender%::kills} is equal to 2:
+								if player has space for 1 wooden sword:							
+									remove 1 from {genie::%command sender%::wishes}
+									give player 1 enchanted book of fortune 3
+									message "&7------------------------------------------------"
+									message "{@n} You now have &e%{genie::%command sender%::wishes}%&r wishes"
+									message "&7------------------------------------------------"
+									execute console command "/playsound note.harp %command sender% ~ ~ ~ 1 1 1"
+								else:
+									message "&7------------------------------------------------"
+									message "{@n} &cError: You don't have room"
+									message "&7------------------------------------------------"
+									execute console command "/playsound random.break %command sender% ~ ~ ~ 1 1 1"										
+							else:
+								message "&7------------------------------------------------"
+								message "{@n} &cError: Incorrect Killstreak &7- /genie wishes"
+								message "&7------------------------------------------------"
+								execute console command "/playsound random.break %command sender% ~ ~ ~ 1 1 1"
+								
+						#Killstreak 3
+						
+						else if arg-2 is equal to "bookshelf":
+							if {genie::%command sender%::kills} is equal to 3:
+								if player has space for 15 bookshelves:
+									remove 1 from {genie::%command sender%::wishes}
+									give player 15 bookshelves
+									message "&7------------------------------------------------"
+									message "{@n} You now have &e%{genie::%command sender%::wishes}%&r wishes"
+									message "&7------------------------------------------------"
+									execute console command "/playsound note.harp %command sender% ~ ~ ~ 1 1 1"
+								else:
+									message "&7------------------------------------------------"
+									message "{@n} &cError: You don't have room"
+									message "&7------------------------------------------------"
+									execute console command "/playsound random.break %command sender% ~ ~ ~ 1 1 1"										
+							else:
+								message "&7------------------------------------------------"
+								message "{@n} &cError: Incorrect Killstreak &7- /genie wishes"
+								message "&7------------------------------------------------"
+								execute console command "/playsound random.break %command sender% ~ ~ ~ 1 1 1"						
+
+						else if arg-2 is equal to "dore":
+							if {genie::%command sender%::kills} is equal to 3:
+								if player has space for 3 diamond ore:
+									remove 1 from {genie::%command sender%::wishes}
+									give player 5 diamond ore
+									message "&7------------------------------------------------"
+									message "{@n} You now have &e%{genie::%command sender%::wishes}%&r wishes"
+									message "&7------------------------------------------------"
+									execute console command "/playsound note.harp %command sender% ~ ~ ~ 1 1 1"
+								else:
+									message "&7------------------------------------------------"
+									message "{@n} &cError: You don't have room"
+									message "&7------------------------------------------------"
+									execute console command "/playsound random.break %command sender% ~ ~ ~ 1 1 1"										
+							else:
+								message "&7------------------------------------------------"
+								message "{@n} &cError: Incorrect Killstreak &7- /genie wishes"
+								message "&7------------------------------------------------"
+								execute console command "/playsound random.break %command sender% ~ ~ ~ 1 1 1"						
+
+						else if arg-2 is equal to "speed2":
+							if {genie::%command sender%::kills} is equal to 3:
+								if player has space for 1 wooden sword:							
+									remove 1 from {genie::%command sender%::wishes}
+									give player 1 potion of:8226
+									message "&7------------------------------------------------"
+									message "{@n} You now have &e%{genie::%command sender%::wishes}%&r wishes"
+									message "&7------------------------------------------------"
+									execute console command "/playsound note.harp %command sender% ~ ~ ~ 1 1 1"
+								else:
+									message "&7------------------------------------------------"
+									message "{@n} &cError: You don't have room"
+									message "&7------------------------------------------------"
+									execute console command "/playsound random.break %command sender% ~ ~ ~ 1 1 1"										
+							else:
+								message "&7------------------------------------------------"
+								message "{@n} &cError: Incorrect Killstreak &7- /genie wishes"
+								message "&7------------------------------------------------"
+								execute console command "/playsound random.break %command sender% ~ ~ ~ 1 1 1"						
+
+						else if arg-2 is equal to "netherwart":
+							if {genie::%command sender%::kills} is equal to 3:
+								if player has space for 8 nether wart:
+									remove 1 from {genie::%command sender%::wishes}
+									give player 8 nether wart
+									message "&7------------------------------------------------"
+									message "{@n} You now have &e%{genie::%command sender%::wishes}%&r wishes"
+									message "&7------------------------------------------------"
+									execute console command "/playsound note.harp %command sender% ~ ~ ~ 1 1 1"
+								else:
+									message "&7------------------------------------------------"
+									message "{@n} &cError: You don't have room"
+									message "&7------------------------------------------------"
+									execute console command "/playsound random.break %command sender% ~ ~ ~ 1 1 1"										
+							else:
+								message "&7------------------------------------------------"
+								message "{@n} &cError: Incorrect Killstreak &7- /genie wishes"
+								message "&7------------------------------------------------"
+								execute console command "/playsound random.break %command sender% ~ ~ ~ 1 1 1"
+								
+						#Killstreak 4
+						
+						else if arg-2 is equal to "health":
+							if {genie::%command sender%::kills} is equal to 4:
+								if player has space for 1 wooden sword:							
+									remove 1 from {genie::%command sender%::wishes}
+									give player 1 potion of:8229
+									message "&7------------------------------------------------"
+									message "{@n} You now have &e%{genie::%command sender%::wishes}%&r wishes"
+									message "&7------------------------------------------------"
+									execute console command "/playsound note.harp %command sender% ~ ~ ~ 1 1 1"
+								else:
+									message "&7------------------------------------------------"
+									message "{@n} &cError: You don't have room"
+									message "&7------------------------------------------------"
+									execute console command "/playsound random.break %command sender% ~ ~ ~ 1 1 1"										
+							else:
+								message "&7------------------------------------------------"
+								message "{@n} &cError: Incorrect Killstreak &7- /genie wishes"
+								message "&7------------------------------------------------"
+								execute console command "/playsound random.break %command sender% ~ ~ ~ 1 1 1"						
+
+						else if arg-2 is equal to "ebottle":
+							if {genie::%command sender%::kills} is equal to 4:
+								if player has space for 128 bottles of enchanting:							
+									remove 1 from {genie::%command sender%::wishes}
+									give player 128 bottles of enchanting
+									message "&7------------------------------------------------"
+									message "{@n} You now have &e%{genie::%command sender%::wishes}%&r wishes"
+									message "&7------------------------------------------------"
+									execute console command "/playsound note.harp %command sender% ~ ~ ~ 1 1 1"
+								else:
+									message "&7------------------------------------------------"
+									message "{@n} &cError: You don't have room"
+									message "&7------------------------------------------------"
+									execute console command "/playsound random.break %command sender% ~ ~ ~ 1 1 1"										
+							else:
+								message "&7------------------------------------------------"
+								message "{@n} &cError: Incorrect Killstreak &7- /genie wishes"
+								message "&7------------------------------------------------"
+								execute console command "/playsound random.break %command sender% ~ ~ ~ 1 1 1"
+								
+						else if arg-2 is equal to "glowstone":
+							if {genie::%command sender%::kills} is equal to 4:
+								if player has space for 1 glowstone block:
+									remove 1 from {genie::%command sender%::wishes}
+									give player 1 glowstone block
+									message "&7------------------------------------------------"
+									message "{@n} You now have &e%{genie::%command sender%::wishes}%&r wishes"
+									message "&7------------------------------------------------"
+									execute console command "/playsound note.harp %command sender% ~ ~ ~ 1 1 1"
+								else:
+									message "&7------------------------------------------------"
+									message "{@n} &cError: You don't have room"
+									message "&7------------------------------------------------"
+									execute console command "/playsound random.break %command sender% ~ ~ ~ 1 1 1"										
+							else:
+								message "&7------------------------------------------------"
+								message "{@n} &cError: Incorrect Killstreak &7- /genie wishes"
+								message "&7------------------------------------------------"
+								execute console command "/playsound random.break %command sender% ~ ~ ~ 1 1 1"
+								
+						else if arg-2 is equal to "blazerod":
+							if {genie::%command sender%::kills} is equal to 4:
+								if player has space for 1 blaze rod:							
+									remove 1 from {genie::%command sender%::wishes}
+									give player 1 blaze rod
+									message "&7------------------------------------------------"
+									message "{@n} You now have &e%{genie::%command sender%::wishes}%&r wishes"
+									message "&7------------------------------------------------"
+									execute console command "/playsound note.harp %command sender% ~ ~ ~ 1 1 1"
+								else:
+									message "&7------------------------------------------------"
+									message "{@n} &cError: You don't have room"
+									message "&7------------------------------------------------"
+									execute console command "/playsound random.break %command sender% ~ ~ ~ 1 1 1"										
+							else:
+								message "&7------------------------------------------------"
+								message "{@n} &cError: Incorrect Killstreak &7- /genie wishes"
+								message "&7------------------------------------------------"
+								execute console command "/playsound random.break %command sender% ~ ~ ~ 1 1 1"
+								
+						#Killstreak 5+
+
+						else if arg-2 is equal to "obsidian":
+							if {genie::%command sender%::kills} is equal to 5:
+								if player has space for 64 obsidian:
+									remove 1 from {genie::%command sender%::wishes}
+									give player 64 obsidian
+									message "&7------------------------------------------------"
+									message "{@n} You now have &e%{genie::%command sender%::wishes}%&r wishes"
+									message "&7------------------------------------------------"
+									execute console command "/playsound note.harp %command sender% ~ ~ ~ 1 1 1"
+								else:
+									message "&7------------------------------------------------"
+									message "{@n} &cError: You don't have room"
+									message "&7------------------------------------------------"
+									execute console command "/playsound random.break %command sender% ~ ~ ~ 1 1 1"										
+							else:
+								message "&7------------------------------------------------"
+								message "{@n} &cError: Incorrect Killstreak &7- /genie wishes"
+								message "&7------------------------------------------------"
+								execute console command "/playsound random.break %command sender% ~ ~ ~ 1 1 1"						
+
+						else if arg-2 is equal to "skull":
+							if {genie::%command sender%::kills} is equal to 5:
+								if player has space for 3 wither skeleton head:
+									remove 1 from {genie::%command sender%::wishes}
+									give player 3 wither skeleton head
+									message "&7------------------------------------------------"
+									message "{@n} You now have &e%{genie::%command sender%::wishes}%&r wishes"
+									message "&7------------------------------------------------"
+									execute console command "/playsound note.harp %command sender% ~ ~ ~ 1 1 1"
+								else:
+									message "&7------------------------------------------------"
+									message "{@n} &cError: You don't have room"
+									message "&7------------------------------------------------"
+									execute console command "/playsound random.break %command sender% ~ ~ ~ 1 1 1"										
+							else:
+								message "&7------------------------------------------------"
+								message "{@n} &cError: Incorrect Killstreak &7- /genie wishes"
+								message "&7------------------------------------------------"
+								execute console command "/playsound random.break %command sender% ~ ~ ~ 1 1 1"
+								
+						else if arg-2 is equal to "sand":
+							if {genie::%command sender%::kills} is equal to 5:
+								if player has space for 5 soul sand:					
+									remove 1 from {genie::%command sender%::wishes}
+									give player 5 soul sand
+									message "&7------------------------------------------------"
+									message "{@n} You now have &e%{genie::%command sender%::wishes}%&r wishes"
+									message "&7------------------------------------------------"
+									execute console command "/playsound note.harp %command sender% ~ ~ ~ 1 1 1"
+								else:
+									message "&7------------------------------------------------"
+									message "{@n} &cError: You don't have room"
+									message "&7------------------------------------------------"
+									execute console command "/playsound random.break %command sender% ~ ~ ~ 1 1 1"										
+							else:
+								message "&7------------------------------------------------"
+								message "{@n} &cError: Incorrect Killstreak &7- /genie wishes"
+								message "&7------------------------------------------------"
+								execute console command "/playsound random.break %command sender% ~ ~ ~ 1 1 1"
+								
+						else if arg-2 is equal to "gold":
+							if {genie::%command sender%::kills} is equal to 5:
+								if player has space for 8 gold ingot:
+									remove 1 from {genie::%command sender%::wishes}
+									give player 8 gold ingot
+									message "&7------------------------------------------------"
+									message "{@n} You now have &e%{genie::%command sender%::wishes}%&r wishes"
+									message "&7------------------------------------------------"
+									execute console command "/playsound note.harp %command sender% ~ ~ ~ 1 1 1"
+								else:
+									message "&7------------------------------------------------"
+									message "{@n} &cError: You don't have room"
+									message "&7------------------------------------------------"
+									execute console command "/playsound random.break %command sender% ~ ~ ~ 1 1 1"										
+							else:
+								message "&7------------------------------------------------"
+								message "{@n} &cError: Incorrect Killstreak &7- /genie wishes"
+								message "&7------------------------------------------------"
+								execute console command "/playsound random.break %command sender% ~ ~ ~ 1 1 1"
+						
+						else:
+							message "&7------------------------------------------------"
+							message "{@n} &cError: Cannot find wish &7- /genie wishes"
+							message "&7------------------------------------------------"
+							execute console command "/playsound random.break %command sender% ~ ~ ~ 1 1 1"
+								
+				else:
+					message "&7------------------------------------------------"
+					message "{@n} &cError: You have &e0&c wishes left"
+					message "&7------------------------------------------------"
+					execute console command "/playsound random.break %command sender% ~ ~ ~ 1 1 1"
+			else:
+				message "&7------------------------------------------------"
+				message "{@n} &cError: Genie is &lDisabled"
+				message "&7------------------------------------------------"
+				execute console command "/playsound random.break %command sender% ~ ~ ~ 1 1 1"			
+					
+		
+		#/genie help
+		else if arg-1 is equal to "help":
+			message "&7------------------------------------------------"
+			message "{@n} &eCommands:"
+			if player has permission "{@perms}":
+				message "{@n} /{@command} enable &7- Enables the Scenario"
+				message "{@n} /{@command} disable &7- Disables the Scenario"
+				message "{@n} /{@command} toggle &7- Toggles the Scenario"
+			message "{@n} /{@command} wishes &7- How many wishes you have"
+			message "{@n} /{@command} wish &7- Wish for a item here"
+			message "{@n} /{@command} &7- Explains the Scenario"
+			message "&7------------------------------------------------"
+		
+		#/genie awjoadpolwp
+		else:
+			message "&7------------------------------------------------"
+			message "{@n} &cWrong Syntax - use /{@command} help"
+			message "&7------------------------------------------------"
+			execute console command "/playsound random.break %command sender% ~ ~ ~ 1 1 1"
+			
+#Event 'n' Sterf
+
+on death of player:
+	if {genie::isGoing} is set:
+		delete {genie::%victim%::wishes}
+		delete {genie::%victim%::kills}
+		set {genie::%victim%::dead} to true
+		if {genie::%attacker%::kills} is equal to 5:
+			message "&7------------------------------------------------"
+			message "{@n} Your killstreak &ecannot&r go any higher"
+			message "&7------------------------------------------------"
+			execute console command "/playsound random.break %attacker% ~ ~ ~ 1 1 1"
+		else:
+			add 1 to {genie::%attacker%::kills}
+			message "&7------------------------------------------------"
+			message "{@n} Your killstreak is now &e%{genie::%attacker%::kills}%"
+			message "&7------------------------------------------------"
+			execute console command "/playsound note.harp %attacker% ~ ~ ~ 1 1 1"
+			
+on join:
+	if {genie::isGoing} is set:
+		if {genie::%player%::wishes} is not set:
+			if {genie::%player%::dead} is not set:
+				set {genie::%player%::kills} to 0
+				set {genie::%player%::wishes} to 3
