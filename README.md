@@ -1,2 +1,2 @@
-# ultrahardcore
-An UHC plugin made by LeonTG77 for his servers uhc games
+# Ultra Hardcore
+UHC Plugin designed for LeonTG777's UHC games
