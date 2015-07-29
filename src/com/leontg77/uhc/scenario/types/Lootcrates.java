@@ -90,71 +90,67 @@ public class Lootcrates extends Scenario implements Listener {
 
 		if (item.getType() == Material.CHEST) {
 			int i = new Random().nextInt(5);
-			
-			player.getInventory().remove(Material.ENDER_CHEST);
 			player.sendMessage(Main.prefix() + "You rolled an §a" + i + "§7.");
 			
 			switch (i) {
 			case 0:
-				player.getInventory().addItem(new ItemStack (Material.IRON_PICKAXE));
+				player.setItemInHand(new ItemStack (Material.IRON_PICKAXE));
 				break;
 			case 1:
-				player.getInventory().addItem(new ItemStack (Material.APPLE, 2));
+				player.setItemInHand(new ItemStack (Material.APPLE, 2));
 				break;
 			case 2:
-				player.getInventory().addItem(new ItemStack (Material.COOKED_BEEF, 8));
+				player.setItemInHand(new ItemStack (Material.COOKED_BEEF, 8));
 				break;
 			case 3:
-				player.getInventory().addItem(new ItemStack (Material.CAKE));
+				player.setItemInHand(new ItemStack (Material.CAKE));
 				break;
 			case 4:
-				player.getInventory().addItem(new ItemStack (Material.RAW_FISH, 64, (short) 3));
+				player.setItemInHand(new ItemStack (Material.RAW_FISH, 64, (short) 3));
 				break;
 			case 5:
-				player.getInventory().addItem(new ItemStack (Material.BOW));
+				player.setItemInHand(new ItemStack (Material.BOW));
 				break;
 			}
 		}
 
 		if (item.getType() == Material.ENDER_CHEST) {
 			int i = new Random().nextInt(10);
-			
-			player.getInventory().remove(Material.ENDER_CHEST);
 			player.sendMessage(Main.prefix() + "You rolled an §a" + i + "§7.");
 			
 			switch (i) {
 			case 0:
-				player.getInventory().addItem(new ItemStack (Material.DIAMOND));
+				player.setItemInHand(new ItemStack (Material.DIAMOND));
 				break;
 			case 1:
-				player.getInventory().addItem(new ItemStack (Material.GOLD_INGOT, 3));
+				player.setItemInHand(new ItemStack (Material.GOLD_INGOT, 3));
 				break;
 			case 2:
-				player.getInventory().addItem(new ItemStack (Material.IRON_INGOT, 5));
+				player.setItemInHand(new ItemStack (Material.IRON_INGOT, 5));
 				break;
 			case 3:
-				player.getInventory().addItem(new ItemStack (Material.DIRT, 32));
+				player.setItemInHand(new ItemStack (Material.DIRT, 32));
 				break;
 			case 4:
-				player.getInventory().addItem(new ItemStack (Material.ENCHANTMENT_TABLE));
+				player.setItemInHand(new ItemStack (Material.ENCHANTMENT_TABLE));
 				break;
 			case 5:
-				player.getInventory().addItem(new ItemStack (Material.DIAMOND_SWORD));
+				player.setItemInHand(new ItemStack (Material.DIAMOND_SWORD));
 				break;
 			case 6:
-				player.getInventory().addItem(new ItemStack (Material.DIAMOND_HELMET));
+				player.setItemInHand(new ItemStack (Material.DIAMOND_HELMET));
 				break;
 			case 7:
-				player.getInventory().addItem(new ItemStack (Material.DIAMOND_BOOTS));
+				player.setItemInHand(new ItemStack (Material.DIAMOND_BOOTS));
 				break;
 			case 8:
-				player.getInventory().addItem(new ItemStack (Material.ARROW, 32));
+				player.setItemInHand(new ItemStack (Material.ARROW, 32));
 				break;
 			case 9:
-				player.getInventory().addItem(new ItemStack (Material.TNT));
+				player.setItemInHand(new ItemStack (Material.TNT));
 				break;
 			case 10:
-				player.getInventory().addItem(new ItemStack (Material.FLINT_AND_STEEL));
+				player.setItemInHand(new ItemStack (Material.FLINT_AND_STEEL));
 				break;
 			}
 		}
