@@ -80,6 +80,10 @@ public class Lootcrates extends Scenario implements Listener {
 		if (!isEnabled()) {
 			return;
 		}
+		
+		if (event.getItem() == null) {
+			return;
+		}
 
 		Player player = event.getPlayer();
 		ItemStack item = event.getItem();
