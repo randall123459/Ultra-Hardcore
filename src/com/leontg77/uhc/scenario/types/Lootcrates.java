@@ -1,11 +1,26 @@
 package com.leontg77.uhc.scenario.types;
 
-import org.bukkit.event.Listener;
+import java.util.Random;
 
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.inventory.PrepareItemCraftEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
+
+import com.leontg77.uhc.Main;
 import com.leontg77.uhc.scenario.Scenario;
+import com.leontg77.uhc.util.PlayerUtils;
 
 public class Lootcrates extends Scenario implements Listener {
 	private boolean enabled = false;
+	private BukkitRunnable task;
 
 	public Lootcrates() {
 		super("Lootcrates", "Every 10 minutes, players will be given a \"loot crate\" filled with goodies. There are two tiers, an Ender Chest being tier 2 and a normal chest tier 1.");
@@ -13,9 +28,148 @@ public class Lootcrates extends Scenario implements Listener {
 
 	public void setEnabled(boolean enable) {
 		enabled = enable;
+		
+		if (enable) {
+			this.task = new BukkitRunnable() {
+				public void run() {
+					for (Player online : PlayerUtils.getPlayers()) {
+						int i = new Random().nextInt(1);
+						
+						if (i == 1) {
+							online.getInventory().addItem(new ItemStack (Material.ENDER_CHEST));
+						} else {
+							online.getInventory().addItem(new ItemStack (Material.CHEST));
+						}
+					}
+					PlayerUtils.broadcast(Main.prefix() + "Lootcrates has been given out.");
+				}
+			};
+			
+			task.runTaskTimer(Main.plugin, 12000, 12000);
+		} else {
+			task.cancel();
+		}
 	}
 
 	public boolean isEnabled() {
 		return enabled;
+	}
+	
+	@EventHandler
+	public void onBlockPlace(BlockPlaceEvent event) {
+		if (!isEnabled()) {
+			return;
+		}
+
+		Player player = event.getPlayer();
+		Block block = event.getBlock();
+
+		if (block.getType() == Material.CHEST) {
+			player.sendMessage(ChatColor.RED + "You cannot place lootcrates.");
+			event.setCancelled(true);
+		}
+
+		if (block.getType() == Material.ENDER_CHEST) {
+			player.sendMessage(ChatColor.RED + "You cannot place lootcrates.");
+			event.setCancelled(true);
+		}
+	}
+	
+	@EventHandler
+	public void onPlayerInteract(PlayerInteractEvent event) {
+		if (!isEnabled()) {
+			return;
+		}
+
+		Player player = event.getPlayer();
+		ItemStack item = event.getItem();
+
+		if (item.getType() == Material.CHEST) {
+			int i = new Random().nextInt(5);
+			
+			player.getInventory().remove(Material.ENDER_CHEST);
+			player.sendMessage(Main.prefix() + "You rolled an §a" + i + "§7.");
+			
+			switch (i) {
+			case 0:
+				player.getInventory().addItem(new ItemStack (Material.IRON_PICKAXE));
+				break;
+			case 1:
+				player.getInventory().addItem(new ItemStack (Material.APPLE, 2));
+				break;
+			case 2:
+				player.getInventory().addItem(new ItemStack (Material.COOKED_BEEF, 8));
+				break;
+			case 3:
+				player.getInventory().addItem(new ItemStack (Material.CAKE));
+				break;
+			case 4:
+				player.getInventory().addItem(new ItemStack (Material.DIRT, 64));
+				break;
+			case 5:
+				player.getInventory().addItem(new ItemStack (Material.BOW));
+				break;
+			}
+		}
+
+		if (item.getType() == Material.ENDER_CHEST) {
+			int i = new Random().nextInt(10);
+			
+			player.getInventory().remove(Material.ENDER_CHEST);
+			player.sendMessage(Main.prefix() + "You rolled an §a" + i + "§7.");
+			
+			switch (i) {
+			case 0:
+				player.getInventory().addItem(new ItemStack (Material.DIAMOND));
+				break;
+			case 1:
+				player.getInventory().addItem(new ItemStack (Material.GOLD_INGOT, 3));
+				break;
+			case 2:
+				player.getInventory().addItem(new ItemStack (Material.IRON_INGOT, 5));
+				break;
+			case 3:
+				player.getInventory().addItem(new ItemStack (Material.DIRT, 32));
+				break;
+			case 4:
+				player.getInventory().addItem(new ItemStack (Material.ENCHANTMENT_TABLE));
+				break;
+			case 5:
+				player.getInventory().addItem(new ItemStack (Material.DIAMOND_SWORD));
+				break;
+			case 6:
+				player.getInventory().addItem(new ItemStack (Material.DIAMOND_HELMET));
+				break;
+			case 7:
+				player.getInventory().addItem(new ItemStack (Material.DIAMOND_BOOTS));
+				break;
+			case 8:
+				player.getInventory().addItem(new ItemStack (Material.ARROW, 32));
+				break;
+			case 9:
+				player.getInventory().addItem(new ItemStack (Material.TNT));
+				break;
+			case 10:
+				player.getInventory().addItem(new ItemStack (Material.FLINT_AND_STEEL));
+				break;
+			}
+		}
+	}
+	
+	@EventHandler
+	public void onPrepareItemCraft(PrepareItemCraftEvent event) {
+		if (!isEnabled()) {
+			return;
+		}
+		
+		ItemStack item = event.getRecipe().getResult();
+		
+		if (item.getType() == Material.CHEST) {
+			event.getInventory().setResult(new ItemStack(Material.AIR));
+		}
+		
+		if (item.getType() == Material.ENDER_CHEST) {
+			event.getInventory().setResult(new ItemStack(Material.AIR));
+		}
 	}
 }
