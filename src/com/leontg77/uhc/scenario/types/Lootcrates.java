@@ -108,7 +108,7 @@ public class Lootcrates extends Scenario implements Listener {
 				player.getInventory().addItem(new ItemStack (Material.CAKE));
 				break;
 			case 4:
-				player.getInventory().addItem(new ItemStack (Material.DIRT, 64));
+				player.getInventory().addItem(new ItemStack (Material.RAW_FISH, 64, (short) 3));
 				break;
 			case 5:
 				player.getInventory().addItem(new ItemStack (Material.BOW));
