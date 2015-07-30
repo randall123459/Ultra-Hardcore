@@ -52,7 +52,7 @@ public class PlayerUtils {
 				online.sendMessage(message);
 			}
 		}
-		Bukkit.getLogger().info(message);
+		Bukkit.getLogger().info(message.replaceAll("§l", ""));
 	}
 	
 	/**
