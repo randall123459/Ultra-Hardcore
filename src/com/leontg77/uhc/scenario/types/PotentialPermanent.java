@@ -51,11 +51,16 @@ public class PotentialPermanent extends Scenario implements Listener {
 			return;
 		}
 		
+		if (event.getItem().getType() != Material.GOLDEN_APPLE) {
+			return;
+		}
+		
 		Player player = event.getPlayer();
 		CraftPlayer cplayer = (CraftPlayer) player;
 		
 		event.setCancelled(true);
         player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 100, 1));
+        
 		if (player.getItemInHand().getAmount() == 1) {
 			player.setItemInHand(new ItemStack (Material.AIR));
 		} else {
