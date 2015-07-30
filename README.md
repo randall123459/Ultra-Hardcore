@@ -1,2 +1,2 @@
 # Ultra Hardcore
-UHC Plugin designed for LeonTG777's UHC games
+UHC Plugin designed for LeonTG77's UHC games
