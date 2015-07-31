@@ -14,6 +14,7 @@ import org.bukkit.scoreboard.Team;
 import com.leontg77.uhc.GameState;
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.Settings;
+import com.leontg77.uhc.util.PlayerUtils;
 
 @SuppressWarnings("deprecation")
 public class SpreadCommand implements CommandExecutor {
@@ -26,33 +27,54 @@ public class SpreadCommand implements CommandExecutor {
 					return true;
 				}
 				
+				final int radius;
+				final int maxradius;
+				final boolean teams;
+				
+				try {
+					radius = Integer.parseInt(args[0]);
+				} catch (Exception e) {
+					player.sendMessage(ChatColor.RED + "Invaild radius.");
+					return true;
+				}
+				
+				try {
+					maxradius = Integer.parseInt(args[1]);
+				} catch (Exception e) {
+					player.sendMessage(ChatColor.RED + "Invaild max radius.");
+					return true;
+				}
+				
+				if (args[2].equalsIgnoreCase("true")) {
+					teams = true;
+				}
+				else if (args[2].equalsIgnoreCase("false")) {
+					teams = false;
+				} 
+				else {
+					player.sendMessage(ChatColor.RED + "Teamspread must be true of false"); 
+					return true;
+				}
+				
 				if (args[3].equalsIgnoreCase("*")) {
-					for (Player online : Bukkit.getServer().getOnlinePlayers()) {
-						online.sendMessage(Main.prefix() + "Scattering...");
-						online.sendMessage(Main.prefix() + "Loading chunks, expect lag for a sec.");
-						online.teleport(new Location(Bukkit.getWorld(Settings.getInstance().getData().getString("game.world")), 0.5, 200, 0.5));
+					PlayerUtils.broadcast(Main.prefix() + "Scattering §a" + PlayerUtils.getPlayers().size() + " §7players.");
+					
+					Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Main.plugin, new Runnable() {
+						public void run() {
+							PlayerUtils.broadcast(Main.prefix() + "Finding scatter locations...");
+							
+							if ()
+						}
+					}, 10);
+					
+					
+					
+					for (Player online : PlayerUtils.getPlayers()) {
 						online.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 1000000, 128));
 						online.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 1000000, 6));
 						online.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 1000000, 6));
 						online.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 1000000, 10));
 						online.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 1000000, 6));
-					}
-					
-					final int radius;
-					final int maxradius;
-					
-					try {
-						radius = Integer.parseInt(args[0]);
-					} catch (Exception e) {
-						player.sendMessage(ChatColor.RED + "Invaild radius.");
-						return true;
-					}
-					
-					try {
-						maxradius = Integer.parseInt(args[1]);
-					} catch (Exception e) {
-						player.sendMessage(ChatColor.RED + "Invaild max radius.");
-						return true;
 					}
 					
 					Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Main.plugin, new Runnable() {
