@@ -6,7 +6,6 @@ import java.util.Arrays;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -15,8 +14,8 @@ import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import com.leontg77.uhc.util.NumberUtils;
 import com.leontg77.uhc.util.DateUtils;
+import com.leontg77.uhc.util.NumberUtils;
 import com.leontg77.uhc.util.PlayerUtils;
 
 /**
@@ -58,39 +57,55 @@ public class InvGUI {
 	 */
 	public void openInv(Player player, final Player target) {
 		final Inventory inv = Bukkit.getServer().createInventory(target, 45, "Player Inventory");
-		final Damageable dmg = target;
 	
 		Main.invsee.put(inv, new BukkitRunnable() {
 			public void run() {
-				inv.setItem(0, target.getInventory().getHelmet());
-				inv.setItem(1, target.getInventory().getChestplate());
-				inv.setItem(2, target.getInventory().getLeggings());
-				inv.setItem(3, target.getInventory().getBoots());
+				if (inv.getItem(0) != target.getInventory().getHelmet()) {
+					inv.setItem(0, target.getInventory().getHelmet());
+				}
+
+				if (inv.getItem(1) != target.getInventory().getChestplate()) {
+					inv.setItem(1, target.getInventory().getChestplate());
+				}
+
+				if (inv.getItem(2) != target.getInventory().getLeggings()) {
+					inv.setItem(2, target.getInventory().getLeggings());
+				}
+
+				if (inv.getItem(3) != target.getInventory().getBoots()) {
+					inv.setItem(3, target.getInventory().getBoots());
+				}
 				
-				ItemStack info = new ItemStack (Material.PAPER);
+				ItemStack info = new ItemStack (Material.BOOK);
 				ItemMeta infoMeta = info.getItemMeta();
-				infoMeta.setDisplayName("§cPlayer information");
+				infoMeta.setDisplayName("Â§4Player information");
 				ArrayList<String> lore = new ArrayList<String>();
-				lore.add("§aName: §7" + target.getName());
+				lore.add("Â§aName: Â§7" + target.getName());
 				lore.add(" ");
-				int health = (int) dmg.getHealth();
-				lore.add("§aHearts: §7" + (health / 2));
-				lore.add("§aPercentage Health: §7" + NumberUtils.makePercent(dmg.getHealth()) + "%");
-				lore.add("§aHunger: §7" + (target.getFoodLevel() / 2));
-				lore.add("§aXp level: §7" + target.getLevel());
-				lore.add("§aLocation: §7" + target.getWorld().getEnvironment().name().replaceAll("_", "").toLowerCase().replaceAll("normal", "overworld") + ", x:" + target.getLocation().getBlockX() + ", y:" + target.getLocation().getBlockY() + ", z:" + target.getLocation().getBlockZ());
+				int health = (int) target.getHealth();
+				lore.add("Â§aHearts: Â§7" + (((double) health) / 2) + "Â§4â™¥");
+				lore.add("Â§a% Health: Â§7" + NumberUtils.makePercent(target.getHealth()) + "%");
+				lore.add("Â§aHunger: Â§7" + (target.getFoodLevel() / 2));
+				lore.add("Â§aXp level: Â§7" + target.getLevel());
+				lore.add("Â§aLocation: Â§7" + target.getWorld().getEnvironment().name().replaceAll("_", "").toLowerCase().replaceAll("normal", "overworld") + ", x:" + target.getLocation().getBlockX() + ", y:" + target.getLocation().getBlockY() + ", z:" + target.getLocation().getBlockZ());
 				lore.add(" ");
-				lore.add("§cPotion effects:");
+				lore.add("Â§cPotion effects:");
+				if (target.getActivePotionEffects().size() == 0) {
+					lore.add(ChatColor.GRAY + "None");
+				}
 				for (PotionEffect l : target.getActivePotionEffects()) {
-					lore.add(ChatColor.GRAY + l.getType().getName().substring(0, 1).toUpperCase() + l.getType().getName().substring(1).toLowerCase().replaceAll("_", "") + " §atier: §7" + (l.getAmplifier() + 1) + " §aLength: §7" + DateUtils.ticksToString(l.getDuration() / 20));
+					lore.add(ChatColor.GRAY + l.getType().getName().substring(0, 1).toUpperCase() + l.getType().getName().substring(1).toLowerCase().replaceAll("_", "") + " Â§atier: Â§7" + (l.getAmplifier() + 1) + " Â§aLength: Â§7" + DateUtils.ticksToString(l.getDuration() / 20));
 				}
 				infoMeta.setLore(lore);
 				info.setItemMeta(infoMeta);
 				inv.setItem(8, info);
+				lore.clear();
 				
 				int i = 9;
 				for (ItemStack item : target.getInventory().getContents()) {
-					inv.setItem(i, item);
+					if (inv.getItem(i) != item) {
+						inv.setItem(i, item);
+					}
 					i++;
 				}
 			}
@@ -98,5 +113,9 @@ public class InvGUI {
 		Main.invsee.get(inv).runTaskTimer(Main.plugin, 1, 1);
 		
 		player.openInventory(inv);
+	}
+
+	public void openRules(Player player) {
+		
 	}
 }
