@@ -65,6 +65,20 @@ public class Teams {
 	}
 	
 	/**
+	 * Gets a list of all teams.
+	 * @return the list of teams.
+	 */
+	public List<Team> getTeamsWithPlayers() {
+		List<Team> list = new ArrayList<Team>();
+		for (Team team : teams) {
+			if (team.getSize() > 0) {
+				list.add(team);
+			}
+		}
+		return list;
+	}
+	
+	/**
 	 * Sets up all the teams.
 	 */
 	public void setupTeams() {
