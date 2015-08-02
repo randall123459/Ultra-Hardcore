@@ -20,10 +20,19 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 import com.leontg77.uhc.Main;
+import com.leontg77.uhc.Settings;
 
+/**
+ * Player utilities class.
+ * @author LeonTG77
+ */
 @SuppressWarnings("deprecation")
 public class PlayerUtils {
 	
+	/**
+	 * Get a list of players online.
+	 * @return A list of online players.
+	 */
 	public static List<Player> getPlayers() {
 		ArrayList<Player> list = new ArrayList<Player>();
 		for (Player online : Bukkit.getServer().getOnlinePlayers()) {
@@ -90,6 +99,12 @@ public class PlayerUtils {
 		return 54;
 	}
 	
+	/**
+	 * Get a list of entites within a distance of a location.
+	 * @param loc the location.
+	 * @param distance the distance.
+	 * @return A list of entites nearby.
+	 */
 	public static List<Entity> getNearby(Location loc, int distance) {
 		List<Entity> list = new ArrayList<Entity>();
 		for (Entity e : loc.getWorld().getEntities()) {
@@ -127,7 +142,7 @@ public class PlayerUtils {
 	public static void setTabList(Player player) {
 		PlayerConnection connection = ((CraftPlayer) player).getHandle().playerConnection;
         IChatBaseComponent tabTitle = ChatSerializer.a("{text:'Ultra Hardcore',color:'dark_red',bold:'true'}");
-        IChatBaseComponent tabFoot = ChatSerializer.a("{text:'/rules and /config',color:'gray'}");
+        IChatBaseComponent tabFoot = ChatSerializer.a("{text:'" + ServerUtils.getTeamSize() + " " + Settings.getInstance().getData().getString("motd") + "',color:'gray'}");
         PacketPlayOutPlayerListHeaderFooter headerPacket = new PacketPlayOutPlayerListHeaderFooter(tabTitle);
  
         try {

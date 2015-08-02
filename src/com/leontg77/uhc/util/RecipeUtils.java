@@ -11,6 +11,10 @@ import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.ShapelessRecipe;
 
+/**
+ * Recipe utilities class
+ * @author LeonTG77
+ */
 public class RecipeUtils {
 
 	/**

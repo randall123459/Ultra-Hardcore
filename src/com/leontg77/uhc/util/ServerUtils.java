@@ -4,9 +4,13 @@ import net.minecraft.server.v1_8_R3.MinecraftServer;
 
 import org.bukkit.Bukkit;
 
-import com.leontg77.uhc.GameState;
 import com.leontg77.uhc.Main;
+import com.leontg77.uhc.Main.State;
 
+/**
+ * Server utilities class.
+ * @author LeonTG77
+ */
 public class ServerUtils {
 	
 	/**
@@ -18,19 +22,11 @@ public class ServerUtils {
 	}
 	
 	/**
-	 * Gets the servers recent tps.
-	 * @return The servers recent tps.
-	 */
-	public static double[] getRecentTps() {
-		return MinecraftServer.getServer().recentTps;
-	}
-	
-	/**
 	 * Gets a string version of the current state.
 	 * @return the string version.
 	 */
 	public static String getState() {
-		GameState current = GameState.getState();
+		State current = State.getState();
 		
 		switch (current) {
 		case INGAME:
@@ -41,7 +37,7 @@ public class ServerUtils {
 			} else {
 				return "Waiting for players...";
 			}
-		case WAITING:
+		case SCATTER:
 			return "Starting...";
 		default:
 			return "Not running.";
@@ -53,11 +49,12 @@ public class ServerUtils {
 	 * @return the string format.
 	 */
 	public static String getTeamSize() {
-		if (Main.teamSize == 1 && Main.ffa) {
-			return "FFA";
-		}
-		if (Main.teamSize > 1 && Main.ffa) {
-			return "rTo" + Main.teamSize;
+		if (Main.ffa) {
+			if (Main.teamSize == 1) {
+				return "FFA";
+			} else {
+				return "rTo" + Main.teamSize;
+			}
 		}
 		return "To" + Main.teamSize;
 	}

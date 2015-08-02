@@ -1,17 +1,16 @@
 package com.leontg77.uhc.util;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.TreeSpecies;
-import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
-import com.leontg77.uhc.Main;
-
+/**
+ * Block utilties class
+ * @author LeonTG77
+ */
 @SuppressWarnings("deprecation")
 public class BlockUtils {
 	
@@ -56,36 +55,12 @@ public class BlockUtils {
 	}
 	
 	/**
-	 * Check if a spectator is blocking a block.
-	 * @param block the block.
-	 * @return True if the spectator is blocking it.
-	 */
-	public static boolean isSpecBlock(Block block) {
-		Location loc = block.getLocation();
-		
-		for (int x = loc.getBlockX() - 2; x <= loc.getBlockX() + 2; x++) {
-			for (int y = loc.getBlockY() - 2; y <= loc.getBlockY() + 2; y++) {
-				for (int z = loc.getBlockZ() - 2; z <= loc.getBlockZ() + 2; z++) {
-					for (Player online : Bukkit.getServer().getOnlinePlayers()) {
-						if (Main.spectating.contains(online.getName())) {
-							if ((online.getEyeLocation().getBlockX() == x && online.getEyeLocation().getBlockY() == y && online.getEyeLocation().getBlockZ() == z) || (online.getLocation().getBlockX() == x && online.getLocation().getBlockY() == y && online.getLocation().getBlockZ() == z)) {
-								return true;
-							}
-						}
-					}
-				}
-			}
-		}
-		return false;
-	}
-	
-	/**
 	 * Get the block face direction bases on a locations yaw
-	 * @param l the location
+	 * @param loc the location
 	 * @return the block face.
 	 */
-	public static BlockFace getBlockFaceDirection(Location l) {
-        double rotation = (l.getYaw()+180) % 360;
+	public static BlockFace getBlockFaceDirection(Location loc) {
+        double rotation = (loc.getYaw()+180) % 360;
         if (rotation < 0) {
             rotation += 360.0;
         }
@@ -130,26 +105,19 @@ public class BlockUtils {
     }
 
 	/**
-	 * Checks the type of the tree.
-	 * @param species the tree type.
-	 * @return The durability of the tree.
+	 * Get the highest block at an location.
+	 * @param l the location.
+	 * @return the highest block.
 	 */
-	public static short saplingDur(TreeSpecies species) {
-		switch (species) {
-		case GENERIC:
-			return 0;
-		case REDWOOD:
-			return 1;
-		case BIRCH:
-			return 2;
-		case JUNGLE:
-			return 3;
-		case ACACIA:
-			return 4;
-		case DARK_OAK:
-			return 5;
-		default:
-			return 0;
+	public static Location highestBlock(Location l) {
+		Location loc = l.clone();
+		
+		for (int i = 255; i >= 0; i--) {
+			if (loc.getWorld().getBlockAt(loc.getBlockX(), i, loc.getBlockZ()).getType() != Material.AIR) {
+				loc.setY(i);
+				break;
+			}
 		}
+		return loc;
 	}
 }

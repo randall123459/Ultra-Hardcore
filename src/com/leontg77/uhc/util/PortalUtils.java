@@ -14,15 +14,16 @@ import org.bukkit.entity.Player;
 /**
  * Nether utilities class
  * @author LeonTG77
- * @deprecated Not in use yet.
  */
-@Deprecated
 public class PortalUtils {
 	
 	/**
-	 * @deprecated Not in use yet.
+	 * Find a possible portal location for an entity.
+	 * @param entity the entity.
+	 * @param from the from portal.
+	 * @param travelAgent the portal travel agent.
+	 * @return The possible portal location, null if not found.
 	 */
-	@Deprecated
     public static Location getPossiblePortalLocation(Entity entity, Location from, TravelAgent travelAgent) {
         String fromWorldName = from.getWorld().getName();
 
@@ -55,13 +56,14 @@ public class PortalUtils {
         return to;
     }
 	
-	/**
-	 * @deprecated Not in use yet.
-	 */
-	@Deprecated
+    /**
+     * Check if an location has a portal near itself.
+     * @param location the location.
+     * @return True if portal was found, false otherwise.
+     */
     private static boolean isNetherPortal(Location location) {
         Block block = location.getBlock();
-        for (BlockFace face : new BlockFace[]{
+        for (BlockFace face : new BlockFace[] {
                 BlockFace.SELF,
                 BlockFace.EAST,
                 BlockFace.NORTH,
@@ -81,9 +83,9 @@ public class PortalUtils {
     }
     
     /**
-	 * @deprecated Not in use yet.
-	 */
-	@Deprecated
+     * Sends an error to an entity if the portal didn't work.
+     * @param entity the entity.
+     */
     private static void worldError(Entity entity) {
         if (entity.getWorld().getEnvironment() == World.Environment.NORMAL) {
             sendMessage(entity,
@@ -99,11 +101,12 @@ public class PortalUtils {
             );
         }
     }
-    
+
     /**
-	 * @deprecated Not in use yet.
-	 */
-	@Deprecated
+     * Sends messages to an entity.
+     * @param entity the entity.
+     * @param messages messages to send.
+     */
     private static void sendMessage(Entity entity, String... messages) {
         if (entity.getType() == EntityType.PLAYER) {
             for (String message : messages) {
