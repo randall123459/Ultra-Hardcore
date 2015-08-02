@@ -4,22 +4,28 @@ import java.util.Random;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.TreeSpecies;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.EntityPortalEvent;
+import org.bukkit.event.player.PlayerPortalEvent;
+import org.bukkit.event.world.ChunkUnloadEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.Tree;
 import org.bukkit.util.Vector;
 
-import com.leontg77.uhc.GameState;
 import com.leontg77.uhc.Main;
+import com.leontg77.uhc.Main.State;
 import com.leontg77.uhc.util.BlockUtils;
+import com.leontg77.uhc.util.PortalUtils;
 
 public class BlockListener implements Listener {
 
@@ -28,7 +34,7 @@ public class BlockListener implements Listener {
     	Player player = event.getPlayer();
 		Block block = event.getBlock();
     	
-    	if (GameState.isState(GameState.WAITING)) {
+    	if (State.isState(State.SCATTER)) {
     		event.setCancelled(true);
     		return;
     	}
@@ -78,7 +84,7 @@ public class BlockListener implements Listener {
     public void onBlockPlace(BlockPlaceEvent event) {
 		Player player = event.getPlayer();
     	
-    	if (GameState.isState(GameState.WAITING)) {
+    	if (State.isState(State.SCATTER)) {
     		event.setCancelled(true);
     		return;
     	}
@@ -89,10 +95,13 @@ public class BlockListener implements Listener {
     	}
     }
 	
-	/*
-	 * This feature is not finished yet.
-	 * TODO: Finish feature.
-	 * 
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
+	public void onChunkUnloadEvent(ChunkUnloadEvent event) {
+		if (State.isState(State.SCATTER)) {
+			event.setCancelled(true);
+		}
+	}
+
 	@EventHandler
     public void onPlayerPortal(PlayerPortalEvent event) {
         Location to = PortalUtils.getPossiblePortalLocation(event.getPlayer(), event.getFrom(), event.getPortalTravelAgent());
@@ -107,5 +116,5 @@ public class BlockListener implements Listener {
         if (to != null) {
             event.setTo(to);
         }
-    }*/
+    }
 }
