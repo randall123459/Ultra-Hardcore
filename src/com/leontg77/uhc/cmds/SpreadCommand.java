@@ -68,8 +68,8 @@ public class SpreadCommand implements CommandExecutor {
 						}
 					}
 					
-					for (Player online : PlayerUtils.getPlayers()) {
-						if (online.getScoreboard().getEntryTeam(online.getName()) == null) {
+					for (OfflinePlayer online : Bukkit.getServer().getWhitelistedPlayers()) {
+						if (Scoreboards.getManager().sb.getEntryTeam(online.getName()) == null) {
 							s++;
 						}
 					}
@@ -78,9 +78,9 @@ public class SpreadCommand implements CommandExecutor {
 					final int so = s;
 					
 					if (teams) {
-						PlayerUtils.broadcast(Main.prefix() + "Scattering §a" + t + " §7teams and §a" + s + " §7solos.");
+						PlayerUtils.broadcast(Main.prefix() + "Scattering §a" + t + " §7teams and §a" + s + " §7solos...");
 					} else {
-						PlayerUtils.broadcast(Main.prefix() + "Scattering §a" + Bukkit.getServer().getWhitelistedPlayers().size() + " §7players.");
+						PlayerUtils.broadcast(Main.prefix() + "Scattering §a" + Bukkit.getServer().getWhitelistedPlayers().size() + " §7players...");
 					}
 					
 					Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Main.plugin, new Runnable() {
@@ -185,7 +185,7 @@ public class SpreadCommand implements CommandExecutor {
 						return true;
 					}
 
-					PlayerUtils.broadcast(Main.prefix() + "Scattering §a" + target.getName() + " §7...");
+					PlayerUtils.broadcast(Main.prefix() + "Scattering §a" + target.getName() + "§7...");
 					
 					Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Main.plugin, new Runnable() {
 						public void run() {

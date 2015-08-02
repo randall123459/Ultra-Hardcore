@@ -10,6 +10,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Team;
 
@@ -18,7 +19,7 @@ import com.leontg77.uhc.Main.State;
 import com.leontg77.uhc.Teams;
 import com.leontg77.uhc.util.PlayerUtils;
 
-public class TeamCommand implements CommandExecutor {
+public class TeamCommand implements CommandExecutor, TabCompleter {
 	public static HashMap<Player, ArrayList<Player>> invites = new HashMap<Player, ArrayList<Player>>();
 
 	public boolean onCommand(CommandSender sender, Command cmd, String label, final String[] args) {
@@ -31,11 +32,6 @@ public class TeamCommand implements CommandExecutor {
 		
 		if (cmd.getName().equalsIgnoreCase("team")) {
 			if (args.length == 0) {
-				if (Main.ffa) {
-					player.sendMessage(Main.teamSize > 1 ? ChatColor.RED + "You cannot create teams in random teams games." : ChatColor.RED + "You cannot create teams in FFA games.");
-					return true;
-				}
-				
 				player.sendMessage(Main.prefix() + "Team help:");
 				player.sendMessage("§7- §f/team create - Create a team.");
 				player.sendMessage("§7- §f/team leave - Leave your team.");
@@ -58,7 +54,7 @@ public class TeamCommand implements CommandExecutor {
 					}
 					
 					if (!State.isState(State.LOBBY)) {
-						player.sendMessage(ChatColor.RED + "You cannot do this command at the moment.");
+						player.sendMessage(ChatColor.RED + "You cannot create teams when the game has started.");
 						return true;
 					}
 				
@@ -86,12 +82,12 @@ public class TeamCommand implements CommandExecutor {
 				}
 				else if (args[0].equalsIgnoreCase("leave")) {
 					if (Main.ffa) {
-						player.sendMessage(ChatColor.RED + "This is an FFA or randomteams game.");
+						player.sendMessage(Main.teamSize > 1 ? ChatColor.RED + "You cannot create teams in random teams games." : ChatColor.RED + "You cannot create teams in FFA games.");
 						return true;
 					}
 					
 					if (!State.isState(State.LOBBY)) {
-						player.sendMessage(ChatColor.RED + "You cannot do this command at the moment.");
+						player.sendMessage(ChatColor.RED + "You cannot create teams when the game has started.");
 						return true;
 					}
 					
@@ -106,7 +102,12 @@ public class TeamCommand implements CommandExecutor {
 				}
 				else if (args[0].equalsIgnoreCase("invite")) {
 					if (Main.ffa) {
-						player.sendMessage(ChatColor.RED + "This is an FFA or randomteams game.");
+						player.sendMessage(Main.teamSize > 1 ? ChatColor.RED + "You cannot create teams in random teams games." : ChatColor.RED + "You cannot create teams in FFA games.");
+						return true;
+					}
+					
+					if (!State.isState(State.LOBBY)) {
+						player.sendMessage(ChatColor.RED + "You cannot create teams when the game has started.");
 						return true;
 					}
 					
@@ -114,7 +115,12 @@ public class TeamCommand implements CommandExecutor {
 				}
 				else if (args[0].equalsIgnoreCase("kick")) {
 					if (Main.ffa) {
-						player.sendMessage(ChatColor.RED + "This is an FFA or randomteams game.");
+						player.sendMessage(Main.teamSize > 1 ? ChatColor.RED + "You cannot create teams in random teams games." : ChatColor.RED + "You cannot create teams in FFA games.");
+						return true;
+					}
+					
+					if (!State.isState(State.LOBBY)) {
+						player.sendMessage(ChatColor.RED + "You cannot create teams when the game has started.");
 						return true;
 					}
 					
@@ -122,7 +128,12 @@ public class TeamCommand implements CommandExecutor {
 				}
 				else if (args[0].equalsIgnoreCase("accept")) {
 					if (Main.ffa) {
-						player.sendMessage(ChatColor.RED + "This is an FFA or randomteams game.");
+						player.sendMessage(Main.teamSize > 1 ? ChatColor.RED + "You cannot create teams in random teams games." : ChatColor.RED + "You cannot create teams in FFA games.");
+						return true;
+					}
+					
+					if (!State.isState(State.LOBBY)) {
+						player.sendMessage(ChatColor.RED + "You cannot create teams when the game has started.");
 						return true;
 					}
 					
@@ -130,7 +141,12 @@ public class TeamCommand implements CommandExecutor {
 				}
 				else if (args[0].equalsIgnoreCase("deny")) {
 					if (Main.ffa) {
-						player.sendMessage(ChatColor.RED + "This is an FFA or randomteams game.");
+						player.sendMessage(Main.teamSize > 1 ? ChatColor.RED + "You cannot create teams in random teams games." : ChatColor.RED + "You cannot create teams in FFA games.");
+						return true;
+					}
+					
+					if (!State.isState(State.LOBBY)) {
+						player.sendMessage(ChatColor.RED + "You cannot create teams when the game has started.");
 						return true;
 					}
 					
@@ -141,6 +157,7 @@ public class TeamCommand implements CommandExecutor {
 						player.sendMessage(ChatColor.RED + "You cannot clear teams.");
 						return true;
 					}
+					
 					for (Team team : Teams.getManager().getTeams()) {
 						for (String p : team.getEntries()) {
 							team.removeEntry(p);
@@ -159,8 +176,7 @@ public class TeamCommand implements CommandExecutor {
 					StringBuilder list = new StringBuilder("");
 					
 					for (String p : team.getEntries()) {
-						@SuppressWarnings("deprecation")
-						OfflinePlayer players = Bukkit.getServer().getOfflinePlayer(p);
+						OfflinePlayer players = PlayerUtils.getOfflinePlayer(p);
 						
 						if (list.length() > 0) {
 							list.append("§f, ");
@@ -177,19 +193,17 @@ public class TeamCommand implements CommandExecutor {
 					player.sendMessage(list.toString().trim());
 				}
 				else {
-					if (Main.ffa) {
-						player.sendMessage(Main.teamSize > 1 ? ChatColor.RED + "You cannot create teams in random teams games." : ChatColor.RED + "You cannot create teams in FFA games.");
-						return true;
-					}
-					
 					player.sendMessage(Main.prefix() + "Team help:");
 					player.sendMessage("§7- §f/team create - Create a team.");
-					player.sendMessage("§7- §f/team remove - Remove your team.");
+					player.sendMessage("§7- §f/team leave - Leave your team.");
 					player.sendMessage("§7- §f/team invite <player> - Invite a player to your team.");
 					player.sendMessage("§7- §f/team kick <player> - Kick a player from your team.");
 					player.sendMessage("§7- §f/team accept <player> - Accept the players request.");
 					player.sendMessage("§7- §f/team deny <player> - Deny the players request.");
 					player.sendMessage("§7- §f/team info - Display your teammates.");
+					if (player.hasPermission("uhc.teamadmin")) {
+						player.sendMessage("§7- §f/team clear - Clear all teams.");
+					}
 				}
 				return true;
 			}
@@ -203,7 +217,7 @@ public class TeamCommand implements CommandExecutor {
 				}
 				
 				if (!State.isState(State.LOBBY)) {
-					player.sendMessage(ChatColor.RED + "You cannot do this command at the moment.");
+					player.sendMessage(ChatColor.RED + "You cannot create teams when the game has started.");
 					return true;
 				}
 			
@@ -231,12 +245,12 @@ public class TeamCommand implements CommandExecutor {
 			}
 			else if (args[0].equalsIgnoreCase("leave")) {
 				if (Main.ffa) {
-					player.sendMessage(ChatColor.RED + "This is an FFA or randomteams game.");
+					player.sendMessage(Main.teamSize > 1 ? ChatColor.RED + "You cannot create teams in random teams games." : ChatColor.RED + "You cannot create teams in FFA games.");
 					return true;
 				}
 				
 				if (!State.isState(State.LOBBY)) {
-					player.sendMessage(ChatColor.RED + "You cannot do this command at the moment.");
+					player.sendMessage(ChatColor.RED + "You cannot create teams when the game has started.");
 					return true;
 				}
 			
@@ -257,8 +271,13 @@ public class TeamCommand implements CommandExecutor {
 				}
 			}
 			else if (args[0].equalsIgnoreCase("invite")) {
+				if (Main.ffa) {
+					player.sendMessage(Main.teamSize > 1 ? ChatColor.RED + "You cannot create teams in random teams games." : ChatColor.RED + "You cannot create teams in FFA games.");
+					return true;
+				}
+				
 				if (!State.isState(State.LOBBY)) {
-					player.sendMessage(ChatColor.RED + "You cannot do this command at the moment.");
+					player.sendMessage(ChatColor.RED + "You cannot create teams when the game has started.");
 					return true;
 				}
 				
@@ -303,12 +322,12 @@ public class TeamCommand implements CommandExecutor {
 			}
 			else if (args[0].equalsIgnoreCase("kick")) {
 				if (Main.ffa) {
-					player.sendMessage(ChatColor.RED + "This is an FFA or randomteams game.");
+					player.sendMessage(Main.teamSize > 1 ? ChatColor.RED + "You cannot create teams in random teams games." : ChatColor.RED + "You cannot create teams in FFA games.");
 					return true;
 				}
 				
 				if (!State.isState(State.LOBBY)) {
-					player.sendMessage(ChatColor.RED + "You cannot do this command at the moment.");
+					player.sendMessage(ChatColor.RED + "You cannot create teams when the game has started.");
 					return true;
 				}
 				
@@ -344,12 +363,12 @@ public class TeamCommand implements CommandExecutor {
 			}
 			else if (args[0].equalsIgnoreCase("accept")) {
 				if (Main.ffa) {
-					player.sendMessage(ChatColor.RED + "This is an FFA or randomteams game.");
+					player.sendMessage(Main.teamSize > 1 ? ChatColor.RED + "You cannot create teams in random teams games." : ChatColor.RED + "You cannot create teams in FFA games.");
 					return true;
 				}
 				
 				if (!State.isState(State.LOBBY)) {
-					player.sendMessage(ChatColor.RED + "You cannot do this command at the moment.");
+					player.sendMessage(ChatColor.RED + "You cannot create teams when the game has started.");
 					return true;
 				}
 				
@@ -389,12 +408,12 @@ public class TeamCommand implements CommandExecutor {
 			}
 			else if (args[0].equalsIgnoreCase("deny")) {
 				if (Main.ffa) {
-					player.sendMessage(ChatColor.RED + "This is an FFA or randomteams game.");
+					player.sendMessage(Main.teamSize > 1 ? ChatColor.RED + "You cannot create teams in random teams games." : ChatColor.RED + "You cannot create teams in FFA games.");
 					return true;
 				}
 				
 				if (!State.isState(State.LOBBY)) {
-					player.sendMessage(ChatColor.RED + "You cannot do this command at the moment.");
+					player.sendMessage(ChatColor.RED + "You cannot create teams when the game has started.");
 					return true;
 				}
 				
@@ -426,8 +445,7 @@ public class TeamCommand implements CommandExecutor {
 				StringBuilder list = new StringBuilder("");
 				
 				for (String s : team.getEntries()) {
-					@SuppressWarnings("deprecation")
-					OfflinePlayer players = Bukkit.getServer().getOfflinePlayer(s);
+					OfflinePlayer players = PlayerUtils.getOfflinePlayer(s);
 					if (list.length() > 0) {
 						list.append("§f, ");
 					}
@@ -455,90 +473,69 @@ public class TeamCommand implements CommandExecutor {
 				player.sendMessage(Main.prefix() + "Teams cleared.");
 			}
 			else {
-				if (Main.ffa) {
-					player.sendMessage(Main.teamSize > 1 ? ChatColor.RED + "You cannot create teams in random teams games." : ChatColor.RED + "You cannot create teams in FFA games.");
-					return true;
-				}
-				
 				player.sendMessage(Main.prefix() + "Team help:");
 				player.sendMessage("§7- §f/team create - Create a team.");
+				player.sendMessage("§7- §f/team leave - Leave your team.");
 				player.sendMessage("§7- §f/team invite <player> - Invite a player to your team.");
-				player.sendMessage("§7- §f/team accept <player> - Accept the players request.");
 				player.sendMessage("§7- §f/team kick <player> - Kick a player from your team.");
+				player.sendMessage("§7- §f/team accept <player> - Accept the players request.");
 				player.sendMessage("§7- §f/team deny <player> - Deny the players request.");
 				player.sendMessage("§7- §f/team info - Display your teammates.");
+				if (player.hasPermission("uhc.teamadmin")) {
+					player.sendMessage("§7- §f/team clear - Clear all teams.");
+				}
 			}
 		}
 		return true;
 	}
 	
 	public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {
-		if (cmd.getName().equalsIgnoreCase("whitelist")) {
-			if (sender.hasPermission("uhc.whitelist")) {
-				if (args.length == 1) {
-		        	ArrayList<String> arg = new ArrayList<String>();
-		        	ArrayList<String> types = new ArrayList<String>();
-		        	types.add("create");
-		        	types.add("remove");
-		        	types.add("add");
-		        	types.add("remove");
-		        	types.add("all");
+		if (cmd.getName().equalsIgnoreCase("team")) {
+			if (args.length == 1) {
+	        	ArrayList<String> arg = new ArrayList<String>();
+	        	ArrayList<String> types = new ArrayList<String>();
+	        	types.add("create");
+	        	types.add("invite");
+	        	types.add("accept");
+	        	types.add("kick");
+	        	types.add("deny");
+	        	types.add("info");
+	        	if (sender.hasPermission("uhc.teamadmin")) {
 		        	types.add("clear");
-		        	types.add("list");
-		        	
-		        	if (!args[0].equals("")) {
-		        		for (String type : types) {
-		        			if (type.startsWith(args[0].toLowerCase())) {
-		        				arg.add(type);
-		        			}
-		        		}
-		        	}
-		        	else {
-		        		for (String type : types) {
-		        			arg.add(type);
-		        		}
-		        	}
-		        	return arg;
-		        }
-				
-				if (args.length == 2) {
-		        	ArrayList<String> arg = new ArrayList<String>();
-		        	
-		        	if (args[0].equalsIgnoreCase("add")) {
-			        	if (!args[1].equals("")) {
-			        		for (Player online : PlayerUtils.getPlayers()) {
-			        			if (online.getName().toLowerCase().startsWith(args[0].toLowerCase())) {
-			        				if (!online.isWhitelisted()) {
-				        				arg.add(online.getName());
-			        				}
-			        			}
-			        		}
-			        	}
-			        	else {
-			        		for (Player online : PlayerUtils.getPlayers()) {
-			        			if (!online.isWhitelisted()) {
-				        			arg.add(online.getName());
-			        			}
-			        		}
-			        	}
-		        	}
-		        	else if (args[0].equalsIgnoreCase("remove")) {
-			        	if (!args[1].equals("")) {
-			        		for (OfflinePlayer whitelisted : Bukkit.getServer().getWhitelistedPlayers()) {
-			        			if (whitelisted.getName().toLowerCase().startsWith(args[0].toLowerCase())) {
-			        				arg.add(whitelisted.getName());
-			        			}
-			        		}
-			        	}
-			        	else {
-			        		for (OfflinePlayer whitelisted : Bukkit.getServer().getWhitelistedPlayers()) {
-			        			arg.add(whitelisted.getName());
-			        		}
-			        	}
-		        	}
-		        	return arg;
-		        }
-			}
+	        	}
+	        	
+	        	if (!args[0].equals("")) {
+	        		for (String type : types) {
+	        			if (type.toLowerCase().startsWith(args[0].toLowerCase())) {
+	        				arg.add(type);
+	        			}
+	        		}
+	        	}
+	        	else {
+	        		for (String type : types) {
+	        			arg.add(type);
+	        		}
+	        	}
+	        	return arg;
+	        }
+			
+			if (args.length == 2) {
+	        	ArrayList<String> arg = new ArrayList<String>();
+	        	
+	        	if (!args[1].equals("")) {
+	        		for (Player online : PlayerUtils.getPlayers()) {
+	        			if (online.getName().toLowerCase().startsWith(args[1].toLowerCase())) {
+	        				arg.add(online.getName());
+	        			}
+	        		}
+	        	}
+	        	else {
+	        		for (Player online : PlayerUtils.getPlayers()) {
+	        			arg.add(online.getName());
+	        		}
+	        	}
+	        	return arg;
+	        }
 		}
 		return null;
 	}
