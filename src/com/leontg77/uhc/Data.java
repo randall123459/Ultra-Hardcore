@@ -60,6 +60,9 @@ public class Data {
         this.player = player;
         
         if (creating) {
+        	config.set("username", player.getName());
+        	config.set("firstjoined", System.currentTimeMillis());
+        	config.set("rank", Rank.USER.name());
         	config.set("stats.gamesplayed", 0);
         	config.set("stats.wins", 0);
         	config.set("stats.kills", 0);
@@ -131,5 +134,9 @@ public class Data {
 	 */
 	public int getStat(String stat) {
 		return config.getInt("stats." + stat);
+	}
+	
+	public enum Rank {
+		USER, VIP, STAFF, HOST;
 	}
 }
