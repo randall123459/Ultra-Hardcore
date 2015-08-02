@@ -52,12 +52,13 @@ import org.bukkit.util.Vector;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
 
 import com.leontg77.uhc.Arena;
-import com.leontg77.uhc.GameState;
 import com.leontg77.uhc.InvGUI;
 import com.leontg77.uhc.Main;
+import com.leontg77.uhc.Main.State;
 import com.leontg77.uhc.Scoreboards;
 import com.leontg77.uhc.Settings;
 import com.leontg77.uhc.Spectator;
+import com.leontg77.uhc.cmds.SpreadCommand;
 import com.leontg77.uhc.cmds.TeamCommand;
 import com.leontg77.uhc.cmds.VoteCommand;
 import com.leontg77.uhc.scenario.ScenarioManager;
@@ -66,7 +67,6 @@ import com.leontg77.uhc.util.PlayerUtils;
 import com.leontg77.uhc.util.RecipeUtils;
 import com.leontg77.uhc.util.ServerUtils;
 
-@SuppressWarnings("deprecation")
 public class PlayerListener implements Listener {
 	private Settings settings = Settings.getInstance();
 	
@@ -97,9 +97,8 @@ public class PlayerListener implements Listener {
 			Spectator.getManager().set(player, true);
 		}
 		
-		if (GameState.isState(GameState.INGAME) && !player.isWhitelisted()) {
-			player.sendMessage(Main.prefix() + "You joined in a game that you didn't play or died in.");
-			player.sendMessage(Main.prefix() + "Spectator mode is now enabled because of that.");
+		if (State.isState(State.INGAME) && !player.isWhitelisted() && !Main.spectating.contains(player.getName())) {
+			player.sendMessage(Main.prefix() + "You joined a game that you didn't play from the start (or you was idle for too long).");
 			
 			player.getInventory().clear();
 			player.getInventory().setArmorContents(null);
@@ -112,7 +111,20 @@ public class PlayerListener implements Listener {
 			PlayerUtils.broadcast("§8[§a+§8] §7" + player.getName() + " has joined.");
 		}
 		
-		if (GameState.isState(GameState.LOBBY)) {
+		if (SpreadCommand.scatterLocs.containsKey(player.getName())) {
+			if (State.isState(State.SCATTER)) {
+				player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 1000000, 128));
+				player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 1000000, 6));
+				player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 1000000, 6));
+				player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 1000000, 10));
+				player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 1000000, 6));
+			}
+			player.teleport(SpreadCommand.scatterLocs.get(player.getName()));
+			PlayerUtils.broadcast(Main.prefix() + " - §a" + player.getName() + " §7scheduled scatter.");
+			SpreadCommand.scatterLocs.remove(player.getName());
+		}
+		
+		if (State.isState(State.LOBBY)) {
 			World w = Bukkit.getServer().getWorld(settings.getData().getString("spawn.world"));
 			double x = settings.getData().getDouble("spawn.x");
 			double y = settings.getData().getDouble("spawn.y");
@@ -132,7 +144,7 @@ public class PlayerListener implements Listener {
 		if (!Main.spectating.contains(player.getName())) {
 			PlayerUtils.broadcast("§8[§c-§8] §7" + player.getName() + " has left.");
 			
-			if (!GameState.isState(GameState.LOBBY)) {
+			if (!State.isState(State.LOBBY)) {
 				Main.relog.put(player.getName(), new BukkitRunnable() {
 					public void run() {
 						if (!player.isOnline()) {
@@ -171,7 +183,7 @@ public class PlayerListener implements Listener {
 					}
 				});
 				
-				Main.relog.get(player.getName()).runTaskLater(Main.plugin, 600);
+				Main.relog.get(player.getName()).runTaskLater(Main.plugin, 12000);
 			}
 		}
 	}
@@ -182,11 +194,14 @@ public class PlayerListener implements Listener {
 		
 		if (!Arena.getManager().isEnabled()) {
 			player.setWhitelisted(false);
-		    player.getWorld().strikeLightningEffect(player.getLocation());
+			if (Main.lightning) {
+			    player.getWorld().strikeLightningEffect(player.getLocation());
+			}
 
 		    if (Main.ghead) {
 				try {
 					Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Main.plugin, new Runnable() {
+						@SuppressWarnings("deprecation")
 						public void run() {
 							player.getLocation().getBlock().setType(Material.NETHER_FENCE);
 					        player.getLocation().add(0, 1, 0).getBlock().setType(Material.SKULL);
@@ -206,13 +221,13 @@ public class PlayerListener implements Listener {
 				}
 		    }
 
-			if (event.getEntity().getKiller() == null) {
+			if (player.getKiller() == null) {
 		        Scoreboards.getManager().setScore("§a§lPvE", Scoreboards.getManager().getScore("§a§lPvE") + 1);
 				Scoreboards.getManager().resetScore(player.getName());
 				return;
 			}
 			
-			Player killer = event.getEntity().getKiller();
+			Player killer = player.getKiller();
 
 	        Scoreboards.getManager().setScore(killer.getName(), Scoreboards.getManager().getScore(killer.getName()) + 1);
 			Scoreboards.getManager().resetScore(player.getName());
@@ -233,14 +248,14 @@ public class PlayerListener implements Listener {
 		Location loc = new Location(w, x, y, z, yaw, pitch);
 		event.setRespawnLocation(loc);
 		
-		if (!Arena.getManager().isEnabled() && !GameState.isState(GameState.LOBBY)) {
+		if (!Arena.getManager().isEnabled() && !State.isState(State.LOBBY)) {
 			player.sendMessage(Main.prefix() + "§7Thanks for playing our game, it really means a lot :)");
 			if (player.hasPermission("uhc.prelist")) {
 				player.sendMessage("§8§l» §7You will be put into spectator mode in 30 seconds. (No spoiling please)");
 				
 				Bukkit.getServer().getScheduler().runTaskLater(Main.plugin, new Runnable() {
 					public void run() {
-						if (!GameState.isState(GameState.LOBBY) && player.isOnline() && !Main.spectating.contains(player.getName())) {
+						if (!State.isState(State.LOBBY) && player.isOnline() && !Main.spectating.contains(player.getName())) {
 							Spectator.getManager().set(player, true);
 						}
 					}
@@ -250,7 +265,7 @@ public class PlayerListener implements Listener {
 				
 				Bukkit.getServer().getScheduler().runTaskLater(Main.plugin, new Runnable() {
 					public void run() {
-						if (!GameState.isState(GameState.LOBBY) && player.isOnline()) {
+						if (!State.isState(State.LOBBY) && player.isOnline()) {
 							player.kickPlayer("§8§l» §7Thanks for playing! §8§l«");
 						}
 					}
@@ -265,7 +280,7 @@ public class PlayerListener implements Listener {
 		
 		if (VoteCommand.vote) {
 			if (event.getMessage().equalsIgnoreCase("y")) {
-				if (!GameState.isState(GameState.LOBBY) && player.getWorld().getName().equals("lobby")) {
+				if (!State.isState(State.LOBBY) && player.getWorld().getName().equals("lobby")) {
 					player.sendMessage(ChatColor.RED + "You cannot vote when you are dead.");
 					event.setCancelled(true);
 					return;
@@ -290,7 +305,7 @@ public class PlayerListener implements Listener {
 			}
 			
 			if (event.getMessage().equalsIgnoreCase("n")) {
-				if (!GameState.isState(GameState.LOBBY) && player.getWorld().getName().equals("lobby")) {
+				if (!State.isState(State.LOBBY) && player.getWorld().getName().equals("lobby")) {
 					player.sendMessage(ChatColor.RED + "You cannot vote when you are dead.");
 					event.setCancelled(true);
 					return;
@@ -433,7 +448,7 @@ public class PlayerListener implements Listener {
 		}
 		
 		if (event.getMessage().split(" ")[0].equalsIgnoreCase("/rl")) {
-			if (!GameState.isState(GameState.LOBBY)) {
+			if (!State.isState(State.LOBBY)) {
 				player.sendMessage(ChatColor.RED + "You might not want to reload when the game is running.");
 				player.sendMessage(ChatColor.RED + "If you still want to reload, do it in the console.");
 				event.setCancelled(true);
@@ -441,7 +456,7 @@ public class PlayerListener implements Listener {
 		}
 		
 		if (event.getMessage().split(" ")[0].equalsIgnoreCase("/reload")) {
-			if (!GameState.isState(GameState.LOBBY)) {
+			if (!State.isState(State.LOBBY)) {
 				player.sendMessage(ChatColor.RED + "You might not want to reload when the game is running.");
 				player.sendMessage(ChatColor.RED + "If you still want to reload, do it in the console.");
 				event.setCancelled(true);
@@ -777,7 +792,7 @@ public class PlayerListener implements Listener {
 	
 	@EventHandler
 	public void onPlayerDropItem(PlayerDropItemEvent event) {
-		if (GameState.isState(GameState.WAITING)) {
+		if (State.isState(State.SCATTER)) {
 			event.setCancelled(true);
 		}
 	}
