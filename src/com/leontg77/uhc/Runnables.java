@@ -16,7 +16,8 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import com.leontg77.uhc.cmds.ConfigCommand.Border;
+import com.leontg77.uhc.Main.Border;
+import com.leontg77.uhc.Main.State;
 import com.leontg77.uhc.util.PlayerUtils;
 
 /**
@@ -93,7 +94,8 @@ public class Runnables extends BukkitRunnable {
 						PlayerUtils.sendTitle(online, "§aGo!", "§7Good luck have fun!", 1, 20, 1);
 					}
 					
-					GameState.setState(GameState.INGAME);
+					start();
+					State.setState(State.INGAME);
 					Scoreboards.getManager().setScore("§a§lPvE", 1);
 					Scoreboards.getManager().setScore("§a§lPvE", 0);
 					finalheal = 1;
@@ -146,166 +148,171 @@ public class Runnables extends BukkitRunnable {
 					}
 				}
 			}, 20);
-			
-			task = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(Main.plugin, new Runnable() {
-				public void run() {
-					finalheal--;
-					pvp--;
-					meetup--;
-					
-					if (finalheal == 0) {
-						PlayerUtils.broadcast(Main.prefix() + "§6§lFinal heal has been given, do not ask for another one.");
-						for (Player online : PlayerUtils.getPlayers()) {
-							online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
-							online.setHealth(20.0);
-							online.setFireTicks(0);
-							online.setFoodLevel(20);
-							online.setSaturation(20);
-						}
-
-						Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer cancel");
-						Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer " + (pvp * 60) + " &aPvP in:&7");
-					}
-					
-					if (finalheal == -2) {
-						for (World world : Bukkit.getWorlds()) {
-							if (world.getName().equals("lobby") || world.getName().equals("arena")) {
-								continue;
-							}
-							
-							world.setGameRuleValue("doMobSpawning", "true");
-						}
-					}
-
-					if (pvp == 0) {
-						PlayerUtils.broadcast(Main.prefix() + "§6§lPvP has been enabled.");
-						for (Player online : PlayerUtils.getPlayers()) {
-							online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
-						}
-						for (World world : Bukkit.getWorlds()) {
-							world.setPVP(true);
-							world.setPVP(true);
-							world.setPVP(true);
-							world.setPVP(true);
-							world.setPVP(true);
-							world.setPVP(true);
-							world.setPVP(true);
-							world.setPVP(true);
-						}
-						if (Main.border == Border.PVP) {
-							for (World world : Bukkit.getWorlds()) {
-								if (world.getName().equals("lobby") || world.getName().equals("arena")) {
-									continue;
-								}
-								
-								world.getWorldBorder().setSize(299, meetup * 60);
-							}
-						}
-						Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer cancel");
-						Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer " + (meetup * 60) + " &aMeetup in:&7");
-					}
-					
-					if (meetup == 0) {
-						Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer cancel");
-						Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer -1 &6Meetup is now! Head to 0,0 and only stop for a fight!");
-						for (Player online : PlayerUtils.getPlayers()) {
-							online.sendMessage(ChatColor.DARK_GRAY + "==============================================");													  
-							online.sendMessage(ChatColor.GREEN + " Meetup has started, start headding to 0,0.");											  
-							online.sendMessage(ChatColor.GREEN + " Only stop for a fight, nothing else.");
-							online.sendMessage(ChatColor.DARK_GRAY + "==============================================");
-							online.playSound(online.getLocation(), Sound.WITHER_DEATH, 1, 0);
-						}
-
-						for (World world : Bukkit.getWorlds()) {
-							if (world.getName().equals("lobby") || world.getName().equals("arena")) {
-								continue;
-							}
-							
-							if (Main.border == Border.MEETUP) {
-								world.getWorldBorder().setSize(299, 600);
-							}
-							
-							world.setThundering(false);
-							world.setStorm(false);
-
-							world.setGameRuleValue("doDaylightCycle", "false");
-							world.setTime(6000);
-						}
-					}
-					
-					if (pvp == 45) {
-						PlayerUtils.broadcast(Main.prefix() + "§6§l45 minutes to pvp.");
-					}
-					
-					if (pvp == 30) {
-						PlayerUtils.broadcast(Main.prefix() + "§6§l30 minutes to pvp.");
-					}
-					
-					if (pvp == 15) {
-						PlayerUtils.broadcast(Main.prefix() + "§6§l15 minutes to pvp.");
-					}
-					
-					if (pvp == 10) {
-						PlayerUtils.broadcast(Main.prefix() + "§6§l10 minutes to pvp.");
-					}
-					
-					if (pvp == 5) {
-						PlayerUtils.broadcast(Main.prefix() + "§6§l5 minutes to pvp.");
-					}
-					
-					if (pvp == 1) {
-						PlayerUtils.broadcast(Main.prefix() + "§6§l1 minute to pvp.");
-					}
-					
-					if (meetup == 120) {
-						PlayerUtils.broadcast(Main.prefix() + "§6§l2 hours to meetup.");
-					}
-					
-					if (meetup == 105) {
-						PlayerUtils.broadcast(Main.prefix() + "§6§l1 hour and 45 minutes to meetup.");
-					}
-					
-					if (meetup == 90) {
-						PlayerUtils.broadcast(Main.prefix() + "§6§l1 hour and 30 minutes to meetup.");
-					}
-					
-					if (meetup == 75) {
-						PlayerUtils.broadcast(Main.prefix() + "§6§l1 hour and 15 minutes to meetup.");
-					}
-					
-					if (meetup == 60) {
-						PlayerUtils.broadcast(Main.prefix() + "§6§l1 hour to meetup.");
-					}
-					
-					if (meetup == 45) {
-						PlayerUtils.broadcast(Main.prefix() + "§6§l45 minutes to meetup.");
-					}
-					
-					if (meetup == 30) {
-						PlayerUtils.broadcast(Main.prefix() + "§6§l30 minutes to meetup.");
-					}
-					
-					if (meetup == 15) {
-						PlayerUtils.broadcast(Main.prefix() + "§6§l15 minutes to meetup.");
-					}
-					
-					if (meetup == 10) {
-						PlayerUtils.broadcast(Main.prefix() + "§6§l10 minutes to meetup.");
-					}
-					
-					if (meetup == 5) {
-						PlayerUtils.broadcast(Main.prefix() + "§6§l5 minutes to meetup.");
-					}
-					
-					if (meetup == 1) {
-						PlayerUtils.broadcast(Main.prefix() + "§6§l1 minute to meetup, get ready to head to 0,0.");
-						for (Player online : PlayerUtils.getPlayers()) {
-							online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
-						}
-					}
-				}
-			}, 1220, 1200);
 		}
 		timeToStart--;
+	}
+	
+	/**
+	 * Start the timers.
+	 */
+	public static void start() {
+		task = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(Main.plugin, new Runnable() {
+			public void run() {
+				finalheal--;
+				pvp--;
+				meetup--;
+				
+				if (finalheal == 0) {
+					PlayerUtils.broadcast(Main.prefix() + "§6§lFinal heal has been given, do not ask for another one.");
+					for (Player online : PlayerUtils.getPlayers()) {
+						online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
+						online.setHealth(20.0);
+						online.setFireTicks(0);
+						online.setFoodLevel(20);
+						online.setSaturation(20);
+					}
+
+					Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer cancel");
+					Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer " + (pvp * 60) + " &aPvP in:&7");
+				}
+				
+				if (finalheal == -2) {
+					for (World world : Bukkit.getWorlds()) {
+						if (world.getName().equals("lobby") || world.getName().equals("arena")) {
+							continue;
+						}
+						
+						world.setGameRuleValue("doMobSpawning", "true");
+					}
+				}
+
+				if (pvp == 0) {
+					PlayerUtils.broadcast(Main.prefix() + "§6§lPvP has been enabled.");
+					for (Player online : PlayerUtils.getPlayers()) {
+						online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
+					}
+					for (World world : Bukkit.getWorlds()) {
+						world.setPVP(true);
+						world.setPVP(true);
+						world.setPVP(true);
+						world.setPVP(true);
+						world.setPVP(true);
+						world.setPVP(true);
+						world.setPVP(true);
+						world.setPVP(true);
+					}
+					if (Main.border == Border.PVP) {
+						for (World world : Bukkit.getWorlds()) {
+							if (world.getName().equals("lobby") || world.getName().equals("arena")) {
+								continue;
+							}
+							
+							world.getWorldBorder().setSize(299, meetup * 60);
+						}
+					}
+					Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer cancel");
+					Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer " + (meetup * 60) + " &aMeetup in:&7");
+				}
+				
+				if (meetup == 0) {
+					Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer cancel");
+					Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer -1 &6Meetup is now! Head to 0,0 and only stop for a fight!");
+					for (Player online : PlayerUtils.getPlayers()) {
+						online.sendMessage(ChatColor.DARK_GRAY + "==============================================");													  
+						online.sendMessage(ChatColor.GREEN + " Meetup has started, start headding to 0,0.");											  
+						online.sendMessage(ChatColor.GREEN + " Only stop for a fight, nothing else.");
+						online.sendMessage(ChatColor.DARK_GRAY + "==============================================");
+						online.playSound(online.getLocation(), Sound.WITHER_DEATH, 1, 0);
+					}
+
+					for (World world : Bukkit.getWorlds()) {
+						if (world.getName().equals("lobby") || world.getName().equals("arena")) {
+							continue;
+						}
+						
+						if (Main.border == Border.MEETUP) {
+							world.getWorldBorder().setSize(299, 600);
+						}
+						
+						world.setThundering(false);
+						world.setStorm(false);
+
+						world.setGameRuleValue("doDaylightCycle", "false");
+						world.setTime(6000);
+					}
+				}
+				
+				if (pvp == 45) {
+					PlayerUtils.broadcast(Main.prefix() + "§6§l45 minutes to pvp.");
+				}
+				
+				if (pvp == 30) {
+					PlayerUtils.broadcast(Main.prefix() + "§6§l30 minutes to pvp.");
+				}
+				
+				if (pvp == 15) {
+					PlayerUtils.broadcast(Main.prefix() + "§6§l15 minutes to pvp.");
+				}
+				
+				if (pvp == 10) {
+					PlayerUtils.broadcast(Main.prefix() + "§6§l10 minutes to pvp.");
+				}
+				
+				if (pvp == 5) {
+					PlayerUtils.broadcast(Main.prefix() + "§6§l5 minutes to pvp.");
+				}
+				
+				if (pvp == 1) {
+					PlayerUtils.broadcast(Main.prefix() + "§6§l1 minute to pvp.");
+				}
+				
+				if (meetup == 120) {
+					PlayerUtils.broadcast(Main.prefix() + "§6§l2 hours to meetup.");
+				}
+				
+				if (meetup == 105) {
+					PlayerUtils.broadcast(Main.prefix() + "§6§l1 hour and 45 minutes to meetup.");
+				}
+				
+				if (meetup == 90) {
+					PlayerUtils.broadcast(Main.prefix() + "§6§l1 hour and 30 minutes to meetup.");
+				}
+				
+				if (meetup == 75) {
+					PlayerUtils.broadcast(Main.prefix() + "§6§l1 hour and 15 minutes to meetup.");
+				}
+				
+				if (meetup == 60) {
+					PlayerUtils.broadcast(Main.prefix() + "§6§l1 hour to meetup.");
+				}
+				
+				if (meetup == 45) {
+					PlayerUtils.broadcast(Main.prefix() + "§6§l45 minutes to meetup.");
+				}
+				
+				if (meetup == 30) {
+					PlayerUtils.broadcast(Main.prefix() + "§6§l30 minutes to meetup.");
+				}
+				
+				if (meetup == 15) {
+					PlayerUtils.broadcast(Main.prefix() + "§6§l15 minutes to meetup.");
+				}
+				
+				if (meetup == 10) {
+					PlayerUtils.broadcast(Main.prefix() + "§6§l10 minutes to meetup.");
+				}
+				
+				if (meetup == 5) {
+					PlayerUtils.broadcast(Main.prefix() + "§6§l5 minutes to meetup.");
+				}
+				
+				if (meetup == 1) {
+					PlayerUtils.broadcast(Main.prefix() + "§6§l1 minute to meetup, get ready to head to 0,0.");
+					for (Player online : PlayerUtils.getPlayers()) {
+						online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
+					}
+				}
+			}
+		}, 1200, 1200);
 	}
 }
