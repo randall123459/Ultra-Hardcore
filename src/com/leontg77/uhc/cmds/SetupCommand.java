@@ -28,7 +28,8 @@ public class SetupCommand implements CommandExecutor {
 				if (args.length == 1) {
 					if (sender instanceof Player) {
 						Player player = (Player) sender;
-						
+						radius = radius + 0;
+						player.damage(0.0);
 					} else {
 						sender.sendMessage(ChatColor.RED + "Only players can generate their own world.");
 					}
