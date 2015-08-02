@@ -18,12 +18,12 @@ public class ScatterUtils {
 	
 	/**
 	 * Get a list of available scatter locations
-	 * @param w the world to scatter in.
+	 * @param world the world to scatter in.
 	 * @param radius the maximum radius to scatter.
 	 * @param count the amount of scatter locations needed.
 	 * @return List of scatter locations.
 	 */
-	public static List<Location> getScatterLocations(World w, int radius, int count) {
+	public static List<Location> getScatterLocations(World world, int radius, int count) {
 		double minDisSq = mindis(radius, count);
 
 		List<Location> locs = new ArrayList<>();
@@ -40,7 +40,7 @@ public class ScatterUtils {
 				int x = rand.nextInt(radius * 2) - radius;
 				int z = rand.nextInt(radius * 2) - radius;
 
-				Location r = new Location(w, x + 0.5, 0, z + 0.5);
+				Location r = new Location(world, x + 0.5, 0, z + 0.5);
 
 				boolean close = false;
 				for (Location l : locs) {
