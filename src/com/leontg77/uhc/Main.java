@@ -92,6 +92,7 @@ public class Main extends JavaPlugin {
 	public static Main plugin;
 	
 	public static BukkitRunnable countdown;
+	public static boolean muted = false;
 	public static Recipe res;
 
 	public static Border border;
@@ -111,7 +112,6 @@ public class Main extends JavaPlugin {
 	
 	public static ArrayList<String> spectating = new ArrayList<String>();
 	public static ArrayList<String> voted = new ArrayList<String>();
-	public static ArrayList<String> mute = new ArrayList<String>();
 
 	public static HashMap<CommandSender, CommandSender> msg = new HashMap<CommandSender, CommandSender>();
 	public static HashMap<Inventory, BukkitRunnable> invsee = new HashMap<Inventory, BukkitRunnable>();
@@ -194,7 +194,7 @@ public class Main extends JavaPlugin {
 		Arena.getManager().setup();
 		
 		State.setState(State.valueOf(settings.getData().getString("game.currentstate")));
-		addGoldenHeads();
+		addRecipes();
 		
 		ffa = settings.getData().getBoolean("game.ffa");
 		teamSize = settings.getData().getInt("game.teamsize");
@@ -334,7 +334,7 @@ public class Main extends JavaPlugin {
 	 * Adds the golden head recipe.
 	 */
 	@SuppressWarnings("deprecation")
-	public static void addGoldenHeads() {
+	public static void addRecipes() {
         MaterialData mater = new MaterialData (Material.SKULL_ITEM);
         mater.setData((byte) 3);
         ItemStack head = new ItemStack(Material.GOLDEN_APPLE);
@@ -347,6 +347,12 @@ public class Main extends JavaPlugin {
         Bukkit.getServer().addRecipe(goldenhead);
         res = goldenhead;
 		Bukkit.getLogger().info("§a[UHC] Golden heads recipe added.");
+
+        ItemStack melon = new ItemStack(Material.SPECKLED_MELON); 
+        ShapedRecipe goldenmelon = new ShapedRecipe(melon).shape("@@@", "@*@", "@@@").setIngredient('@', Material.GOLD_INGOT).setIngredient('*', Material.MELON);
+        Bukkit.getServer().addRecipe(goldenmelon);
+  
+		Bukkit.getLogger().info("§a[UHC] Golden Melon recipe added.");
 	}
 	
 	/**
@@ -354,7 +360,6 @@ public class Main extends JavaPlugin {
 	 * @author LeonTG77
 	 */
 	public enum Border {
-		
 		MEETUP, PVP, START;
 	}
 	
