@@ -15,8 +15,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import com.leontg77.uhc.GameState;
 import com.leontg77.uhc.Main;
+import com.leontg77.uhc.Main.State;
 import com.leontg77.uhc.Runnables;
 import com.leontg77.uhc.Scoreboards;
 import com.leontg77.uhc.Settings;
@@ -86,7 +86,7 @@ public class EndCommand implements CommandExecutor {
 				}
 
 				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer cancel");
-				GameState.setState(GameState.LOBBY);
+				State.setState(State.LOBBY);
 				Main.relog.clear();
 				SpecInfoListener.totalG.clear();
 				SpecInfoListener.totalD.clear();

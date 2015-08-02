@@ -15,7 +15,7 @@ import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import com.leontg77.uhc.util.DamageUtil;
+import com.leontg77.uhc.util.NumberUtils;
 import com.leontg77.uhc.util.DateUtils;
 import com.leontg77.uhc.util.PlayerUtils;
 
@@ -75,7 +75,7 @@ public class InvGUI {
 				lore.add(" ");
 				int health = (int) dmg.getHealth();
 				lore.add("§aHearts: §7" + (health / 2));
-				lore.add("§aPercentage Health: §7" + DamageUtil.makePercent(dmg.getHealth()) + "%");
+				lore.add("§aPercentage Health: §7" + NumberUtils.makePercent(dmg.getHealth()) + "%");
 				lore.add("§aHunger: §7" + (target.getFoodLevel() / 2));
 				lore.add("§aXp level: §7" + target.getLevel());
 				lore.add("§aLocation: §7" + target.getWorld().getEnvironment().name().replaceAll("_", "").toLowerCase().replaceAll("normal", "overworld") + ", x:" + target.getLocation().getBlockX() + ", y:" + target.getLocation().getBlockY() + ", z:" + target.getLocation().getBlockZ());

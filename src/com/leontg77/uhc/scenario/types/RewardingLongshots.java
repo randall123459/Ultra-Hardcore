@@ -9,7 +9,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
 
 import com.leontg77.uhc.scenario.Scenario;
-import com.leontg77.uhc.util.DamageUtil;
+import com.leontg77.uhc.util.NumberUtils;
 import com.leontg77.uhc.util.PlayerUtils;
 
 public class RewardingLongshots extends Scenario implements Listener {
@@ -50,21 +50,21 @@ public class RewardingLongshots extends Scenario implements Listener {
 		
 		if (distance >= 30 && distance <= 49) {
 			killer.getInventory().addItem(new ItemStack(Material.IRON_INGOT));
-			PlayerUtils.broadcast("§9[RewardingLongshots] §f" + killer.getName() + " got a longshot of " + DamageUtil.convertHealth(distance) + " blocks.");
+			PlayerUtils.broadcast("§9[RewardingLongshots] §f" + killer.getName() + " got a longshot of " + NumberUtils.convertDouble(distance) + " blocks.");
 		} else if (distance >= 50 && distance <= 99) {
 			killer.getInventory().addItem(new ItemStack(Material.IRON_INGOT));
 			killer.getInventory().addItem(new ItemStack(Material.GOLD_INGOT));
-			PlayerUtils.broadcast("§9[RewardingLongshots] §f" + killer.getName() + " got a longshot of " + DamageUtil.convertHealth(distance) + " blocks.");
+			PlayerUtils.broadcast("§9[RewardingLongshots] §f" + killer.getName() + " got a longshot of " + NumberUtils.convertDouble(distance) + " blocks.");
 		} else if (distance >= 100 && distance <= 199) {
 			killer.getInventory().addItem(new ItemStack(Material.IRON_INGOT));
 			killer.getInventory().addItem(new ItemStack(Material.GOLD_INGOT));
 			killer.getInventory().addItem(new ItemStack(Material.DIAMOND));
-			PlayerUtils.broadcast("§9[RewardingLongshots] §f" + killer.getName() + " got a longshot of " + DamageUtil.convertHealth(distance) + " blocks.");
+			PlayerUtils.broadcast("§9[RewardingLongshots] §f" + killer.getName() + " got a longshot of " + NumberUtils.convertDouble(distance) + " blocks.");
 		} else if (distance >= 200) {
 			killer.getInventory().addItem(new ItemStack(Material.IRON_INGOT, 2));
 			killer.getInventory().addItem(new ItemStack(Material.GOLD_INGOT, 3));
 			killer.getInventory().addItem(new ItemStack(Material.DIAMOND, 5));
-			PlayerUtils.broadcast("§9[RewardingLongshots] §f" + killer.getName() + " got a longshot of " + DamageUtil.convertHealth(distance) + " blocks.");
+			PlayerUtils.broadcast("§9[RewardingLongshots] §f" + killer.getName() + " got a longshot of " + NumberUtils.convertDouble(distance) + " blocks.");
 		}
 	}
 }

@@ -13,8 +13,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Team;
 
-import com.leontg77.uhc.GameState;
 import com.leontg77.uhc.Main;
+import com.leontg77.uhc.Main.State;
 import com.leontg77.uhc.Teams;
 import com.leontg77.uhc.util.PlayerUtils;
 
@@ -57,7 +57,7 @@ public class TeamCommand implements CommandExecutor {
 						return true;
 					}
 					
-					if (!GameState.isState(GameState.LOBBY)) {
+					if (!State.isState(State.LOBBY)) {
 						player.sendMessage(ChatColor.RED + "You cannot do this command at the moment.");
 						return true;
 					}
@@ -90,7 +90,7 @@ public class TeamCommand implements CommandExecutor {
 						return true;
 					}
 					
-					if (!GameState.isState(GameState.LOBBY)) {
+					if (!State.isState(State.LOBBY)) {
 						player.sendMessage(ChatColor.RED + "You cannot do this command at the moment.");
 						return true;
 					}
@@ -202,7 +202,7 @@ public class TeamCommand implements CommandExecutor {
 					return true;
 				}
 				
-				if (!GameState.isState(GameState.LOBBY)) {
+				if (!State.isState(State.LOBBY)) {
 					player.sendMessage(ChatColor.RED + "You cannot do this command at the moment.");
 					return true;
 				}
@@ -235,7 +235,7 @@ public class TeamCommand implements CommandExecutor {
 					return true;
 				}
 				
-				if (!GameState.isState(GameState.LOBBY)) {
+				if (!State.isState(State.LOBBY)) {
 					player.sendMessage(ChatColor.RED + "You cannot do this command at the moment.");
 					return true;
 				}
@@ -257,7 +257,7 @@ public class TeamCommand implements CommandExecutor {
 				}
 			}
 			else if (args[0].equalsIgnoreCase("invite")) {
-				if (!GameState.isState(GameState.LOBBY)) {
+				if (!State.isState(State.LOBBY)) {
 					player.sendMessage(ChatColor.RED + "You cannot do this command at the moment.");
 					return true;
 				}
@@ -307,7 +307,7 @@ public class TeamCommand implements CommandExecutor {
 					return true;
 				}
 				
-				if (!GameState.isState(GameState.LOBBY)) {
+				if (!State.isState(State.LOBBY)) {
 					player.sendMessage(ChatColor.RED + "You cannot do this command at the moment.");
 					return true;
 				}
@@ -348,7 +348,7 @@ public class TeamCommand implements CommandExecutor {
 					return true;
 				}
 				
-				if (!GameState.isState(GameState.LOBBY)) {
+				if (!State.isState(State.LOBBY)) {
 					player.sendMessage(ChatColor.RED + "You cannot do this command at the moment.");
 					return true;
 				}
@@ -393,7 +393,7 @@ public class TeamCommand implements CommandExecutor {
 					return true;
 				}
 				
-				if (!GameState.isState(GameState.LOBBY)) {
+				if (!State.isState(State.LOBBY)) {
 					player.sendMessage(ChatColor.RED + "You cannot do this command at the moment.");
 					return true;
 				}

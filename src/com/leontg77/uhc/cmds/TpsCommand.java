@@ -10,7 +10,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
 import com.leontg77.uhc.Main;
-import com.leontg77.uhc.util.DamageUtil;
+import com.leontg77.uhc.util.NumberUtils;
 import com.leontg77.uhc.util.DateUtils;
 import com.leontg77.uhc.util.PlayerUtils;
 import com.leontg77.uhc.util.ServerUtils;
@@ -32,7 +32,7 @@ public class TpsCommand implements CommandExecutor {
 			}
 			
 			sender.sendMessage(Main.prefix() + "Server status:");
-			sender.sendMessage("§8§l» §7Current TPS: " + color + DamageUtil.convertHealth(ServerUtils.getTps()));
+			sender.sendMessage("§8§l» §7Current TPS: " + color + NumberUtils.convertDouble(ServerUtils.getTps()));
 			sender.sendMessage("§8§l» §7Uptime: §a" + DateUtils.formatDateDiff(ManagementFactory.getRuntimeMXBean().getStartTime()));
 			sender.sendMessage("§8§l» §7RAM Usage: §a" + (Runtime.getRuntime().totalMemory() / 1024 / 1024) + " MB");
 			sender.sendMessage("§8§l» §7Max Memory: §a4096 MB");

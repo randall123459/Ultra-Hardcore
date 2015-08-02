@@ -24,16 +24,16 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import com.leontg77.uhc.GameState;
 import com.leontg77.uhc.Main;
+import com.leontg77.uhc.Main.State;
 import com.leontg77.uhc.scenario.ScenarioManager;
-import com.leontg77.uhc.util.DamageUtil;
+import com.leontg77.uhc.util.NumberUtils;
 
 public class EntityListener implements Listener {
 	
 	@EventHandler
 	public void onEntityDamage(EntityDamageEvent event) {		
-		if (GameState.isState(GameState.WAITING)) {
+		if (State.isState(State.SCATTER)) {
 			event.setCancelled(true);
 			return;
 		}
@@ -206,7 +206,7 @@ public class EntityListener implements Listener {
 		}
 		
 		for (Player online : Bukkit.getServer().getOnlinePlayers()) {
-			online.sendMessage(Main.prefix() + killer.getName() + " got a longshot of §6" + DamageUtil.convertHealth(distance) + " §7blocks.");
+			online.sendMessage(Main.prefix() + killer.getName() + " got a longshot of §6" + NumberUtils.convertDouble(distance) + " §7blocks.");
 		}
 	}
 }
