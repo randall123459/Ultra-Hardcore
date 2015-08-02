@@ -6,8 +6,9 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
-import com.leontg77.uhc.GameState;
 import com.leontg77.uhc.Main;
+import com.leontg77.uhc.Main.Border;
+import com.leontg77.uhc.Main.State;
 import com.leontg77.uhc.Scoreboards;
 import com.leontg77.uhc.Settings;
 
@@ -85,15 +86,15 @@ public class ConfigCommand implements CommandExecutor {
 								sender.sendMessage(Main.prefix() + "Set " + args[1].toLowerCase() + " to " + args[2] + ".");
 								break;
 							case CURRENTSTATE:
-								GameState st;
+								State st;
 								
 								try {
-									st = GameState.valueOf(args[2].toUpperCase());
+									st = State.valueOf(args[2].toUpperCase());
 								} catch (Exception e) {
 									sender.sendMessage(ChatColor.RED + "That is not a vaild state.");
 									return true;
 								}
-								GameState.setState(st);
+								State.setState(st);
 								sender.sendMessage(Main.prefix() + "Set " + args[1].toLowerCase() + " to " + args[2] + ".");
 								break;
 							case FFA:
@@ -198,14 +199,14 @@ public class ConfigCommand implements CommandExecutor {
 								Settings.getInstance().saveData();
 								sender.sendMessage(Main.prefix() + "Set " + args[1].toLowerCase() + " to " + args[2] + ".");
 								break;
-							case MOTD:
+							case SCENARIOS:
 								StringBuilder bu = new StringBuilder();
 								
 								for (int s = 2; s < args.length; s++) {
 									bu.append(args[s]).append(" ");
 								}
 								
-								Settings.getInstance().getData().set(args[1].toLowerCase(), ChatColor.translateAlternateColorCodes('&', bu.toString().trim()));
+								Settings.getInstance().getData().set("motd", ChatColor.translateAlternateColorCodes('&', bu.toString().trim()));
 								Settings.getInstance().saveData();
 								sender.sendMessage(Main.prefix() + "Set " + args[1].toLowerCase() + " to " + ChatColor.translateAlternateColorCodes('&', bu.toString().trim()) + ".");
 								break;
@@ -312,10 +313,6 @@ public class ConfigCommand implements CommandExecutor {
 	}
 	
 	public enum ConfigType {
-		FFA, PVP, MEETUP, HOST, BORDER, FLINTRATE, APPLERATE, SHEARRATE, TEAMSIZE, CURRENTSTATE, ABSORB, GHEAD, PEARLDMG, GODAPPLE, POST, MOTD, MAXPLAYERS, WORLD;
-	}
-	
-	public enum Border {
-		MEETUP, PVP, START;
+		FFA, PVP, MEETUP, HOST, BORDER, FLINTRATE, APPLERATE, SHEARRATE, TEAMSIZE, CURRENTSTATE, ABSORB, GHEAD, PEARLDMG, GODAPPLE, POST, SCENARIOS, MAXPLAYERS, WORLD;
 	}
 }
