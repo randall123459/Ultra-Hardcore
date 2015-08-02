@@ -1,185 +1,245 @@
 package com.leontg77.uhc.cmds;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Team;
 
-import com.leontg77.uhc.GameState;
 import com.leontg77.uhc.Main;
+import com.leontg77.uhc.Main.State;
+import com.leontg77.uhc.Scoreboards;
 import com.leontg77.uhc.Settings;
+import com.leontg77.uhc.Teams;
 import com.leontg77.uhc.util.PlayerUtils;
+import com.leontg77.uhc.util.ScatterUtils;
 
-@SuppressWarnings("deprecation")
 public class SpreadCommand implements CommandExecutor {
+	public static final HashMap<String, Location> scatterLocs = new HashMap<String, Location>();
 
-	public boolean onCommand(CommandSender player, Command cmd, String label, final String[] args) {
+	public boolean onCommand(CommandSender sender, Command cmd, String label, final String[] args) {
 		if (cmd.getName().equalsIgnoreCase("spread")) {
-			if (player.hasPermission("uhc.spread")) {
-				if (args.length < 4) {
-					player.sendMessage(ChatColor.RED + "Usage: /spread <radius> <maxradius> <teamspread> <player|*>");
+			if (sender.hasPermission("uhc.spread")) {
+				if (args.length < 3) {
+					sender.sendMessage(ChatColor.RED + "Usage: /spread <radius> <teamspread> <player|*>");
 					return true;
 				}
 				
-				final int radius;
-				final int maxradius;
 				final boolean teams;
+				final int radius;
 				
 				try {
 					radius = Integer.parseInt(args[0]);
 				} catch (Exception e) {
-					player.sendMessage(ChatColor.RED + "Invaild radius.");
+					sender.sendMessage(ChatColor.RED + "Invaild radius.");
 					return true;
 				}
 				
-				try {
-					maxradius = Integer.parseInt(args[1]);
-				} catch (Exception e) {
-					player.sendMessage(ChatColor.RED + "Invaild max radius.");
-					return true;
-				}
-				
-				if (args[2].equalsIgnoreCase("true")) {
+				if (args[1].equalsIgnoreCase("true")) {
 					teams = true;
 				}
-				else if (args[2].equalsIgnoreCase("false")) {
+				else if (args[1].equalsIgnoreCase("false")) {
 					teams = false;
 				} 
 				else {
-					player.sendMessage(ChatColor.RED + "Teamspread must be true of false"); 
+					sender.sendMessage(ChatColor.RED + "Teamspread must be true of false"); 
 					return true;
 				}
 				
-				if (args[3].equalsIgnoreCase("*")) {
-					PlayerUtils.broadcast(Main.prefix() + "Scattering §a" + PlayerUtils.getPlayers().size() + " §7players.");
+				if (args[2].equalsIgnoreCase("*")) {
+					State.setState(State.SCATTER);
+					int t = 0;
+					int s = 0;
+					
+					for (Team te : Teams.getManager().getTeams()) {
+						if (te.getSize() > 0) {
+							t++;
+						}
+					}
+					
+					for (Player online : PlayerUtils.getPlayers()) {
+						if (online.getScoreboard().getEntryTeam(online.getName()) == null) {
+							s++;
+						}
+					}
+					
+					final int te = t;
+					final int so = s;
+					
+					if (teams) {
+						PlayerUtils.broadcast(Main.prefix() + "Scattering §a" + t + " §7teams and §a" + s + " §7solos.");
+					} else {
+						PlayerUtils.broadcast(Main.prefix() + "Scattering §a" + Bukkit.getServer().getWhitelistedPlayers().size() + " §7players.");
+					}
 					
 					Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Main.plugin, new Runnable() {
 						public void run() {
 							PlayerUtils.broadcast(Main.prefix() + "Finding scatter locations...");
 							
-							if ()
+							if (teams) {
+								List<Location> loc = ScatterUtils.getScatterLocations(Bukkit.getWorld(Settings.getInstance().getData().getString("game.world")), radius, te + so);
+								
+								int index = 0;
+								
+								for (Team tem : Teams.getManager().getTeamsWithPlayers()) {
+									for (String player : tem.getEntries()) {
+										scatterLocs.put(player, loc.get(index));
+									}
+									index++;
+								}
+								
+								for (OfflinePlayer online : Bukkit.getServer().getWhitelistedPlayers()) {
+									if (Scoreboards.getManager().sb.getEntryTeam(online.getName()) == null) {
+										scatterLocs.put(online.getName(), loc.get(index));
+										index++;
+									}
+								}
+							} else {
+								List<Location> loc = ScatterUtils.getScatterLocations(Bukkit.getWorld(Settings.getInstance().getData().getString("game.world")), radius, Bukkit.getServer().getWhitelistedPlayers().size());
+							
+								int index = 0;
+								
+								for (OfflinePlayer online : Bukkit.getServer().getWhitelistedPlayers()) {
+									scatterLocs.put(online.getName(), loc.get(index));
+									index++;
+								}
+							}
 						}
 					}, 10);
 					
-					
-					
-					for (Player online : PlayerUtils.getPlayers()) {
-						online.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 1000000, 128));
-						online.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 1000000, 6));
-						online.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 1000000, 6));
-						online.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 1000000, 10));
-						online.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 1000000, 6));
-					}
-					
 					Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Main.plugin, new Runnable() {
-						@Override
 						public void run() {
-							for (Player online : Bukkit.getServer().getOnlinePlayers()) {
-								online.sendMessage(Main.prefix() + "Chunks loaded, scattering...");
+							PlayerUtils.broadcast(Main.prefix() + "Locations found, loading chunks...");
+							
+							final ArrayList<Location> a = new ArrayList<Location>();
+							final ArrayList<String> b = new ArrayList<String>();
+							
+							for (Location loc : scatterLocs.values()) {
+								a.add(loc);
 							}
-						}
-					}, 30);
-						
-					Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Main.plugin, new Runnable() {
-						@Override
-						public void run() {
-							Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "spreadplayers 0 0 " + radius + " " + maxradius + " " + args[2] + " @a");
-							for (Player online : Bukkit.getServer().getOnlinePlayers()) {
-								if (online.getScoreboard().getEntryTeam(online.getName()) == null) {
-									Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "spreadplayers 0 0 " + radius + " " + maxradius + " false " + online.getName());
+							
+							for (String names : scatterLocs.keySet()) {
+								b.add(names);
+							}
+							
+							new BukkitRunnable() {
+								int i = 0;
+								
+								public void run() {
+									if (i < a.size()) {
+										a.get(i).getChunk().load(true);
+										i++;
+									} else {
+										cancel();
+										a.clear();
+										PlayerUtils.broadcast(Main.prefix() + "All chunks loaded, starting scatter...");
+										
+										new BukkitRunnable() {
+											int i = 0;
+											
+											public void run() {
+												if (i < b.size()) {
+													Player scatter = Bukkit.getServer().getPlayer(b.get(i));
+													
+													if (scatter == null) {
+														PlayerUtils.broadcast(Main.prefix() + "- §c" + b.get(i) + " §7offline, scheduled.");
+													} else {
+														scatter.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 1000000, 128));
+														scatter.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 1000000, 6));
+														scatter.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 1000000, 6));
+														scatter.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 1000000, 10));
+														scatter.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 1000000, 6));
+														scatter.teleport(scatterLocs.get(b.get(i)));
+														PlayerUtils.broadcast(Main.prefix() + "- §a" + b.get(i) + " §7has been scattered.");
+														scatterLocs.remove(b.get(i));
+													}
+													i++;
+												} else {
+													cancel();
+													PlayerUtils.broadcast(Main.prefix() + "The scatter has finished.");
+													b.clear();
+												}
+											}
+										}.runTaskTimer(Main.plugin, 3, 3);
+									}
 								}
-								online.teleport(new Location(online.getWorld(), online.getLocation().getX(), 255, online.getLocation().getZ()));
-								online.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 1000000, 128));
-								online.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 1000000, 6));
-								online.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 1000000, 6));
-								online.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 1000000, 10));
-								online.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 1000000, 6));
-								online.sendMessage(Main.prefix() + "Everyone has been scattered.");
-							}
+							}.runTaskTimer(Main.plugin, 1, 1);
 						}
-					}, 60);
-					GameState.setState(GameState.WAITING);
+					}, 20);
 				} else {
-					final Player target = Bukkit.getServer().getPlayer(args[3]);
+					final Player target = Bukkit.getPlayer(args[2]);
 					
 					if (target == null) {
-						player.sendMessage(ChatColor.RED + "That player is not online.");
+						sender.sendMessage(ChatColor.RED + "That player is not online.");
 						return true;
 					}
 
-					for (Player online : Bukkit.getServer().getOnlinePlayers()) {
-						online.sendMessage(Main.prefix() + "Scattering " + target.getName() + "...");
-					}
-					target.teleport(new Location(Bukkit.getWorld(Settings.getInstance().getData().getString("game.world")), 0.5, 200, 0.5));
-					target.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 1000000, 128));
-					target.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 1000000, 6));
-					target.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 1000000, 6));
-					target.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 1000000, 10));
-					target.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 1000000, 6));
+					PlayerUtils.broadcast(Main.prefix() + "Scattering §a" + target.getName() + " §7...");
 					
-					final int radius;
-					final int maxradius;
-					
-					try {
-						radius = Integer.parseInt(args[0]);
-					} catch (Exception e) {
-						player.sendMessage(ChatColor.RED + "Invaild radius.");
-						return true;
-					}
-					
-					try {
-						maxradius = Integer.parseInt(args[1]);
-					} catch (Exception e) {
-						player.sendMessage(ChatColor.RED + "Invaild max radius.");
-						return true;
-					}
-						
 					Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Main.plugin, new Runnable() {
-						@Override
 						public void run() {
-							for (Player online : Bukkit.getServer().getOnlinePlayers()) {
-								online.sendMessage(Main.prefix() + "Scattered " + target.getName() + ".");
-							}
-							Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "spreadplayers 0 0 " + radius + " " + maxradius + " false " + target.getName());
-							target.teleport(new Location(target.getWorld(), target.getLocation().getX(), 255, target.getLocation().getZ()));
-							target.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 1000000, 128));
-							target.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 1000000, 6));
-							target.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 1000000, 6));
-							target.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 1000000, 10));
-							target.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 1000000, 6));
-						}
-					}, 60);
-					
-					if (args[2].equalsIgnoreCase("true")) {
-						Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Main.plugin, new Runnable() {
-							@Override
-							public void run() {
-								Team t = target.getScoreboard().getPlayerTeam(target);
-								if (t == null) {
+							PlayerUtils.broadcast(Main.prefix() + "Finding scatter location...");
+							
+							if (teams) {
+								if (target.getScoreboard().getEntryTeam(target.getName()) == null) {
+									List<Location> loc = ScatterUtils.getScatterLocations(Bukkit.getWorld(Settings.getInstance().getData().getString("game.world")), radius, 1);
+									scatterLocs.put(target.getName(), loc.get(0));
 									return;
 								}
-								for (Player online2 : Bukkit.getServer().getOnlinePlayers()) {
-									Team t2 = online2.getScoreboard().getPlayerTeam(online2);
-									if (t2 == null) {
-										continue;
+								
+								Team tem = target.getScoreboard().getEntryTeam(target.getName());
+								
+								for (String tm : tem.getEntries()) {
+									Player temmate = Bukkit.getServer().getPlayer(tm);
+									
+									if (temmate != null) {
+										scatterLocs.put(target.getName(), temmate.getLocation());
+										break;
 									}
-									if (t == t2 && target != online2) {
-										target.teleport(online2);
-										target.teleport(target.getLocation().add(0, 2, 0));
-									}	
-								}	
+								}
+							} else {
+								List<Location> loc = ScatterUtils.getScatterLocations(Bukkit.getWorld(Settings.getInstance().getData().getString("game.world")), radius, 1);
+								scatterLocs.put(target.getName(), loc.get(0));
 							}
-						}, 70);
-					}
+						}
+					}, 10);
+					
+					Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Main.plugin, new Runnable() {
+						public void run() {
+							PlayerUtils.broadcast(Main.prefix() + "Location found, scattering...");
+							
+							if (!target.isOnline()) {
+								PlayerUtils.broadcast(Main.prefix() + "- §c" + target.getName() + " §7offline, scheduled.");
+							} else {
+								if (State.isState(State.SCATTER)) {
+									target.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 1000000, 128));
+									target.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 1000000, 6));
+									target.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 1000000, 6));
+									target.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 1000000, 10));
+									target.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 1000000, 6));
+								}
+								target.teleport(scatterLocs.get(target.getName()));
+								PlayerUtils.broadcast(Main.prefix() + "- §a" + target.getName() + " §7has been scattered.");
+								scatterLocs.remove(target.getName());
+							}
+						
+							PlayerUtils.broadcast(Main.prefix() + "Scatter for §a" + target.getName() + "§7 finished.");
+						}
+					}, 20);
 				}
 			} else {
-				player.sendMessage(ChatColor.RED + "You do not have access to that command.");
+				sender.sendMessage(ChatColor.RED + "You do not have access to that command.");
 			}
 		}
 		return true;
