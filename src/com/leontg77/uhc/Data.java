@@ -24,7 +24,7 @@ public class Data {
 	
 	/**
 	 * Gets the data of a player.
-	 * @param name the name of the player.
+	 * @param player the player.
 	 * @return the data class.
 	 */
 	public static Data getData(Player player) {
@@ -63,6 +63,7 @@ public class Data {
         	config.set("username", player.getName());
         	config.set("firstjoined", System.currentTimeMillis());
         	config.set("rank", Rank.USER.name());
+        	config.set("muted", false);
         	config.set("stats.gamesplayed", 0);
         	config.set("stats.wins", 0);
         	config.set("stats.kills", 0);
@@ -105,6 +106,19 @@ public class Data {
 	 */
 	public void reloadFile() {
         config = YamlConfiguration.loadConfiguration(file);
+	}
+
+	/**
+	 * Sets if the player is muted or not
+	 * @param mute mute the player.
+	 */
+	public void setMuted(boolean mute) {
+		config.set("muted", mute);
+		saveFile();
+	}
+	
+	public boolean isMuted() {
+		return config.getBoolean("muted");
 	}
 	
 	/**
