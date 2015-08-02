@@ -1,5 +1,6 @@
 package com.leontg77.uhc.cmds;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -10,40 +11,85 @@ import com.leontg77.uhc.Main;
 
 public class SpeedCommand implements CommandExecutor {
 
-	public boolean onCommand(CommandSender sender, Command cmd, String label, final String[] args) {
-		if (!(sender instanceof Player)) {
-			sender.sendMessage(ChatColor.RED + "Only players can change their fly speed.");
-			return true;
-		}
-		
-		Player player = (Player) sender;
-		
+	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (cmd.getName().equalsIgnoreCase("speed")) {
-        	if (player.hasPermission("uhc.speed") || Main.spectating.contains(player.getName())) {
+        	if (sender.hasPermission("uhc.speed")) {
         		if (args.length == 0) {
-        			player.sendMessage(ChatColor.RED + "Usage: /speed <1-4>");
+        			sender.sendMessage(ChatColor.RED + "Usage: /speed <speed> [player]");
         			return true;
         		}
         		
-        		if (args[0].equalsIgnoreCase("1")) {
-        			player.setFlySpeed(0.1f);
-            		player.sendMessage(Main.prefix() + "You set your flying speed to §61§7.");
-        		} 
-	    		else if (args[0].equalsIgnoreCase("2")) {
-        			player.setFlySpeed(0.2f);
-            		player.sendMessage(Main.prefix() + "You set your flying speed to §62§7.");
-        		} 
-        		else if (args[0].equalsIgnoreCase("3")) {
-        			player.setFlySpeed(0.3f);
-            		player.sendMessage(Main.prefix() + "You set your flying speed to §63§7.");
-        		} 
-        		else if (args[0].equalsIgnoreCase("4")) {
-        			player.setFlySpeed(0.4f);
-            		player.sendMessage(Main.prefix() + "You set your flying speed to §64§7.");
-        		} 
-        		else {
-        			player.sendMessage(ChatColor.RED + "Usage: /speed <1-4>");
-        		}	
+        		float speed;
+        		float orgspeed;
+        		
+        		try {
+        			speed = Float.parseFloat(args[0]);
+        		} catch (Exception e) {
+        			sender.sendMessage(ChatColor.RED + "Invaild number.");
+        			return true;
+        		}
+        		
+        		if (speed > 10f) {
+        			speed = 10f;
+        			orgspeed = 10f;
+        		} else if (speed < 0.0001f) {
+    				speed = 0.0001f;
+        			orgspeed = 0.0001f;
+    			} else {
+    				orgspeed = speed;
+    			}
+        		
+        		if (args.length == 1) {
+        			if (sender instanceof Player) {
+            			Player player = (Player) sender;
+            			
+                		float defaultSpeed = player.isFlying() ? 0.1f : 0.2f;
+                		float maxSpeed = 1f;
+
+                		if (speed < 1f) {
+                			speed = defaultSpeed * speed;
+                		} else {
+                			float ratio = ((speed - 1) / 9) * (maxSpeed - defaultSpeed);
+                			speed = ratio + defaultSpeed;
+                		}
+            			
+                		if (player.isFlying()) {
+                			player.setFlySpeed(speed);
+                    		player.sendMessage(Main.prefix() + "You set your flying speed to §6" + orgspeed + "§7.");
+                		} else {
+                			player.setWalkSpeed(speed);
+                    		player.sendMessage(Main.prefix() + "You set your walking speed to §6" + orgspeed + "§7.");
+                		}
+        			} else {
+        				sender.sendMessage(ChatColor.RED + "Only players can change their walk/fly speed.");
+        			}
+        			return true;
+        		}
+        		
+        		Player target = Bukkit.getServer().getPlayer(args[1]);
+        		
+        		if (target == null) {
+        			sender.sendMessage(ChatColor.RED + "That player is not online.");
+        			return true;
+        		}
+    			
+        		float defaultSpeed = target.isFlying() ? 0.1f : 0.2f;
+        		float maxSpeed = 1f;
+
+        		if (speed < 1f) {
+        			speed = defaultSpeed * speed;
+        		} else {
+        			float ratio = ((speed - 1) / 9) * (maxSpeed - defaultSpeed);
+        			speed = ratio + defaultSpeed;
+        		}
+    			
+        		if (target.isFlying()) {
+        			target.setFlySpeed(speed);
+            		sender.sendMessage(Main.prefix() + "You set your flying speed to §6" + orgspeed + "§7.");
+        		} else {
+        			target.setWalkSpeed(speed);
+        			sender.sendMessage(Main.prefix() + "You set your walking speed to §6" + orgspeed + "§7.");
+        		}
         	}
 		}
 		return true;
