@@ -17,8 +17,14 @@ public class Settings {
 	private static Settings instance = new Settings(); 
 	private Settings() {}   
 	
+	private FileConfiguration config;
+	private File cfile;
+	
 	private FileConfiguration data;
 	private File dfile;
+	
+	private FileConfiguration hof;
+	private File hfile;
 
 	/**
 	 * Gets the instance of the class.
@@ -36,11 +42,25 @@ public class Settings {
 		if (!p.getDataFolder().exists()) {
 			p.getDataFolder().mkdir();
 		}
-               
+        
+		cfile = new File(p.getDataFolder(), "config.yml");
+	        
+		if (!cfile.exists()) {
+			Bukkit.getLogger().info("§a[UHC] Could not find config.yml file, creating...");
+			try {
+				cfile.createNewFile();
+				Bukkit.getLogger().info("§a[UHC] File created.");
+			} catch (IOException ex) {
+				Bukkit.getServer().getLogger().severe(ChatColor.RED + "Could not create config.yml!");
+			}
+		}
+	        
+		config = YamlConfiguration.loadConfiguration(cfile);
+	    
 		dfile = new File(p.getDataFolder(), "data.yml");
-               
+		    
 		if (!dfile.exists()) {
-			Bukkit.getLogger().info("§a[UHC] Could not find config file, creating...");
+			Bukkit.getLogger().info("§a[UHC] Could not find data.yml file, creating...");
 			try {
 				dfile.createNewFile();
 				Bukkit.getLogger().info("§a[UHC] File created.");
@@ -48,14 +68,55 @@ public class Settings {
 				Bukkit.getServer().getLogger().severe(ChatColor.RED + "Could not create data.yml!");
 			}
 		}
-               
+		    
 		data = YamlConfiguration.loadConfiguration(dfile);
+               
+		hfile = new File(p.getDataFolder(), "hof.yml");
+               
+		if (!hfile.exists()) {
+			Bukkit.getLogger().info("§a[UHC] Could not find hof.yml file, creating...");
+			try {
+				hfile.createNewFile();
+				Bukkit.getLogger().info("§a[UHC] File created.");
+			} catch (IOException ex) {
+				Bukkit.getServer().getLogger().severe(ChatColor.RED + "Could not create hof.yml!");
+			}
+		}
+               
+		hof = YamlConfiguration.loadConfiguration(hfile);
 		Bukkit.getLogger().info("§a[UHC] Configs has been setup.");
 	}
     
 	/**
-	 * Gets the data config.
-	 * @return the config.
+	 * Gets the config file.
+	 * @return the file.
+	 */
+	public FileConfiguration getConfig() {
+		return config;
+	}
+    
+	/**
+	 * Saves the data config.
+	 */
+	public void saveConfig() {
+		try {
+			config.save(cfile);
+		} catch (IOException ex) {
+			Bukkit.getServer().getLogger().severe(ChatColor.RED + "Could not save config.yml!");
+		}
+	}
+    
+	/**
+	 * Reloads the config file.
+	 */
+	public void reloadConfig() {
+		config = YamlConfiguration.loadConfiguration(cfile);
+		Bukkit.getLogger().info("§a[UHC] Config has been reloaded.");
+	}
+    
+	/**
+	 * Gets the data file.
+	 * @return the file.
 	 */
 	public FileConfiguration getData() {
 		return data;
@@ -77,6 +138,33 @@ public class Settings {
 	 */
 	public void reloadData() {
 		data = YamlConfiguration.loadConfiguration(dfile);
-		Bukkit.getLogger().info("§a[UHC] Config has been reloaded.");
+		Bukkit.getLogger().info("§a[UHC] Data has been reloaded.");
+	}
+    
+	/**
+	 * Gets the hof file.
+	 * @return the file.
+	 */
+	public FileConfiguration getHOF() {
+		return hof;
+	}
+    
+	/**
+	 * Saves the hof config.
+	 */
+	public void saveHOF() {
+		try {
+			hof.save(hfile);
+		} catch (Exception ex) {
+			Bukkit.getServer().getLogger().severe(ChatColor.RED + "Could not save hof.yml!");
+		}
+	}
+    
+	/**
+	 * Reloads the hof file.
+	 */
+	public void reloadHOF() {
+		hof = YamlConfiguration.loadConfiguration(hfile);
+		Bukkit.getLogger().info("§a[UHC] HOF has been reloaded.");
 	}
 }
