@@ -55,7 +55,8 @@ public class ServerUtils {
 			} else {
 				return "rTo" + Main.teamSize;
 			}
+		} else {
+			return "To" + Main.teamSize;
 		}
-		return "To" + Main.teamSize;
 	}
 }
