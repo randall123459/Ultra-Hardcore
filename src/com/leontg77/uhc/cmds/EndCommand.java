@@ -1,6 +1,5 @@
 package com.leontg77.uhc.cmds;
 
-import org.bukkit.Achievement;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -54,11 +53,6 @@ public class EndCommand implements CommandExecutor {
 					online.getInventory().clear();
 					online.getInventory().setArmorContents(null);
 					online.setItemOnCursor(new ItemStack (Material.AIR));
-					for (Achievement ach : Achievement.values()) {
-						if (online.hasAchievement(ach)) {
-							online.removeAchievement(ach);
-						}
-					}
 					for (PotionEffect effect : online.getActivePotionEffects()) {
 						online.removePotionEffect(effect.getType());	
 					}
