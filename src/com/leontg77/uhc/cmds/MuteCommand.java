@@ -7,22 +7,24 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import com.leontg77.uhc.Data;
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.util.PlayerUtils;
  
 public class MuteCommand implements CommandExecutor {
 
-	public boolean onCommand(CommandSender player, Command cmd, String label, final String[] args) {
+	public boolean onCommand(CommandSender player, Command cmd, String label, String[] args) {
 		if (cmd.getName().equalsIgnoreCase("mute")) {
 			if (player.hasPermission("uhc.mute")) {
 				if (args.length == 0) {
-					if (Main.mute.contains("a")) {
-						Main.mute.remove("a");
-						PlayerUtils.broadcast(Main.prefix() + "Global chat enabled.");
+					if (Main.muted) {
+						Main.muted = false;
+						PlayerUtils.broadcast(Main.prefix() + "The chat has been enabled.");
 						return true;
 					} 
-					PlayerUtils.broadcast(Main.prefix() + "Global chat disabled.");
-					Main.mute.add("a");
+					
+					PlayerUtils.broadcast(Main.prefix() + "The chat has been disabled.");
+					Main.muted = true;
 					return true;
 				}
 				
@@ -32,14 +34,19 @@ public class MuteCommand implements CommandExecutor {
 					player.sendMessage(ChatColor.RED + "That player is not online.");
 					return true;
 				}
+				
+				Data data = Data.getData(target);
 	
-				if (Main.mute.contains(target.getName())) {
-					Main.mute.remove(target.getName());
+				if (data.isMuted()) {
+					data.setMuted(false);
 					player.sendMessage(Main.prefix() + target.getName() + " unmuted.");
+					target.sendMessage(Main.prefix() + "You are no longer muted.");
 					return true;
 				} 
+				
 				player.sendMessage(Main.prefix() + target.getName() + " muted");
-				Main.mute.add(target.getName());
+				target.sendMessage(Main.prefix() + "You have been muted.");
+				data.setMuted(true);
 			} else {
 				player.sendMessage(ChatColor.RED + "You do not have access to that command.");
 			}

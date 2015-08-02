@@ -5,10 +5,10 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Player;
 
 import com.leontg77.uhc.Main;
+import com.leontg77.uhc.util.NumberUtils;
 
 public class HealthCommand implements CommandExecutor {
 
@@ -26,15 +26,10 @@ public class HealthCommand implements CommandExecutor {
 				return true;
 			}
 			
-			Damageable damage = target;
-			double health = damage.getHealth();
-			double hearts = health / 2;
-			double precent = hearts * 10;
-			double maxhealth = damage.getMaxHealth();
-			double maxhearts = maxhealth / 2;
-			double maxprecent = maxhearts * 10;
+			double health = target.getHealth();
+			double maxhealth = target.getMaxHealth();
 
-			sender.sendMessage(Main.prefix(ChatColor.GOLD) + target.getName() + " §7is at §6" + ((int) precent) + "%" + (maxprecent == 100 ? "" : " §7out of maximum §6" + ((int) maxprecent) + "%"));
+			sender.sendMessage(Main.prefix(ChatColor.GOLD) + target.getName() + " §7is at §6" + NumberUtils.makePercent(health) + "%" + (maxhealth == 20 ? "" : " §7out of maximum §6" + ((int) NumberUtils.makePercent(maxhealth)) + "%"));
 		}
 		return true;
 	}

@@ -12,7 +12,7 @@ import com.leontg77.uhc.Main;
 
 public class TlCommand implements CommandExecutor {
 
-	public boolean onCommand(CommandSender sender, Command cmd, String label, final String[] args) {
+	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (!(sender instanceof Player)) {
 			sender.sendMessage(ChatColor.RED + "Only players can display their location to their.");
 			return true;

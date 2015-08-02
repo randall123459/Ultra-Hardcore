@@ -144,7 +144,7 @@ public class WhitelistCommand implements CommandExecutor, TabCompleter {
 		        	if (args[0].equalsIgnoreCase("add")) {
 			        	if (!args[1].equals("")) {
 			        		for (Player online : PlayerUtils.getPlayers()) {
-			        			if (online.getName().toLowerCase().startsWith(args[0].toLowerCase())) {
+			        			if (online.getName().toLowerCase().startsWith(args[1].toLowerCase())) {
 			        				if (!online.isWhitelisted()) {
 				        				arg.add(online.getName());
 			        				}
@@ -162,7 +162,7 @@ public class WhitelistCommand implements CommandExecutor, TabCompleter {
 		        	else if (args[0].equalsIgnoreCase("remove")) {
 			        	if (!args[1].equals("")) {
 			        		for (OfflinePlayer whitelisted : Bukkit.getServer().getWhitelistedPlayers()) {
-			        			if (whitelisted.getName().toLowerCase().startsWith(args[0].toLowerCase())) {
+			        			if (whitelisted.getName().toLowerCase().startsWith(args[1].toLowerCase())) {
 			        				arg.add(whitelisted.getName());
 			        			}
 			        		}

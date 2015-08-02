@@ -22,6 +22,10 @@ public class ListCommand implements CommandExecutor {
 	    	int p = 0;
 	    		
 	    	for (int i = 0; i < players.size(); i++) {
+	    		if (sender instanceof Player && !((Player) sender).canSee(players.get(i))) {
+	    			continue;
+	    		}
+	    		
 				if (onlineList.length() > 0 && i == players.size() - 1) {
 					onlineList.append(" §7and §f");
 				}

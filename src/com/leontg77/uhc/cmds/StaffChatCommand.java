@@ -10,7 +10,7 @@ import com.leontg77.uhc.util.PlayerUtils;
 
 public class StaffChatCommand implements CommandExecutor {
 
-	public boolean onCommand(CommandSender sender, Command cmd, String label, final String[] args) {
+	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (cmd.getName().equalsIgnoreCase("ac")) {
 			if (sender.hasPermission("uhc.staff")) {
 				if (args.length == 0) {

@@ -12,7 +12,7 @@ import com.leontg77.uhc.util.PlayerUtils;
 
 public class SetmaxhealthCommand implements CommandExecutor {
 
-	public boolean onCommand(CommandSender sender, Command cmd, String label, final String[] args) {
+	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (cmd.getName().equalsIgnoreCase("setmaxhealth")) {
 			if (sender.hasPermission("uhc.setmaxhealth")) {
 				if (args.length == 0) {

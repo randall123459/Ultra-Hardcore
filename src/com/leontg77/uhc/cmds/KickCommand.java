@@ -19,8 +19,6 @@ public class KickCommand implements CommandExecutor {
 					sender.sendMessage(ChatColor.RED + "Usage: /kick <player> <reason>");
 					return true;
 				}
-		    	
-		    	Player target = Bukkit.getServer().getPlayer(args[0]);
 							
 				StringBuilder reason = new StringBuilder("");
 					
@@ -28,30 +26,27 @@ public class KickCommand implements CommandExecutor {
 					reason.append(args[i]).append(" ");
 				}
 						
-				String msg = reason.toString().trim().trim();
+				String msg = reason.toString().trim();
 
 				if (args[0].equals("*")) {
 					for (Player online : PlayerUtils.getPlayers()) {
 						if (!online.hasPermission("uhc.prelist")) {
 					    	online.kickPlayer(msg);
 						}
-						if (online.hasPermission("uhc.admin")) {
-				    		online.sendMessage(Main.prefix() + "§7All players has been kicked for §6" + msg);
-			    		}
+						
+				    	PlayerUtils.broadcast(Main.prefix() + "§7All players has been kicked for §6" + msg, "uhc.admin");
 					}
 					return true;
 				}
+		    	
+		    	Player target = Bukkit.getServer().getPlayer(args[0]);
 				
 		    	if (target == null) {
 		    		sender.sendMessage(ChatColor.RED + "That player is not online.");
 		            return true;
 				}
 		    	
-		    	for (Player online : PlayerUtils.getPlayers()) {
-		    		if (online.hasPermission("uhc.admin")) {
-			    		online.sendMessage(Main.prefix() + "§6" + args[0] + " §7has been kicked for §6" + msg);
-		    		}
-		    	}
+		    	PlayerUtils.broadcast(Main.prefix() + "§6" + args[0] + " §7has been kicked for §6" + msg, "uhc.admin");
 		    	target.kickPlayer(msg);
 			} else {
 				sender.sendMessage(ChatColor.RED + "You do not have access to that command.");

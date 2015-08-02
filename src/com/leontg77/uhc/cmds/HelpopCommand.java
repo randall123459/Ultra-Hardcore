@@ -36,7 +36,7 @@ public class HelpopCommand implements CommandExecutor {
 			
 			String msg = ChatColor.translateAlternateColorCodes('&', sb.toString().trim());
 
-			PlayerUtils.broadcast(Main.prefix().replaceAll("UHC", "HelpOp") + "§7" + sender.getName() + "§7: §6" + msg);
+			PlayerUtils.broadcast(Main.prefix().replaceAll("UHC", "HelpOp") + "§7" + sender.getName() + "§7: §6" + msg, "uhc.staff");
 			for (Player online : PlayerUtils.getPlayers()) {
 				if (online.hasPermission("uhc.staff")) {
 					online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 1);
@@ -48,7 +48,7 @@ public class HelpopCommand implements CommandExecutor {
 				public void run() {
 					cooldown.remove(sender);
 				}
-			}, 150);
+			}, 100);
 		}
 		return true;
 	}

@@ -12,9 +12,9 @@ import com.leontg77.uhc.Settings;
 public class SetspawnCommand implements CommandExecutor {
 	private Settings settings = Settings.getInstance();
 	
-	public boolean onCommand(CommandSender sender, Command cmd, String label, final String[] args) {
+	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (!(sender instanceof Player)) {
-			sender.sendMessage(ChatColor.RED + "Only players can set the spawn.");
+			sender.sendMessage(ChatColor.RED + "Only players can set the spawn point.");
 			return true;
 		}
 		
@@ -29,7 +29,8 @@ public class SetspawnCommand implements CommandExecutor {
 				settings.getData().set("spawn.yaw", player.getLocation().getYaw());
 				settings.getData().set("spawn.pitch", player.getLocation().getPitch());
 		        settings.saveData();
-		        player.sendMessage(Main.prefix() + "You have set the lobby spawn.");
+		        
+		        player.sendMessage(Main.prefix() + "You have set the spawnpoint.");
 		        return true;
 			} else {
 				player.sendMessage(ChatColor.RED + "You do not have access to that command.");

@@ -1,18 +1,14 @@
 package com.leontg77.uhc.cmds;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabCompleter;
 
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.util.PlayerUtils;
 
-public class VoteCommand implements CommandExecutor, TabCompleter {
+public class VoteCommand implements CommandExecutor {
 	public static boolean vote = false;
 	public static int yes = 0;
 	public static int no = 0;
@@ -51,30 +47,5 @@ public class VoteCommand implements CommandExecutor, TabCompleter {
 			}
 		}
 		return true;
-	}
-	
-	public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {
-		if (cmd.getName().equalsIgnoreCase("vote")) {
-			if (args.length == 1) {
-	        	ArrayList<String> arg = new ArrayList<String>();
-	        	ArrayList<String> types = new ArrayList<String>();
-	        	types.add("end");
-	        	
-	        	if (!args[0].equals("")) {
-	        		for (String type : types) {
-	        			if (type.startsWith(args[0].toLowerCase())) {
-	        				arg.add(type);
-	        			}
-	        		}
-	        	}
-	        	else {
-	        		for (String type : types) {
-	        			arg.add(type);
-	        		}
-	        	}
-	        	return arg;
-	        }
-		}
-		return null;
 	}
 }

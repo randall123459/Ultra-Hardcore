@@ -2,6 +2,7 @@ package com.leontg77.uhc.cmds;
 
 import java.util.ArrayList;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -23,16 +24,16 @@ public class RandomCommand implements CommandExecutor {
 					return true;
 				}
 				
+				int size = 1;
+				
+				try {
+					size = Integer.parseInt(args[0]);
+				} catch (Exception e) {
+					sender.sendMessage(ChatColor.RED + "Invaild team.");
+					return true;
+				}
+				
 				if (args.length == 1) {
-					int size = 1;
-					
-					try {
-						size = Integer.parseInt(args[0]);
-					} catch (Exception e) {
-						sender.sendMessage(ChatColor.RED + "Invaild team.");
-						return true;
-					}
-					
 					ArrayList<Player> a = new ArrayList<Player>();
 					
 					for (Player online : PlayerUtils.getPlayers()) {
@@ -55,22 +56,24 @@ public class RandomCommand implements CommandExecutor {
 						return true;
 					}
 					
-					for (int i = 0; i < size; i++) {
-						Player p = a.get(i);
-						t.addEntry(p.getName());
-						p.sendMessage(Main.prefix() + "You were added to team " + t.getName());
+					try {
+						for (int i = 0; i < size; i++) {
+							if (a.size() < i) {
+								sender.sendMessage(ChatColor.RED + "Could not add a player to team " + t.getName() + ".");
+								continue;
+							}
+							
+							Player p = a.get(i);
+							t.addEntry(p.getName());
+							p.sendMessage(Main.prefix() + "You were added to team " + t.getName());
+						}
+					} catch (Exception e) {
+						sender.sendMessage(ChatColor.RED + "Not enough players for this team.");
 					}
 
-					sender.sendMessage(Main.prefix() + "Created a rTo" + size + " using team " + t.getName() + ".");
-					return true;
-				}
-				
-				int size = 1;
-				
-				try {
-					size = Integer.parseInt(args[0]);
-				} catch (Exception e) {
-					sender.sendMessage(ChatColor.RED + "Invaild team.");
+					if (t.getSize() > 0) {
+						sender.sendMessage(Main.prefix() + "Created a rTo" + size + " using team " + t.getName() + ".");
+					}
 					return true;
 				}
 				
@@ -83,8 +86,12 @@ public class RandomCommand implements CommandExecutor {
 				}
 				
 				for (int i = 1; i < args.length; i++) {
-					if (a.contains(args[i])) {
-						a.remove(args[i]);
+					Player target = Bukkit.getServer().getPlayer(args[i]);
+					
+					if (target != null) {
+						if (a.contains(target)) {
+							a.remove(target);
+						}
 					}
 				}
 
@@ -102,17 +109,24 @@ public class RandomCommand implements CommandExecutor {
 					return true;
 				}
 				
-				for (int i = 0; i < size; i++) {
-					if (a.size() < i) {
-						sender.sendMessage(ChatColor.RED + "Could not add a player to team " + t.getName() + ".");
-						continue;
+				try {
+					for (int i = 0; i < size; i++) {
+						if (a.size() < i) {
+							sender.sendMessage(ChatColor.RED + "Could not add a player to team " + t.getName() + ".");
+							continue;
+						}
+						
+						Player p = a.get(i);
+						t.addEntry(p.getName());
+						p.sendMessage(Main.prefix() + "You were added to team " + t.getName());
 					}
-					Player p = a.get(i);
-					t.addEntry(p.getName());
-					p.sendMessage(Main.prefix() + "You were added to team " + t.getName());
+				} catch (Exception e) {
+					sender.sendMessage(ChatColor.RED + "Not enough players for this team.");
 				}
-				
-				sender.sendMessage(Main.prefix() + "Created a rTo" + size + " using team " + t.getName() + ".");
+
+				if (t.getSize() > 0) {
+					sender.sendMessage(Main.prefix() + "Created a rTo" + size + " using team " + t.getName() + ".");
+				}
 			} else {
 				sender.sendMessage(ChatColor.RED + "You do not have access to that command.");
 			}

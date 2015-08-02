@@ -23,7 +23,7 @@ public class InvseeCommand implements CommandExecutor {
 		if (cmd.getName().equalsIgnoreCase("invsee")) {
 			if (player.hasPermission("uhc.invsee") || Main.spectating.contains(player.getName())) {
 				if (args.length == 0) {
-		    		player.sendMessage(ChatColor.RED + "Usage: /invsee <player> [armor]");
+		    		player.sendMessage(ChatColor.RED + "Usage: /invsee <player>");
 		    		return true;
 				}
 				

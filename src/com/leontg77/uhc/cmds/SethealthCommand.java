@@ -13,7 +13,7 @@ import com.leontg77.uhc.util.PlayerUtils;
 
 public class SethealthCommand implements CommandExecutor {
 
-	public boolean onCommand(CommandSender sender, Command cmd, String label, final String[] args) {
+	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (cmd.getName().equalsIgnoreCase("sethealth")) {
 			if (sender.hasPermission("uhc.sethealth")) {
 				if (args.length == 0) {

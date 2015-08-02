@@ -11,7 +11,7 @@ import com.leontg77.uhc.Main;
 
 public class TpCommand implements CommandExecutor {
 
-	public boolean onCommand(CommandSender sender, Command cmd, String label, final String[] args) {
+	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (cmd.getName().equalsIgnoreCase("tp")) {
 			if (sender.hasPermission("uhc.tp") || Main.spectating.contains(sender.getName())) {
 				if (args.length == 0) {

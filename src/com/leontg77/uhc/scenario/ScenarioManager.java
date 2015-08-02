@@ -11,6 +11,7 @@ import com.leontg77.uhc.scenario.types.Barebones;
 import com.leontg77.uhc.scenario.types.BestBTC;
 import com.leontg77.uhc.scenario.types.BestPvE;
 import com.leontg77.uhc.scenario.types.BetaZombies;
+import com.leontg77.uhc.scenario.types.BiomeParanoia;
 import com.leontg77.uhc.scenario.types.BlockRush;
 import com.leontg77.uhc.scenario.types.BloodDiamonds;
 import com.leontg77.uhc.scenario.types.Captains;
@@ -76,6 +77,7 @@ public class ScenarioManager {
 		scen.add(new BestBTC());
 		scen.add(new BestPvE());
 		scen.add(new BetaZombies());
+		scen.add(new BiomeParanoia());
 		scen.add(new BlockRush());
 		scen.add(new BloodDiamonds());
 		/* TODO: Test */ scen.add(new Captains());
@@ -153,6 +155,20 @@ public class ScenarioManager {
 		ArrayList<Scenario> l = new ArrayList<Scenario>();
 		for (Scenario s : scen) {
 			if (s.isEnabled()) {
+				l.add(s);
+			}
+		}
+		return l;
+	}
+
+	/**
+	 * Get a list of all enabled scenarios.
+	 * @return the list of enabled scenarios.
+	 */
+	public List<Scenario> getDisabledScenarios() {
+		ArrayList<Scenario> l = new ArrayList<Scenario>();
+		for (Scenario s : scen) {
+			if (!s.isEnabled()) {
 				l.add(s);
 			}
 		}

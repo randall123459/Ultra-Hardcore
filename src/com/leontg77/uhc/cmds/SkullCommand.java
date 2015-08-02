@@ -13,7 +13,7 @@ import com.leontg77.uhc.Main;
 
 public class SkullCommand implements CommandExecutor {
 
-	public boolean onCommand(CommandSender sender, Command cmd, String label, final String[] args) {
+	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (!(sender instanceof Player)) {
 			sender.sendMessage(ChatColor.RED + "Only players can spawn player heads.");
 		}
@@ -32,7 +32,7 @@ public class SkullCommand implements CommandExecutor {
 				meta.setOwner(args[0]);
 				head.setItemMeta(meta);
 				player.getInventory().addItem(head);
-				player.sendMessage(Main.prefix() + "You've been given the head of §6" + args[0] + "§7.");
+				player.sendMessage(Main.prefix() + "You've been given the head of §a" + args[0] + "§7.");
 			} else {
 				player.sendMessage(ChatColor.RED + "You do not have access to that command.");
 			}

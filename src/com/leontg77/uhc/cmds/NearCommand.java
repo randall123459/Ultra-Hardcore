@@ -12,7 +12,7 @@ import com.leontg77.uhc.util.PlayerUtils;
 
 public class NearCommand implements CommandExecutor {
 
-	public boolean onCommand(CommandSender sender, Command cmd, String label, final String[] args) {
+	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (!(sender instanceof Player)) {
 			sender.sendMessage(ChatColor.RED + "Only players can check whos near them.");
 			return true;

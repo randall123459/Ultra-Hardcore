@@ -62,7 +62,7 @@ public class TimerCommand implements CommandExecutor, TabCompleter {
 		}
 	};
 	
-	public boolean onCommand(final CommandSender sender, Command cmd, String label,String[] args) {
+	public boolean onCommand(final CommandSender sender, Command cmd, String label, String[] args) {
 		if (cmd.getName().equalsIgnoreCase("timer")) {
 			if (sender.hasPermission("uhc.timer")) {
 				if (args.length == 0) {
