@@ -52,6 +52,7 @@ import org.bukkit.util.Vector;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
 
 import com.leontg77.uhc.Arena;
+import com.leontg77.uhc.Data;
 import com.leontg77.uhc.InvGUI;
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.Main.State;
@@ -75,11 +76,12 @@ public class PlayerListener implements Listener {
 		Player player = event.getPlayer();
 		event.setJoinMessage(null);
 		
+		Data data = Data.getData(player);
+		data.getFile().set("username", player.getName());
+		data.saveFile();
+		
 		Spectator.getManager().hideAll(player);
 		PlayerUtils.setTabList(player);
-		
-		player.setFlySpeed(0.1f);
-		player.setWalkSpeed(0.2f);
 		
 		if (Main.relog.containsKey(player.getName())) {
 			Main.relog.get(player.getName()).cancel();
@@ -120,7 +122,7 @@ public class PlayerListener implements Listener {
 				player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 1000000, 6));
 			}
 			player.teleport(SpreadCommand.scatterLocs.get(player.getName()));
-			PlayerUtils.broadcast(Main.prefix() + " - §a" + player.getName() + " §7scheduled scatter.");
+			PlayerUtils.broadcast(Main.prefix() + "- §a" + player.getName() + " §7scheduled scatter.");
 			SpreadCommand.scatterLocs.remove(player.getName());
 		}
 		
@@ -277,6 +279,7 @@ public class PlayerListener implements Listener {
 	@EventHandler(priority = EventPriority.HIGH)
     public void onAsyncPlayerChat(AsyncPlayerChatEvent event) {
 		Player player = event.getPlayer();
+		Data data = Data.getData(player);
 		
 		if (VoteCommand.vote) {
 			if (event.getMessage().equalsIgnoreCase("y")) {
@@ -336,12 +339,13 @@ public class PlayerListener implements Listener {
 				if (settings.getData().getString("game.host").equals(player.getName())) {
 					PlayerUtils.broadcast("§3§lHost §8| §f" + (team != null ? (team.getName().equals("spec") ? player.getName() : team.getPrefix() + player.getName()) : player.getName()) + "§8 » §f" + event.getMessage());
 				} else {
-					if (Main.mute.contains("a")) {
+					if (Main.muted) {
 						player.sendMessage(Main.prefix() + "All players are muted.");
 						event.setCancelled(true);
 						return;
 					}
-					if (Main.mute.contains(player.getName())) {
+					
+					if (data.isMuted()) {
 						player.sendMessage(Main.prefix() + "You have been muted.");
 						event.setCancelled(true);
 						return;
@@ -353,12 +357,12 @@ public class PlayerListener implements Listener {
 				if (settings.getData().getString("game.host").equals(player.getName())) {
 					PlayerUtils.broadcast("§4§lHost §8| §f" + (team != null ? (team.getName().equals("spec") ? player.getName() : team.getPrefix() + player.getName()) : player.getName()) + "§8 » §f" + event.getMessage());
 				} else {
-					if (Main.mute.contains("a")) {
+					if (Main.muted) {
 						player.sendMessage(Main.prefix() + "All players are muted.");
 						event.setCancelled(true);
 						return;
 					}
-					if (Main.mute.contains(player.getName())) {
+					if (data.isMuted()) {
 						player.sendMessage(Main.prefix() + "You have been muted.");
 						event.setCancelled(true);
 						return;
@@ -369,12 +373,13 @@ public class PlayerListener implements Listener {
 			}
 		}
 		else if (PermissionsEx.getUser(player).inGroup("Staff")) {
-			if (Main.mute.contains("a")) {
+			if (Main.muted) {
 				player.sendMessage(Main.prefix() + "All players are muted.");
 				event.setCancelled(true);
 				return;
 			}
-			if (Main.mute.contains(player.getName())) {
+			
+			if (data.isMuted()) {
 				player.sendMessage(Main.prefix() + "You have been muted.");
 				event.setCancelled(true);
 				return;
@@ -384,12 +389,13 @@ public class PlayerListener implements Listener {
 			PlayerUtils.broadcast("§c§lStaff §8| §f" + (team != null ? (team.getName().equals("spec") ? player.getName() : team.getPrefix() + player.getName()) : player.getName()) + "§8 » §f" + event.getMessage());
 		}
 		else if (PermissionsEx.getUser(player).inGroup("VIP")) {
-			if (Main.mute.contains("a")) {
+			if (Main.muted) {
 				player.sendMessage(Main.prefix() + "All players are muted.");
 				event.setCancelled(true);
 				return;
 			}
-			if (Main.mute.contains(player.getName())) {
+			
+			if (data.isMuted()) {
 				player.sendMessage(Main.prefix() + "You have been muted.");
 				event.setCancelled(true);
 				return;
@@ -400,12 +406,12 @@ public class PlayerListener implements Listener {
 			PlayerUtils.broadcast("§5§lVIP §8| §f" + (team != null ? (team.getName().equals("spec") ? player.getName() : team.getPrefix() + player.getName()) : player.getName()) + "§8 » §f" + event.getMessage());
 		} 
 		else {
-			if (Main.mute.contains("a")) {
+			if (Main.muted) {
 				player.sendMessage(Main.prefix() + "All players are muted.");
 				event.setCancelled(true);
 				return;
 			}
-			if (Main.mute.contains(player.getName())) {
+			if (data.isMuted()) {
 				player.sendMessage(Main.prefix() + "You have been muted.");
 				event.setCancelled(true);
 				return;
@@ -611,6 +617,10 @@ public class PlayerListener implements Listener {
         
 		Player player = (Player) event.getWhoClicked();
 		ItemStack item = event.getCurrentItem();
+        
+		if (event.getInventory().getTitle().equals("Player Inventory")) {
+			event.setCancelled(true);
+		}
 		
 		if (!Main.spectating.contains(player.getName())) {
 			return;
