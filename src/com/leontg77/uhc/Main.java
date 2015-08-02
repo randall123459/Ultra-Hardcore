@@ -34,7 +34,6 @@ import com.leontg77.uhc.cmds.ButcherCommand;
 import com.leontg77.uhc.cmds.ClearInvCommand;
 import com.leontg77.uhc.cmds.ClearXpCommand;
 import com.leontg77.uhc.cmds.ConfigCommand;
-import com.leontg77.uhc.cmds.ConfigCommand.Border;
 import com.leontg77.uhc.cmds.EditCommand;
 import com.leontg77.uhc.cmds.EndCommand;
 import com.leontg77.uhc.cmds.FeedCommand;
@@ -65,7 +64,6 @@ import com.leontg77.uhc.cmds.SpeedCommand;
 import com.leontg77.uhc.cmds.SpreadCommand;
 import com.leontg77.uhc.cmds.StaffChatCommand;
 import com.leontg77.uhc.cmds.StartCommand;
-import com.leontg77.uhc.cmds.StartTimerCommand;
 import com.leontg77.uhc.cmds.TeamCommand;
 import com.leontg77.uhc.cmds.TimeLeftCommand;
 import com.leontg77.uhc.cmds.TimerCommand;
@@ -105,6 +103,7 @@ public class Main extends JavaPlugin {
 	public static boolean ghead;
 	public static boolean pearldmg;
 	public static boolean godapple;
+	public static boolean lightning;
 	
 	public static int flintrate;
 	public static int applerate;
@@ -123,7 +122,7 @@ public class Main extends JavaPlugin {
 		PluginDescriptionFile pdfFile = this.getDescription();
 		this.logger.info(pdfFile.getName() + " is now disabled.");
 		
-		settings.getData().set("game.currentstate", GameState.getState().name());
+		settings.getData().set("game.currentstate", State.getState().name());
 		settings.saveData();
 		plugin = null;
 	}
@@ -178,7 +177,6 @@ public class Main extends JavaPlugin {
 		getCommand("spread").setExecutor(new SpreadCommand());
 		getCommand("ac").setExecutor(new StaffChatCommand());
 		getCommand("start").setExecutor(new StartCommand());
-		getCommand("starttimer").setExecutor(new StartTimerCommand());
 		getCommand("team").setExecutor(new TeamCommand());
 		getCommand("timeleft").setExecutor(new TimeLeftCommand());
 		getCommand("timer").setExecutor(new TimerCommand());
@@ -195,13 +193,13 @@ public class Main extends JavaPlugin {
 		Teams.getManager().setupTeams();
 		Arena.getManager().setup();
 		
-		GameState.setState(GameState.valueOf(settings.getData().getString("game.currentstate")));
+		State.setState(State.valueOf(settings.getData().getString("game.currentstate")));
 		addGoldenHeads();
 		
 		ffa = settings.getData().getBoolean("game.ffa");
 		teamSize = settings.getData().getInt("game.teamsize");
 		
-		border = Border.valueOf(settings.getData().getString("options.border"));
+		/*border = Border.valueOf(settings.getData().getString("options.border"));*/
 		
 		absorption = settings.getData().getBoolean("options.absorb");
 		ghead = settings.getData().getBoolean("options.ghead");
@@ -219,7 +217,7 @@ public class Main extends JavaPlugin {
 		}
 		Bukkit.getLogger().info("§a[UHC] Scenario listeners are now setup.");
 		
-		if (GameState.isState(GameState.LOBBY)) {
+		if (State.isState(State.LOBBY)) {
 			File file = new File(Bukkit.getWorlds().get(0).getWorldFolder(), "playerdata");
 			File file2 = new File(Bukkit.getWorlds().get(0).getWorldFolder(), "stats");
 		
@@ -299,7 +297,7 @@ public class Main extends JavaPlugin {
 	 * Start the starting countdown.
 	 */
 	public static void startCountdown() {
-		GameState.setState(GameState.WAITING);
+		State.setState(State.SCATTER);
 		Runnables.timeToStart = 3;
 		countdown = new Runnables();
 		countdown.runTaskTimer(plugin, 20, 20);
@@ -349,5 +347,51 @@ public class Main extends JavaPlugin {
         Bukkit.getServer().addRecipe(goldenhead);
         res = goldenhead;
 		Bukkit.getLogger().info("§a[UHC] Golden heads recipe added.");
+	}
+	
+	/**
+	 * Border types enum class.
+	 * @author LeonTG77
+	 */
+	public enum Border {
+		
+		MEETUP, PVP, START;
+	}
+	
+	/**
+	 * The game state class.
+	 * @author LeonTG77
+	 */
+	public enum State {
+		LOBBY, SCATTER, INGAME;
+
+		private static State currentState;
+		
+		/**
+		 * Sets the current state to be #.
+		 * @param state the state setting it to.
+		 */
+		public static void setState(State state) {
+			State.currentState = state;
+			Settings.getInstance().getData().set("game.currentstate", state.name().toUpperCase());
+			Settings.getInstance().saveData();
+		}
+		
+		/**
+		 * Checks if the state is #.
+		 * @param state The state checking.
+		 * @return True if it's the given state.
+		 */
+		public static boolean isState(State state) {
+			return State.currentState == state;
+		}
+		
+		/**
+		 * Gets the current state.
+		 * @return The state
+		 */
+		public static State getState() {
+			return currentState;
+		}
 	}
 }
