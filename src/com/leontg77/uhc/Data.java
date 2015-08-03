@@ -7,9 +7,12 @@ import java.io.IOException;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+
+import com.leontg77.uhc.util.PlayerUtils;
 
 /**
  * Player data class.
@@ -30,6 +33,16 @@ public class Data {
 	public static Data getData(Player player) {
 		return new Data(player, player.getUniqueId().toString());
 	}
+
+	/**
+	 * Gets the data of a player.
+	 * @param player the player.
+	 * @return the data class.
+	 */
+	public static Data getData(OfflinePlayer player) {
+		return new Data(player.getPlayer(), player.getUniqueId().toString());
+	}
+	
 	/**
 	 * Constuctor for playerdata.
 	 * @param uuid the uuid of the player.
@@ -60,7 +73,6 @@ public class Data {
         this.player = player;
         
         if (creating) {
-        	config.set("username", player.getName());
         	config.set("firstjoined", System.currentTimeMillis());
         	config.set("rank", Rank.USER.name());
         	config.set("muted", false);
@@ -107,7 +119,22 @@ public class Data {
 	public void reloadFile() {
         config = YamlConfiguration.loadConfiguration(file);
 	}
+	
+	public void setRank(Rank rank) {
+		config.set("rank", rank.name());
+		saveFile();
+		
+		PlayerUtils.handlePermissions(player);
+	}
 
+	/**
+	 * Get the players rank.
+	 * @return the rank.
+	 */
+	public Rank getRank() {
+		return Rank.valueOf(config.getString("rank"));
+	}
+	
 	/**
 	 * Sets if the player is muted or not
 	 * @param mute mute the player.
