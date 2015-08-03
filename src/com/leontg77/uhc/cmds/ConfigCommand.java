@@ -317,10 +317,16 @@ public class ConfigCommand implements CommandExecutor, TabCompleter {
 					PlayerUtils.broadcast(Main.prefix() + "PvP is now §a" + pvp + "§7 minutes in.");
 					break;
 				case SCENARIOS:
-					settings.getConfig().set("game.scenarios", args[1]);
+					StringBuilder bu = new StringBuilder();
+											
+					for (int s = 1; s < args.length; s++) {
+						bu.append(args[s]).append(" ");
+					}
+					
+					settings.getConfig().set("game.scenarios", ChatColor.translateAlternateColorCodes('&', bu.toString().trim()));
 					settings.saveConfig();
 
-					sender.sendMessage(Main.prefix() + "You set the scenarios to §a" + args[1] + "§7.");
+					sender.sendMessage(Main.prefix() + "You set the scenarios to §a" + ChatColor.translateAlternateColorCodes('&', bu.toString().trim()) + "§7.");
 
 					for (Player online : PlayerUtils.getPlayers()) {
 						PlayerUtils.setTabList(online);
