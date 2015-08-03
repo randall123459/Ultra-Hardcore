@@ -81,6 +81,7 @@ public class PlayerListener implements Listener {
 		data.saveFile();
 		
 		Spectator.getManager().hideAll(player);
+		PlayerUtils.handlePermissions(player);
 		PlayerUtils.setTabList(player);
 		
 		if (Main.relog.containsKey(player.getName())) {
@@ -112,6 +113,14 @@ public class PlayerListener implements Listener {
 		if (!Main.spectating.contains(player.getName())) {
 			PlayerUtils.broadcast("§8[§a+§8] §7" + player.getName() + " has joined.");
 		}
+		
+		player.sendMessage("§8---------------------------");
+		player.sendMessage(" §8» §6Welcome to Ultra Hardcore");
+		player.sendMessage("§8---------------------------");
+		player.sendMessage(" §8» §aHost: §7" + Settings.getInstance().getConfig().getString("game.host"));
+		player.sendMessage(" §8» §aTeamsize: §7" + ServerUtils.getTeamSize());
+		player.sendMessage(" §8» §aGamemode: §7" + Settings.getInstance().getConfig().getString("game.scenarios"));
+		player.sendMessage("§8---------------------------");
 		
 		if (SpreadCommand.scatterLocs.containsKey(player.getName())) {
 			if (State.isState(State.SCATTER)) {
@@ -196,6 +205,9 @@ public class PlayerListener implements Listener {
 		
 		if (!Arena.getManager().isEnabled()) {
 			player.setWhitelisted(false);
+			Data data = Data.getData(player);
+			data.increaseStat("deaths");
+			
 			if (Main.deathlightning) {
 			    player.getWorld().strikeLightningEffect(player.getLocation());
 			}
@@ -230,6 +242,9 @@ public class PlayerListener implements Listener {
 			}
 			
 			Player killer = player.getKiller();
+
+			Data killerData = Data.getData(killer);
+			killerData.increaseStat("kills");
 
 	        Scoreboards.getManager().setScore(killer.getName(), Scoreboards.getManager().getScore(killer.getName()) + 1);
 			Scoreboards.getManager().resetScore(player.getName());
@@ -598,8 +613,12 @@ public class PlayerListener implements Listener {
         
 		Player player = (Player) event.getWhoClicked();
 		ItemStack item = event.getCurrentItem();
-        
+		
 		if (event.getInventory().getTitle().equals("Player Inventory")) {
+			event.setCancelled(true);
+		}
+		
+		if (event.getInventory().getTitle().equals("Ultra Hardcore Rules")) {
 			event.setCancelled(true);
 		}
 		
@@ -745,7 +764,7 @@ public class PlayerListener implements Listener {
 		}
 		
 		if (event.getItem().getType() == Material.GOLDEN_APPLE && event.getItem().getItemMeta().getDisplayName() != null && event.getItem().getItemMeta().getDisplayName().equals("§6Golden Head")) {
-			player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 25 + Settings.getInstance().getConfig().getInt("feature.goldenheads.heal"), 1));
+			player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 25 * (Settings.getInstance().getConfig().getInt("feature.goldenheads.heal") * 2), 1));
 		}
 	}
 	
