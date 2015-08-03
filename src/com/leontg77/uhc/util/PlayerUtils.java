@@ -187,4 +187,8 @@ public class PlayerUtils {
         connection.sendPacket(titlePacket);
         connection.sendPacket(subtitlePacket);
     }
+
+	public static void handlePermissions(Player player) {
+		
+	}
 }
