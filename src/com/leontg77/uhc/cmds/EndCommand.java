@@ -1,5 +1,7 @@
 package com.leontg77.uhc.cmds;
 
+import java.util.ArrayList;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -13,7 +15,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scoreboard.Team;
 
+import com.leontg77.uhc.Data;
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.Main.State;
 import com.leontg77.uhc.Runnables;
@@ -21,6 +25,8 @@ import com.leontg77.uhc.Scoreboards;
 import com.leontg77.uhc.Settings;
 import com.leontg77.uhc.Spectator;
 import com.leontg77.uhc.listeners.SpecInfoListener;
+import com.leontg77.uhc.util.PlayerUtils;
+import com.leontg77.uhc.util.ServerUtils;
 
 public class EndCommand implements CommandExecutor {
 	private Settings settings = Settings.getInstance();
@@ -28,6 +34,26 @@ public class EndCommand implements CommandExecutor {
 	public boolean onCommand(CommandSender sender, Command cmd,	String label, String[] args) {
 		if (cmd.getName().equalsIgnoreCase("end")) {
 			if (sender.hasPermission("uhc.end")) {
+				if (args.length < 2) {
+					sender.sendMessage(ChatColor.RED + "Usage: /end <kills> <winners...>");
+					return true;
+				}
+				
+				int kills;
+				
+				try {
+					kills = Integer.parseInt(args[0]);
+				} catch (Exception e) {
+					sender.sendMessage(ChatColor.RED + "Invaild kill amount.");
+					return true;
+				}
+				
+				ArrayList<String> winners = new ArrayList<String>();
+				
+				for (int i = 1; i < args.length; i++) {
+					winners.add(args[i]);
+				}
+				
 				World w = Bukkit.getServer().getWorld(settings.getData().getString("spawn.world"));
 				double x = settings.getData().getDouble("spawn.x");
 				double y = settings.getData().getDouble("spawn.y");
@@ -37,8 +63,39 @@ public class EndCommand implements CommandExecutor {
 				
 				Location loc = new Location(w, x, y, z, yaw, pitch);
 				
+				StringBuilder win = new StringBuilder();
+				
+				for (int i = 0; i < winners.size(); i++) {
+					if (win.length() > 0 && i == winners.size() - 1) {
+						win.append(" and ");
+					}
+					else if (win.length() > 0 && win.length() != winners.size()) {
+						win.append(", ");
+					}
+					
+					win.append(winners.get(i));
+				}
+				
+				Team team = Scoreboards.getManager().sb.getEntryTeam(args[0]);
+				
+				if (team != null) {
+					for (String entry : team.getEntries()) {
+						OfflinePlayer m8 = PlayerUtils.getOfflinePlayer(entry);
+						
+						Data data = Data.getData(m8);
+						data.increaseStat("wins");
+					}
+				} else {
+					for (String entry : winners) {
+						OfflinePlayer m9 = PlayerUtils.getOfflinePlayer(entry);
+						
+						Data data = Data.getData(m9);
+						data.increaseStat("wins");
+					}
+				}
+				
 				for (Player online : Bukkit.getServer().getOnlinePlayers()) {
-					online.sendMessage(Main.prefix() + "The UHC has been ended.");
+					online.sendMessage(Main.prefix() + "The UHC has ended, the winners are " + win.toString().trim() + " with " + kills + " kills.");
 					if (Main.spectating.contains(online.getName())) {
 						Spectator.getManager().set(online, false);
 					}
@@ -56,6 +113,22 @@ public class EndCommand implements CommandExecutor {
 					for (PotionEffect effect : online.getActivePotionEffects()) {
 						online.removePotionEffect(effect.getType());	
 					}
+					
+					String host = settings.getConfig().getString("game.host");
+					
+					if (!settings.getHOF().contains(host)) {
+						settings.getHOF().createSection(host);
+						settings.saveHOF();
+					}
+					
+					int id = settings.getHOF().getConfigurationSection(host).getKeys(false).size() + 1;
+					
+					settings.getHOF().set(host + "." + id + ".winners", win.toString().trim());
+					settings.getHOF().set(host + "." + id + ".kills", kills);
+					settings.getHOF().set(host + "." + id + ".teamsize", ServerUtils.getTeamSize());
+					settings.getHOF().set(host + "." + id + ".scenarios", settings.getConfig().getString("game.scenarios"));
+					settings.getHOF().set(host + "." + id + ".post", settings.getConfig().getString("matchpost"));
+					settings.saveHOF();
 				}
 				
 				for (String e : Scoreboards.getManager().kills.getScoreboard().getEntries()) {
