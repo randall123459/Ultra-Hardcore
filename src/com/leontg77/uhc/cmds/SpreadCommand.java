@@ -116,7 +116,7 @@ public class SpreadCommand implements CommandExecutor {
 								}
 							}
 						}
-					}, 10);
+					}, 30);
 					
 					Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Main.plugin, new Runnable() {
 						public void run() {
@@ -176,7 +176,7 @@ public class SpreadCommand implements CommandExecutor {
 								}
 							}.runTaskTimer(Main.plugin, 1, 1);
 						}
-					}, 20);
+					}, 60);
 				} else {
 					final Player target = Bukkit.getPlayer(args[2]);
 					
@@ -213,7 +213,7 @@ public class SpreadCommand implements CommandExecutor {
 								scatterLocs.put(target.getName(), loc.get(0));
 							}
 						}
-					}, 10);
+					}, 30);
 					
 					Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Main.plugin, new Runnable() {
 						public void run() {
@@ -236,7 +236,7 @@ public class SpreadCommand implements CommandExecutor {
 						
 							PlayerUtils.broadcast(Main.prefix() + "Scatter for §a" + target.getName() + "§7 finished.");
 						}
-					}, 20);
+					}, 60);
 				}
 			} else {
 				sender.sendMessage(ChatColor.RED + "You do not have access to that command.");
