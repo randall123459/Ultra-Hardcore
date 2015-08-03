@@ -14,9 +14,11 @@ import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import com.leontg77.uhc.Main.Border;
 import com.leontg77.uhc.util.DateUtils;
 import com.leontg77.uhc.util.NumberUtils;
 import com.leontg77.uhc.util.PlayerUtils;
+import com.leontg77.uhc.util.ServerUtils;
 
 /**
  * The inventory managing class.
@@ -115,7 +117,118 @@ public class InvGUI {
 		player.openInventory(inv);
 	}
 
+	/**
+	 * Open the rules inventory for a player
+	 * @param player the player
+	 */
 	public void openRules(Player player) {
+		Inventory inv = Bukkit.getServer().createInventory(null, 9, "Ultra Hardcore Rules");
 		
+		ItemStack general = new ItemStack (Material.SIGN);
+		ItemMeta generalMeta = general.getItemMeta();
+		generalMeta.setDisplayName("§6General Rules");
+		ArrayList<String> lore = new ArrayList<String>();
+		lore.add(" ");
+		lore.add("§aStarter food: §75 minutes of starter saturation.");
+		lore.add("§aSpoiling: §7Not allowed after you died.");
+		lore.add("§aSpamming: §7Mute, ban if excessive.");
+		lore.add("§aSwearing: §7Allowed unless it's done excessively.");
+		lore.add("§aTowering: §7Allowed, but come down at meetup.");
+		lore.add("§aForting: §7Allowed before meetup.");
+		lore.add("§aHorses: §7Enabled.");
+		lore.add("§aHorse Healing: §7Enabled.");
+		lore.add("§aHorse Armor: §7Enabled.");
+		lore.add(" ");
+		lore.add("§aAbsorption: §7" + (Main.absorption ? "Enabled." : "Disabled."));
+		lore.add("§aGolden Heads: §7" + (Main.goldenheads ? "Enabled, they heal " + Settings.getInstance().getConfig().getInt("feature.goldenheads.heal") + " hearts." : "Disabled."));
+		lore.add("§aPearl Damage: §7" + (Main.pearldamage ? "Enabled." : "Disabled."));
+		lore.add("§aNotch Apples: §7" + (Main.notchapples ? "Enabled." : "Disabled."));
+		lore.add("§aDeath Lightning: §7" + (Main.deathlightning ? "Enabled." : "Disabled."));
+		lore.add("§aBorder shrinks: §7" + (Main.border == Border.START ? "From " : "At ") + Main.border.name().toLowerCase() + ".");
+		lore.add(" ");
+		generalMeta.setLore(lore);
+		general.setItemMeta(generalMeta);
+		inv.setItem(0, general);
+
+		ItemStack mining = new ItemStack (Material.DIAMOND_PICKAXE);
+		ItemMeta miningMeta = mining.getItemMeta();
+		miningMeta.setDisplayName("§6Mining Rules");
+		ArrayList<String> lore2 = new ArrayList<String>();
+		lore2.add(" ");
+		lore2.add("§aStripmining: §7Allowed.");
+		lore2.add("§aBranchmining: §7Allowed.");
+		lore2.add("§aPokeholing: §7Allowed.");
+		lore2.add("§aBlastmining: §7Allowed.");
+		lore2.add("§aStaircasing: §7Allowed.");
+		lore2.add("§aRollercoastering: §7Allowed.");
+		lore2.add("§aDigging to sounds: §7Allowed.");
+		lore2.add("§aDigging to entities: §7Allowed.");
+		lore2.add("§aDigging to players: §7Only if you see them.");
+		lore2.add(" ");
+		miningMeta.setLore(lore2);
+		mining.setItemMeta(miningMeta);
+		inv.setItem(2, mining);
+		
+		ItemStack pvp = new ItemStack (Material.IRON_SWORD);
+		ItemMeta pvpMeta = pvp.getItemMeta();
+		pvpMeta.setDisplayName("§6PvP Rules");
+		ArrayList<String> lore3 = new ArrayList<String>();
+		lore3.add(" ");
+		lore3.add("§aiPvP: §7Not allowed before pvp.");
+		lore3.add("§aTeam Killing: §7" + (ServerUtils.getTeamSize().startsWith("r") ? "Not allowed." : "Allowed."));
+		lore3.add("§aStalking: §7Allowed.");
+		lore3.add("§aStealing: §7Allowed.");
+		lore3.add("§aCrossteaming: §7Not allowed, you will get banned.");
+		lore3.add(" ");
+		pvpMeta.setLore(lore3);
+		pvp.setItemMeta(pvpMeta);
+		inv.setItem(4, pvp);
+		
+		ItemStack nether = new ItemStack (Material.LAVA_BUCKET);
+		ItemMeta netherMeta = nether.getItemMeta();
+		netherMeta.setDisplayName("§6Nether Rules");
+		ArrayList<String> lore4 = new ArrayList<String>();
+		lore4.add(" ");
+		lore4.add("§aTrapping: §7Allowed.");
+		lore4.add("§aCamping: §7Allowed.");
+		lore4.add("§aStrength: §7" + (Main.nerfedStrength ? "Both tiers nerfed." : "Vanilla."));
+		lore4.add("§aTier 2: §7On for all potions.");
+		lore4.add("§aGhast Drop: §7" + (Main.ghastdrops ? "Gold ingot." : "Ghast tear."));
+		lore4.add(" ");
+		lore4.add("§aNether: §7" + (Main.nether ? "Enabled." : "Disabled."));
+		lore4.add("§aThe End: §7" + (Main.theend ? "Enabled." : "Disabled."));
+		lore4.add(" ");
+		netherMeta.setLore(lore4);
+		nether.setItemMeta(netherMeta);
+		inv.setItem(6, nether);
+		
+		ItemStack rates = new ItemStack (Material.APPLE);
+		ItemMeta otherMeta = rates.getItemMeta();
+		otherMeta.setDisplayName("§6Rates");
+		ArrayList<String> lore5 = new ArrayList<String>();
+		lore5.add(" ");
+		lore5.add("§aApple rates: §70.5%, " + (Main.shears ? "Shears work" : "Shears does not work") + ".");
+		lore5.add("§aFlintrates: §7" + Main.flintrate + "%.");
+		lore5.add("§aMob rates: §7Vanilla.");
+		lore5.add("§aOre rates: §7Vanilla.");
+		lore5.add("§aCave rates: §7Vanilla.");
+		lore5.add("§aWitch Potion: §7Increased.");
+		lore5.add(" ");
+		otherMeta.setLore(lore5);
+		rates.setItemMeta(otherMeta);
+		inv.setItem(8, rates);
+		
+		player.openInventory(inv);
+	}
+	
+	/**
+	 * Open the HOF inventory for a player
+	 * @param player the player
+	 * @param host who's hof it is.
+	 */
+	public void openHOF(Player player, String host) {
+		Inventory inv = Bukkit.getServer().createInventory(null, 54, host + "'s Hall of Fame");
+		
+		player.openInventory(inv);
 	}
 }
