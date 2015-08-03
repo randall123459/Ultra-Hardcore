@@ -142,7 +142,7 @@ public class PlayerUtils {
 	public static void setTabList(Player player) {
 		PlayerConnection connection = ((CraftPlayer) player).getHandle().playerConnection;
         IChatBaseComponent tabTitle = ChatSerializer.a("{text:'Ultra Hardcore',color:'dark_red',bold:'true'}");
-        IChatBaseComponent tabFoot = ChatSerializer.a("{text:'" + ServerUtils.getTeamSize() + " " + Settings.getInstance().getData().getString("motd") + "',color:'gray'}");
+        IChatBaseComponent tabFoot = ChatSerializer.a("{text:'" + ServerUtils.getTeamSize() + " " + Settings.getInstance().getConfig().getString("game.scenarios") + "',color:'gray'}");
         PacketPlayOutPlayerListHeaderFooter headerPacket = new PacketPlayOutPlayerListHeaderFooter(tabTitle);
  
         try {

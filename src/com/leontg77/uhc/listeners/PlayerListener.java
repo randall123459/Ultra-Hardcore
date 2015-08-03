@@ -196,11 +196,11 @@ public class PlayerListener implements Listener {
 		
 		if (!Arena.getManager().isEnabled()) {
 			player.setWhitelisted(false);
-			if (Main.lightning) {
+			if (Main.deathlightning) {
 			    player.getWorld().strikeLightningEffect(player.getLocation());
 			}
 
-		    if (Main.ghead) {
+		    if (Main.goldenheads) {
 				try {
 					Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Main.plugin, new Runnable() {
 						@SuppressWarnings("deprecation")
@@ -335,42 +335,23 @@ public class PlayerListener implements Listener {
     	
 		if (PermissionsEx.getUser(player).inGroup("Host")) {
 			Team team = player.getScoreboard().getEntryTeam(player.getName());
-			if (player.getUniqueId().toString().equals("02dc5178-f7ec-4254-8401-1a57a7442a2f")) {
-				if (settings.getData().getString("game.host").equals(player.getName())) {
-					PlayerUtils.broadcast("§3§lHost §8| §f" + (team != null ? (team.getName().equals("spec") ? player.getName() : team.getPrefix() + player.getName()) : player.getName()) + "§8 » §f" + event.getMessage());
-				} else {
-					if (Main.muted) {
-						player.sendMessage(Main.prefix() + "All players are muted.");
-						event.setCancelled(true);
-						return;
-					}
-					
-					if (data.isMuted()) {
-						player.sendMessage(Main.prefix() + "You have been muted.");
-						event.setCancelled(true);
-						return;
-					}
-
-					PlayerUtils.broadcast("§3§lCo-Host §8| §f" + (team != null ? (team.getName().equals("spec") ? player.getName() : team.getPrefix() + player.getName()) : player.getName()) + "§8 » §f" + event.getMessage());
-				}
+			
+			if (settings.getConfig().getString("game.host").equals(player.getName())) {
+				PlayerUtils.broadcast("§4§lHost §8| §f" + (team != null ? (team.getName().equals("spec") ? player.getName() : team.getPrefix() + player.getName()) : player.getName()) + "§8 » §f" + event.getMessage());
 			} else {
-				if (settings.getData().getString("game.host").equals(player.getName())) {
-					PlayerUtils.broadcast("§4§lHost §8| §f" + (team != null ? (team.getName().equals("spec") ? player.getName() : team.getPrefix() + player.getName()) : player.getName()) + "§8 » §f" + event.getMessage());
-				} else {
-					if (Main.muted) {
-						player.sendMessage(Main.prefix() + "All players are muted.");
-						event.setCancelled(true);
-						return;
-					}
-					if (data.isMuted()) {
-						player.sendMessage(Main.prefix() + "You have been muted.");
-						event.setCancelled(true);
-						return;
-					}
+				if (Main.muted) {
+					player.sendMessage(Main.prefix() + "All players are muted.");
+					event.setCancelled(true);
+					return;
+				}
+				if (data.isMuted()) {
+					player.sendMessage(Main.prefix() + "You have been muted.");
+					event.setCancelled(true);
+					return;
+				}
 
-					PlayerUtils.broadcast("§4§lCo-Host §8| §f" + (team != null ? (team.getName().equals("spec") ? player.getName() : team.getPrefix() + player.getName()) : player.getName()) + "§8 » §f" + event.getMessage());
-				}		
-			}
+				PlayerUtils.broadcast("§4§lCo-Host §8| §f" + (team != null ? (team.getName().equals("spec") ? player.getName() : team.getPrefix() + player.getName()) : player.getName()) + "§8 » §f" + event.getMessage());
+			}	
 		}
 		else if (PermissionsEx.getUser(player).inGroup("Staff")) {
 			if (Main.muted) {
@@ -543,7 +524,7 @@ public class PlayerListener implements Listener {
 			return;
 		}
 		
-		if (PlayerUtils.getPlayers().size() == settings.getData().getInt("maxplayers")) {
+		if (PlayerUtils.getPlayers().size() == settings.getConfig().getInt("maxplayers")) {
 			if (player.hasPermission("uhc.prelist")) {
 				event.allow();
 				return;
@@ -556,7 +537,7 @@ public class PlayerListener implements Listener {
 	
 	@EventHandler
 	public void onServerListPing(ServerListPingEvent event) {
-		String bm = ChatColor.translateAlternateColorCodes('&', settings.getData().getString("motd"));
+		String bm = ChatColor.translateAlternateColorCodes('&', settings.getConfig().getString("game.scenarios"));
 		
 		if (bm == null) {
 			event.setMotd(Bukkit.getMotd());
@@ -568,10 +549,10 @@ public class PlayerListener implements Listener {
 			}
 			
 			event.setMotd("§4§lUltra Hardcore §8- §71.8 §8- §a" + ServerUtils.getState() + "§r \n" + 
-			s.toString().trim() + "§8 - §4Host: §7" + Settings.getInstance().getData().getString("game.host"));
+			ChatColor.GOLD + ServerUtils.getTeamSize() + " " + s.toString().trim() + "§8 - §4Host: §7" + Settings.getInstance().getConfig().getString("game.host"));
 		}
 
-		int max = settings.getData().getInt("maxplayers");
+		int max = settings.getConfig().getInt("maxplayers");
 		
 		if (max == 0) {
 			event.setMaxPlayers(Bukkit.getMaxPlayers());
@@ -728,13 +709,13 @@ public class PlayerListener implements Listener {
 					return;
 				}
 				
-				if (!Main.ghead) {
+				if (!Main.goldenheads) {
 					event.getInventory().setResult(new ItemStack(Material.AIR));
 				}
 			}
 			
 			if (item.getDurability() == 1) {
-				if (!Main.godapple) {
+				if (!Main.notchapples) {
 					event.getInventory().setResult(new ItemStack(Material.AIR));
 				}
 			}
@@ -764,7 +745,7 @@ public class PlayerListener implements Listener {
 		}
 		
 		if (event.getItem().getType() == Material.GOLDEN_APPLE && event.getItem().getItemMeta().getDisplayName() != null && event.getItem().getItemMeta().getDisplayName().equals("§6Golden Head")) {
-			player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 200, 1));
+			player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 25 + Settings.getInstance().getConfig().getInt("feature.goldenheads.heal"), 1));
 		}
 	}
 	

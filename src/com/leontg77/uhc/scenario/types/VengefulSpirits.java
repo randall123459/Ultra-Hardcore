@@ -27,9 +27,9 @@ public class VengefulSpirits extends Scenario implements Listener {
 		enabled = enable;
 		
 		if (enable) {
-			Settings.getInstance().getData().set("options.ghead", false);
-			Settings.getInstance().saveData();
-			Main.ghead = false;
+			Settings.getInstance().getConfig().set("feature.goldenheads.enabled", false);
+			Settings.getInstance().saveConfig();
+			Main.goldenheads = false;
 		}
 	}
 

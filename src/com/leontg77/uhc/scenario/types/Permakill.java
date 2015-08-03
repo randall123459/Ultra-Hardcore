@@ -19,10 +19,10 @@ public class Permakill extends Scenario implements Listener {
 		enabled = enable;
 		
 		if (enable) {
-			Bukkit.getWorld(Settings.getInstance().getData().getString("game.world")).setGameRuleValue("doDaylightCycle", "false");
-			Bukkit.getWorld(Settings.getInstance().getData().getString("game.world")).setTime(6000);
+			Bukkit.getWorld(Settings.getInstance().getConfig().getString("game.world")).setGameRuleValue("doDaylightCycle", "false");
+			Bukkit.getWorld(Settings.getInstance().getConfig().getString("game.world")).setTime(6000);
 		} else {
-			Bukkit.getWorld(Settings.getInstance().getData().getString("game.world")).setGameRuleValue("doDaylightCycle", "true");
+			Bukkit.getWorld(Settings.getInstance().getConfig().getString("game.world")).setGameRuleValue("doDaylightCycle", "true");
 		}
 	}
 
@@ -36,10 +36,10 @@ public class Permakill extends Scenario implements Listener {
 			return;
 		}
 		
-		if (Bukkit.getWorld(Settings.getInstance().getData().getString("game.world")).getTime() == 6000) {
-			Bukkit.getWorld(Settings.getInstance().getData().getString("game.world")).setTime(18000);
+		if (Bukkit.getWorld(Settings.getInstance().getConfig().getString("game.world")).getTime() == 6000) {
+			Bukkit.getWorld(Settings.getInstance().getConfig().getString("game.world")).setTime(18000);
 		} else {
-			Bukkit.getWorld(Settings.getInstance().getData().getString("game.world")).setTime(6000);
+			Bukkit.getWorld(Settings.getInstance().getConfig().getString("game.world")).setTime(6000);
 		}
 	}
 }

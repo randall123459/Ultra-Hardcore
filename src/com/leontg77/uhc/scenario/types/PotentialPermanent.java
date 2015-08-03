@@ -30,8 +30,8 @@ public class PotentialPermanent extends Scenario implements Listener {
 				online.addPotionEffect(new PotionEffect(PotionEffectType.ABSORPTION, 1726272000, 4));
 				online.setMaxHealth(20.0);
 			}
-			Settings.getInstance().getData().set("options.absorb", true);
-			Settings.getInstance().saveData();
+			Settings.getInstance().getConfig().set("feature.absorption.enabled", true);
+			Settings.getInstance().saveConfig();
 			Main.absorption = true;
 		} else {
 			for (Player online : PlayerUtils.getPlayers()) {

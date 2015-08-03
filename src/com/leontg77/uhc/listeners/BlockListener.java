@@ -62,20 +62,22 @@ public class BlockListener implements Listener {
 			}
 		}
 		
-		if (block.getType() == Material.LEAVES || block.getType() == Material.LEAVES_2) {
-			try {
-				Tree tree = (Tree) event.getBlock().getState().getData();
-				if (tree.getSpecies() == TreeSpecies.GENERIC || tree.getSpecies() == TreeSpecies.DARK_OAK) {
-					Random r = new Random();
-					
-					if (player.getItemInHand() != null && player.getItemInHand().getType() == Material.SHEARS) {
-						if ((r.nextInt(99) + 1) <= Main.shearrate) {
-							event.getBlock().getWorld().dropItem(event.getBlock().getLocation(), new ItemStack(Material.APPLE, 1));
+		if (Main.shears) {
+			if (block.getType() == Material.LEAVES || block.getType() == Material.LEAVES_2) {
+				try {
+					Tree tree = (Tree) event.getBlock().getState().getData();
+					if (tree.getSpecies() == TreeSpecies.GENERIC || tree.getSpecies() == TreeSpecies.DARK_OAK) {
+						Random r = new Random();
+						
+						if (player.getItemInHand() != null && player.getItemInHand().getType() == Material.SHEARS) {
+							if ((r.nextInt(99) + 1) <= Main.shearrate) {
+								event.getBlock().getWorld().dropItem(event.getBlock().getLocation(), new ItemStack(Material.APPLE, 1));
+							}
 						}
 					}
+				} catch (ClassCastException localClassCastException) {
+					Bukkit.getLogger().warning(ChatColor.RED + "Could not shear leave for apple @ " + block.getLocation().toString());
 				}
-			} catch (ClassCastException localClassCastException) {
-				Bukkit.getLogger().warning(ChatColor.RED + "Could not shear leave for apple @ " + block.getLocation().toString());
 			}
 		}
     }
@@ -104,17 +106,21 @@ public class BlockListener implements Listener {
 
 	@EventHandler
     public void onPlayerPortal(PlayerPortalEvent event) {
-        Location to = PortalUtils.getPossiblePortalLocation(event.getPlayer(), event.getFrom(), event.getPortalTravelAgent());
-        if (to != null) {
-            event.setTo(to);
-        }
+		if (Main.nether) {
+	        Location to = PortalUtils.getPossiblePortalLocation(event.getPlayer(), event.getFrom(), event.getPortalTravelAgent());
+	        if (to != null) {
+	            event.setTo(to);
+	        }
+		}
     }
 
     @EventHandler
     public void onEntityPortal(EntityPortalEvent event) {
-        Location to = PortalUtils.getPossiblePortalLocation(event.getEntity(), event.getFrom(), event.getPortalTravelAgent());
-        if (to != null) {
-            event.setTo(to);
-        }
+		if (Main.nether) {
+	        Location to = PortalUtils.getPossiblePortalLocation(event.getEntity(), event.getFrom(), event.getPortalTravelAgent());
+	        if (to != null) {
+	            event.setTo(to);
+	        }
+		}
     }
 }

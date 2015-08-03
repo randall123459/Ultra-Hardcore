@@ -89,7 +89,7 @@ public class Runnables extends BukkitRunnable {
 						online.setLevel(0);
 						online.setExp(0);
 						
-						online.sendMessage(Main.prefix() + "Remember to read the match post: " + Settings.getInstance().getData().getString("match.post"));
+						online.sendMessage(Main.prefix() + "Remember to read the match post: " + Settings.getInstance().getConfig().getString("matchpost"));
 						online.sendMessage(Main.prefix() + "If you have any questions, use /helpop.");
 						PlayerUtils.sendTitle(online, "§aGo!", "§7Good luck have fun!", 1, 20, 1);
 					}
@@ -99,19 +99,19 @@ public class Runnables extends BukkitRunnable {
 					Scoreboards.getManager().setScore("§a§lPvE", 1);
 					Scoreboards.getManager().setScore("§a§lPvE", 0);
 					finalheal = 1;
-					pvp = Settings.getInstance().getData().getInt("game.pvp");
-					meetup = Settings.getInstance().getData().getInt("game.meetup");
+					pvp = Settings.getInstance().getConfig().getInt("time.pvp");
+					meetup = Settings.getInstance().getConfig().getInt("time.meetup");
 					Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer cancel");
 					Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer 60 &aFinal heal in:&7");
 					
 					for (World world : Bukkit.getWorlds()) {
-						world.setTime(0);
-						world.setDifficulty(Difficulty.HARD);
-						world.setPVP(false);
-
 						if (world.getName().equals("lobby") || world.getName().equals("arena")) {
 							continue;
 						}
+						
+						world.setTime(0);
+						world.setDifficulty(Difficulty.HARD);
+						world.setPVP(false);
 						
 						world.setGameRuleValue("doMobSpawning", "false");
 						world.setGameRuleValue("doDaylightCycle", "true");

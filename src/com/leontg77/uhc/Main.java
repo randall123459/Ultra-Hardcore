@@ -90,25 +90,28 @@ public class Main extends JavaPlugin {
 	private final Logger logger = Bukkit.getServer().getLogger();
 	private Settings settings = Settings.getInstance();
 	public static Main plugin;
-	
-	public static BukkitRunnable countdown;
-	public static boolean muted = false;
-	public static Recipe res;
 
-	public static Border border;
+	public static boolean muted = false;
+	public static BukkitRunnable countdown;
+	public static Recipe res;
 	
 	public static boolean ffa;
 	public static int teamSize;
-	
+
+	public static Border border;
 	public static boolean absorption;
-	public static boolean ghead;
-	public static boolean pearldmg;
-	public static boolean godapple;
-	public static boolean lightning;
-	
-	public static int flintrate;
-	public static int applerate;
+	public static boolean goldenheads;
+	public static boolean pearldamage;
+	public static boolean notchapples;
+	public static boolean deathlightning;
+	public static boolean nether;
+	public static boolean theend;
+	public static boolean ghastdrops;
+	public static boolean nerfedStrength;
+
+	public static boolean shears;
 	public static int shearrate;
+	public static int flintrate;
 	
 	public static ArrayList<String> spectating = new ArrayList<String>();
 	public static ArrayList<String> voted = new ArrayList<String>();
@@ -122,7 +125,7 @@ public class Main extends JavaPlugin {
 		PluginDescriptionFile pdfFile = this.getDescription();
 		this.logger.info(pdfFile.getName() + " is now disabled.");
 		
-		settings.getData().set("game.currentstate", State.getState().name());
+		settings.getData().set("state", State.getState().name());
 		settings.saveData();
 		plugin = null;
 	}
@@ -193,22 +196,26 @@ public class Main extends JavaPlugin {
 		Teams.getManager().setupTeams();
 		Arena.getManager().setup();
 		
-		State.setState(State.valueOf(settings.getData().getString("game.currentstate")));
+		State.setState(State.valueOf(settings.getData().getString("state")));
 		addRecipes();
 		
-		ffa = settings.getData().getBoolean("game.ffa");
-		teamSize = settings.getData().getInt("game.teamsize");
+		ffa = settings.getConfig().getBoolean("game.ffa");
+		teamSize = settings.getConfig().getInt("game.teamsize");
 		
-		/*border = Border.valueOf(settings.getData().getString("options.border"));*/
-		
-		absorption = settings.getData().getBoolean("options.absorb");
-		ghead = settings.getData().getBoolean("options.ghead");
-		pearldmg = settings.getData().getBoolean("options.pearldmg");
-		godapple = settings.getData().getBoolean("options.godapple");
-		
-		flintrate = settings.getData().getInt("game.flintrate");
-		applerate = settings.getData().getInt("game.applerate");
-		shearrate = settings.getData().getInt("game.shearrate");
+		border = Border.valueOf(settings.getConfig().getString("feature.border.shrinkAt"));
+		absorption = settings.getConfig().getBoolean("feature.absorption.enabled");
+		goldenheads = settings.getConfig().getBoolean("feature.goldenheads.enabled");
+		pearldamage = settings.getConfig().getBoolean("feature.pearldamage.enabled");
+		notchapples = settings.getConfig().getBoolean("feature.notchapples.enabled");
+		deathlightning = settings.getConfig().getBoolean("feature.deathlightning.enabled");
+		nether = settings.getConfig().getBoolean("feature.nether.enabled");
+		theend = settings.getConfig().getBoolean("feature.theend.enabled");
+		ghastdrops = settings.getConfig().getBoolean("feature.ghastdrops.enabled");
+		nerfedStrength = settings.getConfig().getBoolean("feature.nerfedStrength.enabled");
+
+		shears = settings.getConfig().getBoolean("rates.flint.enabled");
+		shearrate = settings.getConfig().getInt("rates.shears.rate");
+		flintrate = settings.getConfig().getInt("rates.flint.rate");
 		
 		Bukkit.getLogger().info("§a[UHC] Config values has been setup.");
 
@@ -378,7 +385,7 @@ public class Main extends JavaPlugin {
 		 */
 		public static void setState(State state) {
 			State.currentState = state;
-			Settings.getInstance().getData().set("game.currentstate", state.name().toUpperCase());
+			Settings.getInstance().getData().set("state", state.name().toUpperCase());
 			Settings.getInstance().saveData();
 		}
 		

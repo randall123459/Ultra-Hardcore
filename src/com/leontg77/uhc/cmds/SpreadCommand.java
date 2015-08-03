@@ -88,7 +88,7 @@ public class SpreadCommand implements CommandExecutor {
 							PlayerUtils.broadcast(Main.prefix() + "Finding scatter locations...");
 							
 							if (teams) {
-								List<Location> loc = ScatterUtils.getScatterLocations(Bukkit.getWorld(Settings.getInstance().getData().getString("game.world")), radius, te + so);
+								List<Location> loc = ScatterUtils.getScatterLocations(Bukkit.getWorld(Settings.getInstance().getConfig().getString("game.world")), radius, te + so);
 								
 								int index = 0;
 								
@@ -106,7 +106,7 @@ public class SpreadCommand implements CommandExecutor {
 									}
 								}
 							} else {
-								List<Location> loc = ScatterUtils.getScatterLocations(Bukkit.getWorld(Settings.getInstance().getData().getString("game.world")), radius, Bukkit.getServer().getWhitelistedPlayers().size());
+								List<Location> loc = ScatterUtils.getScatterLocations(Bukkit.getWorld(Settings.getInstance().getConfig().getString("game.world")), radius, Bukkit.getServer().getWhitelistedPlayers().size());
 							
 								int index = 0;
 								
@@ -193,7 +193,7 @@ public class SpreadCommand implements CommandExecutor {
 							
 							if (teams) {
 								if (target.getScoreboard().getEntryTeam(target.getName()) == null) {
-									List<Location> loc = ScatterUtils.getScatterLocations(Bukkit.getWorld(Settings.getInstance().getData().getString("game.world")), radius, 1);
+									List<Location> loc = ScatterUtils.getScatterLocations(Bukkit.getWorld(Settings.getInstance().getConfig().getString("game.world")), radius, 1);
 									scatterLocs.put(target.getName(), loc.get(0));
 									return;
 								}
@@ -209,7 +209,7 @@ public class SpreadCommand implements CommandExecutor {
 									}
 								}
 							} else {
-								List<Location> loc = ScatterUtils.getScatterLocations(Bukkit.getWorld(Settings.getInstance().getData().getString("game.world")), radius, 1);
+								List<Location> loc = ScatterUtils.getScatterLocations(Bukkit.getWorld(Settings.getInstance().getConfig().getString("game.world")), radius, 1);
 								scatterLocs.put(target.getName(), loc.get(0));
 							}
 						}

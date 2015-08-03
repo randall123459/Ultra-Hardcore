@@ -70,7 +70,7 @@ public class Scoreboards {
 			heal2 = sb.registerNewObjective("HP2", "dummy");
 			Bukkit.getLogger().info("§a[UHC] Setup bellow name health scoreboard.");
 		}
-		kills.setDisplayName("§4UHC §8- §7" + Settings.getInstance().getData().getString("game.host"));
+		kills.setDisplayName("§4UHC §8- §7" + Settings.getInstance().getConfig().getString("game.host"));
 		kills.setDisplaySlot(DisplaySlot.SIDEBAR);
 		heal.setDisplaySlot(DisplaySlot.PLAYER_LIST);
 		heal2.setDisplaySlot(DisplaySlot.BELOW_NAME);

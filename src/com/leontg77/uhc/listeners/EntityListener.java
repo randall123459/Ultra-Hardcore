@@ -53,7 +53,7 @@ public class EntityListener implements Listener {
 			return;
 		}
 	
-		if (!Main.pearldmg && event.getDamager() instanceof EnderPearl) {
+		if (!Main.pearldamage && event.getDamager() instanceof EnderPearl) {
 			event.setCancelled(true);
 		}
 	}
@@ -71,11 +71,13 @@ public class EntityListener implements Listener {
     public void onEntityDeath(EntityDeathEvent event) {
     	Entity entity = event.getEntity();
     	
-    	if (entity instanceof Ghast) {
-    		event.getDrops().remove(new ItemStack (Material.GHAST_TEAR));
-    		event.getDrops().add(new ItemStack (Material.GOLD_INGOT));
-    		return;
-        }
+    	if (Main.ghastdrops) {
+        	if (entity instanceof Ghast) {
+        		event.getDrops().remove(new ItemStack (Material.GHAST_TEAR));
+        		event.getDrops().add(new ItemStack (Material.GOLD_INGOT));
+        		return;
+            }
+    	}
     	
     	ItemStack potion = new ItemStack (Material.POTION, 1, (short) 8261);
     	
@@ -86,7 +88,7 @@ public class EntityListener implements Listener {
     		    		event.getDrops().add(potion);
     				}
     			} else {
-    				if ((new Random().nextInt(99) + 1) <= 20) {
+    				if ((new Random().nextInt(99) + 1) <= 30) {
     		    		event.getDrops().add(potion);
     				}
     			}
@@ -117,28 +119,30 @@ public class EntityListener implements Listener {
 	
 	@EventHandler
     public void onStrengthDamage(EntityDamageByEntityEvent event) {
-        if (!(event.getDamager() instanceof Player)) {
-            return;
-        }
+		if (Main.nerfedStrength) {
+	        if (!(event.getDamager() instanceof Player)) {
+	            return;
+	        }
 
-        final Player attacker = (Player) event.getDamager();
+	        final Player attacker = (Player) event.getDamager();
 
-        if (!attacker.hasPotionEffect(PotionEffectType.INCREASE_DAMAGE)) {
-            return;
-        }
+	        if (!attacker.hasPotionEffect(PotionEffectType.INCREASE_DAMAGE)) {
+	            return;
+	        }
 
-        int strengthAmplifier = 0;
-        for (PotionEffect potionEffect : attacker.getActivePotionEffects()) {
-            if (potionEffect.getType().equals(PotionEffectType.INCREASE_DAMAGE)) {
-                strengthAmplifier = potionEffect.getAmplifier() + 1;
-                break;
-            }
-        }
+	        int strengthAmplifier = 0;
+	        for (PotionEffect potionEffect : attacker.getActivePotionEffects()) {
+	            if (potionEffect.getType().equals(PotionEffectType.INCREASE_DAMAGE)) {
+	                strengthAmplifier = potionEffect.getAmplifier() + 1;
+	                break;
+	            }
+	        }
 
-        double damageWithoutStrength = event.getDamage() / (1 + (strengthAmplifier * 1.3));
-        double damageWithNerfedStrength = damageWithoutStrength + strengthAmplifier * 3;
+	        double damageWithoutStrength = event.getDamage() / (1 + (strengthAmplifier * 1.3));
+	        double damageWithNerfedStrength = damageWithoutStrength + strengthAmplifier * 3;
 
-        event.setDamage(damageWithNerfedStrength);
+	        event.setDamage(damageWithNerfedStrength);
+		}
     }
 	
 	@EventHandler
