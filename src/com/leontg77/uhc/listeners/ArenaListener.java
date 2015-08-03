@@ -16,6 +16,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import com.leontg77.uhc.Arena;
+import com.leontg77.uhc.Data;
 import com.leontg77.uhc.Main;
 
 public class ArenaListener implements Listener {
@@ -32,6 +33,8 @@ public class ArenaListener implements Listener {
 			p.sendMessage(event.getDeathMessage());
 		}   	
     	event.setDeathMessage(null);
+		Data data = Data.getData(player);
+		data.increaseStat("arenadeaths");
  
     	ItemStack skull = new ItemStack(Material.GOLDEN_APPLE);
 		ItemMeta skullMeta = skull.getItemMeta();
@@ -56,6 +59,8 @@ public class ArenaListener implements Listener {
 		}
 		
 		player.getKiller().setLevel(player.getKiller().getLevel() + 1);
+		Data killerData = Data.getData(player.getKiller());
+		killerData.increaseStat("arenakills");
 		player.sendMessage(Main.prefix() + "You were killed by §a" + player.getKiller().getName() + "§7.");
 	}
 
