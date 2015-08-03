@@ -92,6 +92,9 @@ public class Runnables extends BukkitRunnable {
 						online.sendMessage(Main.prefix() + "Remember to read the match post: " + Settings.getInstance().getConfig().getString("matchpost"));
 						online.sendMessage(Main.prefix() + "If you have any questions, use /helpop.");
 						PlayerUtils.sendTitle(online, "§aGo!", "§7Good luck have fun!", 1, 20, 1);
+						
+						Data data = Data.getData(online);
+						data.increaseStat("gamesplayed");
 					}
 					
 					start();
@@ -218,11 +221,13 @@ public class Runnables extends BukkitRunnable {
 					Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer cancel");
 					Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer -1 &6Meetup is now! Head to 0,0 and only stop for a fight!");
 					for (Player online : PlayerUtils.getPlayers()) {
-						online.sendMessage(ChatColor.DARK_GRAY + "==============================================");													  
-						online.sendMessage(ChatColor.GREEN + " Meetup has started, start headding to 0,0.");											  
-						online.sendMessage(ChatColor.GREEN + " Only stop for a fight, nothing else.");
-						online.sendMessage(ChatColor.DARK_GRAY + "==============================================");
-						online.playSound(online.getLocation(), Sound.WITHER_DEATH, 1, 0);
+						online.sendMessage(ChatColor.DARK_GRAY + "»»»»»»»»»»»»»»»«««««««««««««««");											  
+						online.sendMessage(ChatColor.GREEN + " ");													  
+						online.sendMessage(ChatColor.RED + " Meetup has started, start headding to 0,0.");											  
+						online.sendMessage(ChatColor.RED + " Only stop for a fight, nothing else.");									  
+						online.sendMessage(ChatColor.GREEN + " ");
+						online.sendMessage(ChatColor.DARK_GRAY + "»»»»»»»»»»»»»»»«««««««««««««««");	
+						online.playSound(online.getLocation(), Sound.WITHER_DEATH, 1, 1);
 					}
 
 					for (World world : Bukkit.getWorlds()) {
