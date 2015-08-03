@@ -31,8 +31,12 @@ public class SetupCommand implements CommandExecutor {
 				if (args.length == 1) {
 					if (sender instanceof Player) {
 						Player player = (Player) sender;
-						radius = radius + 0;
-						player.damage(0.0);
+
+						for (int x = Integer.parseInt("-" + (radius / 16)); x <= (radius / 16); x++) {
+							for (int z = Integer.parseInt("-" + (radius / 16)); z <= (radius / 16); z++) {
+								player.getWorld().getChunkAt(x, z).load(true);
+							}
+						}
 					} else {
 						sender.sendMessage(ChatColor.RED + "Only players can generate their own world.");
 					}
