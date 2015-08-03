@@ -52,6 +52,13 @@ public class WhitelistCommand implements CommandExecutor, TabCompleter {
 	           			}
 	           			PlayerUtils.broadcast(Main.prefix() + "The whitelist has been cleared.");
 	           		} 
+	           		else if (args[0].equalsIgnoreCase("list")) {
+	           			if (sender instanceof Player) {
+		           			((Player) sender).chat("/minecraft:whitelist list");
+	           			} else {
+	           				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "minecraft:whitelist list");
+	           			}
+	           		} 
 	           		else {
 		           		sender.sendMessage(ChatColor.RED + "Usage: /whitelist <on|off|add|remove|all|clear|list> [player]");
 	           		}
@@ -99,6 +106,13 @@ public class WhitelistCommand implements CommandExecutor, TabCompleter {
            			}
            			PlayerUtils.broadcast(Main.prefix() + "The whitelist has been cleared.");
            		}
+           		else if (args[0].equalsIgnoreCase("list")) {
+           			if (sender instanceof Player) {
+	           			((Player) sender).chat("/minecraft:whitelist list");
+           			} else {
+           				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "minecraft:whitelist list");
+           			}
+           		} 
            		else {
 	           		sender.sendMessage(ChatColor.RED + "Usage: /whitelist <on|off|add|remove|all|clear|list> [player]");
            		}
