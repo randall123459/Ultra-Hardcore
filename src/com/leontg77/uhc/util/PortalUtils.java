@@ -36,7 +36,7 @@ public class PortalUtils {
 
             targetWorldName = fromWorldName.substring(0, fromWorldName.length() - 7);
         } else if (from.getWorld().getEnvironment() == World.Environment.NORMAL) {
-            if (!isNetherPortal(from)) {
+            if (!isPortal(Material.PORTAL, from)) {
                 return null;
             }
 
@@ -58,10 +58,11 @@ public class PortalUtils {
 	
     /**
      * Check if an location has a portal near itself.
+     * @param material Material of the portal type.
      * @param location the location.
      * @return True if portal was found, false otherwise.
      */
-    private static boolean isNetherPortal(Location location) {
+    public static boolean isPortal(Material material, Location location) {
         Block block = location.getBlock();
         for (BlockFace face : new BlockFace[] {
                 BlockFace.SELF,
@@ -74,7 +75,7 @@ public class PortalUtils {
                 BlockFace.SOUTH_WEST,
                 BlockFace.NORTH_WEST
         }) {
-            if (block.getRelative(face).getType() == Material.PORTAL) {
+            if (block.getRelative(face).getType() == material) {
                 return true;
             }
         }

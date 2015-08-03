@@ -7,6 +7,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.TreeSpecies;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
@@ -110,6 +111,40 @@ public class BlockListener implements Listener {
 	        Location to = PortalUtils.getPossiblePortalLocation(event.getPlayer(), event.getFrom(), event.getPortalTravelAgent());
 	        if (to != null) {
 	            event.setTo(to);
+	        }
+		}
+		
+		if (Main.theend) {
+			String fromWorldName = event.getFrom().getWorld().getName();
+
+	        String targetWorldName;
+	        if (event.getFrom().getWorld().getEnvironment() == World.Environment.THE_END) {
+	            if (!fromWorldName.endsWith("_end")) {
+		        	event.getPlayer().sendMessage("The end has not been created.");
+	                return;
+	            }
+
+	            targetWorldName = fromWorldName.substring(0, fromWorldName.length() - 4);
+	        } else if (event.getFrom().getWorld().getEnvironment() == World.Environment.NORMAL) {
+	            if (!PortalUtils.isPortal(Material.ENDER_PORTAL, event.getFrom())) {
+	                return;
+	            }
+	            
+	            targetWorldName = fromWorldName + "_end";
+	        } else {
+	            return;
+	        }
+
+	        World targetWorld = Bukkit.getWorld(targetWorldName);
+	        if (targetWorld == null) {
+	        	event.getPlayer().sendMessage("The end has not been created.");
+	            return;
+	        }
+
+	        Location to = new Location(targetWorld, event.getFrom().getX(), event.getFrom().getY(), event.getFrom().getZ(), event.getFrom().getYaw(), event.getFrom().getPitch());
+	        to = event.getPortalTravelAgent().findOrCreate(to);
+	        if (to != null) {
+		        event.setTo(to);
 	        }
 		}
     }
