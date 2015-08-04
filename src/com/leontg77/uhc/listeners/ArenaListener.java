@@ -18,6 +18,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import com.leontg77.uhc.Arena;
 import com.leontg77.uhc.Data;
 import com.leontg77.uhc.Main;
+import com.leontg77.uhc.util.PlayerUtils;
 
 public class ArenaListener implements Listener {
 
@@ -58,10 +59,47 @@ public class ArenaListener implements Listener {
 			return;
 		}
 		
+		if (Arena.getManager().killstreak.get(player) > 4) {
+			PlayerUtils.broadcast(Main.prefix(ChatColor.GREEN) + player.getName() + "'s §7killstreak of " + Arena.getManager().killstreak.get(player) + " was shut down by §a" + player.getKiller().getName());
+		}
+		
 		player.getKiller().setLevel(player.getKiller().getLevel() + 1);
 		Data killerData = Data.getData(player.getKiller());
 		killerData.increaseStat("arenakills");
 		player.sendMessage(Main.prefix() + "You were killed by §a" + player.getKiller().getName() + "§7.");
+		
+		Arena.getManager().killstreak.put(player.getKiller(), Arena.getManager().killstreak.get(player.getKiller()) + 1);
+		if (Arena.getManager().killstreak.get(player.getKiller()) == 5) {
+			PlayerUtils.broadcast(Main.prefix(ChatColor.GREEN) + player.getKiller().getName() + " is now on a 5 killstreak");
+		}
+
+		if (Arena.getManager().killstreak.get(player.getKiller()) == 10) {
+			PlayerUtils.broadcast(Main.prefix(ChatColor.GREEN) + player.getKiller().getName() + " is now on a 10 killstreak");
+		}
+
+		if (Arena.getManager().killstreak.get(player.getKiller()) == 15) {
+			PlayerUtils.broadcast(Main.prefix(ChatColor.GREEN) + player.getKiller().getName() + " is now on a 15 killstreak");
+		}
+
+		if (Arena.getManager().killstreak.get(player.getKiller()) == 20) {
+			PlayerUtils.broadcast(Main.prefix(ChatColor.GREEN) + player.getKiller().getName() + " is now on a 20 killstreak");
+		}
+
+		if (Arena.getManager().killstreak.get(player.getKiller()) == 30) {
+			PlayerUtils.broadcast(Main.prefix(ChatColor.GREEN) + player.getKiller().getName() + " is now on a 30 killstreak");
+		}
+		
+		if (Arena.getManager().killstreak.get(player.getKiller()) == 50) {
+			PlayerUtils.broadcast(Main.prefix(ChatColor.GREEN) + player.getKiller().getName() + " is now on a 50 killstreak");
+		}
+
+		if (Arena.getManager().killstreak.get(player.getKiller()) == 75) {
+			PlayerUtils.broadcast(Main.prefix(ChatColor.GREEN) + player.getKiller().getName() + " is now on a 75 killstreak");
+		}
+		
+		if (Arena.getManager().killstreak.get(player.getKiller()) == 100) {
+			PlayerUtils.broadcast(Main.prefix(ChatColor.GREEN) + player.getKiller().getName() + " is now on a 100 killstreak");
+		}
 	}
 
 	@EventHandler
