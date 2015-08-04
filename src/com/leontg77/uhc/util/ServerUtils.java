@@ -52,6 +52,8 @@ public class ServerUtils {
 		if (Main.ffa) {
 			if (Main.teamSize == 1) {
 				return "FFA";
+			} else if (Main.teamSize < 1) {
+				return "No";
 			} else {
 				return "rTo" + Main.teamSize;
 			}
