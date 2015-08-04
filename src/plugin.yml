@@ -31,6 +31,9 @@ commands:
   tps:
     description: Check the servers tps.
     aliases: [lag]
+  hof:
+    description: Open the hall of fame.
+    aliases: [halloffame]
   random:
     description: Create random teams.
   clearxp:
@@ -50,11 +53,10 @@ commands:
     aliases: [ping]
   rules:
     description: View our rules.
-    aliases: [post, matchpost]
   heal:
     description: Heal someone.
-  starttimer:
-    description: Restarts the sidebar timer.
+  stats:
+    description: View your stats.
   end:
     description: Ends the game.
   near:
