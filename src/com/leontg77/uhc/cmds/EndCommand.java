@@ -123,7 +123,7 @@ public class EndCommand implements CommandExecutor {
 					
 					int id = settings.getHOF().getConfigurationSection(host).getKeys(false).size() + 1;
 					
-					settings.getHOF().set(host + "." + id + ".winners", win.toString().trim());
+					settings.getHOF().set(host + "." + id + ".winners", winners);
 					settings.getHOF().set(host + "." + id + ".kills", kills);
 					settings.getHOF().set(host + "." + id + ".teamsize", ServerUtils.getTeamSize());
 					settings.getHOF().set(host + "." + id + ".scenarios", settings.getConfig().getString("game.scenarios"));
