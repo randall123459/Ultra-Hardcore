@@ -83,6 +83,11 @@ public class SpreadCommand implements CommandExecutor {
 						PlayerUtils.broadcast(Main.prefix() + "Scattering §a" + Bukkit.getServer().getWhitelistedPlayers().size() + " §7players...");
 					}
 					
+					for (String e : Scoreboards.getManager().kills.getScoreboard().getEntries()) {
+						Scoreboards.getManager().resetScore(e);
+					}
+					Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer cancel");
+					
 					Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Main.plugin, new Runnable() {
 						public void run() {
 							PlayerUtils.broadcast(Main.prefix() + "Finding scatter locations...");
