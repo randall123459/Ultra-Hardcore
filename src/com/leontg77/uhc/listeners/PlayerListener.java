@@ -533,17 +533,24 @@ public class PlayerListener implements Listener {
 		
 		if (event.getMessage().split(" ")[0].equalsIgnoreCase("/killboard")) {
 			if (player.hasPermission("uhc.killboard")) {
-				PlayerUtils.broadcast(Main.prefix() + "Pregame board activated.");
-				Scoreboards.getManager().setScore("§a ", 10);
-				Scoreboards.getManager().setScore("§cArena:", 9);
-				Scoreboards.getManager().setScore("§7/a ", 8);
-				Scoreboards.getManager().setScore("§b ", 7);
-				Scoreboards.getManager().setScore("§cTeamsize:", 6);
-				Scoreboards.getManager().setScore("§7" + ServerUtils.getTeamSize(), 5);
-				Scoreboards.getManager().setScore("§c ", 4);
-				Scoreboards.getManager().setScore("§cScenarios:", 3);
-				Scoreboards.getManager().setScore("§7" + settings.getConfig().getString("game.scenarios"), 2);
-				Scoreboards.getManager().setScore("§d ", 1);
+				if (Scoreboards.getManager().kills.getScoreboard().getEntries().size() == 0) {
+					PlayerUtils.broadcast(Main.prefix() + "Pregame board enabled.");
+					Scoreboards.getManager().setScore("§a ", 10);
+					Scoreboards.getManager().setScore("§cArena:", 9);
+					Scoreboards.getManager().setScore("§7/a ", 8);
+					Scoreboards.getManager().setScore("§b ", 7);
+					Scoreboards.getManager().setScore("§cTeamsize:", 6);
+					Scoreboards.getManager().setScore("§7" + ServerUtils.getTeamSize(), 5);
+					Scoreboards.getManager().setScore("§c ", 4);
+					Scoreboards.getManager().setScore("§cScenarios:", 3);
+					Scoreboards.getManager().setScore("§7" + settings.getConfig().getString("game.scenarios"), 2);
+					Scoreboards.getManager().setScore("§d ", 1);
+				} else {
+					for (String e : Scoreboards.getManager().kills.getScoreboard().getEntries()) {
+						Scoreboards.getManager().resetScore(e);
+					}
+					PlayerUtils.broadcast(Main.prefix() + "Pregame board disabled.");
+				}
 			} else {
 				player.sendMessage(ChatColor.RED + "You do not have access to that command.");
 			}
