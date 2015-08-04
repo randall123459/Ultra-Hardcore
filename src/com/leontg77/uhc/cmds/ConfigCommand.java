@@ -398,6 +398,44 @@ public class ConfigCommand implements CommandExecutor, TabCompleter {
 						PlayerUtils.setTabList(online);
 					}
 					break;
+				case TABCOLORS:
+					if (args[1].equalsIgnoreCase("true")) {
+						settings.getConfig().set("feature.tabcolors.enabled", true);
+						settings.saveConfig();
+						Main.tabcolors = true;
+						
+						PlayerUtils.broadcast(Main.prefix() + "Tab will now have the color of your health.");
+					} else if (args[1].equalsIgnoreCase("false")) {
+						settings.getConfig().set("feature.tabcolors.enabled", false);
+						settings.saveConfig();
+						Main.tabcolors = false;
+
+						PlayerUtils.broadcast(Main.prefix() + "Tab will no longer have the color of your health.");
+						
+						for (Player online : PlayerUtils.getPlayers()) {
+							online.setPlayerListName(null);
+						}
+					} else {
+						sender.sendMessage(ChatColor.RED + "TheEnd can only be true or false.");
+					}
+					break;
+				case HARDERCRAFTING:
+					if (args[1].equalsIgnoreCase("true")) {
+						settings.getConfig().set("feature.harderCrafting.enabled", true);
+						settings.saveConfig();
+						Main.harderCrafting = true;
+						
+						PlayerUtils.broadcast(Main.prefix() + "HarderCrafting has been enabled.");
+					} else if (args[1].equalsIgnoreCase("false")) {
+						settings.getConfig().set("feature.harderCrafting.enabled", false);
+						settings.saveConfig();
+						Main.harderCrafting = false;
+
+						PlayerUtils.broadcast(Main.prefix() + "HarderCrafting has been disabled.");
+					} else {
+						sender.sendMessage(ChatColor.RED + "TheEnd can only be true or false.");
+					}
+					break;
 				case THEEND:
 					if (args[1].equalsIgnoreCase("true")) {
 						settings.getConfig().set("feature.theend.enabled", true);
@@ -510,6 +548,14 @@ public class ConfigCommand implements CommandExecutor, TabCompleter {
 						arg.add("true");
 						arg.add("false");
 						break;
+					case TABCOLORS:
+						arg.add("true");
+						arg.add("false");
+						break;
+					case HARDERCRAFTING:
+						arg.add("true");
+						arg.add("false");
+						break;
 					case STATE:
 						for (State state : State.values()) {
 							arg.add(state.name().toLowerCase());
@@ -536,6 +582,6 @@ public class ConfigCommand implements CommandExecutor, TabCompleter {
 	}
 	
 	public enum ConfigValue {
-		HOST, WORLD, FFA, TEAMSIZE, SCENARIOS, SHEARS, SHEARRATE, FLINTRATE, BORDER, ABSORPTION, GOLDENHEADS, HEADHEALS, NOTCHAPPLES, PEARLDAMAGE, DEATHLIGHTNING, NETHER, THEEND, GHASTDROPS, NERFEDSTRENGTH, PVP, MEETUP, MATCHPOST, MAXPLAYERS, STATE;
+		HOST, WORLD, FFA, TEAMSIZE, SCENARIOS, SHEARS, SHEARRATE, FLINTRATE, BORDER, ABSORPTION, GOLDENHEADS, HEADHEALS, NOTCHAPPLES, PEARLDAMAGE, DEATHLIGHTNING, NETHER, THEEND, GHASTDROPS, NERFEDSTRENGTH, TABCOLORS, HARDERCRAFTING, PVP, MEETUP, MATCHPOST, MAXPLAYERS, STATE;
 	}
 }
