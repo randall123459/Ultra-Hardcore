@@ -35,12 +35,14 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerLoginEvent.Result;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.server.ServerListPingEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.potion.PotionEffect;
@@ -59,6 +61,7 @@ import com.leontg77.uhc.Main.State;
 import com.leontg77.uhc.Scoreboards;
 import com.leontg77.uhc.Settings;
 import com.leontg77.uhc.Spectator;
+import com.leontg77.uhc.cmds.HOFCommand;
 import com.leontg77.uhc.cmds.SpreadCommand;
 import com.leontg77.uhc.cmds.TeamCommand;
 import com.leontg77.uhc.cmds.VoteCommand;
@@ -117,9 +120,13 @@ public class PlayerListener implements Listener {
 		player.sendMessage("§8---------------------------");
 		player.sendMessage(" §8» §6Welcome to Ultra Hardcore");
 		player.sendMessage("§8---------------------------");
-		player.sendMessage(" §8» §aHost: §7" + Settings.getInstance().getConfig().getString("game.host"));
-		player.sendMessage(" §8» §aTeamsize: §7" + ServerUtils.getTeamSize());
-		player.sendMessage(" §8» §aGamemode: §7" + Settings.getInstance().getConfig().getString("game.scenarios"));
+		if (ServerUtils.getTeamSize().equals("No")) {
+			player.sendMessage(" §8» §cNo games scheduled");
+		} else {
+			player.sendMessage(" §8» §aHost: §7" + Settings.getInstance().getConfig().getString("game.host"));
+			player.sendMessage(" §8» §aTeamsize: §7" + ServerUtils.getTeamSize());
+			player.sendMessage(" §8» §aGamemode: §7" + Settings.getInstance().getConfig().getString("game.scenarios"));
+		}
 		player.sendMessage("§8---------------------------");
 		
 		if (SpreadCommand.scatterLocs.containsKey(player.getName())) {
@@ -513,6 +520,35 @@ public class PlayerListener implements Listener {
 			}
 			event.setCancelled(true);
 		}
+		
+		if (event.getMessage().split(" ")[0].equalsIgnoreCase("/matchpost")) {
+			player.sendMessage(Main.prefix() + "Match post: §a" + settings.getConfig().getString("matchpost"));
+			event.setCancelled(true);
+		}
+		
+		if (event.getMessage().split(" ")[0].equalsIgnoreCase("/post")) {
+			player.sendMessage(Main.prefix() + "Match post: §a" + settings.getConfig().getString("matchpost"));
+			event.setCancelled(true);
+		}
+		
+		if (event.getMessage().split(" ")[0].equalsIgnoreCase("/killboard")) {
+			if (player.hasPermission("uhc.killboard")) {
+				PlayerUtils.broadcast(Main.prefix() + "Pregame board activated.");
+				Scoreboards.getManager().setScore("§a ", 10);
+				Scoreboards.getManager().setScore("§cArena:", 9);
+				Scoreboards.getManager().setScore("§7/a ", 8);
+				Scoreboards.getManager().setScore("§b ", 7);
+				Scoreboards.getManager().setScore("§cTeamsize:", 6);
+				Scoreboards.getManager().setScore("§7" + ServerUtils.getTeamSize(), 5);
+				Scoreboards.getManager().setScore("§c ", 4);
+				Scoreboards.getManager().setScore("§cScenarios:", 3);
+				Scoreboards.getManager().setScore("§7" + settings.getConfig().getString("game.scenarios"), 2);
+				Scoreboards.getManager().setScore("§d ", 1);
+			} else {
+				player.sendMessage(ChatColor.RED + "You do not have access to that command.");
+			}
+			event.setCancelled(true);
+		}
 	}
 	
 	@EventHandler
@@ -576,6 +612,13 @@ public class PlayerListener implements Listener {
 		}
 	}
 	
+	@EventHandler
+	public void onPlayerKick(PlayerKickEvent event) {
+		if (event.getReason().equals("disconnect.spam")) {
+			event.setCancelled(true);
+		}
+	}
+	
 	@EventHandler(priority = EventPriority.HIGH)
     public void onPlayerInteract(PlayerInteractEvent event) {	
         Player player = event.getPlayer();
@@ -616,6 +659,20 @@ public class PlayerListener implements Listener {
 		
 		if (event.getInventory().getTitle().equals("Player Inventory")) {
 			event.setCancelled(true);
+		}
+		
+		if (event.getInventory().getTitle().endsWith("Fame")) {
+			event.setCancelled(true);
+			
+			if (item.getItemMeta().getDisplayName() != null && item.getItemMeta().getDisplayName().equalsIgnoreCase("§aNext page")) {
+				HOFCommand.page.put(player, HOFCommand.page.get(player) + 1);
+				player.openInventory(HOFCommand.inv2);
+			}
+			
+			if (item.getItemMeta().getDisplayName() != null && item.getItemMeta().getDisplayName().equalsIgnoreCase("§aPrevious page")) {
+				HOFCommand.page.put(player, HOFCommand.page.get(player) - 1);
+				player.openInventory(HOFCommand.inv);
+			}
 		}
 		
 		if (event.getInventory().getTitle().equals("Ultra Hardcore Rules")) {
@@ -704,7 +761,7 @@ public class PlayerListener implements Listener {
 	public void onPreCraftEvent(PrepareItemCraftEvent event) {
 		ItemStack item = event.getRecipe().getResult();
 		
-        if (RecipeUtils.areSimilar(event.getRecipe(), Main.res)) {
+        if (RecipeUtils.areSimilar(event.getRecipe(), Main.headRecipe)) {
             ItemMeta meta = item.getItemMeta();
             String name = "N/A";
           
@@ -736,6 +793,22 @@ public class PlayerListener implements Listener {
 			if (item.getDurability() == 1) {
 				if (!Main.notchapples) {
 					event.getInventory().setResult(new ItemStack(Material.AIR));
+				}
+			}
+		}
+		
+		if (item != null && item.getType() == Material.SPECKLED_MELON) {
+			if (Main.harderCrafting) {
+				if (event.getRecipe() instanceof ShapedRecipe) {
+					if (((ShapedRecipe) event.getRecipe()).getIngredientMap().values().contains(new ItemStack (Material.GOLD_NUGGET))) {
+						event.getInventory().setResult(new ItemStack(Material.AIR));
+					}
+				}
+			} else {
+				if (event.getRecipe() instanceof ShapedRecipe) {
+					if (((ShapedRecipe) event.getRecipe()).getIngredientMap().values().contains(new ItemStack (Material.GOLD_INGOT))) {
+						event.getInventory().setResult(new ItemStack(Material.AIR));
+					}
 				}
 			}
 		}
