@@ -203,8 +203,8 @@ public class InvGUI {
 		inv.setItem(6, nether);
 		
 		ItemStack rates = new ItemStack (Material.APPLE);
-		ItemMeta otherMeta = rates.getItemMeta();
-		otherMeta.setDisplayName("§6Rates");
+		ItemMeta ratesMeta = rates.getItemMeta();
+		ratesMeta.setDisplayName("§6Rates");
 		ArrayList<String> lore5 = new ArrayList<String>();
 		lore5.add(" ");
 		lore5.add("§aApple rates: §70.5%, " + (Main.shears ? "Shears work" : "Shears does not work") + ".");
@@ -214,20 +214,9 @@ public class InvGUI {
 		lore5.add("§aCave rates: §7Vanilla.");
 		lore5.add("§aWitch Potion: §7Increased.");
 		lore5.add(" ");
-		otherMeta.setLore(lore5);
-		rates.setItemMeta(otherMeta);
+		ratesMeta.setLore(lore5);
+		rates.setItemMeta(ratesMeta);
 		inv.setItem(8, rates);
-		
-		player.openInventory(inv);
-	}
-	
-	/**
-	 * Open the HOF inventory for a player
-	 * @param player the player
-	 * @param host who's hof it is.
-	 */
-	public void openHOF(Player player, String host) {
-		Inventory inv = Bukkit.getServer().createInventory(null, 54, host + "'s Hall of Fame");
 		
 		player.openInventory(inv);
 	}
