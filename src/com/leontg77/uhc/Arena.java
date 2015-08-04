@@ -1,6 +1,7 @@
 package com.leontg77.uhc;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.bukkit.Bukkit;
@@ -16,6 +17,7 @@ import org.bukkit.inventory.ItemStack;
  * @author LeonTG77
  */
 public class Arena {
+	public HashMap<Player, Integer> killstreak = new HashMap<Player, Integer>();
 	private Settings settings = Settings.getInstance();
 	private ArrayList<Player> players;
 	private boolean enabled = false;	
