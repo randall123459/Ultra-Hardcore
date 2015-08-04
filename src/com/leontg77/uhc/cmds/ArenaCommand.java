@@ -51,13 +51,32 @@ public class ArenaCommand implements CommandExecutor {
 					a.setEnabled(false);
 					PlayerUtils.broadcast(Main.prefix() + "The arena has been disabled.");
 				} else if (args[0].equalsIgnoreCase("reset")) {
+					a.setEnabled(false);
 					PlayerUtils.broadcast(Main.prefix() + "The arena is resetting, lag incoming.");
-					for (int x = -14; x <= 14; x++) {
-						for (int z = -14; z <= 14; z++) {
-							Bukkit.getWorld("arena").regenerateChunk(x, z);
+					Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "mv regen arena");
+					Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "mvconfirm");
+					
+					Bukkit.getScheduler().runTaskLater(Main.plugin, new Runnable() {
+						public void run() {
+							Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "wb arena fill 420");
+							Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "wb fill confirm");
+							
+							Bukkit.getWorld("arena").getWorldBorder().setSize(399);
+							Bukkit.getWorld("arena").getWorldBorder().setCenter(0.5, 0.5);
+							Bukkit.getWorld("arena").getWorldBorder().setWarningDistance(0);
+							Bukkit.getWorld("arena").getWorldBorder().setWarningTime(60);
+							Bukkit.getWorld("arena").getWorldBorder().setDamageAmount(0.1);
+							Bukkit.getWorld("arena").getWorldBorder().setDamageBuffer(50);
+							
+							PlayerUtils.broadcast(Main.prefix() + "Borders setup, pregenning arena world.");
 						}
-					}
-					PlayerUtils.broadcast(Main.prefix() + "Arena reset complete.");
+					}, 200);
+					
+					Bukkit.getScheduler().runTaskLater(Main.plugin, new Runnable() {
+						public void run() {
+							PlayerUtils.broadcast(Main.prefix() + "Arena reset complete.");
+						}
+					}, 620);
 				} else {
 					if (sender instanceof Player) {
 						Player player = (Player) sender;
