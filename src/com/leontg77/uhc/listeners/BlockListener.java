@@ -16,6 +16,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.block.LeavesDecayEvent;
 import org.bukkit.event.entity.EntityPortalEvent;
 import org.bukkit.event.player.PlayerPortalEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
@@ -93,6 +94,16 @@ public class BlockListener implements Listener {
     	}
     	
     	if (event.getBlock().getWorld().getName().equals("lobby") && !player.hasPermission("uhc.build")) {
+    		event.setCancelled(true);
+    		return;
+    	}
+    }
+
+	@EventHandler(ignoreCancelled = true)
+    public void onLeavesDecay(LeavesDecayEvent event) {
+		Block block = event.getBlock();
+    	
+    	if (block.getWorld().getName().equals("lobby")) {
     		event.setCancelled(true);
     		return;
     	}
