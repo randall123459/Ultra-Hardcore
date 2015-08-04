@@ -95,7 +95,8 @@ public class Main extends JavaPlugin {
 
 	public static boolean muted = false;
 	public static BukkitRunnable countdown;
-	public static Recipe res;
+	public static Recipe headRecipe;
+	public static Recipe melonRecipe;
 	
 	public static boolean ffa;
 	public static int teamSize;
@@ -110,6 +111,8 @@ public class Main extends JavaPlugin {
 	public static boolean theend;
 	public static boolean ghastdrops;
 	public static boolean nerfedStrength;
+	public static boolean tabcolors;
+	public static boolean harderCrafting;
 
 	public static boolean shears;
 	public static int shearrate;
@@ -136,6 +139,7 @@ public class Main extends JavaPlugin {
 	public void onEnable() {
 		PluginDescriptionFile pdfFile = this.getDescription();
 		this.logger.info(pdfFile.getName() + " v" + pdfFile.getVersion() + " is now enabled.");
+		settings.setup(this);
 		plugin = this;
 		
 		Bukkit.getServer().getPluginManager().registerEvents(new ArenaListener(), this);
@@ -194,7 +198,6 @@ public class Main extends JavaPlugin {
 		getCommand("vote").setExecutor(new VoteCommand());
 		getCommand("whitelist").setExecutor(new WhitelistCommand());
 
-		settings.setup(this);
 		ScenarioManager.getManager().setup();
 		Scoreboards.getManager().setup();
 		Teams.getManager().setupTeams();
@@ -216,6 +219,8 @@ public class Main extends JavaPlugin {
 		theend = settings.getConfig().getBoolean("feature.theend.enabled");
 		ghastdrops = settings.getConfig().getBoolean("feature.ghastdrops.enabled");
 		nerfedStrength = settings.getConfig().getBoolean("feature.nerfedStrength.enabled");
+		tabcolors = settings.getConfig().getBoolean("feature.tabcolors.tabcolors");
+		harderCrafting = settings.getConfig().getBoolean("feature.harderCrafting.tabcolors");
 
 		shears = settings.getConfig().getBoolean("rates.flint.enabled");
 		shearrate = settings.getConfig().getInt("rates.shears.rate");
@@ -263,6 +268,20 @@ public class Main extends JavaPlugin {
 						if (online.getGameMode() != GameMode.SPECTATOR) {
 							online.setGameMode(GameMode.SPECTATOR);
 						}
+					}
+					
+					if (Main.tabcolors) {
+						ChatColor color;
+
+						if (online.getHealth() < 6.66D) {
+							color = ChatColor.RED;
+						} else if (online.getHealth() < 13.33D) {
+							color = ChatColor.YELLOW;
+						} else {
+							color = ChatColor.GREEN;
+						}
+					    
+					    online.setPlayerListName(color + online.getName());
 					}
 					
 					if (online.isOp()) {
@@ -327,7 +346,7 @@ public class Main extends JavaPlugin {
 	 * @return The UHC prefix.
 	 */
 	public static String prefix() {
-		String prefix = "§4§lUHC §8§l» §7";
+		String prefix = "§4§lUHC §8» §7";
 		return prefix;
 	}
 	
@@ -337,7 +356,7 @@ public class Main extends JavaPlugin {
 	 * @return The UHC prefix.
 	 */
 	public static String prefix(ChatColor endcolor) {
-		String prefix = "§4§lUHC §8§l» " + endcolor;
+		String prefix = "§4§lUHC §8» " + endcolor;
 		return prefix;
 	}
 	
@@ -356,12 +375,13 @@ public class Main extends JavaPlugin {
         
         ShapedRecipe goldenhead = new ShapedRecipe(head).shape("@@@", "@*@", "@@@").setIngredient('@', Material.GOLD_INGOT).setIngredient('*', mater);
         Bukkit.getServer().addRecipe(goldenhead);
-        res = goldenhead;
+        headRecipe = goldenhead;
 		Bukkit.getLogger().info("§a[UHC] Golden heads recipe added.");
-
+		
         ItemStack melon = new ItemStack(Material.SPECKLED_MELON); 
         ShapedRecipe goldenmelon = new ShapedRecipe(melon).shape("@@@", "@*@", "@@@").setIngredient('@', Material.GOLD_INGOT).setIngredient('*', Material.MELON);
         Bukkit.getServer().addRecipe(goldenmelon);
+        melonRecipe = goldenmelon;
   
 		Bukkit.getLogger().info("§a[UHC] Golden Melon recipe added.");
 	}
