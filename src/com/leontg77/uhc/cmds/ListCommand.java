@@ -37,7 +37,7 @@ public class ListCommand implements CommandExecutor {
 				p++;
 			}
 	    			
-	    	sender.sendMessage(Main.prefix() + "There are currently " + ChatColor.GOLD + p + ChatColor.GRAY + " out of " + ChatColor.GOLD + settings.getData().getInt("maxplayers") + ChatColor.GRAY + " players online.");
+	    	sender.sendMessage(Main.prefix() + "There are currently " + ChatColor.GOLD + p + ChatColor.GRAY + " out of " + ChatColor.GOLD + settings.getConfig().getInt("maxplayers") + ChatColor.GRAY + " players online.");
 	    	sender.sendMessage("§7Players: §f" + onlineList.toString());
 	    	p = 0;
         }
