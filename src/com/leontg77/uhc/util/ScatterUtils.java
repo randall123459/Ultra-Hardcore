@@ -27,12 +27,38 @@ public class ScatterUtils {
 		double minDisSq = mindis(radius, count);
 
 		List<Location> locs = new ArrayList<>();
+		
 		for (int i = 0; i < count; i++) {
 			double min = minDisSq;
 			
 			for (int j = 0; j < 2002; j++) {
 				if (j == 2001) {
-					PlayerUtils.broadcast(ChatColor.RED + "Could not scatter " + i, "uhc.admin");
+					for (int l = 0; l < 2002; l++) {
+						if (l == 2001) {
+							PlayerUtils.broadcast(ChatColor.RED + "Could not scatter " + i, "uhc.admin");
+							break;
+						}
+						
+						Random rand = new Random();
+						int x = rand.nextInt(radius * 2) - radius;
+						int z = rand.nextInt(radius * 2) - radius;
+
+						Location r = new Location(world, x + 0.5, 0, z + 0.5);
+
+						boolean close = false;
+						for (Location lo : locs) {
+							if (lo.distanceSquared(r) < min) {
+								close = true;
+							}
+						}
+						
+						if (!close && isValidSpawnLocation(r.clone())) {
+							locs.add(r);
+							break;
+						} else {
+							min -= 1;
+						}
+					}
 					break;
 				}
 				
