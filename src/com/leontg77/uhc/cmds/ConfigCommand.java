@@ -350,13 +350,13 @@ public class ConfigCommand implements CommandExecutor, TabCompleter {
 					break;
 				case SHEARS:
 					if (args[1].equalsIgnoreCase("true")) {
-						settings.getConfig().set("feature.shears.enabled", true);
+						settings.getConfig().set("rates.shears.enabled", true);
 						settings.saveConfig();
 						Main.shears = true;
 						
 						PlayerUtils.broadcast(Main.prefix() + "Shears has been enabled.");
 					} else if (args[1].equalsIgnoreCase("false")) {
-						settings.getConfig().set("feature.shears.enabled", false);
+						settings.getConfig().set("rates.shears.enabled", false);
 						settings.saveConfig();
 						Main.shears = false;
 
