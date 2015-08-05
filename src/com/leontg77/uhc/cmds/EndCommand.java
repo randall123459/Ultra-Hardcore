@@ -94,6 +94,22 @@ public class EndCommand implements CommandExecutor {
 					}
 				}
 				
+				String host = settings.getConfig().getString("game.host");
+				
+				if (!settings.getHOF().contains(host)) {
+					settings.getHOF().createSection(host);
+					settings.saveHOF();
+				}
+				
+				int id = settings.getHOF().getConfigurationSection(host).getKeys(false).size() + 1;
+				
+				settings.getHOF().set(host + "." + id + ".winners", winners);
+				settings.getHOF().set(host + "." + id + ".kills", kills);
+				settings.getHOF().set(host + "." + id + ".teamsize", ServerUtils.getTeamSize());
+				settings.getHOF().set(host + "." + id + ".scenarios", settings.getConfig().getString("game.scenarios"));
+				settings.getHOF().set(host + "." + id + ".post", settings.getConfig().getString("matchpost"));
+				settings.saveHOF();
+				
 				for (Player online : Bukkit.getServer().getOnlinePlayers()) {
 					online.sendMessage(Main.prefix() + "The UHC has ended, the winners are " + win.toString().trim() + " with " + kills + " kills.");
 					if (Main.spectating.contains(online.getName())) {
@@ -113,22 +129,6 @@ public class EndCommand implements CommandExecutor {
 					for (PotionEffect effect : online.getActivePotionEffects()) {
 						online.removePotionEffect(effect.getType());	
 					}
-					
-					String host = settings.getConfig().getString("game.host");
-					
-					if (!settings.getHOF().contains(host)) {
-						settings.getHOF().createSection(host);
-						settings.saveHOF();
-					}
-					
-					int id = settings.getHOF().getConfigurationSection(host).getKeys(false).size() + 1;
-					
-					settings.getHOF().set(host + "." + id + ".winners", winners);
-					settings.getHOF().set(host + "." + id + ".kills", kills);
-					settings.getHOF().set(host + "." + id + ".teamsize", ServerUtils.getTeamSize());
-					settings.getHOF().set(host + "." + id + ".scenarios", settings.getConfig().getString("game.scenarios"));
-					settings.getHOF().set(host + "." + id + ".post", settings.getConfig().getString("matchpost"));
-					settings.saveHOF();
 				}
 				
 				for (String e : Scoreboards.getManager().kills.getScoreboard().getEntries()) {
