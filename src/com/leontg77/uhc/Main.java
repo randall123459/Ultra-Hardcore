@@ -8,8 +8,10 @@ import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Difficulty;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Player;
@@ -92,11 +94,13 @@ public class Main extends JavaPlugin {
 	private final Logger logger = Bukkit.getServer().getLogger();
 	private Settings settings = Settings.getInstance();
 	public static Main plugin;
-
-	public static boolean muted = false;
+	
 	public static BukkitRunnable countdown;
 	public static Recipe headRecipe;
 	public static Recipe melonRecipe;
+
+	public static boolean killboard = false;
+	public static boolean muted = false;
 	
 	public static boolean ffa;
 	public static int teamSize;
@@ -219,10 +223,10 @@ public class Main extends JavaPlugin {
 		theend = settings.getConfig().getBoolean("feature.theend.enabled");
 		ghastdrops = settings.getConfig().getBoolean("feature.ghastdrops.enabled");
 		nerfedStrength = settings.getConfig().getBoolean("feature.nerfedStrength.enabled");
-		tabcolors = settings.getConfig().getBoolean("feature.tabcolors.tabcolors");
+		tabcolors = settings.getConfig().getBoolean("feature.tabcolors.enabled");
 		harderCrafting = settings.getConfig().getBoolean("feature.harderCrafting.tabcolors");
 
-		shears = settings.getConfig().getBoolean("rates.flint.enabled");
+		shears = settings.getConfig().getBoolean("rates.shears.enabled");
 		shearrate = settings.getConfig().getInt("rates.shears.rate");
 		flintrate = settings.getConfig().getInt("rates.flint.rate");
 		
@@ -317,6 +321,12 @@ public class Main extends JavaPlugin {
 					if (bellowName != null) {
 						Score score = bellowName.getScore(online.getName());
 						score.setScore((int) precent);
+					}
+				}
+				
+				for (World world : Bukkit.getWorlds()) {	
+					if (world.getDifficulty() != Difficulty.HARD) {
+						world.setDifficulty(Difficulty.HARD);
 					}
 				}
 			}
