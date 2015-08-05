@@ -15,6 +15,7 @@ import org.bukkit.World;
 import org.bukkit.World.Environment;
 import org.bukkit.block.Block;
 import org.bukkit.block.Skull;
+import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.ExperienceOrb;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
@@ -274,6 +275,7 @@ public class PlayerListener implements Listener {
 		
 		if (!Arena.getManager().isEnabled() && !State.isState(State.LOBBY)) {
 			player.sendMessage(Main.prefix() + "§7Thanks for playing our game, it really means a lot :)");
+			player.sendMessage(Main.prefix() + "§7Follow us on twtter to know when our next games are: @LeonUHC");
 			if (player.hasPermission("uhc.prelist")) {
 				player.sendMessage("§8§l» §7You will be put into spectator mode in 30 seconds. (No spoiling please)");
 				
@@ -533,7 +535,13 @@ public class PlayerListener implements Listener {
 		
 		if (event.getMessage().split(" ")[0].equalsIgnoreCase("/killboard")) {
 			if (player.hasPermission("uhc.killboard")) {
-				if (Scoreboards.getManager().kills.getScoreboard().getEntries().size() == 0) {
+				if (Main.killboard) {
+					for (String e : Scoreboards.getManager().kills.getScoreboard().getEntries()) {
+						Scoreboards.getManager().resetScore(e);
+					}
+					PlayerUtils.broadcast(Main.prefix() + "Pregame board disabled.");
+					Main.killboard = false;
+				} else {
 					PlayerUtils.broadcast(Main.prefix() + "Pregame board enabled.");
 					Scoreboards.getManager().setScore("§a ", 10);
 					Scoreboards.getManager().setScore("§cArena:", 9);
@@ -545,16 +553,44 @@ public class PlayerListener implements Listener {
 					Scoreboards.getManager().setScore("§cScenarios:", 3);
 					Scoreboards.getManager().setScore("§7" + settings.getConfig().getString("game.scenarios"), 2);
 					Scoreboards.getManager().setScore("§d ", 1);
-				} else {
-					for (String e : Scoreboards.getManager().kills.getScoreboard().getEntries()) {
-						Scoreboards.getManager().resetScore(e);
-					}
-					PlayerUtils.broadcast(Main.prefix() + "Pregame board disabled.");
+					Main.killboard = true;
 				}
 			} else {
 				player.sendMessage(ChatColor.RED + "You do not have access to that command.");
 			}
 			event.setCancelled(true);
+		}
+		
+		if (event.getMessage().split(" ")[0].equalsIgnoreCase("/text")) {
+			event.setCancelled(true);
+			
+			ArrayList<String> ar = new ArrayList<String>();
+			for (String arg : event.getMessage().split(" ")) {
+				ar.add(arg);
+			}
+			ar.remove(0);
+			String[] args = ar.toArray(new String[ar.size()]);
+			
+			if (player.hasPermission("uhc.text")) {
+				if (args.length == 0) {
+					player.sendMessage(ChatColor.RED + "Usage: /text <message>");
+					return;
+				}
+				
+				StringBuilder bu = new StringBuilder();
+				
+				for (int i = 0; i < args.length; i++) {
+					bu.append(args[i]).append(" ");
+				}
+				
+				ArmorStand stand = player.getWorld().spawn(player.getLocation(), ArmorStand.class);
+				stand.setCustomName(ChatColor.translateAlternateColorCodes('&', bu.toString().trim()));
+				stand.setCustomNameVisible(true);
+				stand.setGravity(false);
+				stand.setVisible(false);
+			} else {
+				player.sendMessage(ChatColor.RED + "You do not have access to that command.");
+			}
 		}
 	}
 	
@@ -747,7 +783,12 @@ public class PlayerListener implements Listener {
 	}
 	
 	@EventHandler
-    public void onPlayerInteractPlayer(PlayerInteractEntityEvent event) {
+    public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
+		if (event.getRightClicked() instanceof ArmorStand) {
+			event.setCancelled(true);
+			return;
+		}
+		
 		if (!(event.getRightClicked() instanceof Player)) {
 			return;
 		}
