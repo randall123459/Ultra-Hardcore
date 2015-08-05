@@ -8,6 +8,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Damageable;
 import org.bukkit.entity.EnderPearl;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Ghast;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -63,7 +64,9 @@ public class EntityListener implements Listener {
 		Location loc = event.getLocation();
 		
 		if (loc.getWorld().getName().equals("lobby") || loc.getWorld().getName().equals("arena")) {
-			event.setCancelled(true);
+			if (event.getEntityType() != EntityType.ARMOR_STAND) {
+				event.setCancelled(true);
+			}
 		}
 	}
 	
@@ -88,7 +91,7 @@ public class EntityListener implements Listener {
     		    		event.getDrops().add(potion);
     				}
     			} else {
-    				if ((new Random().nextInt(99) + 1) <= 30) {
+    				if ((new Random().nextInt(99) + 1) <= 25) {
     		    		event.getDrops().add(potion);
     				}
     			}
