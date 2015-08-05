@@ -86,6 +86,7 @@ public class SpreadCommand implements CommandExecutor {
 					for (String e : Scoreboards.getManager().kills.getScoreboard().getEntries()) {
 						Scoreboards.getManager().resetScore(e);
 					}
+					Main.killboard = false;
 					Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer cancel");
 					
 					Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Main.plugin, new Runnable() {
