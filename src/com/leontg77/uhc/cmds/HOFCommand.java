@@ -40,6 +40,11 @@ public class HOFCommand implements CommandExecutor {
 			inv.clear();
 			inv2.clear();
 			
+			if (!settings.getConfig().contains(settings.getConfig().getString("game.host"))) {
+				settings.getConfig().createSection(settings.getConfig().getString("game.host"));
+				settings.saveConfig();
+			}
+			
 			for (String section : Settings.getInstance().getHOF().getConfigurationSection(settings.getConfig().getString("game.host")).getKeys(false)) {
 				ItemStack game = new ItemStack (Material.GOLDEN_APPLE);
 				ItemMeta meta = game.getItemMeta();
