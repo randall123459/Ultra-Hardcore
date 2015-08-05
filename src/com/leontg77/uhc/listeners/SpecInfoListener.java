@@ -472,7 +472,7 @@ public class SpecInfoListener implements Listener {
 					Damageable dmgr = killer;
 					
 					for (Player online : PlayerUtils.getPlayers()) {
-						if (Main.spectating.contains(online.getName()) && online.hasPermission("uhc.admin")) {
+						if (Main.spectating.contains(online.getName())) {
 							online.sendMessage("[§9S§f] §4PvP§f:§a" + killer.getName() + "§f-M>§c" + player.getName() + " §f[§a" + NumberUtils.convertDouble((dmgr.getHealth() / 2)) + "§f:§c" + NumberUtils.convertDouble((dmg.getHealth() / 2)) + "§f] [§6" + NumberUtils.convertDouble((damage / 2)) + "§f]");
 						}
 					}
