@@ -24,12 +24,10 @@ public class ScatterUtils {
 	 * @return List of scatter locations.
 	 */
 	public static List<Location> getScatterLocations(World world, int radius, int count) {
-		double minDisSq = mindis(radius, count);
-
 		List<Location> locs = new ArrayList<>();
 		
 		for (int i = 0; i < count; i++) {
-			double min = minDisSq;
+			double min = 150;
 			
 			for (int j = 0; j < 2002; j++) {
 				if (j == 2001) {
@@ -110,18 +108,5 @@ public class ScatterUtils {
 			}
 		}
 		return noHazard;
-	}
-	
-	/**
-	 * Find the minumun distance between players.
-	 * @param radius the max radius.
-	 * @param count amount of scatter locations.
-	 * @return The minimum distance.
-	 */
-	private static double mindis(int radius, int count) {
-		double totalColumns = (radius * 2) * (radius * 2);
-		double minDisSq = (totalColumns / (double) count);
-
-		return minDisSq;
 	}
 }
