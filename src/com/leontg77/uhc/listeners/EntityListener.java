@@ -20,6 +20,7 @@ import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.EntityPortalEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
@@ -29,6 +30,7 @@ import com.leontg77.uhc.Main;
 import com.leontg77.uhc.Main.State;
 import com.leontg77.uhc.scenario.ScenarioManager;
 import com.leontg77.uhc.util.NumberUtils;
+import com.leontg77.uhc.util.PortalUtils;
 
 public class EntityListener implements Listener {
 	
@@ -162,6 +164,9 @@ public class EntityListener implements Listener {
 		}
 		
 		if (damager instanceof EnderPearl) {
+			if (!Main.pearldamage) {
+				event.setCancelled(true);
+			}
 			return;
 		}
 		
@@ -216,4 +221,14 @@ public class EntityListener implements Listener {
 			online.sendMessage(Main.prefix() + killer.getName() + " got a longshot of §6" + NumberUtils.convertDouble(distance) + " §7blocks.");
 		}
 	}
+
+    @EventHandler
+    public void onEntityPortal(EntityPortalEvent event) {
+		if (Main.nether) {
+	        Location to = PortalUtils.getPossiblePortalLocation(event.getEntity(), event.getFrom(), event.getPortalTravelAgent());
+	        if (to != null) {
+	            event.setTo(to);
+	        }
+		}
+    }
 }
