@@ -18,9 +18,12 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
+import com.leontg77.uhc.Main;
+import com.leontg77.uhc.listeners.SpecInfoListener;
 import com.leontg77.uhc.scenario.Scenario;
 import com.leontg77.uhc.scenario.ScenarioManager;
 import com.leontg77.uhc.util.BlockUtils;
+import com.leontg77.uhc.util.PlayerUtils;
 
 public class CutClean extends Scenario implements Listener {
 	private boolean enabled = false;
@@ -98,6 +101,38 @@ public class CutClean extends Scenario implements Listener {
 			if (ScenarioManager.getManager().getScenario("Goldless").isEnabled()) {
 				return;
 			}
+			
+			if (SpecInfoListener.locs.contains(event.getBlock().getLocation())) {
+				return;
+			}
+			
+			Player player = event.getPlayer();
+			int amount = 0;
+			Location loc = event.getBlock().getLocation();
+			
+			for (int x = loc.getBlockX() - 1; x <= loc.getBlockX() + 1; x++) {
+				for (int y = loc.getBlockY() - 1; y <= loc.getBlockY() + 1; y++) {
+					for (int z = loc.getBlockZ() - 1; z <= loc.getBlockZ() + 1; z++) {
+						if (loc.getWorld().getBlockAt(x, y, z).getType() == Material.GOLD_ORE) {
+							amount++;
+							SpecInfoListener.locs.add(loc.getWorld().getBlockAt(x, y, z).getLocation());
+						}
+					}
+				}
+			}
+			
+			if (SpecInfoListener.totalG.containsKey(player.getName())) {
+				SpecInfoListener.totalG.put(player.getName(), SpecInfoListener.totalG.get(player.getName()) + amount);
+			} else {
+				SpecInfoListener.totalG.put(player.getName(), amount);
+			}
+			
+			for (Player online : PlayerUtils.getPlayers()) {
+				if (Main.spectating.contains(online.getName())) {
+					online.sendMessage("[§9S§f] §7" + player.getName() + "§f:§6GOLD §f[V:§6" + amount + "§f] [T:§6" + SpecInfoListener.totalG.get(player.getName()) + "§f]");
+				}
+			}
+			amount = 0;
 			
 			event.setCancelled(true);
 			BlockUtils.blockCrack(event.getPlayer(), block.getLocation(), 14);
