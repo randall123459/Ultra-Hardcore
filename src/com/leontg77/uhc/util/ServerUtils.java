@@ -6,6 +6,7 @@ import org.bukkit.Bukkit;
 
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.Main.State;
+import com.leontg77.uhc.Settings;
 
 /**
  * Server utilities class.
@@ -52,13 +53,40 @@ public class ServerUtils {
 		if (Main.ffa) {
 			if (Main.teamSize == 1) {
 				return "FFA";
-			} else if (Main.teamSize < 1) {
+			} else if (Main.teamSize == 0) {
 				return "No";
+			} else if (Main.teamSize < 0) {
+				return "Open";
 			} else {
 				return "rTo" + Main.teamSize;
 			}
 		} else {
 			return "To" + Main.teamSize;
 		}
+	}
+
+	public static String getCurrentHost() {
+		String host = Settings.getInstance().getConfig().getString("game.host");
+		
+		if (host.equalsIgnoreCase("YoureMad")) {
+			return "Axlur";
+		} else if (host.equalsIgnoreCase("LeonTG77")) {
+			return "Leon";
+		} else if (host.equalsIgnoreCase("Popcane")) {
+			return "Popcane";
+		}
+		
+		return null;
+	}
+
+	public static String getHost(String host) {
+		if (host.equalsIgnoreCase("YoureMad") || host.equalsIgnoreCase("axlur")) {
+			return "Axlur";
+		} else if (host.equalsIgnoreCase("LeonTG77") || host.equalsIgnoreCase("leon")) {
+			return "Leon";
+		} else if (host.equalsIgnoreCase("Popcane") || host.equalsIgnoreCase("pop")) {
+			return "Popcane";
+		}
+		return host;
 	}
 }
