@@ -136,7 +136,7 @@ public class ConfigCommand implements CommandExecutor, TabCompleter {
 					settings.getConfig().set("rates.flint.rate", f);
 					settings.saveConfig();
 
-					Main.shearrate = f;
+					Main.flintrate = f;
 					PlayerUtils.broadcast(Main.prefix() + "Flint rates are now §a" + f + "§7.");
 					break;
 				case GHASTDROPS:
