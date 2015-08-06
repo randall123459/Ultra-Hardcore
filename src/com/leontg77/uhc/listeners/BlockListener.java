@@ -4,10 +4,8 @@ import java.util.Random;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.TreeSpecies;
-import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
@@ -17,8 +15,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.LeavesDecayEvent;
-import org.bukkit.event.entity.EntityPortalEvent;
-import org.bukkit.event.player.PlayerPortalEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.Tree;
@@ -27,7 +23,6 @@ import org.bukkit.util.Vector;
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.Main.State;
 import com.leontg77.uhc.util.BlockUtils;
-import com.leontg77.uhc.util.PortalUtils;
 
 public class BlockListener implements Listener {
 
@@ -115,58 +110,4 @@ public class BlockListener implements Listener {
 			event.setCancelled(true);
 		}
 	}
-
-	@EventHandler
-    public void onPlayerPortal(PlayerPortalEvent event) {
-		if (Main.nether) {
-	        Location to = PortalUtils.getPossiblePortalLocation(event.getPlayer(), event.getFrom(), event.getPortalTravelAgent());
-	        if (to != null) {
-	            event.setTo(to);
-	        }
-		}
-		
-		if (Main.theend) {
-			String fromWorldName = event.getFrom().getWorld().getName();
-
-	        String targetWorldName;
-	        if (event.getFrom().getWorld().getEnvironment() == World.Environment.THE_END) {
-	            if (!fromWorldName.endsWith("_end")) {
-		        	event.getPlayer().sendMessage("The end has not been created.");
-	                return;
-	            }
-
-	            targetWorldName = fromWorldName.substring(0, fromWorldName.length() - 4);
-	        } else if (event.getFrom().getWorld().getEnvironment() == World.Environment.NORMAL) {
-	            if (!PortalUtils.isPortal(Material.ENDER_PORTAL, event.getFrom())) {
-	                return;
-	            }
-	            
-	            targetWorldName = fromWorldName + "_end";
-	        } else {
-	            return;
-	        }
-
-	        World targetWorld = Bukkit.getWorld(targetWorldName);
-	        if (targetWorld == null) {
-	        	event.getPlayer().sendMessage("The end has not been created.");
-	            return;
-	        }
-
-	        Location to = new Location(targetWorld, event.getFrom().getX(), event.getFrom().getY(), event.getFrom().getZ(), event.getFrom().getYaw(), event.getFrom().getPitch());
-	        to = event.getPortalTravelAgent().findOrCreate(to);
-	        if (to != null) {
-		        event.setTo(to);
-	        }
-		}
-    }
-
-    @EventHandler
-    public void onEntityPortal(EntityPortalEvent event) {
-		if (Main.nether) {
-	        Location to = PortalUtils.getPossiblePortalLocation(event.getEntity(), event.getFrom(), event.getPortalTravelAgent());
-	        if (to != null) {
-	            event.setTo(to);
-	        }
-		}
-    }
 }
