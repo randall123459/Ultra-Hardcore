@@ -16,13 +16,14 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import com.leontg77.uhc.Settings;
+import com.leontg77.uhc.util.ServerUtils;
 
 public class HOFCommand implements CommandExecutor {
 	public static HashMap<Player, Integer> page = new HashMap<Player, Integer>();
 	private static Settings settings = Settings.getInstance();
 	
-	public static Inventory inv = Bukkit.getServer().createInventory(null, 54, settings.getConfig().getString("game.host") + "'s Hall of Fame");
-	public static Inventory inv2 = Bukkit.getServer().createInventory(null, 54, settings.getConfig().getString("game.host") + "'s Hall of Fame");
+	public static Inventory inv;
+	public static Inventory inv2;
 
 	public boolean onCommand(CommandSender sender, Command cmd,	String label, String[] args) {
 		if (!(sender instanceof Player)) {
@@ -31,8 +32,26 @@ public class HOFCommand implements CommandExecutor {
 		}
 		
 		Player player = (Player) sender;
+		String host = ServerUtils.getCurrentHost();
 		
 		if (cmd.getName().equalsIgnoreCase("hof")) {
+			if (args.length > 0) {
+				host = ServerUtils.getHost(args[0]);
+			}
+			
+			if (host == null) {
+				sender.sendMessage(ChatColor.RED + "No one is currently hosting.");
+				return true;
+			}
+			
+			if (Settings.getInstance().getHOF().getConfigurationSection(host) == null) {
+				sender.sendMessage(ChatColor.RED + "That player has not hosted any games here.");
+				return true;
+			}
+			
+			inv = Bukkit.getServer().createInventory(null, 54, host + "'s Hall of Fame");
+			inv2 = Bukkit.getServer().createInventory(null, 54, host + "'s Hall of Fame");
+
 			page.put(player, 1);
 			
 			int i = 0;
@@ -40,27 +59,20 @@ public class HOFCommand implements CommandExecutor {
 			inv.clear();
 			inv2.clear();
 			
-			if (!settings.getConfig().contains(settings.getConfig().getString("game.host"))) {
-				settings.getConfig().createSection(settings.getConfig().getString("game.host"));
-				settings.saveConfig();
-			}
-			
-			for (String section : Settings.getInstance().getHOF().getConfigurationSection(settings.getConfig().getString("game.host")).getKeys(false)) {
+			for (String section : Settings.getInstance().getHOF().getConfigurationSection(host).getKeys(false)) {
 				ItemStack game = new ItemStack (Material.GOLDEN_APPLE);
 				ItemMeta meta = game.getItemMeta();
-				meta.setDisplayName(ChatColor.GOLD + settings.getConfig().getString("game.host") + "'s #" + section);
+				meta.setDisplayName(ChatColor.GOLD + host + "'s #" + section);
 				ArrayList<String> lore = new ArrayList<String>();
 				lore.add(" ");
 				lore.add("§aWinners: ");
-				for (String winners : settings.getHOF().getStringList(settings.getConfig().getString("game.host") + "." + section + ".winners")) {
+				for (String winners : settings.getHOF().getStringList(host + "." + section + ".winners")) {
 					lore.add("§7" + winners);
 				}
 				lore.add(" ");
-				lore.add("§aKills: §7" + settings.getHOF().getString(settings.getConfig().getString("game.host") + "." + section + ".kills"));
-				lore.add("§aTeamsize: §7" + settings.getHOF().getString(settings.getConfig().getString("game.host") + "." + section + ".teamsize"));
-				lore.add("§aGamemodes: §7" + settings.getHOF().getString(settings.getConfig().getString("game.host") + "." + section + ".scenarios"));
-				lore.add(" ");
-				lore.add("§aMatch post: §7" + settings.getHOF().getString(settings.getConfig().getString("game.host") + "." + section + ".post"));
+				lore.add("§aKills: §7" + settings.getHOF().getString(host + "." + section + ".kills"));
+				lore.add("§aTeamsize: §7" + settings.getHOF().getString(host + "." + section + ".teamsize"));
+				lore.add("§aGamemodes: §7" + settings.getHOF().getString(host + "." + section + ".scenarios"));
 				lore.add(" ");
 				meta.setLore(lore);
 				game.setItemMeta(meta);
