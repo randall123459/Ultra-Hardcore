@@ -41,7 +41,7 @@ import com.leontg77.uhc.util.PlayerUtils;
 public class SpecInfoListener implements Listener {
 	public static HashMap<String, Integer> totalD = new HashMap<String, Integer>();
 	public static HashMap<String, Integer> totalG = new HashMap<String, Integer>();
-	private ArrayList<Location> locs = new ArrayList<Location>();
+	public static ArrayList<Location> locs = new ArrayList<Location>();
 
 	@EventHandler
 	public void onMineDiamond(BlockBreakEvent event) {
