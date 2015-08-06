@@ -39,6 +39,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerLoginEvent.Result;
+import org.bukkit.event.player.PlayerPortalEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.server.ServerListPingEvent;
@@ -69,6 +70,7 @@ import com.leontg77.uhc.cmds.VoteCommand;
 import com.leontg77.uhc.scenario.ScenarioManager;
 import com.leontg77.uhc.util.BlockUtils;
 import com.leontg77.uhc.util.PlayerUtils;
+import com.leontg77.uhc.util.PortalUtils;
 import com.leontg77.uhc.util.RecipeUtils;
 import com.leontg77.uhc.util.ServerUtils;
 
@@ -123,6 +125,8 @@ public class PlayerListener implements Listener {
 		player.sendMessage("§8---------------------------");
 		if (ServerUtils.getTeamSize().equals("No")) {
 			player.sendMessage(" §8» §cNo games scheduled");
+		} else if (ServerUtils.getTeamSize().equals("Open")) {
+			player.sendMessage(" §8» §7Open PvP, use §a/a §7to join.");
 		} else {
 			player.sendMessage(" §8» §aHost: §7" + Settings.getInstance().getConfig().getString("game.host"));
 			player.sendMessage(" §8» §aTeamsize: §7" + ServerUtils.getTeamSize());
@@ -543,16 +547,32 @@ public class PlayerListener implements Listener {
 					Main.killboard = false;
 				} else {
 					PlayerUtils.broadcast(Main.prefix() + "Pregame board enabled.");
-					Scoreboards.getManager().setScore("§a ", 10);
-					Scoreboards.getManager().setScore("§cArena:", 9);
-					Scoreboards.getManager().setScore("§7/a ", 8);
-					Scoreboards.getManager().setScore("§b ", 7);
-					Scoreboards.getManager().setScore("§cTeamsize:", 6);
-					Scoreboards.getManager().setScore("§7" + ServerUtils.getTeamSize(), 5);
-					Scoreboards.getManager().setScore("§c ", 4);
-					Scoreboards.getManager().setScore("§cScenarios:", 3);
-					Scoreboards.getManager().setScore("§7" + settings.getConfig().getString("game.scenarios"), 2);
-					Scoreboards.getManager().setScore("§d ", 1);
+					if (Main.ffa) {
+						Scoreboards.getManager().setScore("§a ", 10);
+						Scoreboards.getManager().setScore("§cArena:", 9);
+						Scoreboards.getManager().setScore("§7/a ", 8);
+						Scoreboards.getManager().setScore("§b ", 7);
+						Scoreboards.getManager().setScore("§cTeamsize:", 6);
+						Scoreboards.getManager().setScore("§7" + ServerUtils.getTeamSize(), 5);
+						Scoreboards.getManager().setScore("§c ", 4);
+						Scoreboards.getManager().setScore("§cScenarios:", 3);
+						Scoreboards.getManager().setScore("§7" + settings.getConfig().getString("game.scenarios"), 2);
+						Scoreboards.getManager().setScore("§d ", 1);
+					} else {
+						Scoreboards.getManager().setScore("§a ", 13);
+						Scoreboards.getManager().setScore("§cTeam:", 12);
+						Scoreboards.getManager().setScore("§7/team", 11);
+						Scoreboards.getManager().setScore("§e ", 10);
+						Scoreboards.getManager().setScore("§cArena:", 9);
+						Scoreboards.getManager().setScore("§7/a", 8);
+						Scoreboards.getManager().setScore("§b ", 7);
+						Scoreboards.getManager().setScore("§cTeamsize:", 6);
+						Scoreboards.getManager().setScore("§7" + ServerUtils.getTeamSize(), 5);
+						Scoreboards.getManager().setScore("§c ", 4);
+						Scoreboards.getManager().setScore("§cScenarios:", 3);
+						Scoreboards.getManager().setScore("§7" + settings.getConfig().getString("game.scenarios"), 2);
+						Scoreboards.getManager().setScore("§d ", 1);
+					}
 					Main.killboard = true;
 				}
 			} else {
@@ -665,7 +685,12 @@ public class PlayerListener implements Listener {
 	@EventHandler(priority = EventPriority.HIGH)
     public void onPlayerInteract(PlayerInteractEvent event) {	
         Player player = event.getPlayer();
-		
+        
+        if (event.getClickedBlock() != null && event.getClickedBlock().getType() == Material.FIRE && player.getWorld().getName().equals("lobby")) {
+        	event.setCancelled(true);
+        	return;
+        }
+        
 		if (!Main.spectating.contains(player.getName())) {
 			return;
 		}
@@ -802,6 +827,50 @@ public class PlayerListener implements Listener {
 			}
 			
 			InvGUI.getManager().openInv(player, clicked);
+		}
+    }
+
+	@EventHandler
+    public void onPlayerPortal(PlayerPortalEvent event) {
+		if (Main.nether) {
+	        Location to = PortalUtils.getPossiblePortalLocation(event.getPlayer(), event.getFrom(), event.getPortalTravelAgent());
+	        if (to != null) {
+	            event.setTo(to);
+	        }
+		}
+		
+		if (Main.theend) {
+			String fromWorldName = event.getFrom().getWorld().getName();
+
+	        String targetWorldName;
+	        if (event.getFrom().getWorld().getEnvironment() == World.Environment.THE_END) {
+	            if (!fromWorldName.endsWith("_end")) {
+		        	event.getPlayer().sendMessage("The end has not been created.");
+	                return;
+	            }
+
+	            targetWorldName = fromWorldName.substring(0, fromWorldName.length() - 4);
+	        } else if (event.getFrom().getWorld().getEnvironment() == World.Environment.NORMAL) {
+	            if (!PortalUtils.isPortal(Material.ENDER_PORTAL, event.getFrom())) {
+	                return;
+	            }
+	            
+	            targetWorldName = fromWorldName + "_end";
+	        } else {
+	            return;
+	        }
+
+	        World targetWorld = Bukkit.getWorld(targetWorldName);
+	        if (targetWorld == null) {
+	        	event.getPlayer().sendMessage("The end has not been created.");
+	            return;
+	        }
+
+	        Location to = new Location(targetWorld, event.getFrom().getX(), event.getFrom().getY(), event.getFrom().getZ(), event.getFrom().getYaw(), event.getFrom().getPitch());
+	        to = event.getPortalTravelAgent().findOrCreate(to);
+	        if (to != null) {
+		        event.setTo(to);
+	        }
 		}
     }
 	
