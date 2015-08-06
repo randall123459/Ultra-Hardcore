@@ -67,6 +67,8 @@ public class ArenaCommand implements CommandExecutor {
 							Bukkit.getWorld("arena").getWorldBorder().setWarningTime(60);
 							Bukkit.getWorld("arena").getWorldBorder().setDamageAmount(0.1);
 							Bukkit.getWorld("arena").getWorldBorder().setDamageBuffer(50);
+							Bukkit.getWorld("arena").setGameRuleValue("doDaylightCycle", "false");
+							Bukkit.getWorld("arena").setTime(6000);
 							
 							PlayerUtils.broadcast(Main.prefix() + "Borders setup, pregenning arena world.");
 						}
