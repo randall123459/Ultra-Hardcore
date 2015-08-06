@@ -94,21 +94,23 @@ public class EndCommand implements CommandExecutor {
 					}
 				}
 				
-				String host = settings.getConfig().getString("game.host");
+				String host = ServerUtils.getCurrentHost();
 				
-				if (!settings.getHOF().contains(host)) {
-					settings.getHOF().createSection(host);
+				if (settings.getHOF().getConfigurationSection(host) == null) {
+					settings.getHOF().set(host + "." + 1 + ".winners", winners);
+					settings.getHOF().set(host + "." + 1 + ".kills", kills);
+					settings.getHOF().set(host + "." + 1 + ".teamsize", ServerUtils.getTeamSize());
+					settings.getHOF().set(host + "." + 1 + ".scenarios", settings.getConfig().getString("game.scenarios"));
+					settings.saveHOF();
+				} else {
+					int id = settings.getHOF().getConfigurationSection(host).getKeys(false).size() + 1;
+				
+					settings.getHOF().set(host + "." + id + ".winners", winners);
+					settings.getHOF().set(host + "." + id + ".kills", kills);
+					settings.getHOF().set(host + "." + id + ".teamsize", ServerUtils.getTeamSize());
+					settings.getHOF().set(host + "." + id + ".scenarios", settings.getConfig().getString("game.scenarios"));
 					settings.saveHOF();
 				}
-				
-				int id = settings.getHOF().getConfigurationSection(host).getKeys(false).size() + 1;
-				
-				settings.getHOF().set(host + "." + id + ".winners", winners);
-				settings.getHOF().set(host + "." + id + ".kills", kills);
-				settings.getHOF().set(host + "." + id + ".teamsize", ServerUtils.getTeamSize());
-				settings.getHOF().set(host + "." + id + ".scenarios", settings.getConfig().getString("game.scenarios"));
-				settings.getHOF().set(host + "." + id + ".post", settings.getConfig().getString("matchpost"));
-				settings.saveHOF();
 				
 				for (Player online : Bukkit.getServer().getOnlinePlayers()) {
 					online.sendMessage(Main.prefix() + "The UHC has ended, the winners are " + win.toString().trim() + " with " + kills + " kills.");
