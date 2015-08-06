@@ -33,7 +33,7 @@ public class Lootcrates extends Scenario implements Listener {
 			this.task = new BukkitRunnable() {
 				public void run() {
 					for (Player online : PlayerUtils.getPlayers()) {
-						int i = new Random().nextInt(1);
+						int i = new Random().nextInt(2);
 						
 						if (i == 1) {
 							online.getInventory().addItem(new ItemStack (Material.ENDER_CHEST));
