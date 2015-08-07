@@ -279,7 +279,7 @@ public class PlayerListener implements Listener {
 		
 		if (!Arena.getManager().isEnabled() && !State.isState(State.LOBBY)) {
 			player.sendMessage(Main.prefix() + "§7Thanks for playing our game, it really means a lot :)");
-			player.sendMessage(Main.prefix() + "§7Follow us on twtter to know when our next games are: @LeonUHC");
+			player.sendMessage(Main.prefix() + "§7Follow us on twtter to know when our next games are: @ArcticUHC");
 			if (player.hasPermission("uhc.prelist")) {
 				player.sendMessage("§8§l» §7You will be put into spectator mode in 15 seconds. (No spoiling please)");
 				
