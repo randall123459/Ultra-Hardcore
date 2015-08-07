@@ -76,6 +76,16 @@ commands:
     description: Set the health of a player.
   setmaxhealth:
     description: Set the max health of a player.
+  skull:
+    description: Spawn a player head.
+  spectate:
+    description: Change your spectator status.
+  setspawn:
+    description: Set the lobby spawn point.
+  speed:
+    description: Change your fly/walk speed
+  spread:
+    description: Spread all players and freeze them.
   ac:
     description: StaffChat Command
     aliases: [sc]
