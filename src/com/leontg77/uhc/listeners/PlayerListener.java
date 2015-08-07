@@ -103,7 +103,7 @@ public class PlayerListener implements Listener {
 			player.getInventory().clear();
 			player.getInventory().setArmorContents(null);
 			
-			Spectator.getManager().set(player, true);
+			Spectator.getManager().set(player, true, false);
 		}
 		
 		if (State.isState(State.INGAME) && !player.isWhitelisted() && !Main.spectating.contains(player.getName())) {
@@ -113,7 +113,7 @@ public class PlayerListener implements Listener {
 			player.getInventory().setArmorContents(null);
 			player.setExp(0);
 			
-			Spectator.getManager().set(player, true);
+			Spectator.getManager().set(player, true, false);
 		}
 		
 		if (!Main.spectating.contains(player.getName())) {
@@ -281,25 +281,25 @@ public class PlayerListener implements Listener {
 			player.sendMessage(Main.prefix() + "§7Thanks for playing our game, it really means a lot :)");
 			player.sendMessage(Main.prefix() + "§7Follow us on twtter to know when our next games are: @LeonUHC");
 			if (player.hasPermission("uhc.prelist")) {
-				player.sendMessage("§8§l» §7You will be put into spectator mode in 30 seconds. (No spoiling please)");
+				player.sendMessage("§8§l» §7You will be put into spectator mode in 15 seconds. (No spoiling please)");
 				
 				Bukkit.getServer().getScheduler().runTaskLater(Main.plugin, new Runnable() {
 					public void run() {
 						if (!State.isState(State.LOBBY) && player.isOnline() && !Main.spectating.contains(player.getName())) {
-							Spectator.getManager().set(player, true);
+							Spectator.getManager().set(player, true, false);
 						}
 					}
-				}, 600);
+				}, 300);
 			} else {
-				player.sendMessage("§8§l» §7You have 30 seconds to say your goodbyes. (No spoiling please)");
+				player.sendMessage("§8§l» §7You have 45 seconds to say your goodbyes. (No spoiling please)");
 				
 				Bukkit.getServer().getScheduler().runTaskLater(Main.plugin, new Runnable() {
 					public void run() {
-						if (!State.isState(State.LOBBY) && player.isOnline()) {
-							player.kickPlayer("§8§l» §7Thanks for playing! §8§l«");
+						if (!State.isState(State.LOBBY) && player.isOnline() && !Main.spectating.contains(player.getName())) {
+							player.kickPlayer("§8» §7Thanks for playing! §8«");
 						}
 					}
-				}, 600);
+				}, 900);
 			}
 		}
 	}
@@ -367,11 +367,6 @@ public class PlayerListener implements Listener {
 			if (settings.getConfig().getString("game.host").equals(player.getName())) {
 				PlayerUtils.broadcast("§4§lHost §8| §f" + (team != null ? (team.getName().equals("spec") ? player.getName() : team.getPrefix() + player.getName()) : player.getName()) + "§8 » §f" + event.getMessage());
 			} else {
-				if (Main.muted) {
-					player.sendMessage(Main.prefix() + "All players are muted.");
-					event.setCancelled(true);
-					return;
-				}
 				if (data.isMuted()) {
 					player.sendMessage(Main.prefix() + "You have been muted.");
 					event.setCancelled(true);
@@ -382,12 +377,6 @@ public class PlayerListener implements Listener {
 			}	
 		}
 		else if (PermissionsEx.getUser(player).inGroup("Staff")) {
-			if (Main.muted) {
-				player.sendMessage(Main.prefix() + "All players are muted.");
-				event.setCancelled(true);
-				return;
-			}
-			
 			if (data.isMuted()) {
 				player.sendMessage(Main.prefix() + "You have been muted.");
 				event.setCancelled(true);
@@ -624,7 +613,7 @@ public class PlayerListener implements Listener {
 				return;
 			}
 
-			event.setKickMessage("§8§l» §cBanned: §7" + Bukkit.getBanList(Type.NAME).getBanEntry(player.getName()).getReason() + " §8§l«");
+			event.setKickMessage("§8» §cBanned: §7" + Bukkit.getBanList(Type.NAME).getBanEntry(player.getName()).getReason() + " §8«");
 			return;
 		}
 		
@@ -634,7 +623,7 @@ public class PlayerListener implements Listener {
 				return;
 			}
 			
-			event.setKickMessage("§8§l» §7You are not whitelisted §8§l«");
+			event.setKickMessage("§8» §7You are not whitelisted §8«");
 			return;
 		}
 		
@@ -643,7 +632,7 @@ public class PlayerListener implements Listener {
 				event.allow();
 				return;
 			} 
-			event.disallow(Result.KICK_FULL, "§8§l» §7The server is full §8§l«");
+			event.disallow(Result.KICK_FULL, "§8» §7The server is full §8«");
 		} else {
 			event.allow();
 		}
@@ -866,11 +855,23 @@ public class PlayerListener implements Listener {
 	            return;
 	        }
 
-	        Location to = new Location(targetWorld, event.getFrom().getX(), event.getFrom().getY(), event.getFrom().getZ(), event.getFrom().getYaw(), event.getFrom().getPitch());
-	        to = event.getPortalTravelAgent().findOrCreate(to);
-	        if (to != null) {
-		        event.setTo(to);
-	        }
+	        Location to = new Location(targetWorld, 100.0, 49, 0, 90f, 0f);
+
+			for (int y = to.getBlockY() - 1; y <= to.getBlockY() + 2; y++) {
+				for (int x = to.getBlockX() - 2; x <= to.getBlockX() + 2; x++) {
+					for (int z = to.getBlockZ() - 2; z <= to.getBlockZ() + 2; z++) {
+						if (y == 48) {
+							to.getWorld().getBlockAt(x, y, z).setType(Material.OBSIDIAN);
+							to.getWorld().getBlockAt(x, y, z).getState().update();
+						} else {
+							to.getWorld().getBlockAt(x, y, z).setType(Material.AIR);
+							to.getWorld().getBlockAt(x, y, z).getState().update();
+						}
+					}
+				}
+			}
+			
+			event.setTo(to);
 		}
     }
 	
