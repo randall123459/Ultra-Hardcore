@@ -3,6 +3,7 @@ package com.leontg77.uhc.cmds;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -10,6 +11,7 @@ import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -18,7 +20,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import com.leontg77.uhc.Settings;
 import com.leontg77.uhc.util.ServerUtils;
 
-public class HOFCommand implements CommandExecutor {
+public class HOFCommand implements CommandExecutor, TabCompleter {
 	public static HashMap<Player, Integer> page = new HashMap<Player, Integer>();
 	private static Settings settings = Settings.getInstance();
 	
@@ -103,5 +105,33 @@ public class HOFCommand implements CommandExecutor {
 			player.openInventory(inv);
 		}
 		return true;
+	}
+	
+	public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {
+		if (cmd.getName().equalsIgnoreCase("hof")) {
+			if (args.length == 1) {
+	        	ArrayList<String> arg = new ArrayList<String>();
+	        	ArrayList<String> types = new ArrayList<String>();
+	        	types.add("Axlur");
+	        	types.add("Leon");
+	        	types.add("Polar");
+	        	types.add("Pop");
+	        	
+	        	if (!args[0].equals("")) {
+	        		for (String type : types) {
+	        			if (type.toLowerCase().startsWith(args[0].toLowerCase())) {
+	        				arg.add(type);
+	        			}
+	        		}
+	        	}
+	        	else {
+	        		for (String type : types) {
+        				arg.add(type);
+	        		}
+	        	}
+	        	return arg;
+	        }
+		}
+		return null;
 	}
 }
