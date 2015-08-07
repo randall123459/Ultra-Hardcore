@@ -239,8 +239,6 @@ public class SpreadCommand implements CommandExecutor {
 								PlayerUtils.broadcast(Main.prefix() + "- §a" + target.getName() + " §7has been scattered.");
 								scatterLocs.remove(target.getName());
 							}
-						
-							PlayerUtils.broadcast(Main.prefix() + "Scatter for §a" + target.getName() + "§7 finished.");
 						}
 					}, 60);
 				}
