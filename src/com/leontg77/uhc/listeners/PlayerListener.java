@@ -328,7 +328,7 @@ public class PlayerListener implements Listener {
 					event.setCancelled(true);
 					return;
 				}
-				player.sendMessage(Main.prefix() + "Vote voted yes.");
+				player.sendMessage(Main.prefix() + "You voted yes.");
 				VoteCommand.yes++;
 				event.setCancelled(true);
 				Main.voted.add(player.getName());
