@@ -8,6 +8,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.leontg77.uhc.Data;
+import com.leontg77.uhc.util.NumberUtils;
 
 public class StatsCommand implements CommandExecutor {
 	
@@ -27,7 +28,7 @@ public class StatsCommand implements CommandExecutor {
 					if (data.getStat("deaths") == 0) {
 						player.sendMessage(" §8» §aK/D: §7" + data.getStat("kills"));
 					} else {
-						player.sendMessage(" §8» §aK/D: §7" + (data.getStat("kills") / data.getStat("deaths")));
+						player.sendMessage(" §8» §aK/D: §7" + NumberUtils.convertDouble((((double) data.getStat("kills")) / ((double) data.getStat("deaths")))));
 					}
 					player.sendMessage(" §8» §aGames played: §7" + data.getStat("gamesplayed"));
 					player.sendMessage(" §8» §aArena kills: §7" + data.getStat("arenakills"));
@@ -35,7 +36,7 @@ public class StatsCommand implements CommandExecutor {
 					if (data.getStat("arenadeaths") == 0) {
 						player.sendMessage(" §8» §aArena K/D: §7" + data.getStat("arenakills"));
 					} else {
-						player.sendMessage(" §8» §aArena K/D: §7" + (data.getStat("arenakills") / data.getStat("arenadeaths")));
+						player.sendMessage(" §8» §aArena K/D: §7" + NumberUtils.convertDouble((((double) data.getStat("arenakills")) / ((double) data.getStat("arenadeaths")))));
 					}
 					player.sendMessage("§8---------------------------");
 				} else {
@@ -62,7 +63,7 @@ public class StatsCommand implements CommandExecutor {
 			if (data.getStat("deaths") == 0) {
 				sender.sendMessage(" §8» §aK/D: §7" + data.getStat("kills"));
 			} else {
-				sender.sendMessage(" §8» §aK/D: §7" + (data.getStat("kills") / data.getStat("deaths")));
+				sender.sendMessage(" §8» §aK/D: §7" + NumberUtils.convertDouble((((double) data.getStat("kills")) / ((double) data.getStat("deaths")))));
 			}
 			sender.sendMessage(" §8» §aGames played: §7" + data.getStat("gamesplayed"));
 			sender.sendMessage(" §8» §aArena kills: §7" + data.getStat("arenakills"));
@@ -70,7 +71,7 @@ public class StatsCommand implements CommandExecutor {
 			if (data.getStat("arenadeaths") == 0) {
 				sender.sendMessage(" §8» §aArena K/D: §7" + data.getStat("arenakills"));
 			} else {
-				sender.sendMessage(" §8» §aArena K/D: §7" + (data.getStat("arenakills") / data.getStat("arenadeaths")));
+				sender.sendMessage(" §8» §aArena K/D: §7" + NumberUtils.convertDouble((((double) data.getStat("arenakills")) / ((double) data.getStat("arenadeaths")))));
 			}
 			sender.sendMessage("§8---------------------------");
 		}
