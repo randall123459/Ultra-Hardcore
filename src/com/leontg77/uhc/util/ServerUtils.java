@@ -72,6 +72,8 @@ public class ServerUtils {
 			return "Axlur";
 		} else if (host.equalsIgnoreCase("LeonTG77")) {
 			return "Leon";
+		} else if (host.equalsIgnoreCase("PolarBlunk")) {
+			return "Polar";
 		} else if (host.equalsIgnoreCase("Popcane")) {
 			return "Popcane";
 		}
@@ -84,6 +86,8 @@ public class ServerUtils {
 			return "Axlur";
 		} else if (host.equalsIgnoreCase("LeonTG77") || host.equalsIgnoreCase("leon")) {
 			return "Leon";
+		} else if (host.equalsIgnoreCase("polar") || host.equalsIgnoreCase("polarblunk")) {
+			return "Polar";
 		} else if (host.equalsIgnoreCase("Popcane") || host.equalsIgnoreCase("pop")) {
 			return "Popcane";
 		}
