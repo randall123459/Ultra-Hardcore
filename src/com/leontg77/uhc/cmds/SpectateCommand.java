@@ -29,17 +29,17 @@ public class SpectateCommand implements CommandExecutor, TabCompleter {
 					if (sender instanceof Player) {
 						Player player = (Player) sender;
 						if (args[0].equalsIgnoreCase("toggle")) {
-							Spectator.getManager().toggle(player);
+							Spectator.getManager().toggle(player, true);
 							return true;
 						}
 						
 						if (args[0].equalsIgnoreCase("on")) {
-							Spectator.getManager().set(player, true);
+							Spectator.getManager().set(player, true, true);
 							return true;
 						}
 						
 						if (args[0].equalsIgnoreCase("off")) {
-							Spectator.getManager().set(player, false);
+							Spectator.getManager().set(player, false, true);
 							return true;
 						}
 						player.sendMessage(ChatColor.RED + "Usage: /spec <on|off|toggle> [player]");
@@ -58,17 +58,17 @@ public class SpectateCommand implements CommandExecutor, TabCompleter {
 					} 
 					
 					if (args[0].equalsIgnoreCase("toggle")) {
-						Spectator.getManager().toggle(target);
+						Spectator.getManager().toggle(target, true);
 						return true;
 					}
 					
 					if (args[0].equalsIgnoreCase("on")) {
-						Spectator.getManager().set(target, true);
+						Spectator.getManager().set(target, true, true);
 						return true;
 					}
 					
 					if (args[0].equalsIgnoreCase("off")) {
-						Spectator.getManager().set(target, false);
+						Spectator.getManager().set(target, false, true);
 			    		return true;
 					}
 					sender.sendMessage(ChatColor.RED + "Usage: /spec <on|off|toggle> [player]");
@@ -76,17 +76,17 @@ public class SpectateCommand implements CommandExecutor, TabCompleter {
 					if (sender instanceof Player) {
 						Player player = (Player) sender;
 						if (args[0].equalsIgnoreCase("toggle")) {
-							Spectator.getManager().toggle(player);
+							Spectator.getManager().toggle(player, true);
 							return true;
 						}
 						
 						if (args[0].equalsIgnoreCase("on")) {
-							Spectator.getManager().set(player, true);
+							Spectator.getManager().set(player, true, true);
 							return true;
 						}
 						
 						if (args[0].equalsIgnoreCase("off")) {
-							Spectator.getManager().set(player, false);
+							Spectator.getManager().set(player, false, true);
 							return true;
 						}
 						player.sendMessage(ChatColor.RED + "Usage: /spec <on|off|toggle> [player]");

@@ -115,7 +115,7 @@ public class EndCommand implements CommandExecutor {
 				for (Player online : Bukkit.getServer().getOnlinePlayers()) {
 					online.sendMessage(Main.prefix() + "The UHC has ended, the winners are " + win.toString().trim() + " with " + kills + " kills.");
 					if (Main.spectating.contains(online.getName())) {
-						Spectator.getManager().set(online, false);
+						Spectator.getManager().set(online, false, false);
 					}
 					online.setMaxHealth(20.0);
 					online.setHealth(20.0);

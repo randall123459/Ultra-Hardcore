@@ -53,7 +53,7 @@ public class Runnables extends BukkitRunnable {
 					for (Player online : PlayerUtils.getPlayers()) {
 						online.playSound(online.getLocation(), Sound.SUCCESSFUL_HIT, 1, 1);
 						if (Main.spectating.contains(online.getName())) {
-							Spectator.getManager().set(online, false);
+							Spectator.getManager().set(online, false, false);
 						}
 						
 						if (!Main.spectating.contains(online.getName())) {
