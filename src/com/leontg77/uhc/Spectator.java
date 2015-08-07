@@ -36,11 +36,13 @@ public class Spectator {
 	 * @param player the player you're setting for.
 	 * @param enable true or false if what you want for spectating.
 	 */
-	public void set(Player player, boolean enable) {
+	public void set(Player player, boolean enable, boolean command) {
 		if (enable) {
-			if (Main.spectating.contains(player.getName())) {
-				player.sendMessage(Main.prefix() + "You are already spectating.");
-				return;
+			if (command) {
+				if (Main.spectating.contains(player.getName())) {
+					player.sendMessage(Main.prefix() + "You are already spectating.");
+					return;
+				}
 			}
 
 			player.sendMessage(Main.prefix() + "You are now spectating, Don't spoil ANYTHING.");
@@ -90,7 +92,10 @@ public class Spectator {
 			player.setFlying(true);
 			player.setFlySpeed((float) 0.1);
 			
-			Main.spectating.add(player.getName());
+
+			if (!Main.spectating.contains(player.getName())) {
+				Main.spectating.add(player.getName());
+			}
 			
 			Teams.getManager().joinTeam("spec", player);
 			
@@ -105,9 +110,11 @@ public class Spectator {
 				player.showPlayer(online);
 			}
 		} else {
-			if (!Main.spectating.contains(player.getName())) {
-				player.sendMessage(Main.prefix() + "You are not spectating.");
-				return;
+			if (command) {
+				if (!Main.spectating.contains(player.getName())) {
+					player.sendMessage(Main.prefix() + "You are not spectating.");
+					return;
+				}
 			}
 			
 			player.sendMessage(Main.prefix() + "You are no longer spectating.");
@@ -119,8 +126,10 @@ public class Spectator {
 			if (Teams.getManager().getTeam(player) != null) {
 				Teams.getManager().leaveTeam(player);
 			}
-			
-			Main.spectating.remove(player.getName());
+
+			if (Main.spectating.contains(player.getName())) {
+				Main.spectating.remove(player.getName());
+			}
 			
 			player.removePotionEffect(PotionEffectType.NIGHT_VISION);
 			player.getInventory().clear();
@@ -141,11 +150,11 @@ public class Spectator {
 	 * Toggles the players spectator mode.
 	 * @param player the player toggling.
 	 */
-	public void toggle(Player player) {
+	public void toggle(Player player, boolean command) {
 		if (Main.spectating.contains(player.getName())) {
-			this.set(player, false);
+			this.set(player, false, command);
 		} else {
-			this.set(player, true);
+			this.set(player, true, command);
 		}
 	}
 	
