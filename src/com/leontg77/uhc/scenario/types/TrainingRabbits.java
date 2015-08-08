@@ -1,5 +1,7 @@
 package com.leontg77.uhc.scenario.types;
 
+import java.util.HashMap;
+
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -13,6 +15,7 @@ import com.leontg77.uhc.scenario.Scenario;
 import com.leontg77.uhc.util.PlayerUtils;
 
 public class TrainingRabbits extends Scenario implements Listener {
+	public static HashMap<String, Integer> jump = new HashMap<String, Integer>();
 	private boolean enabled = false;
 
 	public TrainingRabbits() {
@@ -25,11 +28,13 @@ public class TrainingRabbits extends Scenario implements Listener {
 		if (enable) {
 			for (Player online : PlayerUtils.getPlayers()) {
 				online.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 1726272000, 1));
+				jump.put(online.getName(), 1);
 			}
 		} else {
 			for (Player online : PlayerUtils.getPlayers()) {
 				online.removePotionEffect(PotionEffectType.JUMP);
 			}
+			jump.clear();
 		}
 	}
 
@@ -49,14 +54,14 @@ public class TrainingRabbits extends Scenario implements Listener {
 
 		Player player = event.getEntity().getKiller();
 
-		int level = 1;
-		
-		for (PotionEffect effect : player.getActivePotionEffects()) {
-			if (effect.getType() == PotionEffectType.JUMP) {
-				level = effect.getAmplifier() + 1;
-				break;
-			}
+		if (jump.containsKey(player.getName())) {
+			jump.put(player.getName(), jump.get(player.getName()) + 1);
+		} else {
+			jump.put(player.getName(), 2);
 		}
+		
+		
+		int level = jump.get(player.getName());
 		
 		player.removePotionEffect(PotionEffectType.JUMP);
 		player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 1726272000, level));
