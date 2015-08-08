@@ -86,6 +86,8 @@ public class PlayerListener implements Listener {
 		data.getFile().set("username", player.getName());
 		data.saveFile();
 		
+		player.setNoDamageTicks(0);
+		
 		Spectator.getManager().hideAll(player);
 		PlayerUtils.handlePermissions(player);
 		PlayerUtils.setTabList(player);
