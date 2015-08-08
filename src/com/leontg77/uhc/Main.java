@@ -83,6 +83,7 @@ import com.leontg77.uhc.listeners.EntityListener;
 import com.leontg77.uhc.listeners.PlayerListener;
 import com.leontg77.uhc.listeners.SpecInfoListener;
 import com.leontg77.uhc.listeners.WeatherListener;
+import com.leontg77.uhc.scenario.Scenario;
 import com.leontg77.uhc.scenario.ScenarioManager;
 import com.leontg77.uhc.util.PlayerUtils;
 
@@ -136,6 +137,16 @@ public class Main extends JavaPlugin {
 		
 		settings.getData().set("state", State.getState().name());
 		settings.saveData();
+		
+		ArrayList<String> scens = new ArrayList<String>();
+		
+		for (Scenario scen : ScenarioManager.getManager().getEnabledScenarios()) {
+			scens.add(scen.getName());
+		}
+		
+		settings.getData().set("scenarios", scens);
+		settings.saveData();
+		
 		plugin = null;
 	}
 	
@@ -254,6 +265,10 @@ public class Main extends JavaPlugin {
 				j++;
 			}
 			Bukkit.getLogger().info("§a[UHC] Deleted " + j + " player stats files.");
+		}
+		
+		for (String scen : settings.getData().getStringList("scenarios")) {
+			ScenarioManager.getManager().getScenario(scen).setEnabled(true);
 		}
 		
 		Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
