@@ -34,6 +34,7 @@ import com.leontg77.uhc.scenario.types.Kings;
 import com.leontg77.uhc.scenario.types.Krenzinator;
 import com.leontg77.uhc.scenario.types.LAFS;
 import com.leontg77.uhc.scenario.types.Lootcrates;
+import com.leontg77.uhc.scenario.types.MeleeFun;
 import com.leontg77.uhc.scenario.types.Moles;
 import com.leontg77.uhc.scenario.types.NightmareMode;
 import com.leontg77.uhc.scenario.types.NoFall;
@@ -102,6 +103,7 @@ public class ScenarioManager {
 		scen.add(new Krenzinator());
 		scen.add(new LAFS());
 		scen.add(new Lootcrates());
+		scen.add(new MeleeFun());
 		scen.add(new Moles());
 		// TODO: scen.add(new MysteryTeams());
 		scen.add(new NightmareMode());
