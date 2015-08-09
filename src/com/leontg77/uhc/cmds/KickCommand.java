@@ -33,9 +33,8 @@ public class KickCommand implements CommandExecutor {
 						if (!online.hasPermission("uhc.prelist")) {
 					    	online.kickPlayer(msg);
 						}
-						
-				    	PlayerUtils.broadcast(Main.prefix() + "§7All players has been kicked for §6" + msg, "uhc.admin");
 					}
+			    	PlayerUtils.broadcast(Main.prefix() + "§7All players has been kicked for §6" + msg, "uhc.admin");
 					return true;
 				}
 		    	
