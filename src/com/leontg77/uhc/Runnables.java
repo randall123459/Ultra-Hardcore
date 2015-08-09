@@ -187,6 +187,7 @@ public class Runnables extends BukkitRunnable {
 						
 						world.setGameRuleValue("doMobSpawning", "true");
 					}
+					PlayerUtils.broadcast(Main.prefix() + "Mobs can now spawn.");
 				}
 
 				if (pvp == 0) {
@@ -203,9 +204,9 @@ public class Runnables extends BukkitRunnable {
 						world.setPVP(true);
 						world.setPVP(true);
 						world.setPVP(true);
-					}
-					if (Main.border == Border.PVP) {
-						for (World world : Bukkit.getWorlds()) {
+						
+
+						if (Main.border == Border.PVP) {
 							if (world.getName().equals("lobby") || world.getName().equals("arena")) {
 								continue;
 							}
@@ -219,12 +220,12 @@ public class Runnables extends BukkitRunnable {
 				
 				if (meetup == 0) {
 					Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer cancel");
-					Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer -1 &6Meetup is now! Head to 0,0 and only stop for a fight!");
+					Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer -1 &6Meetup is now!");
 					for (Player online : PlayerUtils.getPlayers()) {
 						online.sendMessage(ChatColor.DARK_GRAY + "»»»»»»»»»»»»»»»«««««««««««««««");											  
 						online.sendMessage(ChatColor.GREEN + " ");													  
-						online.sendMessage(ChatColor.RED + " Meetup has started, start headding to 0,0.");											  
-						online.sendMessage(ChatColor.RED + " Only stop for a fight, nothing else.");									  
+						online.sendMessage(ChatColor.RED + " Meetup has started, stop caving.");											  
+						online.sendMessage(ChatColor.RED + " Border will now shrink to 300x300 over 10 minutes.");									  
 						online.sendMessage(ChatColor.GREEN + " ");
 						online.sendMessage(ChatColor.DARK_GRAY + "»»»»»»»»»»»»»»»«««««««««««««««");	
 						online.playSound(online.getLocation(), Sound.WITHER_DEATH, 1, 1);
