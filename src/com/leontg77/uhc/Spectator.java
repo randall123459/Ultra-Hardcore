@@ -43,9 +43,11 @@ public class Spectator {
 					player.sendMessage(Main.prefix() + "You are already spectating.");
 					return;
 				}
-			}
 
-			player.sendMessage(Main.prefix() + "You are now spectating, Don't spoil ANYTHING.");
+				player.sendMessage(Main.prefix() + "You are now spectating, Don't spoil ANYTHING.");
+			} else {
+				player.sendMessage(Main.prefix() + "Spectator mode enabled.");
+			}
 			
 			ItemStack compass = new ItemStack (Material.COMPASS);
 			ItemMeta compassMeta = compass.getItemMeta();
@@ -115,9 +117,12 @@ public class Spectator {
 					player.sendMessage(Main.prefix() + "You are not spectating.");
 					return;
 				}
+
+				player.sendMessage(Main.prefix() + "You are no longer spectating.");
+			} else {
+				player.sendMessage(Main.prefix() + "Spectator mode disabled.");
 			}
 			
-			player.sendMessage(Main.prefix() + "You are no longer spectating.");
 			player.setGameMode(GameMode.SURVIVAL);
 			player.setAllowFlight(false);
 			player.setFlying(false);
