@@ -1,5 +1,8 @@
 package com.leontg77.uhc.listeners;
 
+import static com.leontg77.uhc.Main.plugin;
+
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -120,6 +123,12 @@ public class PlayerListener implements Listener {
 		
 		if (!Main.spectating.contains(player.getName())) {
 			PlayerUtils.broadcast("§8[§a+§8] §7" + player.getName() + " has joined.");
+			if (data.isNew()) {
+				PlayerUtils.broadcast(Main.prefix(ChatColor.GREEN) + player.getName() + " §7just joined for the first time.");
+				
+				File f = new File(plugin.getDataFolder() + File.separator + "users" + File.separator);
+				PlayerUtils.broadcast(Main.prefix() + "The server has now §a" + f.listFiles().length + "§7 unique joins.");
+			}
 		}
 		
 		player.sendMessage("§8---------------------------");
@@ -227,13 +236,13 @@ public class PlayerListener implements Listener {
 			}
 
 		    if (Main.goldenheads) {
-				try {
-					Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Main.plugin, new Runnable() {
-						@SuppressWarnings("deprecation")
-						public void run() {
-							player.getLocation().getBlock().setType(Material.NETHER_FENCE);
-					        player.getLocation().add(0, 1, 0).getBlock().setType(Material.SKULL);
+				Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Main.plugin, new Runnable() {
+					@SuppressWarnings("deprecation")
+					public void run() {
+						player.getLocation().getBlock().setType(Material.NETHER_FENCE);
+						player.getLocation().add(0, 1, 0).getBlock().setType(Material.SKULL);
 					        
+						try {
 					        Skull skull = (Skull) player.getLocation().add(0, 1, 0).getBlock().getState();
 						    skull.setSkullType(SkullType.PLAYER);
 						    skull.setOwner(player.getName());
@@ -242,11 +251,11 @@ public class PlayerListener implements Listener {
 						    
 						    Block b = player.getLocation().add(0, 1, 0).getBlock();
 						    b.setData((byte) 0x1, true);
+						} catch (Exception e) {
+							Bukkit.getLogger().warning(ChatColor.RED + "Could not place player skull.");
 						}
-					}, 1L);
-				} catch (Exception e) {
-					Bukkit.getLogger().warning(ChatColor.RED + "Could not place player skull.");
-				}
+					}
+				}, 1L);
 		    }
 
 			if (player.getKiller() == null) {
