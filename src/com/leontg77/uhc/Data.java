@@ -87,6 +87,14 @@ public class Data {
 	}
 	
 	/**
+	 * Check if the user just joined for the first time.
+	 * @return True if it's the first time, false otherwise
+	 */
+	public boolean isNew() {
+		return creating;
+	}
+	
+	/**
 	 * Get the player class for the data owner.
 	 * @return the player class.
 	 */
