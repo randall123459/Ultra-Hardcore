@@ -103,7 +103,7 @@ public class Pyrophobia extends Scenario implements Listener {
 	private void completedPyro(final World w, int radius) {
 		Bukkit.getServer().getScheduler().cancelTask(this.generateTaskID);
 		this.generateTaskID = -1;
-		Bukkit.getServer().broadcastMessage(Main.prefix() + "World Mid Converted");
+		Bukkit.getServer().broadcastMessage(Main.prefix().replaceAll("UHC", "Pyrophobia") + "World Mid Converted");
 
 		this.locations = new ArrayList<Location>();
 		for (int i = -1 * radius; i < radius; i += 16) {
@@ -128,7 +128,7 @@ public class Pyrophobia extends Scenario implements Listener {
 	protected void completedForReal() {
 		Bukkit.getServer().getScheduler().cancelTask(this.generateTaskID);
 		this.generateTaskID = -1;
-		Bukkit.getServer().broadcastMessage(Main.prefix() + "World Converted");
+		Bukkit.getServer().broadcastMessage(Main.prefix().replaceAll("UHC", "Pyrophobia") + "World Converted");
 	}
 
 	private void convertToPyro(final World w, final int radius) {
@@ -166,16 +166,16 @@ public class Pyrophobia extends Scenario implements Listener {
 					}
 					if ((b.getType() == Material.LAPIS_ORE) && (r.nextInt(50) < 4)) {
 						chunkAt.getBlock(x, y, z).setType(Material.OBSIDIAN);
-						Bukkit.getServer().broadcastMessage(Main.prefix() + "Coverted lapis.");
+						Bukkit.getServer().broadcastMessage(Main.prefix().replaceAll("UHC", "Pyrophobia") + "Coverted lapis.");
 					}
 					if ((b.getType() == Material.REDSTONE_ORE) && (r.nextInt(50) < 24)) {
 						chunkAt.getBlock(x, y, z).setType(Material.OBSIDIAN);
-						Bukkit.getServer().broadcastMessage(Main.prefix() + "Coverted redstone.");
+						Bukkit.getServer().broadcastMessage(Main.prefix().replaceAll("UHC", "Pyrophobia") + "Coverted redstone.");
 					}
 				}
 			}
 		}
-		Bukkit.getServer().broadcastMessage(Main.prefix() + "Processed: §6" + (this.totalChunks - this.locations.size()) + "§7/§6" + this.totalChunks);
+		Bukkit.getServer().broadcastMessage(Main.prefix().replaceAll("UHC", "Pyrophobia") + "Processed: §6" + (this.totalChunks - this.locations.size()) + "§7/§6" + this.totalChunks);
 	}
 
 	protected void pyroChunk(Chunk chunkAt) {
@@ -198,6 +198,6 @@ public class Pyrophobia extends Scenario implements Listener {
 				}
 			}
 		}
-		Bukkit.getServer().broadcastMessage(Main.prefix() + "Processed: §6" + (this.totalChunks - this.locations.size()) + "§7/§6" + this.totalChunks);
+		Bukkit.getServer().broadcastMessage(Main.prefix().replaceAll("UHC", "Pyrophobia") + "Processed: §6" + (this.totalChunks - this.locations.size()) + "§7/§6" + this.totalChunks);
 	}
 }
