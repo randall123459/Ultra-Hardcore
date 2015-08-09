@@ -11,6 +11,7 @@ import com.leontg77.uhc.scenario.types.Barebones;
 import com.leontg77.uhc.scenario.types.BestBTC;
 import com.leontg77.uhc.scenario.types.BestPvE;
 import com.leontg77.uhc.scenario.types.BetaZombies;
+import com.leontg77.uhc.scenario.types.BigCrack;
 import com.leontg77.uhc.scenario.types.BiomeParanoia;
 import com.leontg77.uhc.scenario.types.BlockRush;
 import com.leontg77.uhc.scenario.types.BloodDiamonds;
@@ -49,6 +50,7 @@ import com.leontg77.uhc.scenario.types.SharedHealth;
 import com.leontg77.uhc.scenario.types.SkyClean;
 import com.leontg77.uhc.scenario.types.Skyhigh;
 import com.leontg77.uhc.scenario.types.SlaveMarket;
+import com.leontg77.uhc.scenario.types.SlimyCrack;
 import com.leontg77.uhc.scenario.types.Superheroes;
 import com.leontg77.uhc.scenario.types.Timebomb;
 import com.leontg77.uhc.scenario.types.TrainingRabbits;
@@ -72,12 +74,14 @@ public class ScenarioManager {
 	 */
 	public void setup() {
 		// TODO: scen.add(new Assassins());
+		// TODO: scen.add(new AssaultAndBattery());
 		// TODO: scen.add(new Astrophobia());
 		scen.add(new Backpacks());
 		scen.add(new Barebones());
 		scen.add(new BestBTC());
 		scen.add(new BestPvE());
 		scen.add(new BetaZombies());
+		scen.add(new BigCrack());
 		scen.add(new BiomeParanoia());
 		scen.add(new BlockRush());
 		scen.add(new BloodDiamonds());
@@ -120,9 +124,10 @@ public class ScenarioManager {
 		scen.add(new SkyClean());
 		scen.add(new Skyhigh());
 		/* TODO: Fix */ scen.add(new SlaveMarket());
+		scen.add(new SlimyCrack());
 		scen.add(new Superheroes());
 		scen.add(new Timebomb());
-		/* TODO: Fix */ scen.add(new TrainingRabbits());
+		/* TODO: Test */ scen.add(new TrainingRabbits());
 		scen.add(new VengefulSpirits());
 		Bukkit.getLogger().info("§a[UHC] All scenarios has been setup.");
 	}
