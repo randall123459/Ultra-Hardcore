@@ -68,7 +68,7 @@ public class ServerUtils {
 	public static String getCurrentHost() {
 		String host = Settings.getInstance().getConfig().getString("game.host");
 		
-		if (host.equalsIgnoreCase("YoureMad")) {
+		if (host.equalsIgnoreCase("AxlurUHC")) {
 			return "Axlur";
 		} else if (host.equalsIgnoreCase("LeonTG77")) {
 			return "Leon";
@@ -82,7 +82,7 @@ public class ServerUtils {
 	}
 
 	public static String getHost(String host) {
-		if (host.equalsIgnoreCase("YoureMad") || host.equalsIgnoreCase("axlur")) {
+		if (host.equalsIgnoreCase("AxlurUHC") || host.equalsIgnoreCase("axlur")) {
 			return "Axlur";
 		} else if (host.equalsIgnoreCase("LeonTG77") || host.equalsIgnoreCase("leon")) {
 			return "Leon";
