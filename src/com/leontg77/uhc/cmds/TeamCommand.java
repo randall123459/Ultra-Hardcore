@@ -192,6 +192,28 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
 					player.sendMessage(Main.prefix() + "Your teammates: (red name = offline)");
 					player.sendMessage(list.toString().trim());
 				}
+				else if (args[0].equalsIgnoreCase("list")) {
+					if (!player.hasPermission("uhc.teamadmin")) {
+						player.sendMessage(ChatColor.RED + "You cannot do that.");
+						return true;
+					}
+					
+					player.sendMessage(Main.prefix() + "Teams:");
+					for (Team team : Teams.getManager().getTeams()) {
+						if (team.getSize() > 0) {
+							StringBuilder list = new StringBuilder("");
+							
+							for (String entry : team.getEntries()) {
+								if (list.length() > 0) {
+									list.append("§f, ");
+								}
+								list.append(entry);
+							}
+							
+							player.sendMessage(team.getPrefix() + team.getName() + ": §f" + list.toString().trim() + ".");
+						}
+					}
+				}
 				else {
 					player.sendMessage(Main.prefix() + "Team help:");
 					player.sendMessage("§7- §f/team create - Create a team.");
@@ -434,11 +456,43 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
 					player.sendMessage(ChatColor.RED + "That player has not sent you any requests.");
 				}
 			}
+			else if (args[0].equalsIgnoreCase("list")) {
+				if (!player.hasPermission("uhc.teamadmin")) {
+					player.sendMessage(ChatColor.RED + "You cannot do that.");
+					return true;
+				}
+				
+				player.sendMessage(Main.prefix() + "Teams:");
+				for (Team team : Teams.getManager().getTeams()) {
+					if (team.getSize() > 0) {
+						StringBuilder list = new StringBuilder("");
+						
+						for (String entry : team.getEntries()) {
+							if (list.length() > 0) {
+								list.append("§f, ");
+							}
+							list.append(entry);
+						}
+						
+						player.sendMessage(team.getPrefix() + team.getName() + ": §f" + list.toString().trim() + ".");
+					}
+				}
+			}
 			else if (args[0].equalsIgnoreCase("info")) {
-				Team team = player.getScoreboard().getEntryTeam(player.getName());
+				if (!player.hasPermission("uhc.teamadmin")) {
+					player.sendMessage(ChatColor.RED + "You cannot do that.");
+					return true;
+				}
+				
+				if (target == null) {
+					player.sendMessage(ChatColor.RED + "That player is not online.");
+					return true;
+				}
+				
+				Team team = player.getScoreboard().getEntryTeam(target.getName());
 				
 				if (team == null) {
-					player.sendMessage(ChatColor.RED + "You are not on a team.");
+					player.sendMessage(Main.prefix() + target.getName() + " is not on a team.");
 					return true;
 				}
 				
@@ -457,7 +511,7 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
 					}
 				}
 				
-				player.sendMessage(Main.prefix() + "Your teammates: (red name = offline)");
+				player.sendMessage(Main.prefix() + target.getName() + " is on team " + team.getName() + ", teammates:");
 				player.sendMessage(list.toString().trim());
 			}
 			else if (args[0].equalsIgnoreCase("clear")) {
@@ -502,6 +556,7 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
 	        	types.add("info");
 	        	if (sender.hasPermission("uhc.teamadmin")) {
 		        	types.add("clear");
+		        	types.add("list");
 	        	}
 	        	
 	        	if (!args[0].equals("")) {
