@@ -76,6 +76,8 @@ public class ServerUtils {
 			return "Polar";
 		} else if (host.equalsIgnoreCase("Popcane")) {
 			return "Popcane";
+		} else if (host.equalsIgnoreCase("Itz_Isaac")) {
+			return "Isaac";
 		}
 		
 		return null;
@@ -90,6 +92,8 @@ public class ServerUtils {
 			return "Polar";
 		} else if (host.equalsIgnoreCase("Popcane") || host.equalsIgnoreCase("pop")) {
 			return "Popcane";
+		} else if (host.equalsIgnoreCase("Itz_Isaac") || host.equalsIgnoreCase("isaac")) {
+			return "Isaac";
 		}
 		return host;
 	}

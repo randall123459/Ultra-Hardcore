@@ -18,6 +18,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import com.leontg77.uhc.Arena;
 import com.leontg77.uhc.Data;
 import com.leontg77.uhc.Main;
+import com.leontg77.uhc.Scoreboards;
 import com.leontg77.uhc.util.PlayerUtils;
 
 public class ArenaListener implements Listener {
@@ -54,7 +55,11 @@ public class ArenaListener implements Listener {
 			}
 		}, 20);
 		
+		Arena.getManager().killstreak.put(player, 0);
+		
 		if (player.getKiller() == null) {
+			Scoreboards.getManager().setScore("§a§lPvE", Scoreboards.getManager().getScore("§a§lPvE", false) + 1, false);
+			Scoreboards.getManager().resetScore(player.getName());
 			player.sendMessage(Main.prefix() + "You were killed by PvE.");
 			return;
 		}
@@ -63,12 +68,13 @@ public class ArenaListener implements Listener {
 			PlayerUtils.broadcast(Main.prefix(ChatColor.GREEN) + player.getName() + "'s §7killstreak of " + Arena.getManager().killstreak.get(player) + " was shut down by §a" + player.getKiller().getName());
 		}
 		
-		Arena.getManager().killstreak.put(player, 0);
-		
 		player.getKiller().setLevel(player.getKiller().getLevel() + 1);
 		Data killerData = Data.getData(player.getKiller());
 		killerData.increaseStat("arenakills");
 		player.sendMessage(Main.prefix() + "You were killed by §a" + player.getKiller().getName() + "§7.");
+
+	    Scoreboards.getManager().setScore(player.getKiller().getName(), Scoreboards.getManager().getScore(player.getKiller().getName(), false) + 1, false);
+		Scoreboards.getManager().resetScore(player.getName());
 		
 		if (Arena.getManager().killstreak.containsKey(player.getKiller())) {
 			Arena.getManager().killstreak.put(player.getKiller(), Arena.getManager().killstreak.get(player.getKiller()) + 1);

@@ -99,8 +99,8 @@ public class Runnables extends BukkitRunnable {
 					
 					start();
 					State.setState(State.INGAME);
-					Scoreboards.getManager().setScore("§a§lPvE", 1);
-					Scoreboards.getManager().setScore("§a§lPvE", 0);
+					Scoreboards.getManager().setScore("§a§lPvE", 1, true);
+					Scoreboards.getManager().setScore("§a§lPvE", 0, true);
 					finalheal = 1;
 					pvp = Settings.getInstance().getConfig().getInt("time.pvp");
 					meetup = Settings.getInstance().getConfig().getInt("time.meetup");

@@ -13,7 +13,7 @@ import org.bukkit.inventory.ShapelessRecipe;
 
 /**
  * Recipe utilities class
- * @author LeonTG77
+ * @author Ghowden
  */
 public class RecipeUtils {
 

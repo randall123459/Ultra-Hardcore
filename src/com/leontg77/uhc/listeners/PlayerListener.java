@@ -53,6 +53,7 @@ import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Team;
 import org.bukkit.util.Vector;
 
@@ -259,7 +260,7 @@ public class PlayerListener implements Listener {
 		    }
 
 			if (player.getKiller() == null) {
-		        Scoreboards.getManager().setScore("§a§lPvE", Scoreboards.getManager().getScore("§a§lPvE") + 1);
+		        Scoreboards.getManager().setScore("§a§lPvE", Scoreboards.getManager().getScore("§a§lPvE", true) + 1, true);
 				Scoreboards.getManager().resetScore(player.getName());
 				return;
 			}
@@ -269,7 +270,7 @@ public class PlayerListener implements Listener {
 			Data killerData = Data.getData(killer);
 			killerData.increaseStat("kills");
 
-	        Scoreboards.getManager().setScore(killer.getName(), Scoreboards.getManager().getScore(killer.getName()) + 1);
+	        Scoreboards.getManager().setScore(killer.getName(), Scoreboards.getManager().getScore(killer.getName(), false) + 1, true);
 			Scoreboards.getManager().resetScore(player.getName());
 		}
 	}
@@ -373,19 +374,29 @@ public class PlayerListener implements Listener {
 		}
     	
 		if (PermissionsEx.getUser(player).inGroup("Host")) {
+			if (data.isMuted()) {
+				player.sendMessage(Main.prefix() + "You have been muted.");
+				event.setCancelled(true);
+				return;
+			}
+
 			Team team = player.getScoreboard().getEntryTeam(player.getName());
 			
 			if (settings.getConfig().getString("game.host").equals(player.getName())) {
 				PlayerUtils.broadcast("§4§lHost §8| §f" + (team != null ? (team.getName().equals("spec") ? player.getName() : team.getPrefix() + player.getName()) : player.getName()) + "§8 » §f" + event.getMessage());
 			} else {
-				if (data.isMuted()) {
-					player.sendMessage(Main.prefix() + "You have been muted.");
-					event.setCancelled(true);
-					return;
-				}
-
-				PlayerUtils.broadcast("§4§lCo-Host §8| §f" + (team != null ? (team.getName().equals("spec") ? player.getName() : team.getPrefix() + player.getName()) : player.getName()) + "§8 » §f" + event.getMessage());
+				PlayerUtils.broadcast("§4§lCo Host §8| §f" + (team != null ? (team.getName().equals("spec") ? player.getName() : team.getPrefix() + player.getName()) : player.getName()) + "§8 » §f" + event.getMessage());
 			}	
+		}
+		else if (PermissionsEx.getUser(player).inGroup("Trial")) {
+			if (data.isMuted()) {
+				player.sendMessage(Main.prefix() + "You have been muted.");
+				event.setCancelled(true);
+				return;
+			}
+
+			Team team = player.getScoreboard().getEntryTeam(player.getName());
+			PlayerUtils.broadcast("§4§lTrial Host §8| §f" + (team != null ? (team.getName().equals("spec") ? player.getName() : team.getPrefix() + player.getName()) : player.getName()) + "§8 » §f" + event.getMessage());
 		}
 		else if (PermissionsEx.getUser(player).inGroup("Staff")) {
 			if (data.isMuted()) {
@@ -548,32 +559,55 @@ public class PlayerListener implements Listener {
 				} else {
 					PlayerUtils.broadcast(Main.prefix() + "Pregame board enabled.");
 					if (Main.ffa) {
-						Scoreboards.getManager().setScore("§a ", 10);
-						Scoreboards.getManager().setScore("§cArena:", 9);
-						Scoreboards.getManager().setScore("§7/a ", 8);
-						Scoreboards.getManager().setScore("§b ", 7);
-						Scoreboards.getManager().setScore("§cTeamsize:", 6);
-						Scoreboards.getManager().setScore("§7" + ServerUtils.getTeamSize(), 5);
-						Scoreboards.getManager().setScore("§c ", 4);
-						Scoreboards.getManager().setScore("§cScenarios:", 3);
-						Scoreboards.getManager().setScore("§7" + settings.getConfig().getString("game.scenarios"), 2);
-						Scoreboards.getManager().setScore("§d ", 1);
+						Scoreboards.getManager().setScore("§a ", 10, true);
+						Scoreboards.getManager().setScore("§cArena:", 9, true);
+						Scoreboards.getManager().setScore("§7/a ", 8, true);
+						Scoreboards.getManager().setScore("§b ", 7, true);
+						Scoreboards.getManager().setScore("§cTeamsize:", 6, true);
+						Scoreboards.getManager().setScore("§7" + ServerUtils.getTeamSize(), 5, true);
+						Scoreboards.getManager().setScore("§c ", 4, true);
+						Scoreboards.getManager().setScore("§cScenarios:", 3, true);
+						Scoreboards.getManager().setScore("§7" + settings.getConfig().getString("game.scenarios"), 2, true);
+						Scoreboards.getManager().setScore("§d ", 1, true);
 					} else {
-						Scoreboards.getManager().setScore("§a ", 13);
-						Scoreboards.getManager().setScore("§cTeam:", 12);
-						Scoreboards.getManager().setScore("§7/team", 11);
-						Scoreboards.getManager().setScore("§e ", 10);
-						Scoreboards.getManager().setScore("§cArena:", 9);
-						Scoreboards.getManager().setScore("§7/a", 8);
-						Scoreboards.getManager().setScore("§b ", 7);
-						Scoreboards.getManager().setScore("§cTeamsize:", 6);
-						Scoreboards.getManager().setScore("§7" + ServerUtils.getTeamSize(), 5);
-						Scoreboards.getManager().setScore("§c ", 4);
-						Scoreboards.getManager().setScore("§cScenarios:", 3);
-						Scoreboards.getManager().setScore("§7" + settings.getConfig().getString("game.scenarios"), 2);
-						Scoreboards.getManager().setScore("§d ", 1);
+						Scoreboards.getManager().setScore("§a ", 13, true);
+						Scoreboards.getManager().setScore("§cTeam:", 12, true);
+						Scoreboards.getManager().setScore("§7/team", 11, true);
+						Scoreboards.getManager().setScore("§a ", 10, true);
+						Scoreboards.getManager().setScore("§cArena:", 9, true);
+						Scoreboards.getManager().setScore("§7/a ", 8, true);
+						Scoreboards.getManager().setScore("§b ", 7, true);
+						Scoreboards.getManager().setScore("§cTeamsize:", 6, true);
+						Scoreboards.getManager().setScore("§7" + ServerUtils.getTeamSize(), 5, true);
+						Scoreboards.getManager().setScore("§c ", 4, true);
+						Scoreboards.getManager().setScore("§cScenarios:", 3, true);
+						Scoreboards.getManager().setScore("§7" + settings.getConfig().getString("game.scenarios"), 2, true);
+						Scoreboards.getManager().setScore("§d ", 1, true);
 					}
 					Main.killboard = true;
+				}
+			} else {
+				player.sendMessage(ChatColor.RED + "You do not have access to that command.");
+			}
+			event.setCancelled(true);
+		}
+		
+		if (event.getMessage().split(" ")[0].equalsIgnoreCase("/arenaboard")) {
+			if (player.hasPermission("uhc.arenaboard")) {
+				if (Main.arenaboard) {
+					for (String e : Scoreboards.getManager().ab.getScoreboard().getEntries()) {
+						Scoreboards.getManager().resetScore(e);
+					}
+					PlayerUtils.broadcast(Main.prefix() + "Arena board has been disabled.");
+					Scoreboards.getManager().kills.setDisplaySlot(DisplaySlot.SIDEBAR);
+					Main.arenaboard = false;
+				} else {
+					PlayerUtils.broadcast(Main.prefix() + "Arena board has been enabled.");
+					Scoreboards.getManager().ab.setDisplaySlot(DisplaySlot.SIDEBAR);
+					Main.arenaboard = true;
+
+					Scoreboards.getManager().setScore("§a§lPvE", 1, false);
+					Scoreboards.getManager().setScore("§a§lPvE", 0, false);
 				}
 			} else {
 				player.sendMessage(ChatColor.RED + "You do not have access to that command.");

@@ -100,6 +100,7 @@ public class Main extends JavaPlugin {
 	public static Recipe headRecipe;
 	public static Recipe melonRecipe;
 
+	public static boolean arenaboard = false;
 	public static boolean killboard = false;
 	public static boolean muted = false;
 	
@@ -401,7 +402,7 @@ public class Main extends JavaPlugin {
         ShapedRecipe goldenhead = new ShapedRecipe(head).shape("@@@", "@*@", "@@@").setIngredient('@', Material.GOLD_INGOT).setIngredient('*', mater);
         Bukkit.getServer().addRecipe(goldenhead);
         headRecipe = goldenhead;
-		Bukkit.getLogger().info("§a[UHC] Golden heads recipe added.");
+		Bukkit.getLogger().info("§a[UHC] Golden Head recipe added.");
 		
         ItemStack melon = new ItemStack(Material.SPECKLED_MELON); 
         ShapedRecipe goldenmelon = new ShapedRecipe(melon).shape("@@@", "@*@", "@@@").setIngredient('@', Material.GOLD_INGOT).setIngredient('*', Material.MELON);

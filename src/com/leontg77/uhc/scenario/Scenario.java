@@ -12,7 +12,7 @@ public abstract class Scenario {
 	 * @param name scenario name
 	 * @param desc description of the scenario
 	 */
-	public Scenario(String name, String desc) {
+	protected Scenario(String name, String desc) {
 		this.name = name;
 		this.desc = desc;
 	}

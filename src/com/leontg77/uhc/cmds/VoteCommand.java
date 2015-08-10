@@ -22,6 +22,11 @@ public class VoteCommand implements CommandExecutor {
 				}
 				
 				if (args[0].equalsIgnoreCase("end")) {
+					if (!vote) {
+						sender.sendMessage(ChatColor.RED + "No votes are running.");
+						return true;
+					}
+					
 					PlayerUtils.broadcast(Main.prefix() + "The vote has ended, §a" + yes + " yes §7and §c" + no + " no§7.");
 					vote = false;
 					yes = 0;
@@ -29,6 +34,12 @@ public class VoteCommand implements CommandExecutor {
 					Main.voted.clear();
 					return true;
 				}
+				
+				if (vote) {
+					sender.sendMessage(ChatColor.RED + "Theres already a vote running.");
+					return true;
+				}
+				
 				
 				StringBuilder message = new StringBuilder();
 	               

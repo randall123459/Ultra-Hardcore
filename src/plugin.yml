@@ -10,6 +10,7 @@ commands:
     aliases: [a, p]
   ban:
     description: Ban a player.
+    aliases: [dq]
   broadcast:
     description: Broadcast a message to all players online.
     aliases: [bc, bcast]
@@ -80,6 +81,7 @@ commands:
     description: Spawn a player head.
   spectate:
     description: Change your spectator status.
+    aliases: [spec]
   setspawn:
     description: Set the lobby spawn point.
   speed:
