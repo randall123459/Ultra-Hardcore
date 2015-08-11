@@ -94,11 +94,11 @@ public class CutClean extends Scenario implements Listener {
 		}
 		
 		if (block.getType() == Material.GOLD_ORE) {
-			if (ScenarioManager.getManager().getScenario("Barebones").isEnabled()) {
+			if (ScenarioManager.getInstance().getScenario("Barebones").isEnabled()) {
 				return;
 			}
 			
-			if (ScenarioManager.getManager().getScenario("Goldless").isEnabled()) {
+			if (ScenarioManager.getInstance().getScenario("Goldless").isEnabled()) {
 				return;
 			}
 			

@@ -40,7 +40,7 @@ public class Diamondless extends Scenario implements Listener {
     	Player player = event.getPlayer();
 		Block block = event.getBlock();
     	
-		if (ScenarioManager.getManager().getScenario("CutClean") != null && ScenarioManager.getManager().getScenario("CutClean").isEnabled()) {
+		if (ScenarioManager.getInstance().getScenario("CutClean") != null && ScenarioManager.getInstance().getScenario("CutClean").isEnabled()) {
 	    	if (block.getType() == Material.DIAMOND_ORE) {
 	    		event.setCancelled(true);
 				BlockUtils.blockCrack(player, block.getLocation(), block.getType());
