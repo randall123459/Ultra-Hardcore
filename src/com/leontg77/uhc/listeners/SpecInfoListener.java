@@ -1,7 +1,7 @@
 package com.leontg77.uhc.listeners;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -34,14 +34,14 @@ import org.bukkit.potion.PotionType;
 
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.scenario.ScenarioManager;
-import com.leontg77.uhc.util.NumberUtils;
 import com.leontg77.uhc.util.DateUtils;
+import com.leontg77.uhc.util.NumberUtils;
 import com.leontg77.uhc.util.PlayerUtils;
 
 public class SpecInfoListener implements Listener {
 	public static HashMap<String, Integer> totalD = new HashMap<String, Integer>();
 	public static HashMap<String, Integer> totalG = new HashMap<String, Integer>();
-	public static ArrayList<Location> locs = new ArrayList<Location>();
+	public static HashSet<Location> locs = new HashSet<Location>();
 
 	@EventHandler
 	public void onMineDiamond(BlockBreakEvent event) {
@@ -52,10 +52,10 @@ public class SpecInfoListener implements Listener {
 		if (locs.contains(event.getBlock().getLocation())) {
 			return;
 		}
-		
+
+		Location loc = event.getBlock().getLocation();
 		Player player = event.getPlayer();
 		int amount = 0;
-		Location loc = event.getBlock().getLocation();
 		
 		for (int x = loc.getBlockX() - 1; x <= loc.getBlockX() + 1; x++) {
 			for (int y = loc.getBlockY() - 1; y <= loc.getBlockY() + 1; y++) {
@@ -385,7 +385,7 @@ public class SpecInfoListener implements Listener {
 						}
 					}
 				} else if (cause == DamageCause.FALL) {
-					if (ScenarioManager.getManager().getScenario("NoFall").isEnabled()) {
+					if (ScenarioManager.getInstance().getScenario("NoFall").isEnabled()) {
 						return;
 					}
 					
