@@ -10,6 +10,10 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.scenario.Scenario;
 
+/**
+ * MeleeFun scenario class.
+ * @author D4mnX
+ */
 public class MeleeFun extends Scenario implements Listener {
 	private boolean enabled = false;
 	
