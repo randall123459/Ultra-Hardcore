@@ -1,7 +1,9 @@
 package com.leontg77.uhc.scenario;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
@@ -61,11 +63,14 @@ import com.leontg77.uhc.scenario.types.VengefulSpirits;
  * @author LeonTG77
  */
 public class ScenarioManager {
-	private ArrayList<Scenario> scen = new ArrayList<Scenario>();
-	
-	private ScenarioManager() {}
+	private HashSet<Scenario> scenarios = new HashSet<Scenario>();
 	private static ScenarioManager manager = new ScenarioManager();
-	public static ScenarioManager getManager() {
+	
+	/**
+	 * Get the instance of this class.
+	 * @return The class instance.
+	 */
+	public static ScenarioManager getInstance() {
 		return manager;
 	}
 	
@@ -76,59 +81,59 @@ public class ScenarioManager {
 		// TODO: scen.add(new Assassins());
 		// TODO: scen.add(new AssaultAndBattery());
 		// TODO: scen.add(new Astrophobia());
-		scen.add(new Backpacks());
-		scen.add(new Barebones());
-		scen.add(new BestBTC());
-		scen.add(new BestPvE());
-		scen.add(new BetaZombies());
-		scen.add(new BigCrack());
-		scen.add(new BiomeParanoia());
-		scen.add(new BlockRush());
-		scen.add(new BloodDiamonds());
-		/* TODO: Test */ scen.add(new Captains());
-		scen.add(new Compensation());
-		scen.add(new Cryophobia());
-		scen.add(new CutClean());
+		scenarios.add(new Backpacks());
+		scenarios.add(new Barebones());
+		scenarios.add(new BestBTC());
+		scenarios.add(new BestPvE());
+		scenarios.add(new BetaZombies());
+		scenarios.add(new BigCrack());
+		scenarios.add(new BiomeParanoia());
+		scenarios.add(new BlockRush());
+		scenarios.add(new BloodDiamonds());
+		/* TODO: Test */ scenarios.add(new Captains());
+		scenarios.add(new Compensation());
+		scenarios.add(new Cryophobia());
+		scenarios.add(new CutClean());
 		// TODO: scen.add(new DamageCycle());
-		scen.add(new Depths());
-		scen.add(new Diamondless());
-		scen.add(new EnchantedDeath());
-		scen.add(new Fallout());
-		scen.add(new FlowerPower());
+		scenarios.add(new Depths());
+		scenarios.add(new Diamondless());
+		scenarios.add(new EnchantedDeath());
+		scenarios.add(new Fallout());
+		scenarios.add(new FlowerPower());
 		// TODO: scen.add(new Genie());
-		scen.add(new GoldenPearl());
-		scen.add(new Goldless());
-		scen.add(new GoldRush());
-		scen.add(new GoneFishin());
-		scen.add(new GoToHell());
-		scen.add(new InfiniteEnchanter());
-		scen.add(new Inventors());
-		scen.add(new Kings());
-		scen.add(new Krenzinator());
-		scen.add(new LAFS());
-		scen.add(new Lootcrates());
-		scen.add(new MeleeFun());
-		scen.add(new Moles());
+		scenarios.add(new GoldenPearl());
+		scenarios.add(new Goldless());
+		scenarios.add(new GoldRush());
+		scenarios.add(new GoneFishin());
+		scenarios.add(new GoToHell());
+		scenarios.add(new InfiniteEnchanter());
+		scenarios.add(new Inventors());
+		scenarios.add(new Kings());
+		scenarios.add(new Krenzinator());
+		scenarios.add(new LAFS());
+		scenarios.add(new Lootcrates());
+		scenarios.add(new MeleeFun());
+		scenarios.add(new Moles());
 		// TODO: scen.add(new MysteryTeams());
-		scen.add(new NightmareMode());
-		scen.add(new NoFall());
-		scen.add(new NoSprint());
-		scen.add(new Paranoia());
+		scenarios.add(new NightmareMode());
+		scenarios.add(new NoFall());
+		scenarios.add(new NoSprint());
+		scenarios.add(new Paranoia());
 		// TODO: scen.add(new PeriodOfResistance());
-		scen.add(new Permakill());
-		scen.add(new PotentialHearts());
-		scen.add(new PotentialPermanent());
-		scen.add(new Pyrophobia());
-		scen.add(new RewardingLongshots());
-		scen.add(new SharedHealth());
-		scen.add(new SkyClean());
-		scen.add(new Skyhigh());
-		/* TODO: Fix */ scen.add(new SlaveMarket());
-		scen.add(new SlimyCrack());
-		scen.add(new Superheroes());
-		scen.add(new Timebomb());
-		/* TODO: Test */ scen.add(new TrainingRabbits());
-		scen.add(new VengefulSpirits());
+		scenarios.add(new Permakill());
+		scenarios.add(new PotentialHearts());
+		scenarios.add(new PotentialPermanent());
+		scenarios.add(new Pyrophobia());
+		scenarios.add(new RewardingLongshots());
+		scenarios.add(new SharedHealth());
+		scenarios.add(new SkyClean());
+		scenarios.add(new Skyhigh());
+		/* TODO: Fix */ scenarios.add(new SlaveMarket());
+		scenarios.add(new SlimyCrack());
+		scenarios.add(new Superheroes());
+		scenarios.add(new Timebomb());
+		/* TODO: Test */ scenarios.add(new TrainingRabbits());
+		scenarios.add(new VengefulSpirits());
 		Bukkit.getLogger().info("§a[UHC] All scenarios has been setup.");
 	}
 	
@@ -138,7 +143,7 @@ public class ScenarioManager {
 	 * @return The scenario, null if not found.
 	 */
 	public Scenario getScenario(String name) {
-		for (Scenario s : scen) {
+		for (Scenario s : scenarios) {
 			if (name.equalsIgnoreCase(s.getName())) {
 				return s;
 			}
@@ -150,8 +155,24 @@ public class ScenarioManager {
 	 * Get a list of all scenarios.
 	 * @return the list of scenarios.
 	 */
-	public List<Scenario> getScenarios() {
-		return scen;
+	public Set<Scenario> getScenarios() {
+		return scenarios;
+	}
+
+	/**
+	 * Get an array of all scenarios that implements listener.
+	 * @return the array of scenarios that implements listener.
+	 */
+	public Listener[] getScenariosWithListeners() {
+		ArrayList<Listener> list = new ArrayList<Listener>();
+		
+		for (Scenario s : scenarios) {
+			if (s instanceof Listener) {
+				list.add((Listener) s);
+			}
+		}
+		
+		return list.toArray(new Listener[list.size()]);
 	}
 
 	/**
@@ -159,13 +180,15 @@ public class ScenarioManager {
 	 * @return the list of enabled scenarios.
 	 */
 	public List<Scenario> getEnabledScenarios() {
-		ArrayList<Scenario> l = new ArrayList<Scenario>();
-		for (Scenario s : scen) {
+		ArrayList<Scenario> list = new ArrayList<Scenario>();
+		
+		for (Scenario s : scenarios) {
 			if (s.isEnabled()) {
-				l.add(s);
+				list.add(s);
 			}
 		}
-		return l;
+		
+		return list;
 	}
 
 	/**
@@ -173,26 +196,14 @@ public class ScenarioManager {
 	 * @return the list of enabled scenarios.
 	 */
 	public List<Scenario> getDisabledScenarios() {
-		ArrayList<Scenario> l = new ArrayList<Scenario>();
-		for (Scenario s : scen) {
+		ArrayList<Scenario> list = new ArrayList<Scenario>();
+		
+		for (Scenario s : scenarios) {
 			if (!s.isEnabled()) {
-				l.add(s);
+				list.add(s);
 			}
 		}
-		return l;
-	}
-
-	/**
-	 * Get a list of all scenarios that implements listener.
-	 * @return the list of scenarios that implements listener.
-	 */
-	public List<Listener> getScenariosWithListeners() {
-		ArrayList<Listener> l = new ArrayList<Listener>();
-		for (Scenario s : scen) {
-			if (s instanceof Listener) {
-				l.add((Listener) s);
-			}
-		}
-		return l;
+		
+		return list;
 	}
 }
