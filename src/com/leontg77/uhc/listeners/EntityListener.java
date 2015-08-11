@@ -5,12 +5,14 @@ import java.util.Random;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.TravelAgent;
+import org.bukkit.World;
+import org.bukkit.World.Environment;
 import org.bukkit.entity.Damageable;
 import org.bukkit.entity.EnderPearl;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Ghast;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.entity.Witch;
@@ -22,6 +24,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityPortalEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
+import org.bukkit.event.entity.EntityRegainHealthEvent.RegainReason;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -52,10 +55,6 @@ public class EntityListener implements Listener {
 	
 	@EventHandler
 	public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
-		if (!(event.getDamager() instanceof Player)) {
-			return;
-		}
-	
 		if (!Main.pearldamage && event.getDamager() instanceof EnderPearl) {
 			event.setCancelled(true);
 		}
@@ -87,13 +86,15 @@ public class EntityListener implements Listener {
     	ItemStack potion = new ItemStack (Material.POTION, 1, (short) 8261);
     	
     	if (entity instanceof Witch) {
-    		if (((LivingEntity) entity).getKiller() != null) {
-    			if (((LivingEntity) entity).getKiller().hasPotionEffect(PotionEffectType.POISON)) {
-    				if ((new Random().nextInt(99) + 1) <= 80) {
-    		    		event.getDrops().add(potion);
-    				}
+			Player killer = ((Witch) entity).getKiller();
+			
+    		if (killer != null) {
+        		event.getDrops().remove(new ItemStack (Material.POTION, 1, (short) 8261));
+        		
+    			if (killer.hasPotionEffect(PotionEffectType.POISON)) {
+		    		event.getDrops().add(potion);
     			} else {
-    				if ((new Random().nextInt(99) + 1) <= 25) {
+    				if ((new Random().nextInt(99) + 1) <= 30) {
     		    		event.getDrops().add(potion);
     				}
     			}
@@ -101,27 +102,23 @@ public class EntityListener implements Listener {
         }
 	}
 	
+	/**
+	 * @author Ghowden
+	 */
 	@EventHandler
     public void onHeal(EntityRegainHealthEvent event) {
         if (!(event.getEntity() instanceof Player)) {
             return;
         }
 
-        final Player player = (Player) event.getEntity();
-
-        boolean regainByFood = event.getRegainReason().equals(EntityRegainHealthEvent.RegainReason.SATIATED);
-        boolean regainByPeaceful = event.getRegainReason().equals(EntityRegainHealthEvent.RegainReason.REGEN);
-
-        if (!regainByFood && !regainByPeaceful) {
-            return;
-        }
-
-        event.setCancelled(true);
-        if (player.getFoodLevel() >= 18 && player.getHealth() > 0 && player.getHealth() < player.getMaxHealth()) {
-            player.setExhaustion(player.getExhaustion() - 3);
+        if (event.getRegainReason() == RegainReason.REGEN || event.getRegainReason() == RegainReason.SATIATED) {
+            event.setCancelled(true);
         }
     }
 	
+	/**
+	 * @author D4mnX
+	 */
 	@EventHandler
     public void onStrengthDamage(EntityDamageByEntityEvent event) {
 		if (Main.nerfedStrength) {
@@ -129,15 +126,15 @@ public class EntityListener implements Listener {
 	            return;
 	        }
 
-	        final Player attacker = (Player) event.getDamager();
+	        Player attacker = (Player) event.getDamager();
+	        int strengthAmplifier = 0;
 
 	        if (!attacker.hasPotionEffect(PotionEffectType.INCREASE_DAMAGE)) {
 	            return;
 	        }
-
-	        int strengthAmplifier = 0;
+	        
 	        for (PotionEffect potionEffect : attacker.getActivePotionEffects()) {
-	            if (potionEffect.getType().equals(PotionEffectType.INCREASE_DAMAGE)) {
+	            if (potionEffect.getType() == PotionEffectType.INCREASE_DAMAGE) {
 	                strengthAmplifier = potionEffect.getAmplifier() + 1;
 	                break;
 	            }
@@ -155,6 +152,10 @@ public class EntityListener implements Listener {
 		if (!(event.getDamager() instanceof Projectile) || !(event.getEntity() instanceof Player)) {
 			return;
 		}
+		
+		if (ScenarioManager.getInstance().getScenario("Paranoia").isEnabled()) {
+			return;
+		}
 	
 		final Player player = (Player) event.getEntity();
 		final Projectile damager = (Projectile) event.getDamager();
@@ -164,9 +165,6 @@ public class EntityListener implements Listener {
 		}
 		
 		if (damager instanceof EnderPearl) {
-			if (!Main.pearldamage) {
-				event.setCancelled(true);
-			}
 			return;
 		}
 		
@@ -195,7 +193,7 @@ public class EntityListener implements Listener {
 			return;
 		}
 		
-		if (ScenarioManager.getManager().getScenario("RewardingLongshots").isEnabled()) {
+		if (ScenarioManager.getInstance().getScenario("RewardingLongshots").isEnabled()) {
 			return;
 		}
 	
@@ -224,11 +222,86 @@ public class EntityListener implements Listener {
 
     @EventHandler
     public void onEntityPortal(EntityPortalEvent event) {
+		TravelAgent travel = event.getPortalTravelAgent();
+		Location from = event.getFrom();
+		
 		if (Main.nether) {
-	        Location to = PortalUtils.getPossiblePortalLocation(event.getEntity(), event.getFrom(), event.getPortalTravelAgent());
+			String fromName = event.getFrom().getWorld().getName();
+
+	        String targetName;
+	        if (from.getWorld().getEnvironment() == Environment.NETHER) {
+	            if (!fromName.endsWith("_nether")) {
+	                return;
+	            }
+
+	            targetName = fromName.substring(0, fromName.length() - 7);
+	        } else if (from.getWorld().getEnvironment() == Environment.NORMAL) {
+	            if (!PortalUtils.isPortal(Material.PORTAL, from)) {
+	                return;
+	            }
+
+	            targetName = fromName + "_nether";
+	        } else {
+	            return;
+	        }
+
+	        World world = Bukkit.getServer().getWorld(targetName);
+	        
+	        if (world == null) {
+	            return;
+	        }
+
+	        Location to = new Location(world, from.getX(), from.getY(), from.getZ(), from.getYaw(), from.getPitch());
+	        to = travel.findOrCreate(to);
+
 	        if (to != null) {
 	            event.setTo(to);
 	        }
+		}
+		
+		if (Main.theend) {
+			String fromName = event.getFrom().getWorld().getName();
+
+	        String targetName;
+	        if (event.getFrom().getWorld().getEnvironment() == Environment.THE_END) {
+	            if (!fromName.endsWith("_end")) {
+	                return;
+	            }
+
+	            targetName = fromName.substring(0, fromName.length() - 4);
+	        } else if (event.getFrom().getWorld().getEnvironment() == Environment.NORMAL) {
+	            if (!PortalUtils.isPortal(Material.ENDER_PORTAL, event.getFrom())) {
+	                return;
+	            }
+	            
+	            targetName = fromName + "_end";
+	        } else {
+	            return;
+	        }
+
+	        World world = Bukkit.getServer().getWorld(targetName);
+	        
+	        if (world == null) {
+	            return;
+	        }
+
+	        Location to = new Location(world, 100.0, 49, 0, 90f, 0f);
+
+			for (int y = to.getBlockY() - 1; y <= to.getBlockY() + 2; y++) {
+				for (int x = to.getBlockX() - 2; x <= to.getBlockX() + 2; x++) {
+					for (int z = to.getBlockZ() - 2; z <= to.getBlockZ() + 2; z++) {
+						if (y == 48) {
+							to.getWorld().getBlockAt(x, y, z).setType(Material.OBSIDIAN);
+							to.getWorld().getBlockAt(x, y, z).getState().update();
+						} else {
+							to.getWorld().getBlockAt(x, y, z).setType(Material.AIR);
+							to.getWorld().getBlockAt(x, y, z).getState().update();
+						}
+					}
+				}
+			}
+			
+			event.setTo(to);
 		}
     }
 }
