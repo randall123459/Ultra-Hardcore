@@ -141,7 +141,7 @@ public class Main extends JavaPlugin {
 		
 		ArrayList<String> scens = new ArrayList<String>();
 		
-		for (Scenario scen : ScenarioManager.getManager().getEnabledScenarios()) {
+		for (Scenario scen : ScenarioManager.getInstance().getEnabledScenarios()) {
 			scens.add(scen.getName());
 		}
 		
@@ -214,7 +214,7 @@ public class Main extends JavaPlugin {
 		getCommand("vote").setExecutor(new VoteCommand());
 		getCommand("whitelist").setExecutor(new WhitelistCommand());
 
-		ScenarioManager.getManager().setup();
+		ScenarioManager.getInstance().setup();
 		Scoreboards.getManager().setup();
 		Teams.getManager().setupTeams();
 		Arena.getManager().setup();
@@ -244,7 +244,7 @@ public class Main extends JavaPlugin {
 		
 		Bukkit.getLogger().info("§a[UHC] Config values has been setup.");
 
-		for (Listener scen : ScenarioManager.getManager().getScenariosWithListeners()) {
+		for (Listener scen : ScenarioManager.getInstance().getScenariosWithListeners()) {
 			Bukkit.getServer().getPluginManager().registerEvents(scen, this);
 		}
 		Bukkit.getLogger().info("§a[UHC] Scenario listeners are now setup.");
@@ -269,7 +269,7 @@ public class Main extends JavaPlugin {
 		}
 		
 		for (String scen : settings.getData().getStringList("scenarios")) {
-			ScenarioManager.getManager().getScenario(scen).setEnabled(true);
+			ScenarioManager.getInstance().getScenario(scen).setEnabled(true);
 		}
 		
 		Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
@@ -310,7 +310,7 @@ public class Main extends JavaPlugin {
 						online.setOp(false);
 					}
 					
-					if (ScenarioManager.getManager().getScenario("Pyrophobia").isEnabled()) {
+					if (ScenarioManager.getInstance().getScenario("Pyrophobia").isEnabled()) {
 						for (ItemStack item : online.getInventory().getContents()) {
 							if (item != null && item.getType() == Material.WATER_BUCKET) {
 								item.setType(Material.BUCKET);
@@ -417,7 +417,7 @@ public class Main extends JavaPlugin {
 	 * @author LeonTG77
 	 */
 	public enum Border {
-		MEETUP, PVP, START;
+		NEVER, START, PVP, MEETUP;
 	}
 	
 	/**

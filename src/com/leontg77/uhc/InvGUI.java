@@ -144,7 +144,7 @@ public class InvGUI {
 		lore.add("§aPearl Damage: §7" + (Main.pearldamage ? "Enabled." : "Disabled."));
 		lore.add("§aNotch Apples: §7" + (Main.notchapples ? "Enabled." : "Disabled."));
 		lore.add("§aDeath Lightning: §7" + (Main.deathlightning ? "Enabled." : "Disabled."));
-		lore.add("§aBorder shrinks: §7" + (Main.border == Border.START ? "From " : "At ") + Main.border.name().toLowerCase() + ".");
+		lore.add("§aBorder shrinks: §7" + ((Main.border == Border.NEVER ? "Never" : (Main.border == Border.START ? "From " : "At ") + Main.border.name().toLowerCase())) + ".");
 		lore.add(" ");
 		generalMeta.setLore(lore);
 		general.setItemMeta(generalMeta);
@@ -189,10 +189,11 @@ public class InvGUI {
 		netherMeta.setDisplayName("§6Nether Rules");
 		ArrayList<String> lore4 = new ArrayList<String>();
 		lore4.add(" ");
-		lore4.add("§aTrapping: §7Allowed.");
-		lore4.add("§aCamping: §7Allowed.");
+		lore4.add("§aTrapping: §7Not Allowed.");
+		lore4.add("§aCamping: §7Not Allowed.");
 		lore4.add("§aStrength: §7" + (Main.nerfedStrength ? "Both tiers nerfed." : "Vanilla."));
 		lore4.add("§aTier 2: §7On for all potions.");
+		lore4.add("§aSplash: §7On for all potions.");
 		lore4.add("§aGhast Drop: §7" + (Main.ghastdrops ? "Gold ingot." : "Ghast tear."));
 		lore4.add(" ");
 		lore4.add("§aNether: §7" + (Main.nether ? "Enabled." : "Disabled."));
