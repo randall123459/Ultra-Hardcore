@@ -14,6 +14,7 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.SkullType;
+import org.bukkit.TravelAgent;
 import org.bukkit.World;
 import org.bukkit.World.Environment;
 import org.bukkit.block.Block;
@@ -229,8 +230,11 @@ public class PlayerListener implements Listener {
 		
 		if (!Arena.getManager().isEnabled()) {
 			player.setWhitelisted(false);
-			Data data = Data.getData(player);
-			data.increaseStat("deaths");
+			
+			if (State.isState(State.INGAME)) {
+				Data data = Data.getData(player);
+				data.increaseStat("deaths");
+			}
 			
 			if (Main.deathlightning) {
 			    player.getWorld().strikeLightningEffect(player.getLocation());
@@ -267,10 +271,12 @@ public class PlayerListener implements Listener {
 			
 			Player killer = player.getKiller();
 
-			Data killerData = Data.getData(killer);
-			killerData.increaseStat("kills");
+			if (State.isState(State.INGAME)) {
+				Data killerData = Data.getData(killer);
+				killerData.increaseStat("kills");
+			}
 
-	        Scoreboards.getManager().setScore(killer.getName(), Scoreboards.getManager().getScore(killer.getName(), false) + 1, true);
+	        Scoreboards.getManager().setScore(killer.getName(), Scoreboards.getManager().getScore(killer.getName(), true) + 1, true);
 			Scoreboards.getManager().resetScore(player.getName());
 		}
 	}
@@ -321,25 +327,26 @@ public class PlayerListener implements Listener {
 		Player player = event.getPlayer();
 		Data data = Data.getData(player);
 		
-		if (VoteCommand.vote) {
+		if (VoteCommand.vote && (event.getMessage().equalsIgnoreCase("y") || event.getMessage().equalsIgnoreCase("n"))) {
+			if (!State.isState(State.LOBBY) && player.getWorld().getName().equals("lobby")) {
+				player.sendMessage(ChatColor.RED + "You cannot vote when you are dead.");
+				event.setCancelled(true);
+				return;
+			}
+			
+			if (Main.spectating.contains(player.getName())) {
+				player.sendMessage(ChatColor.RED + "You cannot vote as a spectator.");
+				event.setCancelled(true);
+				return;
+			}
+			
+			if (Main.voted.contains(player.getName())) {
+				player.sendMessage(ChatColor.RED + "You have already voted.");
+				event.setCancelled(true);
+				return;
+			}
+			
 			if (event.getMessage().equalsIgnoreCase("y")) {
-				if (!State.isState(State.LOBBY) && player.getWorld().getName().equals("lobby")) {
-					player.sendMessage(ChatColor.RED + "You cannot vote when you are dead.");
-					event.setCancelled(true);
-					return;
-				}
-				
-				if (Main.spectating.contains(player.getName())) {
-					player.sendMessage(ChatColor.RED + "You cannot vote as a spectator.");
-					event.setCancelled(true);
-					return;
-				}
-				
-				if (Main.voted.contains(player.getName())) {
-					player.sendMessage(ChatColor.RED + "You have already voted.");
-					event.setCancelled(true);
-					return;
-				}
 				player.sendMessage(Main.prefix() + "You voted yes.");
 				VoteCommand.yes++;
 				event.setCancelled(true);
@@ -348,29 +355,12 @@ public class PlayerListener implements Listener {
 			}
 			
 			if (event.getMessage().equalsIgnoreCase("n")) {
-				if (!State.isState(State.LOBBY) && player.getWorld().getName().equals("lobby")) {
-					player.sendMessage(ChatColor.RED + "You cannot vote when you are dead.");
-					event.setCancelled(true);
-					return;
-				}
-				
-				if (Main.spectating.contains(player.getName())) {
-					player.sendMessage(ChatColor.RED + "You cannot vote as a spectator.");
-					event.setCancelled(true);
-					return;
-				}
-				
-				if (Main.voted.contains(player.getName())) {
-					player.sendMessage(ChatColor.RED + "You have already voted.");
-					event.setCancelled(true);
-					return;
-				}
 				player.sendMessage(Main.prefix() + "You voted no.");
 				VoteCommand.no++;
 				event.setCancelled(true);
 				Main.voted.add(player.getName());
-				return;
 			}
+			return;
 		}
     	
 		if (PermissionsEx.getUser(player).inGroup("Host")) {
@@ -422,7 +412,6 @@ public class PlayerListener implements Listener {
 			}
 
 			Team team = player.getScoreboard().getEntryTeam(player.getName());
-
 			PlayerUtils.broadcast("§5§lVIP §8| §f" + (team != null ? (team.getName().equals("spec") ? player.getName() : team.getPrefix() + player.getName()) : player.getName()) + "§8 » §f" + event.getMessage());
 		} 
 		else {
@@ -436,8 +425,8 @@ public class PlayerListener implements Listener {
 				event.setCancelled(true);
 				return;
 			}
+			
 			Team team = player.getScoreboard().getEntryTeam(player.getName());
-
 			PlayerUtils.broadcast((team != null ? team.getPrefix() + player.getName() : player.getName()) + "§8 » §f" + event.getMessage());
 		} 
 		event.setCancelled(true);
@@ -866,41 +855,74 @@ public class PlayerListener implements Listener {
 
 	@EventHandler
     public void onPlayerPortal(PlayerPortalEvent event) {
+		TravelAgent travel = event.getPortalTravelAgent();
+		Player player = event.getPlayer();
+		Location from = event.getFrom();
+		
 		if (Main.nether) {
-	        Location to = PortalUtils.getPossiblePortalLocation(event.getPlayer(), event.getFrom(), event.getPortalTravelAgent());
+			String fromName = event.getFrom().getWorld().getName();
+
+	        String targetName;
+	        if (from.getWorld().getEnvironment() == Environment.NETHER) {
+	            if (!fromName.endsWith("_nether")) {
+	            	player.sendMessage(Main.prefix() + "Could not teleport you to overworld, contact the staff now.");
+	                return;
+	            }
+
+	            targetName = fromName.substring(0, fromName.length() - 7);
+	        } else if (from.getWorld().getEnvironment() == Environment.NORMAL) {
+	            if (!PortalUtils.isPortal(Material.PORTAL, from)) {
+	            	player.sendMessage(Main.prefix() + "Could not teleport you to nether, contact the staff now.");
+	                return;
+	            }
+
+	            targetName = fromName + "_nether";
+	        } else {
+	            return;
+	        }
+
+	        World world = Bukkit.getServer().getWorld(targetName);
+	        
+	        if (world == null) {
+            	player.sendMessage(Main.prefix() + "The nether has not been created.");
+	            return;
+	        }
+
+	        Location to = new Location(world, from.getX(), from.getY(), from.getZ(), from.getYaw(), from.getPitch());
+	        to = travel.findOrCreate(to);
+
 	        if (to != null) {
 	            event.setTo(to);
 	        }
 		}
 		
 		if (Main.theend) {
-			String fromWorldName = event.getFrom().getWorld().getName();
+			String fromName = event.getFrom().getWorld().getName();
 
-	        String targetWorldName;
-	        if (event.getFrom().getWorld().getEnvironment() == World.Environment.THE_END) {
-	            if (!fromWorldName.endsWith("_end")) {
-		        	event.getPlayer().sendMessage("The end has not been created.");
+	        String targetName;
+	        if (event.getFrom().getWorld().getEnvironment() == Environment.THE_END) {
+	            if (!fromName.endsWith("_end")) {
 	                return;
 	            }
 
-	            targetWorldName = fromWorldName.substring(0, fromWorldName.length() - 4);
-	        } else if (event.getFrom().getWorld().getEnvironment() == World.Environment.NORMAL) {
+	            targetName = fromName.substring(0, fromName.length() - 4);
+	        } else if (event.getFrom().getWorld().getEnvironment() == Environment.NORMAL) {
 	            if (!PortalUtils.isPortal(Material.ENDER_PORTAL, event.getFrom())) {
 	                return;
 	            }
 	            
-	            targetWorldName = fromWorldName + "_end";
+	            targetName = fromName + "_end";
 	        } else {
 	            return;
 	        }
 
-	        World targetWorld = Bukkit.getWorld(targetWorldName);
-	        if (targetWorld == null) {
-	        	event.getPlayer().sendMessage("The end has not been created.");
+	        World world = Bukkit.getServer().getWorld(targetName);
+	        
+	        if (world == null) {
 	            return;
 	        }
 
-	        Location to = new Location(targetWorld, 100.0, 49, 0, 90f, 0f);
+	        Location to = new Location(world, 100.0, 49, 0, 90f, 0f);
 
 			for (int y = to.getBlockY() - 1; y <= to.getBlockY() + 2; y++) {
 				for (int x = to.getBlockX() - 2; x <= to.getBlockX() + 2; x++) {
@@ -924,6 +946,9 @@ public class PlayerListener implements Listener {
 	public void onPreCraftEvent(PrepareItemCraftEvent event) {
 		ItemStack item = event.getRecipe().getResult();
 		
+		/**
+		 * @author Ghowden
+		 */
         if (RecipeUtils.areSimilar(event.getRecipe(), Main.headRecipe)) {
             ItemMeta meta = item.getItemMeta();
             String name = "N/A";
@@ -944,7 +969,7 @@ public class PlayerListener implements Listener {
 		
 		if (item != null && item.getType() == Material.GOLDEN_APPLE) {
 			if (item.getItemMeta().getDisplayName() != null && item.getItemMeta().getDisplayName().equals("§6Golden Head")) {
-				if (ScenarioManager.getManager().getScenario("VengefulSpirits").isEnabled()) {
+				if (ScenarioManager.getInstance().getScenario("VengefulSpirits").isEnabled()) {
 					return;
 				}
 				
@@ -1006,7 +1031,7 @@ public class PlayerListener implements Listener {
 	
 	@EventHandler
 	public void onFoodLevelChange(FoodLevelChangeEvent event) {
-		Player player = (Player) event.getEntity();
+		final Player player = (Player) event.getEntity();
 		
 		if (player.getWorld().getName().equals("lobby")) {
 			event.setCancelled(true);
@@ -1015,7 +1040,13 @@ public class PlayerListener implements Listener {
 		}
 		
 		if (event.getFoodLevel() < player.getFoodLevel()) {
+			Main.plugin.getLogger().info("Exhaustion of " + player.getName() + " before event: " + player.getExhaustion());
 			event.setCancelled(new Random().nextInt(100) < 66);
+			Bukkit.getScheduler().runTaskLater(Main.plugin, new Runnable() {
+				public void run() {
+					Main.plugin.getLogger().info("Exhaustion of " + player.getName() + " after event: " + player.getExhaustion());
+				}
+			}, 1);
 	    }
 	}
 	
