@@ -35,7 +35,7 @@ public class Superheroes extends Scenario implements Listener {
 		
 		if (enable) {
 			for (Player online : PlayerUtils.getPlayers()) {
-				HeroType type = getRandom();
+				HeroType type = getRandom(online);
 				online.sendMessage(Main.prefix() + "You are the §a" + type.name().toLowerCase() + " §7type.");
 				
 				switch (type) {
@@ -45,27 +45,58 @@ public class Superheroes extends Scenario implements Listener {
 					this.type.put(online.getName(), type);
 					break;
 				case INVIS:
+					if (online.hasPotionEffect(PotionEffectType.INVISIBILITY)) {
+						online.removePotionEffect(PotionEffectType.INVISIBILITY);
+					}
+					if (online.hasPotionEffect(PotionEffectType.WATER_BREATHING)) {
+						online.removePotionEffect(PotionEffectType.WATER_BREATHING);
+					}
 					online.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 1726272000, 0));
 					online.addPotionEffect(new PotionEffect(PotionEffectType.WATER_BREATHING, 1726272000, 0));
 					this.type.put(online.getName(), type);
 					break;
 				case JUMP:
+					if (online.hasPotionEffect(PotionEffectType.JUMP)) {
+						online.removePotionEffect(PotionEffectType.JUMP);
+					}
+					if (online.hasPotionEffect(PotionEffectType.FAST_DIGGING)) {
+						online.removePotionEffect(PotionEffectType.FAST_DIGGING);
+					}
+					if (online.hasPotionEffect(PotionEffectType.SATURATION)) {
+						online.removePotionEffect(PotionEffectType.SATURATION);
+					}
 					this.type.put(online.getName(), type);
 					online.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 1726272000, 3));
 					online.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, 1726272000, 1));
 					online.addPotionEffect(new PotionEffect(PotionEffectType.SATURATION, 1726272000, 9));
 					break;
 				case RESISTANCE:
+					if (online.hasPotionEffect(PotionEffectType.DAMAGE_RESISTANCE)) {
+						online.removePotionEffect(PotionEffectType.DAMAGE_RESISTANCE);
+					}
+					if (online.hasPotionEffect(PotionEffectType.FIRE_RESISTANCE)) {
+						online.removePotionEffect(PotionEffectType.FIRE_RESISTANCE);
+					}
+					
 					online.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 1726272000, 1));
 					online.addPotionEffect(new PotionEffect(PotionEffectType.FIRE_RESISTANCE, 1726272000, 0));
 					this.type.put(online.getName(), type);
 					break;
 				case SPEED:
+					if (online.hasPotionEffect(PotionEffectType.SPEED)) {
+						online.removePotionEffect(PotionEffectType.SPEED);
+					}
+					if (online.hasPotionEffect(PotionEffectType.FAST_DIGGING)) {
+						online.removePotionEffect(PotionEffectType.FAST_DIGGING);
+					}
 					online.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 1726272000, 1));
 					online.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, 1726272000, 1));
 					this.type.put(online.getName(), type);
 					break;
 				case STRENGTH:
+					if (online.hasPotionEffect(PotionEffectType.INCREASE_DAMAGE)) {
+						online.removePotionEffect(PotionEffectType.INCREASE_DAMAGE);
+					}
 					online.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 1726272000, 0));
 					this.type.put(online.getName(), type);
 					break;
@@ -242,7 +273,7 @@ public class Superheroes extends Scenario implements Listener {
 						return;
 					}
 					
-					HeroType type = getRandom();
+					HeroType type = getRandom(target);
 					
 					switch (type) {
 					case HEALTH:
@@ -341,10 +372,10 @@ public class Superheroes extends Scenario implements Listener {
 		}
 	}
 	
-	private HeroType getRandom() {
+	private HeroType getRandom(Player player) {
 		ArrayList<HeroType> list = new ArrayList<HeroType>();
 		for (HeroType type : HeroType.values()) {
-			if (!Main.ffa && type == HeroType.INVIS) {
+			if (player.getScoreboard().getEntryTeam(player.getName()) != null && type == HeroType.INVIS) {
 				continue;
 			}
 			
