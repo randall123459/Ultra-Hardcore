@@ -60,10 +60,10 @@ public class BlockListener implements Listener {
 		}
 		
 		if (Main.shears) {
-			if (block.getType() == Material.LEAVES || block.getType() == Material.LEAVES_2) {
+			if (block.getType() == Material.LEAVES) {
 				try {
 					Tree tree = (Tree) event.getBlock().getState().getData();
-					if (tree.getSpecies() == TreeSpecies.GENERIC || tree.getSpecies() == TreeSpecies.DARK_OAK) {
+					if (tree.getSpecies() == TreeSpecies.GENERIC) {
 						Random r = new Random();
 						
 						if (player.getItemInHand() != null && player.getItemInHand().getType() == Material.SHEARS) {
@@ -73,7 +73,7 @@ public class BlockListener implements Listener {
 						}
 					}
 				} catch (ClassCastException localClassCastException) {
-					Bukkit.getLogger().warning(ChatColor.RED + "Could not shear leave for apple @ " + block.getLocation().toString());
+					Bukkit.getLogger().warning(ChatColor.RED + "Could not shear leaf for apple @ " + block.getLocation().toString());
 				}
 			}
 		}
