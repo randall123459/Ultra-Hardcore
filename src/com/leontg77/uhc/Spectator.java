@@ -99,8 +99,6 @@ public class Spectator {
 				Main.spectating.add(player.getName());
 			}
 			
-			Teams.getManager().joinTeam("spec", player);
-			
 			player.getInventory().setItem(1, tp);
 			player.getInventory().setItem(4, compass);
 			player.getInventory().setItem(7, night);
@@ -128,10 +126,6 @@ public class Spectator {
 			player.setFlying(false);
 			player.setFlySpeed((float) 0.1);
 			
-			if (Teams.getManager().getTeam(player) != null) {
-				Teams.getManager().leaveTeam(player);
-			}
-
 			if (Main.spectating.contains(player.getName())) {
 				Main.spectating.remove(player.getName());
 			}
