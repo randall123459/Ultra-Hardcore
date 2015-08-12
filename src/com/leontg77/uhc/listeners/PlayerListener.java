@@ -19,6 +19,7 @@ import org.bukkit.World;
 import org.bukkit.World.Environment;
 import org.bukkit.block.Block;
 import org.bukkit.block.Skull;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.ExperienceOrb;
 import org.bukkit.entity.Item;
@@ -46,6 +47,7 @@ import org.bukkit.event.player.PlayerLoginEvent.Result;
 import org.bukkit.event.player.PlayerPortalEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.event.server.ServerCommandEvent;
 import org.bukkit.event.server.ServerListPingEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
@@ -559,7 +561,7 @@ public class PlayerListener implements Listener {
 						Scoreboards.getManager().setScore("§7" + settings.getConfig().getString("game.scenarios"), 2, true);
 						Scoreboards.getManager().setScore("§d ", 1, true);
 					} else {
-						Scoreboards.getManager().setScore("§a ", 13, true);
+						Scoreboards.getManager().setScore("§e ", 13, true);
 						Scoreboards.getManager().setScore("§cTeam:", 12, true);
 						Scoreboards.getManager().setScore("§7/team", 11, true);
 						Scoreboards.getManager().setScore("§a ", 10, true);
@@ -638,6 +640,129 @@ public class PlayerListener implements Listener {
 	}
 	
 	@EventHandler
+	public void onServerCommand(ServerCommandEvent event) {
+		CommandSender player = event.getSender();
+		
+		if (event.getCommand().split(" ")[0].equalsIgnoreCase("/border3000")) {
+			if (player.hasPermission("uhc.border")) {
+				player.sendMessage(ChatColor.RED + "Only players can setup brorders.");
+			} else {
+				player.sendMessage(ChatColor.RED + "You do not have access to that command.");
+			}
+			event.setCancelled(true);
+		}
+		
+		if (event.getCommand().split(" ")[0].equalsIgnoreCase("/border2000")) {
+			if (player.hasPermission("uhc.border")) {
+				player.sendMessage(ChatColor.RED + "Only players can setup brorders.");
+			} else {
+				player.sendMessage(ChatColor.RED + "You do not have access to that command.");
+			}
+			event.setCancelled(true);
+		}
+		
+		if (event.getCommand().split(" ")[0].equalsIgnoreCase("/perma")) {
+			if (player.hasPermission("uhc.perma")) {
+				for (World world : Bukkit.getServer().getWorlds()) {
+					world.setGameRuleValue("doDaylightCycle", "false");
+					world.setTime(6000);
+				}
+				PlayerUtils.broadcast(Main.prefix() + "Permaday enabled.");
+			} else {
+				player.sendMessage(ChatColor.RED + "You do not have access to that command.");
+			}
+			event.setCancelled(true);
+		}
+		
+		if (event.getCommand().split(" ")[0].equalsIgnoreCase("/matchpost")) {
+			player.sendMessage(Main.prefix() + "Match post: §a" + settings.getConfig().getString("matchpost"));
+			event.setCancelled(true);
+		}
+		
+		if (event.getCommand().split(" ")[0].equalsIgnoreCase("/post")) {
+			player.sendMessage(Main.prefix() + "Match post: §a" + settings.getConfig().getString("matchpost"));
+			event.setCancelled(true);
+		}
+		
+		if (event.getCommand().split(" ")[0].equalsIgnoreCase("/killboard")) {
+			if (player.hasPermission("uhc.killboard")) {
+				if (Main.killboard) {
+					for (String e : Scoreboards.getManager().kills.getScoreboard().getEntries()) {
+						Scoreboards.getManager().resetScore(e);
+					}
+					PlayerUtils.broadcast(Main.prefix() + "Pregame board disabled.");
+					Main.killboard = false;
+				} else {
+					PlayerUtils.broadcast(Main.prefix() + "Pregame board enabled.");
+					if (Main.ffa) {
+						Scoreboards.getManager().setScore("§a ", 10, true);
+						Scoreboards.getManager().setScore("§cArena:", 9, true);
+						Scoreboards.getManager().setScore("§7/a ", 8, true);
+						Scoreboards.getManager().setScore("§b ", 7, true);
+						Scoreboards.getManager().setScore("§cTeamsize:", 6, true);
+						Scoreboards.getManager().setScore("§7" + ServerUtils.getTeamSize(), 5, true);
+						Scoreboards.getManager().setScore("§c ", 4, true);
+						Scoreboards.getManager().setScore("§cScenarios:", 3, true);
+						Scoreboards.getManager().setScore("§7" + settings.getConfig().getString("game.scenarios"), 2, true);
+						Scoreboards.getManager().setScore("§d ", 1, true);
+					} else {
+						Scoreboards.getManager().setScore("§e ", 13, true);
+						Scoreboards.getManager().setScore("§cTeam:", 12, true);
+						Scoreboards.getManager().setScore("§7/team", 11, true);
+						Scoreboards.getManager().setScore("§a ", 10, true);
+						Scoreboards.getManager().setScore("§cArena:", 9, true);
+						Scoreboards.getManager().setScore("§7/a ", 8, true);
+						Scoreboards.getManager().setScore("§b ", 7, true);
+						Scoreboards.getManager().setScore("§cTeamsize:", 6, true);
+						Scoreboards.getManager().setScore("§7" + ServerUtils.getTeamSize(), 5, true);
+						Scoreboards.getManager().setScore("§c ", 4, true);
+						Scoreboards.getManager().setScore("§cScenarios:", 3, true);
+						Scoreboards.getManager().setScore("§7" + settings.getConfig().getString("game.scenarios"), 2, true);
+						Scoreboards.getManager().setScore("§d ", 1, true);
+					}
+					Main.killboard = true;
+				}
+			} else {
+				player.sendMessage(ChatColor.RED + "You do not have access to that command.");
+			}
+			event.setCancelled(true);
+		}
+		
+		if (event.getCommand().split(" ")[0].equalsIgnoreCase("/arenaboard")) {
+			if (player.hasPermission("uhc.arenaboard")) {
+				if (Main.arenaboard) {
+					for (String e : Scoreboards.getManager().ab.getScoreboard().getEntries()) {
+						Scoreboards.getManager().resetScore(e);
+					}
+					PlayerUtils.broadcast(Main.prefix() + "Arena board has been disabled.");
+					Scoreboards.getManager().kills.setDisplaySlot(DisplaySlot.SIDEBAR);
+					Main.arenaboard = false;
+				} else {
+					PlayerUtils.broadcast(Main.prefix() + "Arena board has been enabled.");
+					Scoreboards.getManager().ab.setDisplaySlot(DisplaySlot.SIDEBAR);
+					Main.arenaboard = true;
+
+					Scoreboards.getManager().setScore("§a§lPvE", 1, false);
+					Scoreboards.getManager().setScore("§a§lPvE", 0, false);
+				}
+			} else {
+				player.sendMessage(ChatColor.RED + "You do not have access to that command.");
+			}
+			event.setCancelled(true);
+		}
+		
+		if (event.getCommand().split(" ")[0].equalsIgnoreCase("/text")) {
+			event.setCancelled(true);
+			
+			if (player.hasPermission("uhc.text")) {
+				player.sendMessage(ChatColor.RED + "Only players can create floating text.");
+			} else {
+				player.sendMessage(ChatColor.RED + "You do not have access to that command.");
+			}
+		}
+	}
+	
+	@EventHandler
 	public void onPlayerLogin(PlayerLoginEvent event) {
 		Player player = event.getPlayer();
 
@@ -647,7 +772,10 @@ public class PlayerListener implements Listener {
 				return;
 			}
 
-			event.setKickMessage("§8» §cBanned: §7" + Bukkit.getBanList(Type.NAME).getBanEntry(player.getName()).getReason() + " §8«");
+			String reason = Bukkit.getBanList(Type.NAME).getBanEntry(player.getName()).getReason();
+			
+			event.setKickMessage("§8» §cBanned: §7" + reason + " §8«");
+			PlayerUtils.broadcast("§c" + player.getName() + "tried to join while being banned for: " + reason, "uhc.staff");
 			return;
 		}
 		
@@ -661,8 +789,8 @@ public class PlayerListener implements Listener {
 			return;
 		}
 		
-		if (PlayerUtils.getPlayers().size() == settings.getConfig().getInt("maxplayers")) {
-			if (player.hasPermission("uhc.prelist")) {
+		if (PlayerUtils.getPlayers().size() >= settings.getConfig().getInt("maxplayers")) {
+			if (player.hasPermission("uhc.staff")) {
 				event.allow();
 				return;
 			} 
@@ -674,28 +802,23 @@ public class PlayerListener implements Listener {
 	
 	@EventHandler
 	public void onServerListPing(ServerListPingEvent event) {
-		String bm = ChatColor.translateAlternateColorCodes('&', settings.getConfig().getString("game.scenarios"));
-		
-		if (bm == null) {
-			event.setMotd(Bukkit.getMotd());
-		} else {
-			StringBuilder s = new StringBuilder();
-			
-			for (String st : bm.split(" ")) {
-				s.append("§6" + st + " ");
-			}
-			
-			event.setMotd("§4§lUltra Hardcore §8- §71.8 §8- §a" + ServerUtils.getState() + "§r \n" + 
-			ChatColor.GOLD + ServerUtils.getTeamSize() + " " + s.toString().trim() + "§8 - §4Host: §7" + Settings.getInstance().getConfig().getString("game.host"));
+		if (settings.getConfig().getString("game.scenarios") == null) {
+			return;
 		}
+		
+		String scenarios = ChatColor.translateAlternateColorCodes('&', settings.getConfig().getString("game.scenarios"));
+		
+		StringBuilder builder= new StringBuilder();
+		
+		for (String st : scenarios.split(" ")) {
+			builder.append("§6" + st + " ");
+		}
+		
+		event.setMotd("§4§lUltra Hardcore §8- §71.8 §8- §a" + ServerUtils.getState() + "§r \n" + 
+		ChatColor.GOLD + ServerUtils.getTeamSize() + " " + builder.toString().trim() + "§8 - §4Host: §7" + Settings.getInstance().getConfig().getString("game.host"));
 
 		int max = settings.getConfig().getInt("maxplayers");
-		
-		if (max == 0) {
-			event.setMaxPlayers(Bukkit.getMaxPlayers());
-		} else {
-			event.setMaxPlayers(max);
-		}
+		event.setMaxPlayers(max);
 	}
 	
 	@EventHandler
@@ -755,12 +878,12 @@ public class PlayerListener implements Listener {
 		if (event.getInventory().getTitle().endsWith("Fame")) {
 			event.setCancelled(true);
 			
-			if (item.getItemMeta().getDisplayName() != null && item.getItemMeta().getDisplayName().equalsIgnoreCase("§aNext page")) {
+			if (item.hasItemMeta() && item.getItemMeta().hasDisplayName() && item.getItemMeta().getDisplayName().equalsIgnoreCase("§aNext page")) {
 				HOFCommand.page.put(player, HOFCommand.page.get(player) + 1);
 				player.openInventory(HOFCommand.inv2);
 			}
 			
-			if (item.getItemMeta().getDisplayName() != null && item.getItemMeta().getDisplayName().equalsIgnoreCase("§aPrevious page")) {
+			if (item.hasItemMeta() && item.getItemMeta().hasDisplayName() && item.getItemMeta().getDisplayName().equalsIgnoreCase("§aPrevious page")) {
 				HOFCommand.page.put(player, HOFCommand.page.get(player) - 1);
 				player.openInventory(HOFCommand.inv);
 			}
@@ -865,14 +988,14 @@ public class PlayerListener implements Listener {
 	        String targetName;
 	        if (from.getWorld().getEnvironment() == Environment.NETHER) {
 	            if (!fromName.endsWith("_nether")) {
-	            	player.sendMessage(Main.prefix() + "Could not teleport you to overworld, contact the staff now.");
+	            	player.sendMessage(Main.prefix() + "Could not teleport you to the overworld, contact the staff now.");
 	                return;
 	            }
 
 	            targetName = fromName.substring(0, fromName.length() - 7);
 	        } else if (from.getWorld().getEnvironment() == Environment.NORMAL) {
 	            if (!PortalUtils.isPortal(Material.PORTAL, from)) {
-	            	player.sendMessage(Main.prefix() + "Could not teleport you to nether, contact the staff now.");
+	            	player.sendMessage(Main.prefix() + "Could not teleport you to the nether, contact the staff now.");
 	                return;
 	            }
 
@@ -902,12 +1025,14 @@ public class PlayerListener implements Listener {
 	        String targetName;
 	        if (event.getFrom().getWorld().getEnvironment() == Environment.THE_END) {
 	            if (!fromName.endsWith("_end")) {
+	            	player.sendMessage(Main.prefix() + "Could not teleport you to the overworld, contact the staff now.");
 	                return;
 	            }
 
 	            targetName = fromName.substring(0, fromName.length() - 4);
 	        } else if (event.getFrom().getWorld().getEnvironment() == Environment.NORMAL) {
 	            if (!PortalUtils.isPortal(Material.ENDER_PORTAL, event.getFrom())) {
+	            	player.sendMessage(Main.prefix() + "Could not teleport you to the end, contact the staff now.");
 	                return;
 	            }
 	            
@@ -919,6 +1044,7 @@ public class PlayerListener implements Listener {
 	        World world = Bukkit.getServer().getWorld(targetName);
 	        
 	        if (world == null) {
+            	player.sendMessage(Main.prefix() + "The end has not been created.");
 	            return;
 	        }
 
@@ -1006,22 +1132,22 @@ public class PlayerListener implements Listener {
 	public void onPlayerItemConsume(PlayerItemConsumeEvent event) {
 		final Player player = event.getPlayer();
 		final float before = player.getSaturation();
-		
-		new BukkitRunnable() {
+
+		Bukkit.getServer().getScheduler().runTaskLater(Main.plugin, new Runnable() {
 			public void run() {
 				float change = player.getSaturation() - before;
 				player.setSaturation((float) (before + change * 2.5D));
 			}
-	    }.runTaskLater(Main.plugin, 1L);
+	    }, 1L);
 		
-		if (!Main.absorption) {
-			if (event.getItem().getType() == Material.GOLDEN_APPLE) {
-				Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Main.plugin, new Runnable() {
-					public void run() {
-						player.removePotionEffect(PotionEffectType.ABSORPTION);
-					}
-		        }, 1L);
-			}
+		if (event.getItem().getType() == Material.GOLDEN_APPLE && !Main.absorption) {
+			player.removePotionEffect(PotionEffectType.ABSORPTION);
+			
+			Bukkit.getServer().getScheduler().runTaskLater(Main.plugin, new Runnable() {
+				public void run() {
+					player.removePotionEffect(PotionEffectType.ABSORPTION);
+				}
+	        }, 1L);
 		}
 		
 		if (event.getItem().getType() == Material.GOLDEN_APPLE && event.getItem().getItemMeta().getDisplayName() != null && event.getItem().getItemMeta().getDisplayName().equals("§6Golden Head")) {
@@ -1031,7 +1157,7 @@ public class PlayerListener implements Listener {
 	
 	@EventHandler
 	public void onFoodLevelChange(FoodLevelChangeEvent event) {
-		final Player player = (Player) event.getEntity();
+		Player player = (Player) event.getEntity();
 		
 		if (player.getWorld().getName().equals("lobby")) {
 			event.setCancelled(true);
@@ -1040,13 +1166,7 @@ public class PlayerListener implements Listener {
 		}
 		
 		if (event.getFoodLevel() < player.getFoodLevel()) {
-			Main.plugin.getLogger().info("Exhaustion of " + player.getName() + " before event: " + player.getExhaustion());
 			event.setCancelled(new Random().nextInt(100) < 66);
-			Bukkit.getScheduler().runTaskLater(Main.plugin, new Runnable() {
-				public void run() {
-					Main.plugin.getLogger().info("Exhaustion of " + player.getName() + " after event: " + player.getExhaustion());
-				}
-			}, 1);
 	    }
 	}
 	
@@ -1056,13 +1176,10 @@ public class PlayerListener implements Listener {
 		
 		if (Main.spectating.contains(player.getName())) {
 			event.setCancelled(true);
+			return;
 		}
 		
-		if (player.getWorld().getName().equals("lobby")) {
-			event.setCancelled(true);
-		}
-		
-		if (player.getWorld().getName().equals("arena")) {
+		if (!State.isState(State.INGAME)) {
 			event.setCancelled(true);
 		}
 	}
