@@ -138,14 +138,6 @@ public class Teams {
 
 		list.addAll(list2);
 		
-		Team spec = (sb.getTeam("spec") == null ? sb.registerNewTeam("spec") : sb.getTeam("spec"));
-		
-		spec.setDisplayName("spec");
-		spec.setPrefix("§7§o");
-		spec.setSuffix("§r");
-		spec.setAllowFriendlyFire(false);
-		spec.setCanSeeFriendlyInvisibles(true);	
-		
 		for (int i = 0; i < list.size(); i++) {
 			Team team = (sb.getTeam("UHC" + (i + 1)) == null ? sb.registerNewTeam("UHC" + (i + 1)) : sb.getTeam("UHC" + (i + 1)));
 			
