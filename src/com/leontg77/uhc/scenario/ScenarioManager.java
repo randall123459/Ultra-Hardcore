@@ -8,6 +8,8 @@ import java.util.Set;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
 
+import com.leontg77.uhc.scenario.types.Assassins;
+import com.leontg77.uhc.scenario.types.AssaultAndBattery;
 import com.leontg77.uhc.scenario.types.Backpacks;
 import com.leontg77.uhc.scenario.types.Barebones;
 import com.leontg77.uhc.scenario.types.BestBTC;
@@ -78,9 +80,9 @@ public class ScenarioManager {
 	 * Setup all the scenarios.
 	 */
 	public void setup() {
-		// TODO: scen.add(new Assassins());
-		// TODO: scen.add(new AssaultAndBattery());
-		// TODO: scen.add(new Astrophobia());
+		/* TODO: Test */ scenarios.add(new Assassins());
+		/* TODO: Test */ scenarios.add(new AssaultAndBattery());
+		// TODO: scenarios.add(new Astrophobia());
 		scenarios.add(new Backpacks());
 		scenarios.add(new Barebones());
 		scenarios.add(new BestBTC());
@@ -94,13 +96,13 @@ public class ScenarioManager {
 		scenarios.add(new Compensation());
 		scenarios.add(new Cryophobia());
 		scenarios.add(new CutClean());
-		// TODO: scen.add(new DamageCycle());
+		// TODO: scenarios.add(new DamageCycle());
 		scenarios.add(new Depths());
 		scenarios.add(new Diamondless());
 		scenarios.add(new EnchantedDeath());
 		scenarios.add(new Fallout());
 		scenarios.add(new FlowerPower());
-		// TODO: scen.add(new Genie());
+		// TODO: scenarios.add(new Genie());
 		scenarios.add(new GoldenPearl());
 		scenarios.add(new Goldless());
 		scenarios.add(new GoldRush());
@@ -114,12 +116,12 @@ public class ScenarioManager {
 		scenarios.add(new Lootcrates());
 		scenarios.add(new MeleeFun());
 		scenarios.add(new Moles());
-		// TODO: scen.add(new MysteryTeams());
+		// TODO: scenarios.add(new MysteryTeams());
 		scenarios.add(new NightmareMode());
 		scenarios.add(new NoFall());
 		scenarios.add(new NoSprint());
 		scenarios.add(new Paranoia());
-		// TODO: scen.add(new PeriodOfResistance());
+		// TODO: scenarios.add(new PeriodOfResistance());
 		scenarios.add(new Permakill());
 		scenarios.add(new PotentialHearts());
 		scenarios.add(new PotentialPermanent());
