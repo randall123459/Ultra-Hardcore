@@ -1,7 +1,8 @@
 package com.leontg77.uhc.scenario.types;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -20,7 +21,7 @@ import com.leontg77.uhc.scenario.Scenario;
 import com.leontg77.uhc.util.PlayerUtils;
 
 public class BestBTC extends Scenario implements Listener {
-	private ArrayList<String> list = new ArrayList<String>();
+	private HashSet<String> list = new HashSet<String>();
 	private boolean enabled = false;
 	private BukkitRunnable task;
 
@@ -61,7 +62,7 @@ public class BestBTC extends Scenario implements Listener {
 		return enabled;
 	}
 	
-	public List<String> getList() {
+	public Set<String> getList() {
 		return list;
 	}
 	
@@ -98,27 +99,28 @@ public class BestBTC extends Scenario implements Listener {
 	public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
 		Player sender = event.getPlayer();
 		
-		if (event.getMessage().split(" ")[0].equalsIgnoreCase("/blist")) {
+		if (event.getMessage().split(" ")[0].equalsIgnoreCase("/btclist")) {
 			if (!isEnabled()) {
 				sender.sendMessage(ChatColor.RED + "BestBTC is not enabled.");
 				event.setCancelled(true);
 				return;
 			}
-			
-			StringBuilder pvelist = new StringBuilder("");
+
+			ArrayList<String> btc = new ArrayList<String>(list);
+			StringBuilder btclist = new StringBuilder("");
 			
 			for (int i = 0; i < list.size(); i++) {
-				if (pvelist.length() > 0 && i == list.size() - 1) {
-					pvelist.append(" §7and §6");
+				if (btclist.length() > 0 && i == btc.size() - 1) {
+					btclist.append(" §7and §6");
 				}
-				else if (pvelist.length() > 0 && pvelist.length() != list.size()) {
-					pvelist.append("§7, §6");
+				else if (btclist.length() > 0 && btclist.length() != btc.size()) {
+					btclist.append("§7, §6");
 				}
 				
-				pvelist.append(ChatColor.GOLD + list.get(i));
+				btclist.append(ChatColor.GOLD + btc.get(i));
 			}
 			
-			event.getPlayer().sendMessage(Main.prefix() + "People still on the best pve list: §6" + (pvelist.length() > 0 ? pvelist.toString().trim() : "None") + "§7.");
+			event.getPlayer().sendMessage(Main.prefix() + "People still on the best pve list: §6" + (btclist.length() > 0 ? btclist.toString().trim() : "None") + "§7.");
 			event.setCancelled(true);
 		}
 		
