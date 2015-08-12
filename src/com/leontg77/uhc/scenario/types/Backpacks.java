@@ -35,7 +35,7 @@ public class Backpacks extends Scenario implements Listener {
 		if (event.getMessage().split(" ")[0].equalsIgnoreCase("/bp")) {
 			event.setCancelled(true);
 			if (!isEnabled()) {
-				player.sendMessage(ChatColor.RED + "Backback is not enabled.");
+				player.sendMessage(ChatColor.RED + "\"Backbacks\" is not enabled.");
 				return;
 			}
 			
