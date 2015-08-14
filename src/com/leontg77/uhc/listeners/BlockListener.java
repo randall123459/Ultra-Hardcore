@@ -26,7 +26,7 @@ import com.leontg77.uhc.util.BlockUtils;
 
 public class BlockListener implements Listener {
 
-	@EventHandler(ignoreCancelled = true)
+	@EventHandler(priority = EventPriority.HIGHEST)
     public void onBlockBreak(BlockBreakEvent event) {
     	Player player = event.getPlayer();
 		Block block = event.getBlock();

@@ -48,7 +48,7 @@ public class Barebones extends Scenario implements Listener {
 				BlockUtils.blockCrack(player, block.getLocation(), block.getType());
 				block.setType(Material.AIR);
 				block.getState().update();
-				ExperienceOrb exp = (ExperienceOrb) event.getBlock().getWorld().spawn(event.getBlock().getLocation().add(0.5, 0.7, 0.5), ExperienceOrb.class);
+				ExperienceOrb exp = (ExperienceOrb) event.getBlock().getWorld().spawn(event.getBlock().getLocation().add(0.5, 0.3, 0.5), ExperienceOrb.class);
 				exp.setExperience(3);
 				Item item = block.getWorld().dropItem(block.getLocation().add(0.5, 0.7, 0.5), new ItemStack (Material.IRON_INGOT));
 				item.setVelocity(new Vector(0, 0.2, 0));
@@ -59,7 +59,7 @@ public class Barebones extends Scenario implements Listener {
 				BlockUtils.blockCrack(player, block.getLocation(), block.getType());
 				block.setType(Material.AIR);
 				block.getState().update();
-				ExperienceOrb exp = (ExperienceOrb) event.getBlock().getWorld().spawn(event.getBlock().getLocation().add(0.5, 0.7, 0.5), ExperienceOrb.class);
+				ExperienceOrb exp = (ExperienceOrb) event.getBlock().getWorld().spawn(event.getBlock().getLocation().add(0.5, 0.3, 0.5), ExperienceOrb.class);
 				exp.setExperience(3);
 				Item item = block.getWorld().dropItem(block.getLocation().add(0.5, 0.7, 0.5), new ItemStack (Material.IRON_INGOT));
 				item.setVelocity(new Vector(0, 0.2, 0));
@@ -70,7 +70,7 @@ public class Barebones extends Scenario implements Listener {
 				BlockUtils.blockCrack(player, block.getLocation(), block.getType());
 				block.setType(Material.AIR);
 				block.getState().update();
-				ExperienceOrb exp = (ExperienceOrb) event.getBlock().getWorld().spawn(event.getBlock().getLocation().add(0.5, 0.7, 0.5), ExperienceOrb.class);
+				ExperienceOrb exp = (ExperienceOrb) event.getBlock().getWorld().spawn(event.getBlock().getLocation().add(0.5, 0.3, 0.5), ExperienceOrb.class);
 				exp.setExperience(3);
 				Item item = block.getWorld().dropItem(block.getLocation().add(0.5, 0.7, 0.5), new ItemStack (Material.IRON_INGOT));
 				item.setVelocity(new Vector(0, 0.2, 0));
@@ -81,7 +81,7 @@ public class Barebones extends Scenario implements Listener {
 				BlockUtils.blockCrack(player, block.getLocation(), block.getType());
 				block.setType(Material.AIR);
 				block.getState().update();
-				ExperienceOrb exp = (ExperienceOrb) event.getBlock().getWorld().spawn(event.getBlock().getLocation().add(0.5, 0.7, 0.5), ExperienceOrb.class);
+				ExperienceOrb exp = (ExperienceOrb) event.getBlock().getWorld().spawn(event.getBlock().getLocation().add(0.5, 0.3, 0.5), ExperienceOrb.class);
 				exp.setExperience(3);
 				Item item = block.getWorld().dropItem(block.getLocation().add(0.5, 0.7, 0.5), new ItemStack (Material.IRON_INGOT));
 				item.setVelocity(new Vector(0, 0.2, 0));
@@ -92,7 +92,7 @@ public class Barebones extends Scenario implements Listener {
 				BlockUtils.blockCrack(player, block.getLocation(), block.getType());
 				block.setType(Material.AIR);
 				block.getState().update();
-				ExperienceOrb exp = (ExperienceOrb) event.getBlock().getWorld().spawn(event.getBlock().getLocation().add(0.5, 0.7, 0.5), ExperienceOrb.class);
+				ExperienceOrb exp = (ExperienceOrb) event.getBlock().getWorld().spawn(event.getBlock().getLocation().add(0.5, 0.3, 0.5), ExperienceOrb.class);
 				exp.setExperience(3);
 				Item item = block.getWorld().dropItem(block.getLocation().add(0.5, 0.7, 0.5), new ItemStack (Material.IRON_INGOT));
 				item.setVelocity(new Vector(0, 0.2, 0));

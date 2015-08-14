@@ -1,6 +1,7 @@
 package com.leontg77.uhc.cmds;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -41,6 +42,8 @@ public class RandomCommand implements CommandExecutor {
 							a.add(online);
 						}
 					}
+					
+					Collections.shuffle(a);
 
 					Team t = null;
 					
@@ -84,6 +87,8 @@ public class RandomCommand implements CommandExecutor {
 						a.add(online);
 					}
 				}
+				
+				Collections.shuffle(a);
 				
 				for (int i = 1; i < args.length; i++) {
 					Player target = Bukkit.getServer().getPlayer(args[i]);

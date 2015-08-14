@@ -5,7 +5,6 @@ import java.util.HashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
@@ -65,6 +64,10 @@ public class AssaultAndBattery extends Scenario implements Listener {
 					}
 				}
 			}
+			
+			for (Player online : PlayerUtils.getPlayers()) {
+				online.chat("/class");
+			}
 		} else {
 			types.clear();
 		}
@@ -99,27 +102,21 @@ public class AssaultAndBattery extends Scenario implements Listener {
 		if (!isEnabled()) {
 			return;
 		}
-		
-		if (!(event.getDamager() instanceof Player) || !(event.getDamager() instanceof Projectile)) {
-			return;
-		}
 
-		Entity entity = event.getDamager();
-
-		if (entity instanceof Player) {
+		if (event.getDamager() instanceof Player) {
 			Player player = (Player) event.getDamager();
 			
-			if (types.get(player.getName()) == Type.BATTERY) {
+			if (types.get(player.getName()).equals(Type.BATTERY)) {
 				player.sendMessage(ChatColor.RED + "You cannot do melee damage.");
 				event.setCancelled(true);
 			}
-		} else if (entity instanceof Projectile) {
+		} else if (event.getDamager() instanceof Projectile) {
 			Projectile proj = (Projectile) event.getDamager();
 			
 			if (proj.getShooter() instanceof Player) {
 				Player player = (Player) proj.getShooter();
 				
-				if (types.get(player.getName()) == Type.ASSAULT) {
+				if (types.get(player.getName()).equals(Type.ASSAULT)) {
 					player.sendMessage(ChatColor.RED + "You cannot do projectile damage.");
 					event.setCancelled(true);
 				}
@@ -135,6 +132,11 @@ public class AssaultAndBattery extends Scenario implements Listener {
 			event.setCancelled(true);
 			if (!isEnabled()) {
 				sender.sendMessage(ChatColor.RED + "AssaultAndBattery is not enabled.");
+				return;
+			}
+			
+			if (!types.containsKey(sender.getName())) {
+				sender.sendMessage(ChatColor.RED + "Error while checking class.");
 				return;
 			}
 			

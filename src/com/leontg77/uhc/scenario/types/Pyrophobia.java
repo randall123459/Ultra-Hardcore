@@ -4,12 +4,14 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Item;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockIgniteEvent;
@@ -24,6 +26,7 @@ import org.bukkit.util.Vector;
 
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.scenario.Scenario;
+import com.leontg77.uhc.util.PlayerUtils;
 
 /**
  * @author Bergasms
@@ -92,18 +95,41 @@ public class Pyrophobia extends Scenario implements Listener {
 
 	@EventHandler
 	public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
-		if (event.getMessage().startsWith("/genpyro")) {
-			if (event.getPlayer().hasPermission("uhc.pyro")) {
-				convertToPyro(event.getPlayer().getWorld(), 1100);
-			}
+		Player player = event.getPlayer();
+		
+		if (event.getMessage().split(" ")[0].equalsIgnoreCase("/genpyro")) {
 			event.setCancelled(true);
+			
+			ArrayList<String> ar = new ArrayList<String>();
+			for (String arg : event.getMessage().split(" ")) {
+				ar.add(arg);
+			}
+			ar.remove(0);
+			String[] args = ar.toArray(new String[ar.size()]);
+			
+			if (args.length == 0) {
+				player.sendMessage(Main.prefix().replaceAll("UHC", "Pyrophobia") + "Starting pyrophobia convertion.");
+				convertToPyro(player.getWorld(), 1100);
+			}
+			
+			int radius;
+			
+			try {
+				radius = Integer.parseInt(args[0]);
+			} catch (Exception e) {
+				player.sendMessage(ChatColor.RED + "Invaild radius.");
+				return;
+			}
+
+			player.sendMessage(Main.prefix().replaceAll("UHC", "Pyrophobia") + "Starting pyrophobia convertion.");
+			convertToPyro(player.getWorld(), radius);
 		}
 	}
 
 	private void completedPyro(final World w, int radius) {
 		Bukkit.getServer().getScheduler().cancelTask(this.generateTaskID);
 		this.generateTaskID = -1;
-		Bukkit.getServer().broadcastMessage(Main.prefix().replaceAll("UHC", "Pyrophobia") + "World Mid Converted");
+		Bukkit.getServer().broadcastMessage(Main.prefix().replaceAll("UHC", "Pyrophobia") + "World mid Converted");
 
 		this.locations = new ArrayList<Location>();
 		for (int i = -1 * radius; i < radius; i += 16) {
@@ -166,16 +192,19 @@ public class Pyrophobia extends Scenario implements Listener {
 					}
 					if ((b.getType() == Material.LAPIS_ORE) && (r.nextInt(50) < 4)) {
 						chunkAt.getBlock(x, y, z).setType(Material.OBSIDIAN);
-						Bukkit.getServer().broadcastMessage(Main.prefix().replaceAll("UHC", "Pyrophobia") + "Coverted lapis.");
 					}
 					if ((b.getType() == Material.REDSTONE_ORE) && (r.nextInt(50) < 24)) {
 						chunkAt.getBlock(x, y, z).setType(Material.OBSIDIAN);
-						Bukkit.getServer().broadcastMessage(Main.prefix().replaceAll("UHC", "Pyrophobia") + "Coverted redstone.");
 					}
 				}
 			}
 		}
-		Bukkit.getServer().broadcastMessage(Main.prefix().replaceAll("UHC", "Pyrophobia") + "Processed: §6" + (this.totalChunks - this.locations.size()) + "§7/§6" + this.totalChunks);
+
+		int one = ((this.totalChunks - this.locations.size())*100 / totalChunks);
+		
+		for (Player online : PlayerUtils.getPlayers()) {
+			PlayerUtils.sendAction(online, "§4§lPyrophobia §8» §7Processed: §6" + ((one / 2) + 50) + "%");
+		}
 	}
 
 	protected void pyroChunk(Chunk chunkAt) {
@@ -198,6 +227,11 @@ public class Pyrophobia extends Scenario implements Listener {
 				}
 			}
 		}
-		Bukkit.getServer().broadcastMessage(Main.prefix().replaceAll("UHC", "Pyrophobia") + "Processed: §6" + (this.totalChunks - this.locations.size()) + "§7/§6" + this.totalChunks);
+
+		int one = ((totalChunks - locations.size())*100 / totalChunks);
+		
+		for (Player online : PlayerUtils.getPlayers()) {
+			PlayerUtils.sendAction(online, "§4§lPyrophobia §8» §7Processed: §6" + (one / 2) + "%");
+		}
 	}
 }

@@ -74,11 +74,15 @@ public class CutClean extends Scenario implements Listener {
 		Block block = event.getBlock();
 		
 		if (block.getType() == Material.IRON_ORE) {
+			if (ScenarioManager.getInstance().getScenario("TripleOres").isEnabled()) {
+				return;
+			}
+			
 			event.setCancelled(true);
 			BlockUtils.blockCrack(event.getPlayer(), block.getLocation(), 15);
 			block.setType(Material.AIR);
 			block.getState().update();
-			ExperienceOrb exp = (ExperienceOrb) event.getBlock().getWorld().spawn(event.getBlock().getLocation().add(0.5, 0.7, 0.5), ExperienceOrb.class);
+			ExperienceOrb exp = (ExperienceOrb) event.getBlock().getWorld().spawn(event.getBlock().getLocation().add(0.5, 0.3, 0.5), ExperienceOrb.class);
 			exp.setExperience(3);
 			Item item = block.getWorld().dropItem(block.getLocation().add(0.5, 0.7, 0.5), new ItemStack (Material.IRON_INGOT));
 			item.setVelocity(new Vector(0, 0.2, 0));
@@ -99,6 +103,10 @@ public class CutClean extends Scenario implements Listener {
 			}
 			
 			if (ScenarioManager.getInstance().getScenario("Goldless").isEnabled()) {
+				return;
+			}
+			
+			if (ScenarioManager.getInstance().getScenario("TripleOres").isEnabled()) {
 				return;
 			}
 			
@@ -136,7 +144,7 @@ public class CutClean extends Scenario implements Listener {
 			BlockUtils.blockCrack(event.getPlayer(), block.getLocation(), 14);
 			block.setType(Material.AIR);
 			block.getState().update();
-			ExperienceOrb exp = (ExperienceOrb) event.getBlock().getWorld().spawn(event.getBlock().getLocation().add(0.5, 0.7, 0.5), ExperienceOrb.class);
+			ExperienceOrb exp = (ExperienceOrb) event.getBlock().getWorld().spawn(event.getBlock().getLocation().add(0.5, 0.3, 0.5), ExperienceOrb.class);
 			exp.setExperience(7);
 			Item item = block.getWorld().dropItem(block.getLocation().add(0.5, 0.7, 0.5), new ItemStack (Material.GOLD_INGOT));
 			item.setVelocity(new Vector(0, 0.2, 0));

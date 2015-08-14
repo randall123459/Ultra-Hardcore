@@ -77,6 +77,14 @@ public class InvGUI {
 				if (inv.getItem(3) != target.getInventory().getBoots()) {
 					inv.setItem(3, target.getInventory().getBoots());
 				}
+
+				if (inv.getItem(5) != target.getItemInHand()) {
+					inv.setItem(5, target.getItemInHand());
+				}
+
+				if (inv.getItem(6) != target.getItemOnCursor()) {
+					inv.setItem(6, target.getItemOnCursor());
+				}
 				
 				ItemStack info = new ItemStack (Material.BOOK);
 				ItemMeta infoMeta = info.getItemMeta();

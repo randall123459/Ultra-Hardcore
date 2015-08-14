@@ -39,8 +39,8 @@ public class Assassins extends Scenario implements Listener {
 			Collections.shuffle(players);
 	          
 			for (int i = 0; i < players.size(); i++) {
-				Player assassin = (Player)players.get(i);
-	            Player target = (Player)players.get(i < players.size() - 1 ? i + 1 : 0);
+				Player assassin = players.get(i);
+	            Player target = players.get(i < players.size() - 1 ? i + 1 : 0);
 	            
 	            setTarget(assassin.getName(), target.getName());
 			}
@@ -81,13 +81,13 @@ public class Assassins extends Scenario implements Listener {
 		}
 			
 		Player player = event.getPlayer();
-		String target = getTarget(player.getName());
+		String target = getAssassin(player.getName());
 			
 		if (target != null) {
 			Player targetP = Bukkit.getServer().getPlayer(target);
 			
 			if (targetP != null) {
-				player.setCompassTarget(targetP.getLocation());
+				targetP.setCompassTarget(player.getLocation());
 			}
 		}
 	}

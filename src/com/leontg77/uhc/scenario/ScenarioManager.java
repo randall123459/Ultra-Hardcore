@@ -10,6 +10,7 @@ import org.bukkit.event.Listener;
 
 import com.leontg77.uhc.scenario.types.Assassins;
 import com.leontg77.uhc.scenario.types.AssaultAndBattery;
+import com.leontg77.uhc.scenario.types.Astrophobia;
 import com.leontg77.uhc.scenario.types.Backpacks;
 import com.leontg77.uhc.scenario.types.Barebones;
 import com.leontg77.uhc.scenario.types.BestBTC;
@@ -58,6 +59,7 @@ import com.leontg77.uhc.scenario.types.SlimyCrack;
 import com.leontg77.uhc.scenario.types.Superheroes;
 import com.leontg77.uhc.scenario.types.Timebomb;
 import com.leontg77.uhc.scenario.types.TrainingRabbits;
+import com.leontg77.uhc.scenario.types.TripleOres;
 import com.leontg77.uhc.scenario.types.VengefulSpirits;
 
 /**
@@ -82,7 +84,7 @@ public class ScenarioManager {
 	public void setup() {
 		/* TODO: Test */ scenarios.add(new Assassins());
 		/* TODO: Test */ scenarios.add(new AssaultAndBattery());
-		// TODO: scenarios.add(new Astrophobia());
+		/* TODO: Test */ scenarios.add(new Astrophobia());
 		scenarios.add(new Backpacks());
 		scenarios.add(new Barebones());
 		scenarios.add(new BestBTC());
@@ -135,6 +137,7 @@ public class ScenarioManager {
 		scenarios.add(new Superheroes());
 		scenarios.add(new Timebomb());
 		/* TODO: Test */ scenarios.add(new TrainingRabbits());
+		scenarios.add(new TripleOres());
 		scenarios.add(new VengefulSpirits());
 		Bukkit.getLogger().info("§a[UHC] All scenarios has been setup.");
 	}

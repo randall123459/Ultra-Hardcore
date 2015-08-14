@@ -1,6 +1,7 @@
 package com.leontg77.uhc;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.bukkit.Bukkit;
@@ -101,42 +102,52 @@ public class Teams {
 		list.add(ChatColor.YELLOW.toString());
 		list.add(ChatColor.WHITE.toString());
 		
-		ArrayList<String> list2 = new ArrayList<String>();
+		Collections.shuffle(list);
+		
+		ArrayList<String> tempList = new ArrayList<String>();
 		
 		for (String li : list) {
-			list2.add(li + ChatColor.BOLD);
+			tempList.add(li + ChatColor.BOLD);
 		}
 		
 		for (String li : list) {
-			list2.add(li + ChatColor.ITALIC);
+			tempList.add(li + ChatColor.ITALIC);
 		}
 		
 		for (String li : list) {
-			list2.add(li + ChatColor.UNDERLINE);
+			tempList.add(li + ChatColor.UNDERLINE);
 		}
 		
 		for (String li : list) {
-			list2.add(li + ChatColor.STRIKETHROUGH);
+			tempList.add(li + ChatColor.STRIKETHROUGH);
 		}
 		
 		for (String li : list) {
-			list2.add(li + ChatColor.BOLD + ChatColor.ITALIC);
-			list2.add(li + ChatColor.BOLD + ChatColor.ITALIC + ChatColor.UNDERLINE);
-			list2.add(li + ChatColor.BOLD + ChatColor.ITALIC + ChatColor.STRIKETHROUGH);
-			list2.add(li + ChatColor.BOLD + ChatColor.ITALIC + ChatColor.STRIKETHROUGH + ChatColor.UNDERLINE);
-			list2.add(li + ChatColor.BOLD + ChatColor.STRIKETHROUGH + ChatColor.UNDERLINE);
-			list2.add(li + ChatColor.BOLD + ChatColor.UNDERLINE);
-			list2.add(li + ChatColor.BOLD + ChatColor.STRIKETHROUGH);
-			list2.add(li + ChatColor.ITALIC + ChatColor.UNDERLINE);
-			list2.add(li + ChatColor.ITALIC + ChatColor.STRIKETHROUGH);
-			list2.add(li + ChatColor.ITALIC + ChatColor.STRIKETHROUGH + ChatColor.UNDERLINE);
-			list2.add(li + ChatColor.UNDERLINE + ChatColor.STRIKETHROUGH);
+			tempList.add(li + ChatColor.BOLD + ChatColor.ITALIC);
+			tempList.add(li + ChatColor.BOLD + ChatColor.ITALIC + ChatColor.UNDERLINE);
+			tempList.add(li + ChatColor.BOLD + ChatColor.ITALIC + ChatColor.STRIKETHROUGH);
+			tempList.add(li + ChatColor.BOLD + ChatColor.ITALIC + ChatColor.STRIKETHROUGH + ChatColor.UNDERLINE);
+			tempList.add(li + ChatColor.BOLD + ChatColor.STRIKETHROUGH + ChatColor.UNDERLINE);
+			tempList.add(li + ChatColor.BOLD + ChatColor.UNDERLINE);
+			tempList.add(li + ChatColor.BOLD + ChatColor.STRIKETHROUGH);
+			tempList.add(li + ChatColor.ITALIC + ChatColor.UNDERLINE);
+			tempList.add(li + ChatColor.ITALIC + ChatColor.STRIKETHROUGH);
+			tempList.add(li + ChatColor.ITALIC + ChatColor.STRIKETHROUGH + ChatColor.UNDERLINE);
+			tempList.add(li + ChatColor.UNDERLINE + ChatColor.STRIKETHROUGH);
 		}
 		
 		list.remove(ChatColor.WHITE.toString());
 		list.remove(ChatColor.GRAY.toString() + ChatColor.ITALIC.toString());
 
-		list.addAll(list2);
+		list.addAll(tempList);
+		
+		Team spec = (sb.getTeam("spec") == null ? sb.registerNewTeam("spec") : sb.getTeam("spec"));
+		
+		spec.setDisplayName("spec");
+		spec.setPrefix("§7§o");
+		spec.setSuffix("§r");
+		spec.setAllowFriendlyFire(false);
+		spec.setCanSeeFriendlyInvisibles(true);	
 		
 		for (int i = 0; i < list.size(); i++) {
 			Team team = (sb.getTeam("UHC" + (i + 1)) == null ? sb.registerNewTeam("UHC" + (i + 1)) : sb.getTeam("UHC" + (i + 1)));

@@ -94,7 +94,8 @@ public class Spectator {
 			player.setFlying(true);
 			player.setFlySpeed((float) 0.1);
 			
-
+			Teams.getManager().joinTeam("spec", player);
+			
 			if (!Main.spectating.contains(player.getName())) {
 				Main.spectating.add(player.getName());
 			}
@@ -125,6 +126,10 @@ public class Spectator {
 			player.setAllowFlight(false);
 			player.setFlying(false);
 			player.setFlySpeed((float) 0.1);
+			
+			if (Teams.getManager().getTeam(player) != null) {
+				Teams.getManager().leaveTeam(player);
+			}
 			
 			if (Main.spectating.contains(player.getName())) {
 				Main.spectating.remove(player.getName());

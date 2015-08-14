@@ -19,7 +19,6 @@ import org.bukkit.World;
 import org.bukkit.World.Environment;
 import org.bukkit.block.Block;
 import org.bukkit.block.Skull;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.ExperienceOrb;
 import org.bukkit.entity.Item;
@@ -47,7 +46,6 @@ import org.bukkit.event.player.PlayerLoginEvent.Result;
 import org.bukkit.event.player.PlayerPortalEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
-import org.bukkit.event.server.ServerCommandEvent;
 import org.bukkit.event.server.ServerListPingEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
@@ -640,129 +638,6 @@ public class PlayerListener implements Listener {
 	}
 	
 	@EventHandler
-	public void onServerCommand(ServerCommandEvent event) {
-		CommandSender player = event.getSender();
-		
-		if (event.getCommand().split(" ")[0].equalsIgnoreCase("/border3000")) {
-			if (player.hasPermission("uhc.border")) {
-				player.sendMessage(ChatColor.RED + "Only players can setup brorders.");
-			} else {
-				player.sendMessage(ChatColor.RED + "You do not have access to that command.");
-			}
-			event.setCancelled(true);
-		}
-		
-		if (event.getCommand().split(" ")[0].equalsIgnoreCase("/border2000")) {
-			if (player.hasPermission("uhc.border")) {
-				player.sendMessage(ChatColor.RED + "Only players can setup brorders.");
-			} else {
-				player.sendMessage(ChatColor.RED + "You do not have access to that command.");
-			}
-			event.setCancelled(true);
-		}
-		
-		if (event.getCommand().split(" ")[0].equalsIgnoreCase("/perma")) {
-			if (player.hasPermission("uhc.perma")) {
-				for (World world : Bukkit.getServer().getWorlds()) {
-					world.setGameRuleValue("doDaylightCycle", "false");
-					world.setTime(6000);
-				}
-				PlayerUtils.broadcast(Main.prefix() + "Permaday enabled.");
-			} else {
-				player.sendMessage(ChatColor.RED + "You do not have access to that command.");
-			}
-			event.setCancelled(true);
-		}
-		
-		if (event.getCommand().split(" ")[0].equalsIgnoreCase("/matchpost")) {
-			player.sendMessage(Main.prefix() + "Match post: §a" + settings.getConfig().getString("matchpost"));
-			event.setCancelled(true);
-		}
-		
-		if (event.getCommand().split(" ")[0].equalsIgnoreCase("/post")) {
-			player.sendMessage(Main.prefix() + "Match post: §a" + settings.getConfig().getString("matchpost"));
-			event.setCancelled(true);
-		}
-		
-		if (event.getCommand().split(" ")[0].equalsIgnoreCase("/killboard")) {
-			if (player.hasPermission("uhc.killboard")) {
-				if (Main.killboard) {
-					for (String e : Scoreboards.getManager().kills.getScoreboard().getEntries()) {
-						Scoreboards.getManager().resetScore(e);
-					}
-					PlayerUtils.broadcast(Main.prefix() + "Pregame board disabled.");
-					Main.killboard = false;
-				} else {
-					PlayerUtils.broadcast(Main.prefix() + "Pregame board enabled.");
-					if (Main.ffa) {
-						Scoreboards.getManager().setScore("§a ", 10, true);
-						Scoreboards.getManager().setScore("§cArena:", 9, true);
-						Scoreboards.getManager().setScore("§7/a ", 8, true);
-						Scoreboards.getManager().setScore("§b ", 7, true);
-						Scoreboards.getManager().setScore("§cTeamsize:", 6, true);
-						Scoreboards.getManager().setScore("§7" + ServerUtils.getTeamSize(), 5, true);
-						Scoreboards.getManager().setScore("§c ", 4, true);
-						Scoreboards.getManager().setScore("§cScenarios:", 3, true);
-						Scoreboards.getManager().setScore("§7" + settings.getConfig().getString("game.scenarios"), 2, true);
-						Scoreboards.getManager().setScore("§d ", 1, true);
-					} else {
-						Scoreboards.getManager().setScore("§e ", 13, true);
-						Scoreboards.getManager().setScore("§cTeam:", 12, true);
-						Scoreboards.getManager().setScore("§7/team", 11, true);
-						Scoreboards.getManager().setScore("§a ", 10, true);
-						Scoreboards.getManager().setScore("§cArena:", 9, true);
-						Scoreboards.getManager().setScore("§7/a ", 8, true);
-						Scoreboards.getManager().setScore("§b ", 7, true);
-						Scoreboards.getManager().setScore("§cTeamsize:", 6, true);
-						Scoreboards.getManager().setScore("§7" + ServerUtils.getTeamSize(), 5, true);
-						Scoreboards.getManager().setScore("§c ", 4, true);
-						Scoreboards.getManager().setScore("§cScenarios:", 3, true);
-						Scoreboards.getManager().setScore("§7" + settings.getConfig().getString("game.scenarios"), 2, true);
-						Scoreboards.getManager().setScore("§d ", 1, true);
-					}
-					Main.killboard = true;
-				}
-			} else {
-				player.sendMessage(ChatColor.RED + "You do not have access to that command.");
-			}
-			event.setCancelled(true);
-		}
-		
-		if (event.getCommand().split(" ")[0].equalsIgnoreCase("/arenaboard")) {
-			if (player.hasPermission("uhc.arenaboard")) {
-				if (Main.arenaboard) {
-					for (String e : Scoreboards.getManager().ab.getScoreboard().getEntries()) {
-						Scoreboards.getManager().resetScore(e);
-					}
-					PlayerUtils.broadcast(Main.prefix() + "Arena board has been disabled.");
-					Scoreboards.getManager().kills.setDisplaySlot(DisplaySlot.SIDEBAR);
-					Main.arenaboard = false;
-				} else {
-					PlayerUtils.broadcast(Main.prefix() + "Arena board has been enabled.");
-					Scoreboards.getManager().ab.setDisplaySlot(DisplaySlot.SIDEBAR);
-					Main.arenaboard = true;
-
-					Scoreboards.getManager().setScore("§a§lPvE", 1, false);
-					Scoreboards.getManager().setScore("§a§lPvE", 0, false);
-				}
-			} else {
-				player.sendMessage(ChatColor.RED + "You do not have access to that command.");
-			}
-			event.setCancelled(true);
-		}
-		
-		if (event.getCommand().split(" ")[0].equalsIgnoreCase("/text")) {
-			event.setCancelled(true);
-			
-			if (player.hasPermission("uhc.text")) {
-				player.sendMessage(ChatColor.RED + "Only players can create floating text.");
-			} else {
-				player.sendMessage(ChatColor.RED + "You do not have access to that command.");
-			}
-		}
-	}
-	
-	@EventHandler
 	public void onPlayerLogin(PlayerLoginEvent event) {
 		Player player = event.getPlayer();
 
@@ -790,10 +665,11 @@ public class PlayerListener implements Listener {
 		}
 		
 		if (PlayerUtils.getPlayers().size() >= settings.getConfig().getInt("maxplayers")) {
-			if (player.hasPermission("uhc.staff")) {
+			if (player.hasPermission("uhc.vip") && State.isState(State.INGAME)) {
 				event.allow();
 				return;
 			} 
+			
 			event.disallow(Result.KICK_FULL, "§8» §7The server is full §8«");
 		} else {
 			event.allow();
@@ -880,12 +756,12 @@ public class PlayerListener implements Listener {
 			
 			if (item.hasItemMeta() && item.getItemMeta().hasDisplayName() && item.getItemMeta().getDisplayName().equalsIgnoreCase("§aNext page")) {
 				HOFCommand.page.put(player, HOFCommand.page.get(player) + 1);
-				player.openInventory(HOFCommand.inv2);
+				player.openInventory(HOFCommand.pages.get(player).get(HOFCommand.page.get(player)));
 			}
 			
 			if (item.hasItemMeta() && item.getItemMeta().hasDisplayName() && item.getItemMeta().getDisplayName().equalsIgnoreCase("§aPrevious page")) {
 				HOFCommand.page.put(player, HOFCommand.page.get(player) - 1);
-				player.openInventory(HOFCommand.inv);
+				player.openInventory(HOFCommand.pages.get(player).get(HOFCommand.page.get(player)));
 			}
 		}
 		

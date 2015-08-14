@@ -37,6 +37,12 @@ public class FlowerPower extends Scenario implements Listener {
 		}
 		
 		if (event.getBlock().getType() == Material.RED_ROSE || event.getBlock().getType() == Material.YELLOW_FLOWER || event.getBlock().getType() == Material.DOUBLE_PLANT) {
+			if (event.getBlock().getType() == Material.DOUBLE_PLANT) {
+				if (event.getBlock().getState().getData().toItemStack().getDurability() == 2 || event.getBlock().getState().getData().toItemStack().getDurability() == 3) {
+					return;
+				}
+			}
+			
 			Block block = event.getBlock();
 			
 			event.setCancelled(true);
@@ -50,8 +56,10 @@ public class FlowerPower extends Scenario implements Listener {
 
 	private ItemStack randomItem() {
 		Random r = new Random();
+		
 		Material m = Material.values()[r.nextInt(Material.values().length)];
-		int a = 1 + r.nextInt(2);
+		int a = 1 + r.nextInt(15);
+		
 		return new ItemStack (m, a);
 	}
 }

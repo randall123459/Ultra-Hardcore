@@ -1,0 +1,124 @@
+#This is a fairly easy skript to edit, and it is fully customizable to the user. Under the "options" tab, you can change the colours of HighlightColour and ChatColour. 
+#By WiNtErHaWX9
+
+
+
+options:
+	P : &8[&aAB&8]
+	Correct: /ab <set/change/reset/enable/disable>
+	ChatColour: &b
+	HighlightColour: &e
+
+command /ab [<text>]:
+	permission: skript.ab
+	trigger:
+		if arg 1 is not set:
+			message "{@P} {@ChatColour}{@Correct}" to command sender
+			execute console command "playsound random.break %command sender%"
+		if arg 1 is "reset":
+			#Deletes Previous Settings
+			delete {Team.Assaulter::*}
+			delete {Team.Battery::*}
+			delete {_assaulter}
+			delete {_battery}
+			delete {CannotBow::*}
+			delete {CannotSword::*}
+			delete {both::*}
+			delete {assaulters::*}
+			delete {batteries::*}
+			loop all players:
+				delete {class.%loop-player%::*}
+			broadcast "{@P} {@ChatColour}Assault and Battery reset!"
+
+
+		if arg 1 is "set":
+		#Sets the new Assaulter & Battery
+			if {Teams::*} is not set:
+				message "{@P} {@ChatColour}No teams are set!"
+			broadcast "{@P} {@ChatColour}Setting classes!"
+			loop {Teams::*}:
+				set {_PlayerPot.%loop-value%::*} to {Team.%loop-value%::*}
+			
+			
+			#Set a Random Assaulter
+				set {_assaulter} to (random element out of {_PlayerPot.%loop-value%::*})
+				set {Iam.Assaulter::%{_assaulter}%} to loop-value
+				set {Assaulter.TeamAssaulter::%loop-value%} to {_assaulter}
+				remove {_assaulter} from {_PlayerPot.%loop-value%::*}
+				set {CannotBow::%{_assaulter}%} to true
+				add {_assaulter} to {assaulters::*}
+				
+				
+				
+				#Set a Random Battery
+				set {_battery} to (random element out of {_PlayerPot.%loop-value%::*})
+				set {Team.Battery::%{_battery}%} to loop-value
+				set {Battery.TeamBattery::%loop-value%} to {_battery}
+				remove {_battery} from {_PlayerPot.%loop-value%::*}
+				set {CannotSword::%{_battery}%} to true
+				add {_battery} to {batteries::*}
+
+				
+				loop {Team.%loop-value%::*}:
+					set {_Player} to ("%loop-value-2%" parsed as offlineplayer)
+					if {_Player} is online:
+						message "{@P} {@ChatColour}Assaulter: {@HighlightColour}%{_assaulter}%" to {_Player} 
+						message "{@P} {@ChatColour}Battery: {@HighlightColour}%{_battery}%" to {_Player}
+
+		if arg 1 is "enable":
+			set {ab} to true
+			broadcast "{@P} {@ChatColour}is now enabled!"
+		if arg 1 is "disable":
+			set {ab} to false
+			broadcast "{@P} {@ChatColour}is now disabled!"
+
+
+#Attacking Events
+
+on damage of player:
+	if {ab} is true:
+		if damage was caused by attack:
+			if {CannotSword::%attacker%} is true:
+				cancel the event
+		if damage was caused by projectile:
+			if {CannotBow::%attacker%} is true:
+				cancel the event
+			
+#Classes
+
+command /class:
+	trigger:
+		if player is {assaulters::*}:
+			message "{@P} {@ChatColour}You are the {@HighlightColour}assaulter{@ChatColour}! You can only use your sword!"
+		if player is {batteries::*}:
+			message "{@P} {@ChatColour}You are the {@HighlightColour}battery{@ChatColour}! You can only use your bow!"
+		if player is {both::*}:
+			message "{@P} {@ChatColour}You are the {@HighlightColour}assaulter {@ChatColour}and {@HighlightColour}battery{@ChatColour}! You can both melee and sword!"
+			
+command /listclass:
+	trigger:
+		loop {assaulters::*}:
+			message "{@P} &e===={@ChatColour}Assaulters&e===="
+			message "{@P} {@ChatColour}- {@HighlightColour}%loop-value%"
+		loop {batteries::*}:
+			message "{@P} &e===={@ChatColour}Batteries&e===="
+			message "{@P} {@ChatColour}- {@HighlightColour}%loop-value%"
+		loop {both::*}:
+			message "{@P} &e===={@ChatColour}Both&e===="
+			message "{@P} {@ChatColour}- {@HighlightColour}%loop-value%"
+		
+#Death Event		
+			
+on death of player:
+	command "/team leave %victim%"
+	loop {Teams::*}:
+		if (size of ({Team.%loop-value%::*})) is 1:
+			wait 1 second
+			set {_both} to (first element out of {Team.%loop-value%::*})
+			delete {CannotBow::%{_both}%}
+			delete {CannotSword::%{_both}%}
+			set {CanDo.Both::%loop-value%} to {_both}
+			add {_both} to {both::*}
+			remove {_both} from {assaulters::*}
+			remove {_both} from {batteries::*}
+			message "{@P} {@ChatColour}You can now bow and sword! Good luck!" to {_both}

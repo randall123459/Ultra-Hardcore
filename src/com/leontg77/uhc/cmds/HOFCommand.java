@@ -21,11 +21,9 @@ import com.leontg77.uhc.Settings;
 import com.leontg77.uhc.util.ServerUtils;
 
 public class HOFCommand implements CommandExecutor, TabCompleter {
+	public static HashMap<Player, HashMap<Integer, Inventory>> pages = new HashMap<Player, HashMap<Integer, Inventory>>();
 	public static HashMap<Player, Integer> page = new HashMap<Player, Integer>();
 	private static Settings settings = Settings.getInstance();
-	
-	public static Inventory inv;
-	public static Inventory inv2;
 
 	public boolean onCommand(CommandSender sender, Command cmd,	String label, String[] args) {
 		if (!(sender instanceof Player)) {
@@ -51,15 +49,26 @@ public class HOFCommand implements CommandExecutor, TabCompleter {
 				return true;
 			}
 			
-			inv = Bukkit.getServer().createInventory(null, 54, host + "'s Hall of Fame");
-			inv2 = Bukkit.getServer().createInventory(null, 54, host + "'s Hall of Fame");
 
+			
+			Inventory inv = Bukkit.getServer().createInventory(null, 54, host + "'s Hall of Fame");
+			Inventory inv2 = Bukkit.getServer().createInventory(null, 54, host + "'s Hall of Fame");
+			Inventory inv3 = Bukkit.getServer().createInventory(null, 54, host + "'s Hall of Fame");
+
+			HashMap<Integer, Inventory> invs = new HashMap<Integer, Inventory>();
+			pages.put(player, invs);
+			
+			pages.get(player).put(1, inv);
+			pages.get(player).put(2, inv2);
+			pages.get(player).put(3, inv3);
+			
 			page.put(player, 1);
 			
 			int i = 0;
 			
 			inv.clear();
 			inv2.clear();
+			inv3.clear();
 			
 			for (String section : Settings.getInstance().getHOF().getConfigurationSection(host).getKeys(false)) {
 				ItemStack game = new ItemStack (Material.GOLDEN_APPLE);
@@ -81,8 +90,10 @@ public class HOFCommand implements CommandExecutor, TabCompleter {
 
 				if (i < 45) {
 					inv.addItem(game);
-				} else {
+				} else if (i < 90) {
 					inv2.addItem(game);
+				} else {
+					inv3.addItem(game);
 				}
 				
 				ItemStack nextpage = new ItemStack (Material.ARROW);
@@ -90,14 +101,17 @@ public class HOFCommand implements CommandExecutor, TabCompleter {
 				pagemeta.setDisplayName(ChatColor.GREEN + "Next page");
 				pagemeta.setLore(Arrays.asList("§7Switch to the next page."));
 				nextpage.setItemMeta(pagemeta);
-				inv.setItem(49, nextpage);
 				
 				ItemStack prevpage = new ItemStack (Material.ARROW);
 				ItemMeta prevmeta = prevpage.getItemMeta();
 				prevmeta.setDisplayName(ChatColor.GREEN + "Previous page");
 				prevmeta.setLore(Arrays.asList("§7Switch to the previous page."));
 				prevpage.setItemMeta(prevmeta);
-				inv2.setItem(49, prevpage);
+				
+				inv.setItem(51, nextpage);
+				inv2.setItem(47, prevpage);
+				inv2.setItem(51, nextpage);
+				inv3.setItem(47, prevpage);
 				
 				i++;
 			}
@@ -116,6 +130,7 @@ public class HOFCommand implements CommandExecutor, TabCompleter {
 	        	types.add("Leon");
 	        	types.add("Polar");
 	        	types.add("Pop");
+	        	types.add("Isaac");
 	        	
 	        	if (!args[0].equals("")) {
 	        		for (String type : types) {
