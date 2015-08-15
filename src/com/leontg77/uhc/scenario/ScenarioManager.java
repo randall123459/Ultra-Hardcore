@@ -82,9 +82,9 @@ public class ScenarioManager {
 	 * Setup all the scenarios.
 	 */
 	public void setup() {
-		/* TODO: Test */ scenarios.add(new Assassins());
-		/* TODO: Test */ scenarios.add(new AssaultAndBattery());
-		/* TODO: Test */ scenarios.add(new Astrophobia());
+		scenarios.add(new Assassins());
+		scenarios.add(new AssaultAndBattery());
+		scenarios.add(new Astrophobia());
 		scenarios.add(new Backpacks());
 		scenarios.add(new Barebones());
 		scenarios.add(new BestBTC());
