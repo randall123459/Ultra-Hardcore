@@ -54,7 +54,7 @@ public class StartCommand implements CommandExecutor {
 					Runnables.pvp = b;
 					Runnables.meetup = c;
 					
-					Runnables.start();
+					Runnables.timer();
 					Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer cancel");
 					
 					if (Runnables.finalheal > 0) {
@@ -64,7 +64,7 @@ public class StartCommand implements CommandExecutor {
 					} else if (Runnables.meetup > 0) {
 						Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer " + (Runnables.meetup * 60) + " &aMeetup in:&7");
 					} else {
-						Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer -1 &6Meetup is now! Head to 0,0 and only stop for a fight!");
+						Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer -1 &6Meetup is now!");
 					}
 					break;
 				case LOBBY:
@@ -72,7 +72,7 @@ public class StartCommand implements CommandExecutor {
 					break;
 				case SCATTER:
 					PlayerUtils.broadcast(Main.prefix() + "The game is starting.");
-					Main.startCountdown();
+					Runnables.start();
 					break;
 				default:
 					break;
