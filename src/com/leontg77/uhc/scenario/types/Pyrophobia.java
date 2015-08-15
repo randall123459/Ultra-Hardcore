@@ -18,6 +18,7 @@ import org.bukkit.event.block.BlockIgniteEvent;
 import org.bukkit.event.block.BlockIgniteEvent.IgniteCause;
 import org.bukkit.event.block.LeavesDecayEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.event.player.PlayerBucketFillEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
@@ -53,6 +54,21 @@ public class Pyrophobia extends Scenario implements Listener {
 	}
 
 	@EventHandler
+	public void onPlayerBucketFill(PlayerBucketFillEvent event) {
+		if (!isEnabled()) {
+			return;
+		}
+		
+		Player player = event.getPlayer();
+		
+		if (event.getItemStack().getType() == Material.WATER_BUCKET) {
+			player.sendMessage(ChatColor.DARK_RED + "You aren't allowed to have water buckets in pyrophobia.");
+			event.setItemStack(new ItemStack (Material.BUCKET));
+			event.setCancelled(true);
+		}
+	}
+
+	@EventHandler
 	public void onBlockIgnite(BlockIgniteEvent event) {
 		if (!isEnabled()) {
 			return;
@@ -67,7 +83,6 @@ public class Pyrophobia extends Scenario implements Listener {
 
 		if (cause == IgniteCause.SPREAD) {
 			event.setCancelled(true);
-			return;
 		}
 	}
 
