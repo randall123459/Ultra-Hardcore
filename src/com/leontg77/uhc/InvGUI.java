@@ -58,7 +58,7 @@ public class InvGUI {
 	 * @param target the players inv to use.
 	 */
 	public void openInv(Player player, final Player target) {
-		final Inventory inv = Bukkit.getServer().createInventory(target, 45, "Player Inventory");
+		final Inventory inv = Bukkit.getServer().createInventory(target, 54, "Player Inventory");
 	
 		Main.invsee.put(inv, new BukkitRunnable() {
 			public void run() {
@@ -111,7 +111,19 @@ public class InvGUI {
 				inv.setItem(8, info);
 				lore.clear();
 				
-				int i = 9;
+				for (int i = 9; i < 18; i++) {
+					ItemStack glass = new ItemStack (Material.STAINED_GLASS_PANE, 1, (short) 15);
+					ItemMeta glassMeta = glass.getItemMeta();
+					glassMeta.setDisplayName("§0:>");
+					glass.setItemMeta(glassMeta);
+					inv.setItem(8, info);
+					
+					if (inv.getItem(i) != glass) {
+						inv.setItem(i, glass);
+					}
+				}
+				
+				int i = 18;
 				for (ItemStack item : target.getInventory().getContents()) {
 					if (inv.getItem(i) != item) {
 						inv.setItem(i, item);
