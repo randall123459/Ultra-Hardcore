@@ -7,6 +7,7 @@ import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import org.bukkit.scoreboard.NameTagVisibility;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
@@ -101,7 +102,7 @@ public class Teams {
 		list.add(ChatColor.LIGHT_PURPLE.toString());
 		list.add(ChatColor.YELLOW.toString());
 		list.add(ChatColor.WHITE.toString());
-		
+
 		Collections.shuffle(list);
 		
 		ArrayList<String> tempList = new ArrayList<String>();
@@ -120,20 +121,6 @@ public class Teams {
 		
 		for (String li : list) {
 			tempList.add(li + ChatColor.STRIKETHROUGH);
-		}
-		
-		for (String li : list) {
-			tempList.add(li + ChatColor.BOLD + ChatColor.ITALIC);
-			tempList.add(li + ChatColor.BOLD + ChatColor.ITALIC + ChatColor.UNDERLINE);
-			tempList.add(li + ChatColor.BOLD + ChatColor.ITALIC + ChatColor.STRIKETHROUGH);
-			tempList.add(li + ChatColor.BOLD + ChatColor.ITALIC + ChatColor.STRIKETHROUGH + ChatColor.UNDERLINE);
-			tempList.add(li + ChatColor.BOLD + ChatColor.STRIKETHROUGH + ChatColor.UNDERLINE);
-			tempList.add(li + ChatColor.BOLD + ChatColor.UNDERLINE);
-			tempList.add(li + ChatColor.BOLD + ChatColor.STRIKETHROUGH);
-			tempList.add(li + ChatColor.ITALIC + ChatColor.UNDERLINE);
-			tempList.add(li + ChatColor.ITALIC + ChatColor.STRIKETHROUGH);
-			tempList.add(li + ChatColor.ITALIC + ChatColor.STRIKETHROUGH + ChatColor.UNDERLINE);
-			tempList.add(li + ChatColor.UNDERLINE + ChatColor.STRIKETHROUGH);
 		}
 		
 		list.remove(ChatColor.WHITE.toString());
@@ -157,6 +144,7 @@ public class Teams {
 			team.setSuffix("§r");
 			team.setAllowFriendlyFire(true);
 			team.setCanSeeFriendlyInvisibles(true);
+			team.setNameTagVisibility(NameTagVisibility.ALWAYS);
 			teams.add(team);
 		}
 
