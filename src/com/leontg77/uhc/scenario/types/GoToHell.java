@@ -1,12 +1,12 @@
 package com.leontg77.uhc.scenario.types;
 
-import org.bukkit.Bukkit;
 import org.bukkit.World.Environment;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.scenario.Scenario;
+import com.leontg77.uhc.util.PlayerUtils;
 
 public class GoToHell extends Scenario {
 	private boolean enabled = false;
@@ -22,7 +22,7 @@ public class GoToHell extends Scenario {
 		if (enable) {
 			this.task = new BukkitRunnable() {
 				public void run() {
-					for (Player online : Bukkit.getServer().getOnlinePlayers()) {
+					for (Player online : PlayerUtils.getPlayers()) {
 						if (online.getWorld().getEnvironment() != Environment.NETHER) {
 							online.damage(1.0);
 						}

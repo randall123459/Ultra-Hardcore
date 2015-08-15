@@ -25,6 +25,7 @@ import com.leontg77.uhc.Scoreboards;
 import com.leontg77.uhc.Settings;
 import com.leontg77.uhc.Spectator;
 import com.leontg77.uhc.listeners.SpecInfoListener;
+import com.leontg77.uhc.util.HostUtils;
 import com.leontg77.uhc.util.PlayerUtils;
 import com.leontg77.uhc.util.ServerUtils;
 
@@ -94,7 +95,7 @@ public class EndCommand implements CommandExecutor {
 					}
 				}
 				
-				String host = ServerUtils.getCurrentHost();
+				String host = HostUtils.getCurrentHost();
 				
 				if (settings.getHOF().getConfigurationSection(host) == null) {
 					settings.getHOF().set(host + "." + 1 + ".winners", winners);
@@ -112,7 +113,7 @@ public class EndCommand implements CommandExecutor {
 					settings.saveHOF();
 				}
 				
-				for (Player online : Bukkit.getServer().getOnlinePlayers()) {
+				for (Player online : PlayerUtils.getPlayers()) {
 					online.sendMessage(Main.prefix() + "The UHC has ended, the winners are " + win.toString().trim() + " with " + kills + " kills.");
 					if (Main.spectating.contains(online.getName())) {
 						Spectator.getManager().set(online, false, false);

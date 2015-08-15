@@ -57,6 +57,10 @@ public class Backpacks extends Scenario implements Listener {
 		
 		Chest chest = (Chest) block.getState();
 		for (ItemStack item : player.getEnderChest().getContents()) {
+			if (item == null) {
+				continue;
+			}
+			
 			chest.getInventory().addItem(item);
 		}
 		player.getEnderChest().clear();

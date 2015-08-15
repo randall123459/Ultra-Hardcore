@@ -39,8 +39,8 @@ import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.util.Vector;
 
 import com.leontg77.uhc.Main;
+import com.leontg77.uhc.Settings;
 import com.leontg77.uhc.scenario.Scenario;
-import com.leontg77.uhc.util.PlayerUtils;
 
 /**
  * @author Bergasms
@@ -98,7 +98,7 @@ public class Cryophobia extends Scenario implements Listener {
 	public void startCryo() {
 		this.chunkQueue = new HashMap<String, ChunkProcess>();
 		this.priorityQueue = new LinkedList<String>();
-		this.theworld = PlayerUtils.getPlayers().get(0).getWorld();
+		this.theworld = Bukkit.getWorld(Settings.getInstance().getConfig().getString("game.world"));
 		this.replaceMaterial = Material.ICE;
 		this.heightCountdown = 150;
 		this.levelHeight = 0;
