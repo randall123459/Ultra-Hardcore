@@ -13,7 +13,6 @@ import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.Inventory;
@@ -85,6 +84,7 @@ import com.leontg77.uhc.listeners.SpecInfoListener;
 import com.leontg77.uhc.listeners.WeatherListener;
 import com.leontg77.uhc.scenario.Scenario;
 import com.leontg77.uhc.scenario.ScenarioManager;
+import com.leontg77.uhc.util.NumberUtils;
 import com.leontg77.uhc.util.PlayerUtils;
 
 /**
@@ -242,12 +242,13 @@ public class Main extends JavaPlugin {
 		shearrate = settings.getConfig().getInt("rates.shears.rate");
 		flintrate = settings.getConfig().getInt("rates.flint.rate");
 		
-		Bukkit.getLogger().info("§a[UHC] Config values has been setup.");
+		Bukkit.getLogger().info("[UHC] Config values has been setup.");
 
 		for (Listener scen : ScenarioManager.getInstance().getScenariosWithListeners()) {
 			Bukkit.getServer().getPluginManager().registerEvents(scen, this);
 		}
-		Bukkit.getLogger().info("§a[UHC] Scenario listeners are now setup.");
+		
+		Bukkit.getLogger().info("[UHC] Scenario listeners are now setup.");
 		
 		if (State.isState(State.LOBBY)) {
 			File file = new File(Bukkit.getWorlds().get(0).getWorldFolder(), "playerdata");
@@ -258,14 +259,16 @@ public class Main extends JavaPlugin {
 				f.delete();
 				i++;
 			}
-			Bukkit.getLogger().info("§a[UHC] Deleted " + i + " player data files.");
+			
+			Bukkit.getLogger().info("[UHC] Deleted " + i + " player data files.");
 			
 			int j = 0;
 			for (File f2 : file2.listFiles()) {
 				f2.delete();
 				j++;
 			}
-			Bukkit.getLogger().info("§a[UHC] Deleted " + j + " player stats files.");
+			
+			Bukkit.getLogger().info("[UHC] Deleted " + j + " player stats files.");
 		}
 		
 		for (String scen : settings.getData().getStringList("scenarios")) {
@@ -275,19 +278,8 @@ public class Main extends JavaPlugin {
 		Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
 			public void run() {
 				for (Player online : PlayerUtils.getPlayers()) {	
-					if (spectating.contains(online.getName())) {
-						online.setFoodLevel(20);
-						online.setSaturation(20);
-						online.setHealth(online.getMaxHealth());
-						online.setFireTicks(0);
-						
-						if (!online.getAllowFlight()) {
-							online.setAllowFlight(true);
-						}
-						
-						if (online.getGameMode() != GameMode.SPECTATOR) {
-							online.setGameMode(GameMode.SPECTATOR);
-						}
+					if (spectating.contains(online.getName()) && online.getGameMode() != GameMode.SPECTATOR) {
+						online.setGameMode(GameMode.SPECTATOR);
 					}
 					
 					if (Main.tabcolors) {
@@ -306,64 +298,40 @@ public class Main extends JavaPlugin {
 					
 					if (online.isOp()) {
 						online.sendMessage(ChatColor.DARK_RED + "You aren't allowed to have operator status.");
-						Bukkit.getLogger().info("§a[UHC] Removed " + online.getName() + "'s operator status.");
 						online.setOp(false);
-					}
-					
-					if (ScenarioManager.getInstance().getScenario("Pyrophobia").isEnabled()) {
-						for (ItemStack item : online.getInventory().getContents()) {
-							if (item != null && item.getType() == Material.WATER_BUCKET) {
-								item.setType(Material.BUCKET);
-								online.sendMessage(ChatColor.DARK_RED + "You aren't allowed to have water buckets in pyrophobia.");
-							}
-						}
 					}
 
 					Scoreboard sb = Bukkit.getScoreboardManager().getMainScoreboard();
-					Objective tabList = sb.getObjective("HP");
-					Damageable player = online;
+					int percent = NumberUtils.makePercent(online.getHealth());
 					
-					double health = player.getHealth();
-					double hearts = health / 2;
-					double precent = hearts * 10;
+					Objective tabList = sb.getObjective("HP");
 					
 					if (tabList != null) {
 						Score score = tabList.getScore(online.getName());
-						score.setScore((int) precent);
+						score.setScore(percent);
 					}
 					
 					Objective bellowName = sb.getObjective("HP2");
 					
 					if (bellowName != null) {
 						Score score = bellowName.getScore(online.getName());
-						score.setScore((int) precent);
+						score.setScore(percent);
 					}
 				}
 				
-				for (World world : Bukkit.getWorlds()) {	
-					if (world.getDifficulty() != Difficulty.HARD) {
-						world.setDifficulty(Difficulty.HARD);
+				for (World world : Bukkit.getWorlds()) {
+					if (world.getName().equals("lobby") || world.getName().equals("arena")) {
+						if (world.getDifficulty() != Difficulty.PEACEFUL) {
+							world.setDifficulty(Difficulty.PEACEFUL);
+						}
+					} else {
+						if (world.getDifficulty() != Difficulty.HARD) {
+							world.setDifficulty(Difficulty.HARD);
+						}
 					}
 				}
 			}
 		}, 1, 1);
-	}
-	
-	/**
-	 * Start the starting countdown.
-	 */
-	public static void startCountdown() {
-		State.setState(State.SCATTER);
-		Runnables.timeToStart = 3;
-		countdown = new Runnables();
-		countdown.runTaskTimer(plugin, 20, 20);
-	}
-	
-	/**
-	 * Stop the starting countdown.
-	 */
-	public static void stopCountdown() {
-		countdown.cancel();
 	}
 	
 	/**
@@ -402,22 +370,14 @@ public class Main extends JavaPlugin {
         ShapedRecipe goldenhead = new ShapedRecipe(head).shape("@@@", "@*@", "@@@").setIngredient('@', Material.GOLD_INGOT).setIngredient('*', mater);
         Bukkit.getServer().addRecipe(goldenhead);
         headRecipe = goldenhead;
-		Bukkit.getLogger().info("§a[UHC] Golden Head recipe added.");
+		Bukkit.getLogger().info("[UHC] Golden Head recipe added.");
 		
         ItemStack melon = new ItemStack(Material.SPECKLED_MELON); 
         ShapedRecipe goldenmelon = new ShapedRecipe(melon).shape("@@@", "@*@", "@@@").setIngredient('@', Material.GOLD_INGOT).setIngredient('*', Material.MELON);
         Bukkit.getServer().addRecipe(goldenmelon);
         melonRecipe = goldenmelon;
   
-		Bukkit.getLogger().info("§a[UHC] Golden Melon recipe added.");
-	}
-	
-	/**
-	 * Border types enum class.
-	 * @author LeonTG77
-	 */
-	public enum Border {
-		NEVER, START, PVP, MEETUP;
+		Bukkit.getLogger().info("[UHC] Golden Melon recipe added.");
 	}
 	
 	/**
@@ -434,9 +394,10 @@ public class Main extends JavaPlugin {
 		 * @param state the state setting it to.
 		 */
 		public static void setState(State state) {
-			State.currentState = state;
 			Settings.getInstance().getData().set("state", state.name().toUpperCase());
 			Settings.getInstance().saveData();
+			
+			currentState = state;
 		}
 		
 		/**
@@ -445,7 +406,7 @@ public class Main extends JavaPlugin {
 		 * @return True if it's the given state.
 		 */
 		public static boolean isState(State state) {
-			return State.currentState == state;
+			return currentState == state;
 		}
 		
 		/**
@@ -455,5 +416,13 @@ public class Main extends JavaPlugin {
 		public static State getState() {
 			return currentState;
 		}
+	}
+	
+	/**
+	 * Border types enum class.
+	 * @author LeonTG77
+	 */
+	public enum Border {
+		NEVER, START, PVP, MEETUP;
 	}
 }
