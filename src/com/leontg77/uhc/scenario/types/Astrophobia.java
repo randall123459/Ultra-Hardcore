@@ -86,7 +86,7 @@ public class Astrophobia extends Scenario implements Listener {
 
 	public void stopAstroTask() {
 		if (this.astroTask != -1) {
-			Bukkit.getServer().getScheduler().cancelTask(this.astroTask);
+			Bukkit.getServer().getScheduler().cancelTask(astroTask);
 		}
 		this.astroTask = -1;
 		this.runOnWorld = null;
@@ -114,8 +114,7 @@ public class Astrophobia extends Scenario implements Listener {
 			int chance = r.nextInt(100);
 
 			if (chance < 70) {
-				TNTPrimed tnt = (TNTPrimed) this.runOnWorld.spawn(dropFrom,
-						TNTPrimed.class);
+				TNTPrimed tnt = (TNTPrimed) this.runOnWorld.spawn(dropFrom, TNTPrimed.class);
 				tnt.setVelocity(new Vector((r.nextFloat() * 10.0F - 5.0F) / 2.0F, -1.0F * r.nextFloat(), (r.nextFloat() * 10.0F - 5.0F) / 2.0F));
 				tnt.setFallDistance(150.0F);
 				tnt.setFuseTicks(this.fuse);
