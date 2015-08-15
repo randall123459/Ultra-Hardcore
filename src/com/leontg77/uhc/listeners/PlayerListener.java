@@ -43,6 +43,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerLoginEvent.Result;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPortalEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
@@ -134,7 +135,7 @@ public class PlayerListener implements Listener {
 		}
 		
 		player.sendMessage("§8---------------------------");
-		player.sendMessage(" §8» §6Welcome to Ultra Hardcore");
+		player.sendMessage(" §8» §6Welcome to Arctic UHC");
 		player.sendMessage("§8---------------------------");
 		if (ServerUtils.getTeamSize().equals("No")) {
 			player.sendMessage(" §8» §cNo games scheduled");
@@ -160,6 +161,14 @@ public class PlayerListener implements Listener {
 			SpreadCommand.scatterLocs.remove(player.getName());
 		}
 		
+		if (!State.isState(State.SCATTER) && player.hasPotionEffect(PotionEffectType.JUMP) && player.hasPotionEffect(PotionEffectType.BLINDNESS) && player.hasPotionEffect(PotionEffectType.DAMAGE_RESISTANCE) && player.hasPotionEffect(PotionEffectType.SLOW_DIGGING) && player.hasPotionEffect(PotionEffectType.SLOW)) {
+			player.removePotionEffect(PotionEffectType.JUMP);
+			player.removePotionEffect(PotionEffectType.BLINDNESS);
+			player.removePotionEffect(PotionEffectType.DAMAGE_RESISTANCE);
+			player.removePotionEffect(PotionEffectType.SLOW_DIGGING);
+			player.removePotionEffect(PotionEffectType.SLOW);	
+		}
+		
 		if (State.isState(State.LOBBY)) {
 			World w = Bukkit.getServer().getWorld(settings.getData().getString("spawn.world"));
 			double x = settings.getData().getDouble("spawn.x");
@@ -180,7 +189,7 @@ public class PlayerListener implements Listener {
 		if (!Main.spectating.contains(player.getName())) {
 			PlayerUtils.broadcast("§8[§c-§8] §7" + player.getName() + " has left.");
 			
-			if (!State.isState(State.LOBBY)) {
+			if (State.isState(State.INGAME)) {
 				Main.relog.put(player.getName(), new BukkitRunnable() {
 					public void run() {
 						if (!player.isOnline()) {
@@ -443,23 +452,27 @@ public class PlayerListener implements Listener {
 		}
 		
 		if (event.getMessage().split(" ")[0].startsWith("/me")) {
-			event.setCancelled(true);
 			player.sendMessage(ChatColor.RED + "You do not have access to that command.");
+			event.setCancelled(true);
+			return;
 		}
 		
 		if (event.getMessage().split(" ")[0].startsWith("/bukkit:") && !player.hasPermission("uhc.admin")) {
-			event.setCancelled(true);
 			player.sendMessage(ChatColor.RED + "You do not have access to that command.");
+			event.setCancelled(true);
+			return;
 		}
 		
 		if (event.getMessage().split(" ")[0].startsWith("/minecraft:") && !player.hasPermission("uhc.admin")) {
-			event.setCancelled(true);
 			player.sendMessage(ChatColor.RED + "You do not have access to that command.");
+			event.setCancelled(true);
+			return;
 		}
 		
 		if (event.getMessage().split(" ")[0].equalsIgnoreCase("/kill")) {
-			event.setCancelled(true);
 			player.sendMessage(ChatColor.RED + "You do not have access to that command.");
+			event.setCancelled(true);
+			return;
 		}
 		
 		if (event.getMessage().split(" ")[0].equalsIgnoreCase("/rl")) {
@@ -468,6 +481,7 @@ public class PlayerListener implements Listener {
 				player.sendMessage(ChatColor.RED + "If you still want to reload, do it in the console.");
 				event.setCancelled(true);
 			}
+			return;
 		}
 		
 		if (event.getMessage().split(" ")[0].equalsIgnoreCase("/reload")) {
@@ -476,6 +490,25 @@ public class PlayerListener implements Listener {
 				player.sendMessage(ChatColor.RED + "If you still want to reload, do it in the console.");
 				event.setCancelled(true);
 			}
+			return;
+		}
+		
+		if (event.getMessage().split(" ")[0].equalsIgnoreCase("/stop")) {
+			if (!State.isState(State.LOBBY)) {
+				player.sendMessage(ChatColor.RED + "You might not want to stop when the game is running.");
+				player.sendMessage(ChatColor.RED + "If you still want to stop, do it in the console.");
+				event.setCancelled(true);
+			}
+			return;
+		}
+		
+		if (event.getMessage().split(" ")[0].equalsIgnoreCase("/restart")) {
+			if (!State.isState(State.LOBBY)) {
+				player.sendMessage(ChatColor.RED + "You might not want to restart when the game is running.");
+				player.sendMessage(ChatColor.RED + "If you still want to restart, do it in the console.");
+				event.setCancelled(true);
+			}
+			return;
 		}
 		
 		if (event.getMessage().split(" ")[0].equalsIgnoreCase("/border3000")) {
@@ -495,6 +528,7 @@ public class PlayerListener implements Listener {
 				player.sendMessage(ChatColor.RED + "You do not have access to that command.");
 			}
 			event.setCancelled(true);
+			return;
 		}
 		
 		if (event.getMessage().split(" ")[0].equalsIgnoreCase("/border2000")) {
@@ -514,6 +548,7 @@ public class PlayerListener implements Listener {
 				player.sendMessage(ChatColor.RED + "You do not have access to that command.");
 			}
 			event.setCancelled(true);
+			return;
 		}
 		
 		if (event.getMessage().split(" ")[0].equalsIgnoreCase("/perma")) {
@@ -525,16 +560,19 @@ public class PlayerListener implements Listener {
 				player.sendMessage(ChatColor.RED + "You do not have access to that command.");
 			}
 			event.setCancelled(true);
+			return;
 		}
 		
 		if (event.getMessage().split(" ")[0].equalsIgnoreCase("/matchpost")) {
 			player.sendMessage(Main.prefix() + "Match post: §a" + settings.getConfig().getString("matchpost"));
 			event.setCancelled(true);
+			return;
 		}
 		
 		if (event.getMessage().split(" ")[0].equalsIgnoreCase("/post")) {
 			player.sendMessage(Main.prefix() + "Match post: §a" + settings.getConfig().getString("matchpost"));
 			event.setCancelled(true);
+			return;
 		}
 		
 		if (event.getMessage().split(" ")[0].equalsIgnoreCase("/killboard")) {
@@ -579,6 +617,7 @@ public class PlayerListener implements Listener {
 				player.sendMessage(ChatColor.RED + "You do not have access to that command.");
 			}
 			event.setCancelled(true);
+			return;
 		}
 		
 		if (event.getMessage().split(" ")[0].equalsIgnoreCase("/arenaboard")) {
@@ -602,6 +641,7 @@ public class PlayerListener implements Listener {
 				player.sendMessage(ChatColor.RED + "You do not have access to that command.");
 			}
 			event.setCancelled(true);
+			return;
 		}
 		
 		if (event.getMessage().split(" ")[0].equalsIgnoreCase("/text")) {
@@ -650,7 +690,7 @@ public class PlayerListener implements Listener {
 			String reason = Bukkit.getBanList(Type.NAME).getBanEntry(player.getName()).getReason();
 			
 			event.setKickMessage("§8» §cBanned: §7" + reason + " §8«");
-			PlayerUtils.broadcast("§c" + player.getName() + "tried to join while being banned for: " + reason, "uhc.staff");
+			PlayerUtils.broadcast("§c" + player.getName() + " tried to join while being banned for: " + reason, "uhc.staff");
 			return;
 		}
 		
@@ -665,7 +705,7 @@ public class PlayerListener implements Listener {
 		}
 		
 		if (PlayerUtils.getPlayers().size() >= settings.getConfig().getInt("maxplayers")) {
-			if (player.hasPermission("uhc.vip") && State.isState(State.INGAME)) {
+			if (player.hasPermission("uhc.staff") && State.isState(State.INGAME)) {
 				event.allow();
 				return;
 			} 
@@ -698,6 +738,23 @@ public class PlayerListener implements Listener {
 	}
 	
 	@EventHandler
+	public void onPlayerMove(PlayerMoveEvent event) {
+		Player player = event.getPlayer();
+		
+		if (event.getTo().getWorld().getName().equals("lobby") && event.getTo().getY() <= 20) {
+			World w = Bukkit.getServer().getWorld(settings.getData().getString("spawn.world"));
+			double x = settings.getData().getDouble("spawn.x");
+			double y = settings.getData().getDouble("spawn.y");
+			double z = settings.getData().getDouble("spawn.z");
+			float yaw = (float) settings.getData().getDouble("spawn.yaw");
+			float pitch = (float) settings.getData().getDouble("spawn.pitch");
+			
+			Location loc = new Location(w, x, y, z, yaw, pitch);
+			player.teleport(loc);
+		}
+	}
+	
+	@EventHandler
 	public void onPlayerKick(PlayerKickEvent event) {
 		if (event.getReason().equals("disconnect.spam")) {
 			event.setCancelled(true);
@@ -708,7 +765,7 @@ public class PlayerListener implements Listener {
     public void onPlayerInteract(PlayerInteractEvent event) {	
         Player player = event.getPlayer();
         
-        if (event.getClickedBlock() != null && event.getClickedBlock().getType() == Material.FIRE && player.getWorld().getName().equals("lobby")) {
+        if ((event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.LEFT_CLICK_BLOCK) && player.getWorld().getName().equals("lobby") && !player.hasPermission("uhc.build")) {
         	event.setCancelled(true);
         	return;
         }
@@ -722,7 +779,7 @@ public class PlayerListener implements Listener {
 		} 
 		else if (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK) {
 			ArrayList<Player> players = new ArrayList<Player>();
-			for (Player online : Bukkit.getServer().getOnlinePlayers()) {
+			for (Player online : PlayerUtils.getPlayers()) {
 				if (!Main.spectating.contains(online.getName())) {
 					players.add(online);
 				}
@@ -760,7 +817,7 @@ public class PlayerListener implements Listener {
 			}
 			
 			if (item.hasItemMeta() && item.getItemMeta().hasDisplayName() && item.getItemMeta().getDisplayName().equalsIgnoreCase("§aPrevious page")) {
-				HOFCommand.page.put(player, HOFCommand.page.get(player) - 1);
+				HOFCommand.page.put(player, HOFCommand.page.get(player) - 1); 
 				player.openInventory(HOFCommand.pages.get(player).get(HOFCommand.page.get(player)));
 			}
 		}
@@ -786,7 +843,7 @@ public class PlayerListener implements Listener {
 		if (item.getType() == Material.COMPASS) {
 			if (event.isLeftClick()) {
 				ArrayList<Player> players = new ArrayList<Player>();
-				for (Player online : Bukkit.getServer().getOnlinePlayers()) {
+				for (Player online : PlayerUtils.getPlayers()) {
 					if (!Main.spectating.contains(online.getName())) {
 						players.add(online);
 					}
