@@ -6,7 +6,6 @@ import org.bukkit.Bukkit;
 
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.Main.State;
-import com.leontg77.uhc.Settings;
 
 /**
  * Server utilities class.
@@ -63,38 +62,5 @@ public class ServerUtils {
 		} else {
 			return "To" + Main.teamSize;
 		}
-	}
-
-	public static String getCurrentHost() {
-		String host = Settings.getInstance().getConfig().getString("game.host");
-		
-		if (host.equalsIgnoreCase("AxlurUHC")) {
-			return "Axlur";
-		} else if (host.equalsIgnoreCase("LeonTG77")) {
-			return "Leon";
-		} else if (host.equalsIgnoreCase("PolarBlunk")) {
-			return "Polar";
-		} else if (host.equalsIgnoreCase("Popcane")) {
-			return "Popcane";
-		} else if (host.equalsIgnoreCase("Itz_Isaac")) {
-			return "Isaac";
-		}
-		
-		return null;
-	}
-
-	public static String getHost(String host) {
-		if (host.equalsIgnoreCase("AxlurUHC") || host.equalsIgnoreCase("axlur")) {
-			return "Axlur";
-		} else if (host.equalsIgnoreCase("LeonTG77") || host.equalsIgnoreCase("leon")) {
-			return "Leon";
-		} else if (host.equalsIgnoreCase("polar") || host.equalsIgnoreCase("polarblunk")) {
-			return "Polar";
-		} else if (host.equalsIgnoreCase("Popcane") || host.equalsIgnoreCase("pop")) {
-			return "Popcane";
-		} else if (host.equalsIgnoreCase("Itz_Isaac") || host.equalsIgnoreCase("isaac")) {
-			return "Isaac";
-		}
-		return host;
 	}
 }
