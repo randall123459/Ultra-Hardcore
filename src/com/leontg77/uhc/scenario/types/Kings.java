@@ -105,18 +105,11 @@ public class Kings extends Scenario implements Listener {
 			}
 			
 			if (args.length < 2) {
-				player.sendMessage(ChatColor.RED + "Usage: /setking <team> <player>");
+				player.sendMessage(ChatColor.RED + "Usage: /setking <player>");
 				return;
 			}
 			
-			Team team = Bukkit.getScoreboardManager().getMainScoreboard().getTeam(args[0]);
-			
-			if (team == null) {
-				player.sendMessage(ChatColor.RED + "That is not a vaild team.");
-				return;
-			}
-			
-			Player target = Bukkit.getServer().getPlayer(args[1]);
+			Player target = Bukkit.getServer().getPlayer(args[0]);
 			
 			if (target == null) {
 				player.sendMessage(ChatColor.RED + "That player is not online.");
