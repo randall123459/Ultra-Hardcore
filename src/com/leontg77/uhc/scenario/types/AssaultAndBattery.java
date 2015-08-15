@@ -102,23 +102,25 @@ public class AssaultAndBattery extends Scenario implements Listener {
 		if (!isEnabled()) {
 			return;
 		}
-
-		if (event.getDamager() instanceof Player) {
-			Player player = (Player) event.getDamager();
-			
-			if (types.get(player.getName()).equals(Type.BATTERY)) {
-				player.sendMessage(ChatColor.RED + "You cannot do melee damage.");
-				event.setCancelled(true);
-			}
-		} else if (event.getDamager() instanceof Projectile) {
-			Projectile proj = (Projectile) event.getDamager();
-			
-			if (proj.getShooter() instanceof Player) {
-				Player player = (Player) proj.getShooter();
+		
+		if (event.getEntity() instanceof Player) {
+			if (event.getDamager() instanceof Player) {
+				Player player = (Player) event.getDamager();
 				
-				if (types.get(player.getName()).equals(Type.ASSAULT)) {
-					player.sendMessage(ChatColor.RED + "You cannot do projectile damage.");
+				if (types.get(player.getName()).equals(Type.BATTERY)) {
+					player.sendMessage(ChatColor.RED + "You cannot do melee damage.");
 					event.setCancelled(true);
+				}
+			} else if (event.getDamager() instanceof Projectile) {
+				Projectile proj = (Projectile) event.getDamager();
+				
+				if (proj.getShooter() instanceof Player) {
+					Player player = (Player) proj.getShooter();
+					
+					if (types.get(player.getName()).equals(Type.ASSAULT)) {
+						player.sendMessage(ChatColor.RED + "You cannot do projectile damage.");
+						event.setCancelled(true);
+					}
 				}
 			}
 		}
