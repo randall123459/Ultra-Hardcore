@@ -3,7 +3,6 @@ package com.leontg77.uhc.cmds;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -23,7 +22,7 @@ public class TimerCommand implements CommandExecutor, TabCompleter {
 	private BukkitRunnable run = new BukkitRunnable() {
 		public void run() {
 			if (countdown) {
-				for (Player online : Bukkit.getServer().getOnlinePlayers()) {
+				for (Player online : PlayerUtils.getPlayers()) {
 					PlayerUtils.sendAction(online, message + " " + DateUtils.ticksToString(ticks)); 
 				}
 				ticks--;
@@ -34,7 +33,7 @@ public class TimerCommand implements CommandExecutor, TabCompleter {
 						run = new BukkitRunnable() {
 							public void run() {
 								if (countdown) {
-									for (Player online : Bukkit.getServer().getOnlinePlayers()) {
+									for (Player online : PlayerUtils.getPlayers()) {
 										PlayerUtils.sendAction(online, message + " " + DateUtils.ticksToString(ticks)); 
 									}
 									ticks--;
@@ -46,7 +45,7 @@ public class TimerCommand implements CommandExecutor, TabCompleter {
 										} catch (Exception e) {}
 									}
 								} else {
-									for (Player online : Bukkit.getServer().getOnlinePlayers()) {
+									for (Player online : PlayerUtils.getPlayers()) {
 										PlayerUtils.sendAction(online, message); 
 									}
 								}
@@ -55,7 +54,7 @@ public class TimerCommand implements CommandExecutor, TabCompleter {
 					} catch (Exception e) {}
 				}
 			} else {
-				for (Player online : Bukkit.getServer().getOnlinePlayers()) {
+				for (Player online : PlayerUtils.getPlayers()) {
 					PlayerUtils.sendAction(online, message); 
 				}
 			}
@@ -81,7 +80,7 @@ public class TimerCommand implements CommandExecutor, TabCompleter {
 						run = new BukkitRunnable() {
 							public void run() {
 								if (countdown) {
-									for (Player online : Bukkit.getServer().getOnlinePlayers()) {
+									for (Player online : PlayerUtils.getPlayers()) {
 										PlayerUtils.sendAction(online, message + " " + DateUtils.ticksToString(ticks)); 
 									}
 									ticks--;
@@ -91,7 +90,7 @@ public class TimerCommand implements CommandExecutor, TabCompleter {
 										cancel();
 									}
 								} else {
-									for (Player online : Bukkit.getServer().getOnlinePlayers()) {
+									for (Player online : PlayerUtils.getPlayers()) {
 										PlayerUtils.sendAction(online, message); 
 									}
 								}

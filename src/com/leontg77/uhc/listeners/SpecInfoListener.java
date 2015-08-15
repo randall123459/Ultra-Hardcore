@@ -33,7 +33,6 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionType;
 
 import com.leontg77.uhc.Main;
-import com.leontg77.uhc.scenario.ScenarioManager;
 import com.leontg77.uhc.util.DateUtils;
 import com.leontg77.uhc.util.NumberUtils;
 import com.leontg77.uhc.util.PlayerUtils;
@@ -131,7 +130,7 @@ public class SpecInfoListener implements Listener {
 
 		if (Main.spectating.contains(player.getName())) return;
 		
-		for (Player online : Bukkit.getServer().getOnlinePlayers()) {
+		for (Player online : PlayerUtils.getPlayers()) {
 			if (Main.spectating.contains(online.getName())) {
 				online.sendMessage("[§9S§f] §5Pearl:§6" + player.getName() + "§f->§d" + NumberUtils.convertDouble(event.getFrom().distance(event.getTo())) + " blocks.");
 			}
@@ -360,6 +359,10 @@ public class SpecInfoListener implements Listener {
 			public void run() {
 				double damage = olddamage - dmg.getHealth();
 				
+				if (damage <= 0) {
+					return;
+				}
+				
 				if (cause == DamageCause.LAVA) {
 					for (Player online : PlayerUtils.getPlayers()) {
 						if (Main.spectating.contains(online.getName()) && online.hasPermission("uhc.admin")) {
@@ -385,10 +388,6 @@ public class SpecInfoListener implements Listener {
 						}
 					}
 				} else if (cause == DamageCause.FALL) {
-					if (ScenarioManager.getInstance().getScenario("NoFall").isEnabled()) {
-						return;
-					}
-					
 					for (Player online : PlayerUtils.getPlayers()) {
 						if (Main.spectating.contains(online.getName())) {
 							online.sendMessage("[§9S§f] §5PvE§f:§c" + player.getName() + "§f<-§dFall §f[§c" + NumberUtils.convertDouble((dmg.getHealth() / 2)) + "§f] [§6" + NumberUtils.convertDouble((damage / 2)) + "§f]");

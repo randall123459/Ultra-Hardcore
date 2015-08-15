@@ -1,11 +1,11 @@
 package com.leontg77.uhc.scenario.types;
 
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.scenario.Scenario;
+import com.leontg77.uhc.util.PlayerUtils;
 
 public class Skyhigh extends Scenario {
 	private boolean enabled = false;
@@ -21,7 +21,7 @@ public class Skyhigh extends Scenario {
 		if (enable) {
 			this.task = new BukkitRunnable() {
 				public void run() {
-					for (Player online : Bukkit.getServer().getOnlinePlayers()) {
+					for (Player online : PlayerUtils.getPlayers()) {
 						if (!online.getWorld().getName().equals("lobby")) {
 							if (online.getLocation().getBlockY() < 101) {
 								online.damage(1.0);
