@@ -56,7 +56,7 @@ public class PlayerUtils {
 	 * @param permission the permission.
 	 */
 	public static void broadcast(String message, String permission) {
-		for (Player online : Bukkit.getServer().getOnlinePlayers()) {
+		for (Player online : getPlayers()) {
 			if (online.hasPermission(permission)) {
 				online.sendMessage(message);
 			}
@@ -69,7 +69,7 @@ public class PlayerUtils {
 	 * @param message the message.
 	 */
 	public static void broadcast(String message) {
-		for (Player online : Bukkit.getServer().getOnlinePlayers()) {
+		for (Player online : getPlayers()) {
 			online.sendMessage(message);
 		}
 		Bukkit.getLogger().info(message.replaceAll("§l", ""));
@@ -80,7 +80,7 @@ public class PlayerUtils {
 	 * @return the inv size.
 	 */
 	public static int playerInvSize() {
-		int length = Bukkit.getOnlinePlayers().size();
+		int length = getPlayers().size();
 		length = (length - Main.spectating.size());
 		
 		if (length <= 9) {
@@ -188,6 +188,10 @@ public class PlayerUtils {
         connection.sendPacket(subtitlePacket);
     }
 
+	/**
+	 * Handle the permissions for a 
+	 * @param player
+	 */
 	public static void handlePermissions(Player player) {
 		
 	}
