@@ -40,8 +40,8 @@ public class Superheroes extends Scenario implements Listener {
 				
 				switch (type) {
 				case HEALTH:
-					online.setMaxHealth(40.0);
-					online.setHealth(40.0);
+					online.setMaxHealth(online.getMaxHealth() + 20);
+					online.setHealth(online.getMaxHealth());
 					this.type.put(online.getName(), type);
 					break;
 				case INVIS:
@@ -243,8 +243,7 @@ public class Superheroes extends Scenario implements Listener {
 						}
 						
 						if (type.get(online.getName()) == HeroType.HEALTH) {
-							online.setMaxHealth(40.0);
-							online.setHealth(40.0);
+							online.setHealth(online.getMaxHealth());
 							continue;
 						}
 						
@@ -277,8 +276,8 @@ public class Superheroes extends Scenario implements Listener {
 					
 					switch (type) {
 					case HEALTH:
-						target.setMaxHealth(40.0);
-						target.setHealth(40.0);
+						target.setMaxHealth(target.getMaxHealth() + 20);
+						target.setHealth(target.getMaxHealth());
 						this.type.put(target.getName(), type);
 						break;
 					case INVIS:
