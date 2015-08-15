@@ -18,12 +18,12 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import com.leontg77.uhc.Settings;
-import com.leontg77.uhc.util.ServerUtils;
+import com.leontg77.uhc.util.HostUtils;
 
 public class HOFCommand implements CommandExecutor, TabCompleter {
 	public static HashMap<Player, HashMap<Integer, Inventory>> pages = new HashMap<Player, HashMap<Integer, Inventory>>();
 	public static HashMap<Player, Integer> page = new HashMap<Player, Integer>();
-	private static Settings settings = Settings.getInstance();
+	private Settings settings = Settings.getInstance();
 
 	public boolean onCommand(CommandSender sender, Command cmd,	String label, String[] args) {
 		if (!(sender instanceof Player)) {
@@ -32,11 +32,11 @@ public class HOFCommand implements CommandExecutor, TabCompleter {
 		}
 		
 		Player player = (Player) sender;
-		String host = ServerUtils.getCurrentHost();
+		String host = HostUtils.getCurrentHost();
 		
 		if (cmd.getName().equalsIgnoreCase("hof")) {
 			if (args.length > 0) {
-				host = ServerUtils.getHost(args[0]);
+				host = HostUtils.getHost(args[0]);
 			}
 			
 			if (host == null) {
