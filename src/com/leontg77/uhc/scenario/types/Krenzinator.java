@@ -45,7 +45,11 @@ public class Krenzinator extends Scenario implements Listener {
 		ItemStack item = event.getRecipe().getResult();
 		
 		if (item.getType() == Material.DIAMOND) {
-			event.getInventory().setResult(new ItemStack(Material.AIR));
+			if (event.getRecipe() instanceof ShapelessRecipe) {
+				if (((ShapelessRecipe) event.getRecipe()).getIngredientList().contains(new ItemStack(Material.REDSTONE_BLOCK))) {
+					event.getInventory().setResult(new ItemStack(Material.AIR));
+				}
+			}
 		}
 	}
 
