@@ -11,6 +11,9 @@ import org.bukkit.World;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scoreboard.Objective;
+import org.bukkit.scoreboard.Score;
+import org.bukkit.scoreboard.Scoreboard;
 
 /**
  * PvP Arena class.
@@ -22,6 +25,9 @@ public class Arena {
 	private ArrayList<Player> players;
 	private boolean enabled = false;	
 	private static Arena instance;
+	
+	public Scoreboard sb = Bukkit.getScoreboardManager().getMainScoreboard();
+	public Objective ab = sb.getObjective("AB");
 	
 	/**
 	 * Gets the instance of the class.
@@ -38,6 +44,13 @@ public class Arena {
 		players = new ArrayList<Player>();
 		enabled = false;
 		instance = this;
+
+		if (sb.getObjective("AB") == null) {
+			ab = sb.registerNewObjective("AB", "dummy");
+			Bukkit.getLogger().info("§a[UHC] Setup arena player kill scoreboard.");
+		}
+		ab.setDisplayName("§4Open PvP §8- §7Join with /a");
+		
 		Bukkit.getLogger().info("§a[UHC] The arena has been setup.");
 	}
 	
@@ -78,6 +91,34 @@ public class Arena {
 	 */
 	public boolean hasPlayer(Player player) {
 		return players.contains(player);
+	}
+	
+	/**
+	 * Sets the score of a player.
+	 * @param player the player setting for.
+	 * @param score the new score.
+	 */
+	public void setScore(String player, int score) {
+		Score scores = ab.getScore(player);
+		
+		scores.setScore(score);
+	}
+
+	/**
+	 * Gets a score for a player.
+	 * @param player the player getting for
+	 * @return the score
+	 */
+	public int getScore(String player) {
+		return ab.getScore(player).getScore();
+	}
+
+	/**
+	 * Reset the score of a player.
+	 * @param player the player.
+	 */
+	public void resetScore(String player) {
+		sb.resetScores(player);
 	}
 	
 	/**

@@ -13,10 +13,9 @@ import org.bukkit.scoreboard.Scoreboard;
 public class Scoreboards {
 	private static Scoreboards manager = new Scoreboards();
 	private Scoreboards() {}
-	
+
 	public Scoreboard sb = Bukkit.getScoreboardManager().getMainScoreboard();
 	public Objective kills = sb.getObjective("PK");
-	public Objective ab = sb.getObjective("AB");
 	public Objective heal = sb.getObjective("HP");
 	public Objective heal2 = sb.getObjective("HP2");
 	
@@ -32,16 +31,9 @@ public class Scoreboards {
 	 * Sets the score of a player.
 	 * @param player the player setting for.
 	 * @param score the new score.
-	 * @param game True if its the ingame kills scoreboard, false if its the arena board.
 	 */
-	public void setScore(String player, int score, boolean game) {
-		Score scores;
-		
-		if (game) {
-			scores = kills.getScore(player);
-		} else {
-			scores = ab.getScore(player);
-		}
+	public void setScore(String player, int score) {
+		Score scores = kills.getScore(player);
 		
 		scores.setScore(score);
 	}
@@ -51,12 +43,8 @@ public class Scoreboards {
 	 * @param player the player getting for
 	 * @return the score
 	 */
-	public int getScore(String player, boolean game) {
-		if (game) {
-			return kills.getScore(player).getScore();
-		} else {
-			return ab.getScore(player).getScore();
-		}
+	public int getScore(String player) {
+		return kills.getScore(player).getScore();
 	}
 
 	/**
@@ -75,10 +63,6 @@ public class Scoreboards {
 			kills = sb.registerNewObjective("PK", "dummy");
 			Bukkit.getLogger().info("§a[UHC] Setup player kill scoreboard.");
 		}
-		if (sb.getObjective("AB") == null) {
-			ab = sb.registerNewObjective("AB", "dummy");
-			Bukkit.getLogger().info("§a[UHC] Setup arena player kill scoreboard.");
-		}
 		if (sb.getObjective("HP") == null) {
 			heal = sb.registerNewObjective("HP", "dummy");
 			Bukkit.getLogger().info("§a[UHC] Setup tab list health scoreboard.");
@@ -89,7 +73,6 @@ public class Scoreboards {
 		}
 		kills.setDisplayName("§4UHC §8- §7" + Settings.getInstance().getConfig().getString("game.host"));
 		kills.setDisplaySlot(DisplaySlot.SIDEBAR);
-		ab.setDisplayName("§4Open PvP §8- §7Join with /a");
 		heal.setDisplaySlot(DisplaySlot.PLAYER_LIST);
 		heal2.setDisplaySlot(DisplaySlot.BELOW_NAME);
 		heal2.setDisplayName("§4♥");
