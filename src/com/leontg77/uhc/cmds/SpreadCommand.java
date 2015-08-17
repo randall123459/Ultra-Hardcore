@@ -28,7 +28,7 @@ import com.leontg77.uhc.util.ScatterUtils;
 public class SpreadCommand implements CommandExecutor {
 	public static final HashMap<String, Location> scatterLocs = new HashMap<String, Location>();
 
-	public boolean onCommand(CommandSender sender, Command cmd, String label, final String[] args) {
+	public boolean onCommand(final CommandSender sender, Command cmd, String label, final String[] args) {
 		if (cmd.getName().equalsIgnoreCase("spread")) {
 			if (sender.hasPermission("uhc.spread")) {
 				if (args.length < 3) {
@@ -86,7 +86,7 @@ public class SpreadCommand implements CommandExecutor {
 					for (String e : Scoreboards.getManager().kills.getScoreboard().getEntries()) {
 						Scoreboards.getManager().resetScore(e);
 					}
-					Main.killboard = false;
+					Main.board = false;
 					Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer cancel");
 					
 					Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Main.plugin, new Runnable() {
@@ -128,23 +128,20 @@ public class SpreadCommand implements CommandExecutor {
 						public void run() {
 							PlayerUtils.broadcast(Main.prefix() + "Locations found, loading chunks...");
 							
-							final ArrayList<Location> a = new ArrayList<Location>();
-							final ArrayList<String> b = new ArrayList<String>();
-							
-							for (Location loc : scatterLocs.values()) {
-								a.add(loc);
-							}
-							
-							for (String names : scatterLocs.keySet()) {
-								b.add(names);
-							}
+							final ArrayList<Location> a = new ArrayList<Location>(scatterLocs.values());
+							final ArrayList<String> b = new ArrayList<String>(scatterLocs.keySet());
 							
 							new BukkitRunnable() {
 								int i = 0;
 								
 								public void run() {
 									if (i < a.size()) {
-										a.get(i).getChunk().load(true);
+										if (sender instanceof Player) {
+											Player player = (Player) sender;
+											player.teleport(a.get(i));
+										} else {
+											a.get(i).getChunk().load(true);
+										}
 										i++;
 									} else {
 										cancel();
@@ -180,7 +177,7 @@ public class SpreadCommand implements CommandExecutor {
 										}.runTaskTimer(Main.plugin, 3, 3);
 									}
 								}
-							}.runTaskTimer(Main.plugin, 1, 1);
+							}.runTaskTimer(Main.plugin, 5, 5);
 						}
 					}, 60);
 				} else {
