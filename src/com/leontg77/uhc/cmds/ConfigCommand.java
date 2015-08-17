@@ -174,16 +174,16 @@ public class ConfigCommand implements CommandExecutor, TabCompleter {
 					}
 					break;
 				case HEADHEALS:
-					int heal;
+					double heal;
 					
 					try {
-						heal = Integer.parseInt(args[1]);
+						heal = Double.parseDouble(args[1]);
 					} catch (Exception e) {
 						sender.sendMessage(ChatColor.RED + "Invaild head heal amount.");
 						return true;
 					}
 					
-					settings.getConfig().set("feature.goldenheads.heal", heal);
+					settings.getConfig().set("feature.goldenheads.heal", ((int) heal * 2));
 					settings.saveConfig();
 
 					PlayerUtils.broadcast(Main.prefix() + "GoldenHeads now heal §a" + heal + "§7 hearts.");

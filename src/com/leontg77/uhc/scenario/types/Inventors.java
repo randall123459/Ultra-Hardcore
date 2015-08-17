@@ -41,7 +41,7 @@ public class Inventors extends Scenario implements Listener {
 		
 		if (!crafted.contains(item.getType())) {
 			crafted.add(item.getType());
-			PlayerUtils.broadcast(Main.prefix(ChatColor.GREEN).replaceAll("UHC", "Inventors") + player.getName() + " §7crafted " + item.getType().name().toLowerCase().replaceAll("_", " ") + " first.");
+			PlayerUtils.broadcast(Main.prefix().replaceAll("UHC", "Inventors") + ChatColor.GREEN + player.getName() + " §7crafted " + item.getType().name().toLowerCase().replaceAll("_", " ") + " first.");
 		}
 	}
 }

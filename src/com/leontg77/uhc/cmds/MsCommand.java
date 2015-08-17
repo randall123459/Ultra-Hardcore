@@ -31,7 +31,7 @@ public class MsCommand implements CommandExecutor {
 				return true;
 			}
 			
-			sender.sendMessage(Main.prefix(ChatColor.GOLD) + target.getName() + "'s §7ping: §6" + PlayerUtils.getPing(target));
+			sender.sendMessage(Main.prefix() + ChatColor.GOLD + target.getName() + "'s §7ping: §6" + PlayerUtils.getPing(target));
 		}
 		return true;
 	}

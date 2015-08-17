@@ -86,7 +86,7 @@ public class Captains extends Scenario implements Listener {
 			t.addEntry(args[0]);
 			
 			captains.add(args[0]);
-			PlayerUtils.broadcast(Main.prefix(ChatColor.GREEN) + args[0] + " is now an captain.");
+			PlayerUtils.broadcast(Main.prefix() + ChatColor.GREEN + args[0] + " §7is now an captain.");
 		}
 		
 		if (cmd.equalsIgnoreCase("/removecaptain")) {
@@ -118,7 +118,7 @@ public class Captains extends Scenario implements Listener {
 			}
 			
 			captains.remove(args[0]);
-			PlayerUtils.broadcast(Main.prefix(ChatColor.GREEN) + args[0] + " is no longer an captain.");
+			PlayerUtils.broadcast(Main.prefix() + args[0] + ChatColor.GREEN + " §7is no longer an captain.");
 		}
 		
 		if (cmd.equalsIgnoreCase("/randomcaptains")) {
@@ -174,7 +174,7 @@ public class Captains extends Scenario implements Listener {
 				}
 				
 				t.addEntry(s);
-				PlayerUtils.broadcast(Main.prefix(ChatColor.GREEN) + s + " §7is now an captain.");
+				PlayerUtils.broadcast(Main.prefix() + ChatColor.GREEN + s + " §7is now an captain.");
 			}
 		}
 		
@@ -255,7 +255,7 @@ public class Captains extends Scenario implements Listener {
 				current = 0;
 			}
 			
-			PlayerUtils.broadcast(Main.prefix(ChatColor.GREEN) + player.getName() + " §7has picked §a" + target.getName() + "§7, next captain to choose is §a" + captains.get(current));
+			PlayerUtils.broadcast(Main.prefix() + player.getName() + ChatColor.GREEN + " §7has picked §a" + target.getName() + "§7, next captain to choose is §a" + captains.get(current));
 			chooser = captains.get(current);
 		}
 	}

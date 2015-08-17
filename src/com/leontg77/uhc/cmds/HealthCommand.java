@@ -29,7 +29,7 @@ public class HealthCommand implements CommandExecutor {
 			double health = target.getHealth();
 			double maxhealth = target.getMaxHealth();
 
-			sender.sendMessage(Main.prefix(ChatColor.GOLD) + target.getName() + " §7is at §6" + NumberUtils.makePercent(health) + "%" + (maxhealth == 20 ? "" : " §7out of maximum §6" + ((int) NumberUtils.makePercent(maxhealth)) + "%"));
+			sender.sendMessage(Main.prefix() + ChatColor.GOLD + target.getName() + " §7is at §6" + NumberUtils.makePercent(health) + "%" + (maxhealth == 20 ? "" : " §7out of maximum §6" + ((int) NumberUtils.makePercent(maxhealth)) + "%"));
 		}
 		return true;
 	}

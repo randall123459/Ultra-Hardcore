@@ -1,6 +1,6 @@
 package com.leontg77.uhc.scenario.types;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -18,7 +18,7 @@ import com.leontg77.uhc.scenario.Scenario;
 import com.leontg77.uhc.util.PlayerUtils;
 
 public class BlockRush extends Scenario implements Listener {
-	private ArrayList<Material> crafted = new ArrayList<Material>();
+	private HashSet<Material> mined = new HashSet<Material>();
 	private boolean enabled = false;
 
 	public BlockRush() {
@@ -42,9 +42,9 @@ public class BlockRush extends Scenario implements Listener {
 		Player player = event.getPlayer();
 		Block block = event.getBlock();
 		
-		if (!crafted.contains(block.getType())) {
-			crafted.add(block.getType());
-			PlayerUtils.broadcast(Main.prefix(ChatColor.GREEN).replaceAll("UHC", "BlockRush") + player.getName() + " §7broke " + block.getType().name().toLowerCase().replaceAll("_", " ") + " first.");
+		if (!mined.contains(block.getType())) {
+			mined.add(block.getType());
+			PlayerUtils.broadcast(Main.prefix().replaceAll("UHC", "BlockRush") + ChatColor.GREEN + player.getName() + " §7broke " + block.getType().name().toLowerCase().replaceAll("_", " ") + " first.");
 			Item item = block.getWorld().dropItem(block.getLocation().add(0.5, 0.7, 0.5), new ItemStack (Material.GOLD_INGOT));
 			item.setVelocity(new Vector(0, 0.2, 0));
 		}

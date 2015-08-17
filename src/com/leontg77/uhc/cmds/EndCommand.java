@@ -23,11 +23,10 @@ import com.leontg77.uhc.Main.State;
 import com.leontg77.uhc.Runnables;
 import com.leontg77.uhc.Scoreboards;
 import com.leontg77.uhc.Settings;
+import com.leontg77.uhc.SpecInfo;
 import com.leontg77.uhc.Spectator;
-import com.leontg77.uhc.listeners.SpecInfoListener;
-import com.leontg77.uhc.util.HostUtils;
+import com.leontg77.uhc.util.GameUtils;
 import com.leontg77.uhc.util.PlayerUtils;
-import com.leontg77.uhc.util.ServerUtils;
 
 public class EndCommand implements CommandExecutor {
 	private Settings settings = Settings.getInstance();
@@ -77,6 +76,10 @@ public class EndCommand implements CommandExecutor {
 					win.append(winners.get(i));
 				}
 				
+				Main.kills.clear();
+				Main.teamKills.clear();
+				TeamCommand.sTeam.clear();
+				
 				Team team = Scoreboards.getManager().sb.getEntryTeam(args[0]);
 				
 				if (team != null) {
@@ -95,12 +98,12 @@ public class EndCommand implements CommandExecutor {
 					}
 				}
 				
-				String host = HostUtils.getCurrentHost();
+				String host = GameUtils.getCurrentHost();
 				
 				if (settings.getHOF().getConfigurationSection(host) == null) {
 					settings.getHOF().set(host + "." + 1 + ".winners", winners);
 					settings.getHOF().set(host + "." + 1 + ".kills", kills);
-					settings.getHOF().set(host + "." + 1 + ".teamsize", ServerUtils.getTeamSize());
+					settings.getHOF().set(host + "." + 1 + ".teamsize", GameUtils.getTeamSize());
 					settings.getHOF().set(host + "." + 1 + ".scenarios", settings.getConfig().getString("game.scenarios"));
 					settings.saveHOF();
 				} else {
@@ -108,7 +111,7 @@ public class EndCommand implements CommandExecutor {
 				
 					settings.getHOF().set(host + "." + id + ".winners", winners);
 					settings.getHOF().set(host + "." + id + ".kills", kills);
-					settings.getHOF().set(host + "." + id + ".teamsize", ServerUtils.getTeamSize());
+					settings.getHOF().set(host + "." + id + ".teamsize", GameUtils.getTeamSize());
 					settings.getHOF().set(host + "." + id + ".scenarios", settings.getConfig().getString("game.scenarios"));
 					settings.saveHOF();
 				}
@@ -158,8 +161,8 @@ public class EndCommand implements CommandExecutor {
 				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer cancel");
 				State.setState(State.LOBBY);
 				Main.relog.clear();
-				SpecInfoListener.totalG.clear();
-				SpecInfoListener.totalD.clear();
+				SpecInfo.totalG.clear();
+				SpecInfo.totalD.clear();
 			} else {
 				sender.sendMessage(ChatColor.RED + "You do not have access to that command.");
 			}

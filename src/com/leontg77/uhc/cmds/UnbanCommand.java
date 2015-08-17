@@ -25,7 +25,7 @@ public class UnbanCommand implements CommandExecutor, TabCompleter {
 					return true;
 				}
 		    	
-				PlayerUtils.broadcast(Main.prefix(ChatColor.GOLD) + args[0] + " §7has been unbanned.", "uhc.unban");
+				PlayerUtils.broadcast(Main.prefix() + ChatColor.GOLD + args[0] + " §7has been unbanned.", "uhc.unban");
 		   		Bukkit.getServer().getBanList(Type.NAME).pardon(args[0]);
 			} else {
 				sender.sendMessage(ChatColor.RED + "You do not have access to that command.");

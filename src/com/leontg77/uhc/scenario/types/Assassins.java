@@ -70,7 +70,7 @@ public class Assassins extends Scenario implements Listener {
 			
 			setTarget(assassin, target);
 			assassins.remove(player.getName());
-			event.setDeathMessage(Main.prefix(ChatColor.GREEN) + player.getName() + " §7was eliminated!");
+			event.setDeathMessage(Main.prefix() + ChatColor.GREEN + player.getName() + " §7was eliminated!");
 		}
 	}
 

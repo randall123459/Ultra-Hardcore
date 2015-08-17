@@ -30,7 +30,7 @@ public class TpCommand implements CommandExecutor {
 							return true;
 						} 
 						
-						player.sendMessage(Main.prefix() + "You teleported to §6" + targetOne.getName() + "§7.");
+						player.sendMessage(Main.prefix() + "You teleported to §a" + targetOne.getName() + "§7.");
 						player.teleport(targetOne);
 						return true;
 					} else {
@@ -46,7 +46,7 @@ public class TpCommand implements CommandExecutor {
 					return true;
 				} 
 				
-				sender.sendMessage(Main.prefix(ChatColor.GOLD) + targetOne.getName() + "§7 was teleported to §6" + targetTwo.getName() + "§7.");
+				sender.sendMessage(Main.prefix() + ChatColor.GREEN + targetOne.getName() + "§7 was teleported to §a" + targetTwo.getName() + "§7.");
 				targetOne.teleport(targetTwo);
 			} else {
 				sender.sendMessage(ChatColor.RED + "You do not have access to that command.");

@@ -84,11 +84,11 @@ public class ScenarioCommand implements CommandExecutor, TabCompleter {
 				}
 				
 				if (s.isEnabled()) {
-					sender.sendMessage(Main.prefix(ChatColor.GOLD) + s.getName() + " §7is already enabled.");
+					sender.sendMessage(Main.prefix() + ChatColor.GOLD + s.getName() + " §7is already enabled.");
 					return true;
 				}
 
-				PlayerUtils.broadcast(Main.prefix(ChatColor.GOLD) + s.getName() + " §7has been enabled.");
+				PlayerUtils.broadcast(Main.prefix() + ChatColor.GOLD + s.getName() + " §7has been enabled.");
 				s.setEnabled(true);
 			} else if (args[0].equalsIgnoreCase("disable")) {
 				if (!sender.hasPermission("uhc.scenario")) {
@@ -112,11 +112,11 @@ public class ScenarioCommand implements CommandExecutor, TabCompleter {
 				}
 				
 				if (!s.isEnabled()) {
-					sender.sendMessage(Main.prefix(ChatColor.GOLD) + s.getName() + " §7is not enabled.");
+					sender.sendMessage(Main.prefix() + ChatColor.GOLD + s.getName() + " §7is not enabled.");
 					return true;
 				}
 
-				PlayerUtils.broadcast(Main.prefix(ChatColor.GOLD) + s.getName() + " §7has been disabled.");
+				PlayerUtils.broadcast(Main.prefix() + ChatColor.GOLD + s.getName() + " §7has been disabled.");
 				s.setEnabled(false);
 			} else if (args[0].equalsIgnoreCase("list")) {
 				Scenario s = ScenarioManager.getInstance().getScenario(args[1]);
