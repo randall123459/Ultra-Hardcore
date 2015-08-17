@@ -17,7 +17,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
 import com.leontg77.uhc.Main;
-import com.leontg77.uhc.listeners.SpecInfoListener;
+import com.leontg77.uhc.SpecInfo;
 import com.leontg77.uhc.scenario.Scenario;
 import com.leontg77.uhc.scenario.ScenarioManager;
 import com.leontg77.uhc.util.BlockUtils;
@@ -81,7 +81,7 @@ public class TripleOres extends Scenario implements Listener {
 				return;
 			}
 			
-			if (!SpecInfoListener.locs.contains(event.getBlock().getLocation())) {
+			if (!SpecInfo.locs.contains(event.getBlock().getLocation())) {
 				Player player = event.getPlayer();
 				int amount = 0;
 				Location loc = event.getBlock().getLocation();
@@ -91,21 +91,21 @@ public class TripleOres extends Scenario implements Listener {
 						for (int z = loc.getBlockZ() - 1; z <= loc.getBlockZ() + 1; z++) {
 							if (loc.getWorld().getBlockAt(x, y, z).getType() == Material.GOLD_ORE) {
 								amount++;
-								SpecInfoListener.locs.add(loc.getWorld().getBlockAt(x, y, z).getLocation());
+								SpecInfo.locs.add(loc.getWorld().getBlockAt(x, y, z).getLocation());
 							}
 						}
 					}
 				}
 				
-				if (SpecInfoListener.totalG.containsKey(player.getName())) {
-					SpecInfoListener.totalG.put(player.getName(), SpecInfoListener.totalG.get(player.getName()) + amount);
+				if (SpecInfo.totalG.containsKey(player.getName())) {
+					SpecInfo.totalG.put(player.getName(), SpecInfo.totalG.get(player.getName()) + amount);
 				} else {
-					SpecInfoListener.totalG.put(player.getName(), amount);
+					SpecInfo.totalG.put(player.getName(), amount);
 				}
 				
 				for (Player online : PlayerUtils.getPlayers()) {
 					if (Main.spectating.contains(online.getName())) {
-						online.sendMessage("[§9S§f] §7" + player.getName() + "§f:§6GOLD §f[V:§6" + amount + "§f] [T:§6" + SpecInfoListener.totalG.get(player.getName()) + "§f]");
+						online.sendMessage("[§4S§f] §7" + player.getName() + "§f:§6GOLD §f[V:§6" + amount + "§f] [T:§6" + SpecInfo.totalG.get(player.getName()) + "§f]");
 					}
 				}
 				amount = 0;
@@ -162,6 +162,36 @@ public class TripleOres extends Scenario implements Listener {
 		}
 		
 		if (block.getType() == Material.DIAMOND_ORE) {
+			if (!SpecInfo.locs.contains(event.getBlock().getLocation())) {
+				Location loc = event.getBlock().getLocation();
+				Player player = event.getPlayer();
+				int amount = 0;
+				
+				for (int x = loc.getBlockX() - 1; x <= loc.getBlockX() + 1; x++) {
+					for (int y = loc.getBlockY() - 1; y <= loc.getBlockY() + 1; y++) {
+						for (int z = loc.getBlockZ() - 1; z <= loc.getBlockZ() + 1; z++) {
+							if (loc.getWorld().getBlockAt(x, y, z).getType() == Material.DIAMOND_ORE) {
+								amount++;
+								locs.add(loc.getWorld().getBlockAt(x, y, z).getLocation());
+							}
+						}
+					}
+				}
+				
+				if (SpecInfo.totalD.containsKey(player.getName())) {
+					SpecInfo.totalD.put(player.getName(), SpecInfo.totalD.get(player.getName()) + amount);
+				} else {
+					SpecInfo.totalD.put(player.getName(), amount);
+				}
+				
+				for (Player online : PlayerUtils.getPlayers()) {
+					if (Main.spectating.contains(online.getName())) {
+						online.sendMessage("[§4S§f] §7" + player.getName() + "§f:§3DIAMOND §f[V:§3" + amount + "§f] [T:§3" + SpecInfo.totalD.get(player.getName()) + "§f]");
+					}
+				}
+				amount = 0;
+			}
+			
 			event.setCancelled(true);
 			BlockUtils.blockCrack(event.getPlayer(), block.getLocation(), 56);
 			block.setType(Material.AIR);
