@@ -27,6 +27,9 @@ import com.leontg77.uhc.util.PlayerUtils;
 
 public class TeamCommand implements CommandExecutor, TabCompleter {
 	public static HashMap<Player, ArrayList<Player>> invites = new HashMap<Player, ArrayList<Player>>();
+	public static HashMap<String, ArrayList<String>> sTeam = new HashMap<String, ArrayList<String>>();
+	
+	private Teams teams = Teams.getManager();
 	private boolean enabled = false;
 
 	public boolean onCommand(CommandSender sender, Command cmd, String label, final String[] args) {
@@ -50,27 +53,24 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
 						return true;
 					}
 				
-					if (player.getScoreboard().getEntryTeam(player.getName()) != null) {
+					if (teams.getTeam(player) != null) {
 						player.sendMessage(Main.prefix() + "You are already on a team.");
 						return true;
 					}
 					
-					Team t = null;
+					Team team = teams.findAvailableTeam();
 					
-					for (Team team : Teams.getManager().getTeams()) {
-						if (team.getSize() == 0) {
-							t = team;
-							break;
-						}
-					}
-					
-					if (t == null) {
+					if (team == null) {
 						sender.sendMessage(Main.prefix() + "There are no more available teams.");
 						return true;
 					}
-
+					
+					teams.joinTeam(team, player);
+					
+					ArrayList<String> players = new ArrayList<String>(team.getEntries());
+					TeamCommand.sTeam.put(team.getName(), players);
+					
 					player.sendMessage(Main.prefix() + "Team created! Use §a/team invite <player>§7 to invite a player.");
-					t.addEntry(player.getName());
 				}
 				else if (args[0].equalsIgnoreCase("leave")) {
 					if (!enabled) {
@@ -78,38 +78,44 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
 						return true;
 					}
 					
-					Team team = player.getScoreboard().getEntryTeam(player.getName());
+					Team team = teams.getTeam(player);
 					
 					if (team == null) {
 						player.sendMessage(Main.prefix() + "You are not on a team.");
 						return true;
 					}
-					team.removeEntry(player.getName());
+
 					player.sendMessage(Main.prefix() + "You left your team.");
+					teams.leaveTeam(player);
 					
-					for (String entry : team.getEntries()) {
-						Player teammate = Bukkit.getServer().getPlayer(entry);
-						
-						if (teammate != null) {
-							teammate.sendMessage(Main.prefix() + player.getName() + " left your team.");
-						}
-					}
+					ArrayList<String> players = new ArrayList<String>(team.getEntries());
+					TeamCommand.sTeam.put(team.getName(), players);
+					
+					teams.sendMessage(team, Main.prefix() + player.getName() + " left your team.");
 				}
 				else if (args[0].equalsIgnoreCase("info")) {
-					Team team = player.getScoreboard().getEntryTeam(player.getName());
+					Team team = teams.getTeam(player);
 					
-					if (team == null) {
+					if (team == null || Main.spectating.contains(player.getName())) {
 						player.sendMessage(Main.prefix() + "You are not on a team.");
 						return true;
 					}
 					
-					StringBuilder list = new StringBuilder("");
+					ArrayList<String> players = new ArrayList<String>(team.getEntries());
+					TeamCommand.sTeam.put(team.getName(), players);
 					
-					for (String entry : team.getEntries()) {
+					StringBuilder list = new StringBuilder("");
+					int i = 1;
+					
+					for (String entry : sTeam.get(team.getName())) {
 						if (list.length() > 0) {
-							list.append("§f, ");
+							if (i == sTeam.get(team.getName()).size()) {
+								list.append(" §7and §f");
+							} else {
+								list.append("§7, §f");
+							}
 						}
-
+						
 						OfflinePlayer teammates = PlayerUtils.getOfflinePlayer(entry);
 						
 						if (teammates.isOnline()) {
@@ -117,9 +123,10 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
 						} else {
 							list.append(ChatColor.RED + teammates.getName());
 						}
+						i++;
 					}
 					
-					player.sendMessage(Main.prefix() + "Your teammates: §o(Names in read means they are offline)");
+					player.sendMessage(Main.prefix() + "Your teammates: §o(Names in red means they are offline)");
 					player.sendMessage("§8» §f" + list.toString().trim());
 				}
 				else if (args[0].equalsIgnoreCase("clear")) {
@@ -130,6 +137,10 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
 							}
 						}
 						
+						for (String key : sTeam.keySet()) {
+							sTeam.get(key).clear();
+						}
+						
 						PlayerUtils.broadcast(Main.prefix() + "All teams has been cleared.");
 					} else {
 						sendHelp(player);
@@ -137,15 +148,22 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
 				}
 				else if (args[0].equalsIgnoreCase("list")) {
 					if (player.hasPermission("uhc.teamadmin")) {
-						player.sendMessage(Main.prefix() + "Teams:");
+						player.sendMessage(Main.prefix() + "List of teams:");
 						for (Team team : Teams.getManager().getTeamsWithPlayers()) {
 							StringBuilder list = new StringBuilder("");
+							int i = 1;
 							
 							for (String entry : team.getEntries()) {
 								if (list.length() > 0) {
-									list.append("§f, ");
+									if (i == team.getEntries().size()) {
+										list.append(" and ");
+									} else {
+										list.append(", ");
+									}
 								}
+								
 								list.append(entry);
+								i++;
 							}
 							
 							player.sendMessage(team.getPrefix() + team.getName() + ": §f" + list.toString().trim() + ".");
@@ -186,6 +204,33 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
 				return true;
 			}
 			
+			if (args.length > 2) {
+				if (args[0].equalsIgnoreCase("add")) {
+					if (player.hasPermission("uhc.teamadmin")) {
+						Team team = teams.getTeam(args[1]);
+						
+						if (team == null) {
+							player.sendMessage(Main.prefix() + "That team does not exist.");
+							return true;
+						}
+						
+						OfflinePlayer offline = PlayerUtils.getOfflinePlayer(args[2]);
+						
+						teams.joinTeam(team, offline);
+						
+						ArrayList<String> players = new ArrayList<String>(team.getEntries());
+						TeamCommand.sTeam.put(team.getName(), players);
+						
+						player.sendMessage(Main.prefix() + ChatColor.GREEN + offline.getName() + "§7 was added to team " + team.getName() + ".");
+					} else {
+						sendHelp(player);
+					}
+				} else {
+					player.chat("/team " + args[0] + args[1]);
+				}
+				return true;
+			}
+			
 			Player target = Bukkit.getServer().getPlayer(args[1]);
 			
 			if (args[0].equalsIgnoreCase("create")) {
@@ -194,27 +239,85 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
 					return true;
 				}
 			
-				if (player.getScoreboard().getEntryTeam(player.getName()) != null) {
+				if (teams.getTeam(player) != null) {
 					player.sendMessage(Main.prefix() + "You are already on a team.");
 					return true;
 				}
 				
-				Team t = null;
+				Team team = teams.findAvailableTeam();
 				
-				for (Team team : Teams.getManager().getTeams()) {
-					if (team.getSize() == 0) {
-						t = team;
-						break;
-					}
-				}
-				
-				if (t == null) {
+				if (team == null) {
 					sender.sendMessage(Main.prefix() + "There are no more available teams.");
 					return true;
 				}
+				
+				teams.joinTeam(team, player);
+				ArrayList<String> players = new ArrayList<String>(team.getEntries());
+				TeamCommand.sTeam.put(team.getName(), players);
 
 				player.sendMessage(Main.prefix() + "Team created! Use §a/team invite <player>§7 to invite a player.");
-				t.addEntry(player.getName());
+			}
+			else if (args[0].equalsIgnoreCase("leave")) {
+				if (!enabled) {
+					player.sendMessage(Main.prefix() + "Team management is currently disabled.");
+					return true;
+				}
+				
+				Team team = teams.getTeam(player);
+				
+				if (team == null) {
+					player.sendMessage(Main.prefix() + "You are not on a team.");
+					return true;
+				}
+
+				player.sendMessage(Main.prefix() + "You left your team.");
+				teams.leaveTeam(player);
+				ArrayList<String> players = new ArrayList<String>(team.getEntries());
+				TeamCommand.sTeam.put(team.getName(), players);
+				teams.sendMessage(team, Main.prefix() + player.getName() + " left your team.");
+			}
+			else if (args[0].equalsIgnoreCase("clear")) {
+				if (player.hasPermission("uhc.teamadmin")) {
+					for (Team team : Scoreboards.getManager().sb.getTeams()) {
+						for (String p : team.getEntries()) {
+							team.removeEntry(p);
+						}
+					}
+					
+					for (String key : sTeam.keySet()) {
+						sTeam.get(key).clear();
+					}
+					
+					PlayerUtils.broadcast(Main.prefix() + "All teams has been cleared.");
+				} else {
+					sendHelp(player);
+				}
+			}
+			else if (args[0].equalsIgnoreCase("list")) {
+				if (player.hasPermission("uhc.teamadmin")) {
+					player.sendMessage(Main.prefix() + "List of teams:");
+					for (Team team : Teams.getManager().getTeamsWithPlayers()) {
+						StringBuilder list = new StringBuilder("");
+						int i = 1;
+						
+						for (String entry : team.getEntries()) {
+							if (list.length() > 0) {
+								if (i == team.getEntries().size()) {
+									list.append(" and ");
+								} else {
+									list.append(", ");
+								}
+							}
+							
+							list.append(entry);
+							i++;
+						}
+						
+						player.sendMessage(team.getPrefix() + team.getName() + ": §f" + list.toString().trim() + ".");
+					}
+				} else {
+					sendHelp(player);
+				}
 			}
 			else if (args[0].equalsIgnoreCase("enable")) {
 				if (player.hasPermission("uhc.teamadmin")) {
@@ -242,94 +345,60 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
 					sendHelp(player);
 				}
 			}
-			else if (args[0].equalsIgnoreCase("leave")) {
-				if (!enabled) {
-					player.sendMessage(Main.prefix() + "Team management is currently disabled.");
-					return true;
-				}
-				
-				Team team = player.getScoreboard().getEntryTeam(player.getName());
-				
-				if (team == null) {
-					player.sendMessage(Main.prefix() + "You are not on a team.");
-					return true;
-				}
-				team.removeEntry(player.getName());
-				player.sendMessage(Main.prefix() + "You left your team.");
-				
-				for (String entry : team.getEntries()) {
-					Player teammate = Bukkit.getServer().getPlayer(entry);
-					
-					if (teammate != null) {
-						teammate.sendMessage(Main.prefix() + ChatColor.GREEN + player.getName() + " §7left your team.");
-					}
-				}
-			}
 			else if (args[0].equalsIgnoreCase("info")) {
-				if (!player.hasPermission("uhc.teamadmin")) {
-					sendHelp(player);
-					return true;
-				}
-				
-				if (target == null) {
-					player.sendMessage(Main.prefix() + "That player is not online.");
-					return true;
-				}
-				
-				Team team = player.getScoreboard().getEntryTeam(target.getName());
-				
-				if (team == null) {
-					player.sendMessage(Main.prefix() + ChatColor.GREEN + target.getName() + " §7is not on a team.");
-					return true;
-				}
-				
-				StringBuilder list = new StringBuilder("");
-				
-				for (String entry : team.getEntries()) {
-					if (list.length() > 0) {
-						list.append("§f, ");
-					}
-					
-					OfflinePlayer teammate = PlayerUtils.getOfflinePlayer(entry);
-					
-					if (teammate.isOnline()) {
-						list.append(ChatColor.GREEN + teammate.getName());
-					} else {
-						list.append(ChatColor.RED + teammate.getName());
-					}
-				}
-				
-				player.sendMessage(Main.prefix() + ChatColor.GREEN + target.getName() + " §7is on team §a" + team.getName() + "§7, teammates:");
-				player.sendMessage("§8» §f" + list.toString().trim());
-			}
-			else if (args[0].equalsIgnoreCase("clear")) {
 				if (player.hasPermission("uhc.teamadmin")) {
-					for (Team team : Scoreboards.getManager().sb.getTeams()) {
-						for (String p : team.getEntries()) {
-							team.removeEntry(p);
+					if (target == null) {
+						player.sendMessage(Main.prefix() + "That player is not online.");
+						return true;
+					}
+					
+					Team team = player.getScoreboard().getEntryTeam(target.getName());
+					
+					if (team == null || Main.spectating.contains(target.getName())) {
+						player.sendMessage(Main.prefix() + ChatColor.GREEN + target.getName() + "'s §7team info:");
+						player.sendMessage("§8» §7Team: §cNone");
+						if (Main.kills.containsKey(player.getName())) {
+							player.sendMessage("§8» §7Kills:" + Main.kills.get(player.getName()));
 						}
+						return true;
 					}
 					
-					PlayerUtils.broadcast(Main.prefix() + "All teams has been cleared.");
-				} else {
-					sendHelp(player);
-				}
-			}
-			else if (args[0].equalsIgnoreCase("list")) {
-				if (player.hasPermission("uhc.teamadmin")) {
-					player.sendMessage(Main.prefix() + "Teams:");
-					for (Team team : Teams.getManager().getTeamsWithPlayers()) {
-						StringBuilder list = new StringBuilder("");
-						
-						for (String entry : team.getEntries()) {
-							if (list.length() > 0) {
-								list.append("§f, ");
+					ArrayList<String> players = new ArrayList<String>(team.getEntries());
+					TeamCommand.sTeam.put(team.getName(), players);
+					
+					StringBuilder list = new StringBuilder("");
+					int i = 1;
+					
+					for (String entry : sTeam.get(team.getName())) {
+						if (list.length() > 0) {
+							if (i == sTeam.get(team.getName()).size()) {
+								list.append(" §7and §f");
+							} else {
+								list.append("§7, §f");
 							}
-							list.append(entry);
 						}
 						
-						player.sendMessage(team.getPrefix() + team.getName() + ": §f" + list.toString().trim() + ".");
+						OfflinePlayer teammates = PlayerUtils.getOfflinePlayer(entry);
+						
+						if (teammates.isOnline()) {
+							list.append(ChatColor.GREEN + teammates.getName());
+						} else {
+							list.append(ChatColor.RED + teammates.getName());
+						}
+						i++;
 					}
+					
+					player.sendMessage(Main.prefix() + ChatColor.GREEN + target.getName() + "'s §7team info:");
+					player.sendMessage("§8» §7Team: " + team.getPrefix() + team.getName());
+					if (Main.kills.containsKey(player.getName())) {
+						player.sendMessage("§8» §7Kills: §a" + Main.kills.get(player.getName()));
+					}
+					if (Main.teamKills.containsKey(team.getName())) {
+						player.sendMessage("§8» §7Team Kills: §a" + Main.teamKills.get(team.getName()));
+					}
+					player.sendMessage("§8» ---------------------------");
+					player.sendMessage("§8» §7Teammates: §o(Names in red means they are offline)");
+					player.sendMessage("§8» §f" + list.toString().trim());
 				} else {
 					sendHelp(player);
 				}
@@ -347,13 +416,13 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
 					return true;
 				}
 				
-				if (team.getSize() >= Main.teamSize) {
-					player.sendMessage(Main.prefix() + "Your team is currently full.");
+				if (target == null) {
+					player.sendMessage(Main.prefix() + "That player is not online.");
 					return true;
 				}
 				
-				if (target == null) {
-					player.sendMessage(Main.prefix() + "That player is not online.");
+				if (team.getSize() >= Main.teamSize) {
+					player.sendMessage(Main.prefix() + "Your team is currently full.");
 					return true;
 				}
 				
@@ -364,13 +433,7 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
 					return true;
 				}
 				
-				for (String entry : team.getEntries()) {
-					Player teammate = Bukkit.getServer().getPlayer(entry);
-					
-					if (teammate != null) {
-						teammate.sendMessage(Main.prefix() + ChatColor.GREEN + target.getName() + " §7was invited to your team.");
-					}
-				}
+				teams.sendMessage(team, Main.prefix() + ChatColor.GREEN + target.getName() + " §7was invited to your team.");
 
 				if (!invites.containsKey(player)) {
 					invites.put(player, new ArrayList<Player>());
@@ -381,7 +444,7 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
 				ComponentBuilder builder = new ComponentBuilder("");
 				builder.append(Main.prefix() + "§6§l§nClick here to accept his request.");
 				builder.event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/team accept " + player.getName()));
-				builder.event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new BaseComponent[] { new TextComponent("Click to join the team.") }));
+				builder.event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new BaseComponent[] { new TextComponent("Click to join " + player.getName() + "'s team.") }));
 				target.spigot().sendMessage(builder.create());
 			}
 			else if (args[0].equalsIgnoreCase("kick")) {
@@ -402,14 +465,7 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
 					return true;
 				}
 				
-				Team team1 = player.getScoreboard().getEntryTeam(target.getName());
-				
-				if (team1 == null) {
-					player.sendMessage(Main.prefix() + "That player is not on a team.");
-					return true;
-				}
-				
-				if (team != team1) {
+				if (!team.getEntries().contains(target.getName())) {
 					player.sendMessage(Main.prefix() + "That player is not on your team.");
 					return true;
 				}
@@ -417,13 +473,9 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
 				team.removeEntry(target.getName());
 				target.sendMessage(Main.prefix() + "You got kicked out of your team.");
 				
-				for (String entry : team.getEntries()) {
-					Player teammate = Bukkit.getServer().getPlayer(entry);
-					
-					if (teammate != null) {
-						teammate.sendMessage(Main.prefix() + ChatColor.GREEN + target.getName() + " §7was kicked from your team.");
-					}
-				}
+				ArrayList<String> players = new ArrayList<String>(team.getEntries());
+				TeamCommand.sTeam.put(team.getName(), players);
+				teams.sendMessage(team, Main.prefix() + ChatColor.GREEN + target.getName() + " §7was kicked from your team.");
 			
 			}
 			else if (args[0].equalsIgnoreCase("accept")) {
@@ -444,6 +496,7 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
 				
 				if (invites.containsKey(target) && invites.get(target).contains(player)) {
 					Team team = target.getScoreboard().getEntryTeam(target.getName());
+					
 					if (team == null) {
 						player.sendMessage(Main.prefix() + "That player is not on a team.");
 						return true;
@@ -457,13 +510,10 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
 					player.sendMessage(Main.prefix() + "Request accepted.");
 					team.addEntry(player.getName());
 					
-					for (String entry : team.getEntries()) {
-						Player teammate = Bukkit.getServer().getPlayer(entry);
-						
-						if (teammate != null) {
-							teammate.sendMessage(Main.prefix() + ChatColor.GREEN + player.getName() + " §7joined your team.");
-						}
-					}
+					teams.sendMessage(team, Main.prefix() + ChatColor.GREEN + player.getName() + " §7joined your team.");
+					
+					ArrayList<String> players = new ArrayList<String>(team.getEntries());
+					TeamCommand.sTeam.put(team.getName(), players);
 					
 					invites.get(target).remove(player);
 				} else {
@@ -490,6 +540,74 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
 					player.sendMessage(Main.prefix() + ChatColor.GREEN + target.getName() + " §7hasn't sent you any requests.");
 				}
 			}
+			else if (args[0].equalsIgnoreCase("remove")) {
+				if (player.hasPermission("uhc.teamadmin")) {
+					if (target == null) {
+						player.sendMessage(Main.prefix() + "That player is not online.");
+						return true;
+					}
+					
+					Team team = teams.getTeam(target);
+					
+					if (team == null) {
+						player.sendMessage(Main.prefix() + "That player is not on a team.");
+						return true;
+					}
+					
+					player.sendMessage(Main.prefix() + ChatColor.GREEN + target.getName() + " §7was removed from his team.");
+					teams.leaveTeam(target);
+
+					ArrayList<String> players = new ArrayList<String>(team.getEntries());
+					TeamCommand.sTeam.put(team.getName(), players);
+				} else {
+					sendHelp(player);
+				}
+			}
+			else if (args[0].equalsIgnoreCase("delete")) {
+				if (player.hasPermission("uhc.teamadmin")) {
+					Team team = teams.getTeam(args[1]);
+					
+					if (team == null) {
+						player.sendMessage(Main.prefix() + "That team does not exist.");
+						return true;
+					}
+					
+					for (String p : team.getEntries()) {
+						team.removeEntry(p);
+					}
+					
+					ArrayList<String> players = new ArrayList<String>(team.getEntries());
+					TeamCommand.sTeam.put(team.getName(), players);
+					
+					player.sendMessage(Main.prefix() + "Team " + team.getName() + " has been deleted.");
+				} else {
+					sendHelp(player);
+				}
+			}
+			else if (args[0].equalsIgnoreCase("friendlyfire")) {
+				if (player.hasPermission("uhc.teamadmin")) {
+					boolean enable;
+					
+					if (args[1].equalsIgnoreCase("true")) {
+						enable = true;
+					}
+					else if (args[1].equalsIgnoreCase("false")) {
+						enable = false;
+					}
+					else {
+						player.sendMessage(Main.prefix() + "FriendlyFire can only be true or false.");
+						return true;
+					}
+					
+					for (Team team : Scoreboards.getManager().sb.getTeams()) {
+						team.setAllowFriendlyFire(enable);
+					}
+					
+					PlayerUtils.broadcast(Main.prefix() + "FriendlyFire is now " + (enable ? "enabled." : "disabled."));
+				} else {
+					sendHelp(player);
+				}
+			}
 			else {
 				sendHelp(player);
 			}
@@ -511,6 +629,10 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
 	        	if (sender.hasPermission("uhc.teamadmin")) {
 		        	types.add("clear");
 		        	types.add("list");
+		        	types.add("add");
+		        	types.add("remove");
+		        	types.add("delete");
+		        	types.add("friendlyfire");
 	        	}
 	        	
 	        	if (!args[0].equals("")) {
@@ -531,19 +653,73 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
 			if (args.length == 2) {
 	        	ArrayList<String> arg = new ArrayList<String>();
 	        	
-	        	if (!args[1].equals("")) {
-	        		for (Player online : PlayerUtils.getPlayers()) {
-	        			if (online.getName().toLowerCase().startsWith(args[1].toLowerCase())) {
-	        				arg.add(online.getName());
-	        			}
-	        		}
+	        	if (args[0].equalsIgnoreCase("add")) {
+		        	if (!args[1].equals("")) {
+		        		for (Team teams : Teams.getManager().getTeams()) {
+		        			if (teams.getName().toLowerCase().startsWith(args[1].toLowerCase())) {
+		        				arg.add(teams.getName());
+		        			}
+		        		}
+		        	}
+		        	else {
+		        		for (Team teams : Teams.getManager().getTeams()) {
+		        			arg.add(teams.getName());
+		        		}
+		        	}
 	        	}
-	        	else {
-	        		for (Player online : PlayerUtils.getPlayers()) {
-	        			arg.add(online.getName());
-	        		}
+	        	else if (args[0].equalsIgnoreCase("delete")) {
+		        	if (!args[1].equals("")) {
+		        		for (Team teams : Teams.getManager().getTeams()) {
+		        			if (teams.getName().toLowerCase().startsWith(args[1].toLowerCase())) {
+		        				arg.add(teams.getName());
+		        			}
+		        		}
+		        	}
+		        	else {
+		        		for (Team teams : Teams.getManager().getTeams()) {
+		        			arg.add(teams.getName());
+		        		}
+		        	}
+	        	}
+	        	else if (args[0].equalsIgnoreCase("friendlyfire")) {
+		        	arg.add("true");
+		        	arg.add("false");
+	        	} else {
+		        	if (!args[1].equals("")) {
+		        		for (Player online : PlayerUtils.getPlayers()) {
+		        			if (online.getName().toLowerCase().startsWith(args[1].toLowerCase())) {
+		        				arg.add(online.getName());
+		        			}
+		        		}
+		        	}
+		        	else {
+		        		for (Player online : PlayerUtils.getPlayers()) {
+		        			arg.add(online.getName());
+		        		}
+		        	}
 	        	}
 	        	return arg;
+	        }
+			
+			if (args.length == 3) {
+	        	ArrayList<String> arg = new ArrayList<String>();
+	        	
+	        	if (args[0].equalsIgnoreCase("add")) {
+		        	if (!args[2].equals("")) {
+		        		for (Player online : PlayerUtils.getPlayers()) {
+		        			if (online.getName().toLowerCase().startsWith(args[2].toLowerCase())) {
+		        				arg.add(online.getName());
+		        			}
+		        		}
+		        	}
+		        	else {
+		        		for (Player online : PlayerUtils.getPlayers()) {
+		        			arg.add(online.getName());
+		        		}
+		        	}
+		        	
+		        	return arg;
+	        	}
 	        }
 		}
 		return null;
@@ -561,9 +737,10 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
 		player.sendMessage("§8» §f/team kick <player> - Kick a player to your team.");
 		player.sendMessage("§8» §f/team accept <player> - Accept the players request.");
 		player.sendMessage("§8» §f/team deny <player> - Deny the players request.");
-		player.sendMessage("§8» §f/team info - Display your teammates.");
+		player.sendMessage("§8» §f/team info - Display your team info.");
 		if (player.hasPermission("uhc.teamadmin")) {
 			player.sendMessage(Main.prefix() + "Team admin help:");
+			player.sendMessage("§8» §f/team info <player> - Display the targets team info.");
 			player.sendMessage("§8» §f/team enable - Enable team management.");
 			player.sendMessage("§8» §f/team disable - Disable team management.");
 			player.sendMessage("§8» §f/team add <team> <player> - Add a player to a team.");
