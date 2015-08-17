@@ -18,7 +18,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import com.leontg77.uhc.Settings;
-import com.leontg77.uhc.util.HostUtils;
+import com.leontg77.uhc.util.GameUtils;
 
 public class HOFCommand implements CommandExecutor, TabCompleter {
 	public static HashMap<Player, HashMap<Integer, Inventory>> pages = new HashMap<Player, HashMap<Integer, Inventory>>();
@@ -32,11 +32,11 @@ public class HOFCommand implements CommandExecutor, TabCompleter {
 		}
 		
 		Player player = (Player) sender;
-		String host = HostUtils.getCurrentHost();
+		String host = GameUtils.getCurrentHost();
 		
 		if (cmd.getName().equalsIgnoreCase("hof")) {
 			if (args.length > 0) {
-				host = HostUtils.getHost(args[0]);
+				host = GameUtils.getHost(args[0]);
 			}
 			
 			if (host == null) {

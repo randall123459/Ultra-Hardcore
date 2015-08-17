@@ -45,7 +45,7 @@ public class PmCommand implements CommandExecutor {
 				Player teammate = Bukkit.getServer().getPlayer(entry);
 				
 				if (teammate != null) {
-					teammate.sendMessage(Main.spectating.contains(player.getName()) ? "§a§lSpecChat §8§l» §7" + player.getName() + ": §f" + msg : "§9§lTeam §8§l» §7" + player.getName() + ": §f" + msg);
+					teammate.sendMessage(Main.spectating.contains(player.getName()) ? "§5§lSpecChat §8§l» §7" + player.getName() + ": §f" + msg : "§9§lTeam §8§l» §7" + player.getName() + ": §f" + msg);
 				}
 			}
 		}

@@ -43,7 +43,8 @@ public class HelpopCommand implements CommandExecutor {
 				}
 			}
 			cooldown.add(sender);
-			sender.sendMessage(Main.prefix().replaceAll("UHC", "HelpOp") + "§7Your message has been sent, don't spam this command.");
+			sender.sendMessage(Main.prefix().replaceAll("UHC", "HelpOp") + "§7Helpop sent, please don't spam this.");
+			sender.sendMessage(Main.prefix().replaceAll("UHC", "HelpOp") + "§7Your message: §6" + msg);
 			Bukkit.getServer().getScheduler().runTaskLater(Main.plugin, new Runnable() {
 				public void run() {
 					cooldown.remove(sender);

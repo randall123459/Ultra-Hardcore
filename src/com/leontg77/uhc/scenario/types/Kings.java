@@ -104,7 +104,7 @@ public class Kings extends Scenario implements Listener {
 				return;
 			}
 			
-			if (args.length < 2) {
+			if (args.length == 0) {
 				player.sendMessage(ChatColor.RED + "Usage: /setking <player>");
 				return;
 			}
@@ -126,6 +126,34 @@ public class Kings extends Scenario implements Listener {
 			target.setMaxHealth(40);
 			target.setHealth(40);
 			kings.add(target.getName());
+		}
+		
+		if (cmd.equalsIgnoreCase("/remking")) {
+			event.setCancelled(true);
+			if (!isEnabled()) {
+				player.sendMessage(ChatColor.RED + "Kings are not enabled.");
+				return;
+			}
+			
+			if (args.length == 0) {
+				player.sendMessage(ChatColor.RED + "Usage: /remking <player>");
+				return;
+			}
+			
+			Player target = Bukkit.getServer().getPlayer(args[0]);
+			
+			if (target == null) {
+				player.sendMessage(ChatColor.RED + "That player is not online.");
+				return;
+			}
+			
+			for (PotionEffect effect : target.getActivePotionEffects()) {
+				target.removePotionEffect(effect.getType());
+			}
+			
+			target.setMaxHealth(20);
+			target.setHealth(20);
+			kings.remove(target.getName());
 		}
 	}
 }

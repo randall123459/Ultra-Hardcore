@@ -73,7 +73,7 @@ public class GamemodeCommand implements CommandExecutor {
 				}
 				
 				target.setGameMode(mode);
-				target.sendMessage(Main.prefix(ChatColor.GOLD) + sender.getName() + " §7has changed your gamemode to §6" + mode.name().toLowerCase() + " §7mode.");
+				target.sendMessage(Main.prefix() + ChatColor.GOLD + sender.getName() + " §7has changed your gamemode to §6" + mode.name().toLowerCase() + " §7mode.");
 				sender.sendMessage(Main.prefix() + "You have changed §6" + target.getName() + "'s §7gamemode to §6" + mode.name().toLowerCase() + " §7mode.");
 			} else {
 				sender.sendMessage(ChatColor.RED + "You do not have access to that command.");

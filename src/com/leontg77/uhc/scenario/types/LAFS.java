@@ -71,7 +71,7 @@ public class LAFS extends Scenario implements Listener {
 			
 			t.addEntry(player.getName());
 			t.addEntry(clicked.getName());
-			PlayerUtils.broadcast(Main.prefix(ChatColor.GREEN).replaceAll("UHC", "LAFS") + clicked.getName() + " §7and§a " + player.getName() + " §7has found each other and are now on a team.");
+			PlayerUtils.broadcast(Main.prefix().replaceAll("UHC", "§dLAFS") + ChatColor.GREEN + clicked.getName() + " §7and§a " + player.getName() + " §7has found each other and are now on a team.");
 		}
 	}
 }

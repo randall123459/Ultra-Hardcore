@@ -18,7 +18,7 @@ import com.leontg77.uhc.Main.Border;
 import com.leontg77.uhc.util.DateUtils;
 import com.leontg77.uhc.util.NumberUtils;
 import com.leontg77.uhc.util.PlayerUtils;
-import com.leontg77.uhc.util.ServerUtils;
+import com.leontg77.uhc.util.GameUtils;
 
 /**
  * The inventory managing class.
@@ -142,7 +142,7 @@ public class InvGUI {
 	 * @param player the player
 	 */
 	public void openRules(Player player) {
-		Inventory inv = Bukkit.getServer().createInventory(null, 9, "Ultra Hardcore Rules");
+		Inventory inv = Bukkit.getServer().createInventory(null, 9, "Arctic UHC Rules");
 		
 		ItemStack general = new ItemStack (Material.SIGN);
 		ItemMeta generalMeta = general.getItemMeta();
@@ -195,7 +195,7 @@ public class InvGUI {
 		ArrayList<String> lore3 = new ArrayList<String>();
 		lore3.add(" ");
 		lore3.add("§aiPvP: §7Not allowed before pvp.");
-		lore3.add("§aTeam Killing: §7" + (ServerUtils.getTeamSize().startsWith("r") ? "Not allowed." : "Allowed."));
+		lore3.add("§aTeam Killing: §7" + (GameUtils.getTeamSize().startsWith("r") ? "Not allowed." : "Allowed."));
 		lore3.add("§aStalking: §7Allowed.");
 		lore3.add("§aStealing: §7Allowed.");
 		lore3.add("§aCrossteaming: §7Not allowed, you will get banned.");
