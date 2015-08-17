@@ -1,5 +1,7 @@
 package com.leontg77.uhc;
 
+import java.util.ArrayList;
+
 import org.bukkit.Achievement;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -14,9 +16,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scoreboard.Team;
 
 import com.leontg77.uhc.Main.Border;
 import com.leontg77.uhc.Main.State;
+import com.leontg77.uhc.cmds.TeamCommand;
 import com.leontg77.uhc.scenario.ScenarioManager;
 import com.leontg77.uhc.util.PlayerUtils;
 
@@ -63,13 +67,21 @@ public class Runnables {
 							}
 						}
 						
+						for (PotionEffect effect : online.getActivePotionEffects()) {
+							online.removePotionEffect(effect.getType());	
+						}
+						
 						online.awardAchievement(Achievement.OPEN_INVENTORY);
+						online.setHealth(online.getMaxHealth());
 						online.setSaturation(20);
 						online.setFoodLevel(20);
 						online.setFireTicks(0);
-						online.setHealth(20.0);
 						online.setLevel(0);
 						online.setExp(0);
+						
+						online.sendMessage(Main.prefix() + "Remember to read the match post: " + Settings.getInstance().getConfig().getString("matchpost"));
+						online.sendMessage(Main.prefix() + "If you have any questions, use /helpop.");
+						PlayerUtils.sendTitle(online, "§aGo!", "§7Good luck have fun!", 1, 20, 1);
 						continue;
 					}
 					
@@ -92,15 +104,17 @@ public class Runnables {
 					online.setItemOnCursor(new ItemStack (Material.AIR));
 					online.awardAchievement(Achievement.OPEN_INVENTORY);
 					online.getInventory().setArmorContents(null);
+					online.setHealth(online.getMaxHealth());
 					online.getInventory().clear();
 					online.setAllowFlight(false);
 					online.setSaturation(20);
 					online.setFoodLevel(20);
 					online.setFlying(false);
-					online.setHealth(20.0);
 					online.setFireTicks(0);
 					online.setLevel(0);
 					online.setExp(0);
+					
+					Main.kills.put(online.getName(), 0);
 					
 					online.sendMessage(Main.prefix() + "Remember to read the match post: " + Settings.getInstance().getConfig().getString("matchpost"));
 					online.sendMessage(Main.prefix() + "If you have any questions, use /helpop.");
@@ -110,10 +124,17 @@ public class Runnables {
 					data.increaseStat("gamesplayed");
 				}
 				
+				for (Team team : Teams.getManager().getTeamsWithPlayers()) {
+					Main.teamKills.put(team.getName(), 0);
+					
+					ArrayList<String> players = new ArrayList<String>(team.getEntries());
+					TeamCommand.sTeam.put(team.getName(), players);
+				}
+				
 				timer();
 				State.setState(State.INGAME);
-				Scoreboards.getManager().setScore("§a§lPvE", 1, true);
-				Scoreboards.getManager().setScore("§a§lPvE", 0, true);
+				Scoreboards.getManager().setScore("§8» §a§lPvE", 1);
+				Scoreboards.getManager().setScore("§8» §a§lPvE", 0);
 				finalheal = 1;
 				pvp = Settings.getInstance().getConfig().getInt("time.pvp");
 				meetup = Settings.getInstance().getConfig().getInt("time.meetup");
@@ -181,10 +202,10 @@ public class Runnables {
 					
 					for (Player online : PlayerUtils.getPlayers()) {
 						online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
-						online.setHealth(20.0);
-						online.setFireTicks(0);
-						online.setFoodLevel(20);
+						online.setHealth(online.getMaxHealth());
 						online.setSaturation(20);
+						online.setFoodLevel(20);
+						online.setFireTicks(0);
 					}
 
 					Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer cancel");

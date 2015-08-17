@@ -4,6 +4,7 @@ import java.util.Random;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.TreeSpecies;
 import org.bukkit.block.Block;
@@ -13,6 +14,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockBurnEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.LeavesDecayEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
@@ -20,6 +22,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.Tree;
 import org.bukkit.util.Vector;
 
+import com.leontg77.uhc.Arena;
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.Main.State;
 import com.leontg77.uhc.util.BlockUtils;
@@ -93,6 +96,28 @@ public class BlockListener implements Listener {
     		return;
     	}
     }
+
+	@EventHandler
+	public void onBlockBurn(BlockBurnEvent event) {
+		if (!Arena.getManager().isEnabled()) {
+			return;
+		}
+		
+		Location loc = event.getBlock().getLocation();
+
+		for (int x = loc.getBlockX() - 1; x <= loc.getBlockX() + 1; x++) {
+			for (int y = loc.getBlockY() - 1; y <= loc.getBlockY() + 1; y++) {
+				for (int z = loc.getBlockZ() - 1; z <= loc.getBlockZ() + 1; z++) {
+					if (loc.getWorld().getBlockAt(x, y, z).getType() == Material.FIRE) {
+						loc.getWorld().getBlockAt(x, y, z).setType(Material.AIR);
+						loc.getWorld().getBlockAt(x, y, z).getState().update();
+					}
+				}
+			}
+		}
+
+		event.setCancelled(true);
+	}
 
 	@EventHandler(ignoreCancelled = true)
     public void onLeavesDecay(LeavesDecayEvent event) {

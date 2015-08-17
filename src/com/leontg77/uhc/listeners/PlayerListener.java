@@ -4,6 +4,7 @@ import static com.leontg77.uhc.Main.plugin;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -35,7 +36,6 @@ import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerAchievementAwardedEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
-import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
@@ -48,6 +48,7 @@ import org.bukkit.event.player.PlayerPortalEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.server.ServerListPingEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -69,16 +70,16 @@ import com.leontg77.uhc.Main.State;
 import com.leontg77.uhc.Scoreboards;
 import com.leontg77.uhc.Settings;
 import com.leontg77.uhc.Spectator;
+import com.leontg77.uhc.Teams;
 import com.leontg77.uhc.cmds.HOFCommand;
 import com.leontg77.uhc.cmds.SpreadCommand;
 import com.leontg77.uhc.cmds.TeamCommand;
 import com.leontg77.uhc.cmds.VoteCommand;
 import com.leontg77.uhc.scenario.ScenarioManager;
 import com.leontg77.uhc.util.BlockUtils;
+import com.leontg77.uhc.util.GameUtils;
 import com.leontg77.uhc.util.PlayerUtils;
-import com.leontg77.uhc.util.PortalUtils;
 import com.leontg77.uhc.util.RecipeUtils;
-import com.leontg77.uhc.util.ServerUtils;
 
 public class PlayerListener implements Listener {
 	private Settings settings = Settings.getInstance();
@@ -94,7 +95,7 @@ public class PlayerListener implements Listener {
 		
 		player.setNoDamageTicks(0);
 		
-		Spectator.getManager().hideAll(player);
+		Spectator.getManager().manageVanish(player);
 		PlayerUtils.handlePermissions(player);
 		PlayerUtils.setTabList(player);
 		
@@ -127,7 +128,7 @@ public class PlayerListener implements Listener {
 		if (!Main.spectating.contains(player.getName())) {
 			PlayerUtils.broadcast("§8[§a+§8] §7" + player.getName() + " has joined.");
 			if (data.isNew()) {
-				PlayerUtils.broadcast(Main.prefix(ChatColor.GREEN) + player.getName() + " §7just joined for the first time.");
+				PlayerUtils.broadcast(Main.prefix() + ChatColor.GREEN + player.getName() + " §7just joined for the first time.");
 				
 				File f = new File(plugin.getDataFolder() + File.separator + "users" + File.separator);
 				PlayerUtils.broadcast(Main.prefix() + "The server has now §a" + f.listFiles().length + "§7 unique joins.");
@@ -137,13 +138,13 @@ public class PlayerListener implements Listener {
 		player.sendMessage("§8---------------------------");
 		player.sendMessage(" §8» §6Welcome to Arctic UHC");
 		player.sendMessage("§8---------------------------");
-		if (ServerUtils.getTeamSize().equals("No")) {
+		if (GameUtils.getTeamSize().equals("No")) {
 			player.sendMessage(" §8» §cNo games scheduled");
-		} else if (ServerUtils.getTeamSize().equals("Open")) {
+		} else if (GameUtils.getTeamSize().equals("Open")) {
 			player.sendMessage(" §8» §7Open PvP, use §a/a §7to join.");
 		} else {
 			player.sendMessage(" §8» §aHost: §7" + Settings.getInstance().getConfig().getString("game.host"));
-			player.sendMessage(" §8» §aTeamsize: §7" + ServerUtils.getTeamSize());
+			player.sendMessage(" §8» §aTeamsize: §7" + GameUtils.getTeamSize());
 			player.sendMessage(" §8» §aGamemode: §7" + Settings.getInstance().getConfig().getString("game.scenarios"));
 		}
 		player.sendMessage("§8---------------------------");
@@ -186,6 +187,12 @@ public class PlayerListener implements Listener {
 		final Player player = event.getPlayer();
 		event.setQuitMessage(null);
 		
+		if (Arena.getManager().isEnabled() && Arena.getManager().hasPlayer(player)) {
+			Arena.getManager().removePlayer(player, false);
+			player.getInventory().clear();
+			player.getInventory().setArmorContents(null);
+		}
+		
 		if (!Main.spectating.contains(player.getName())) {
 			PlayerUtils.broadcast("§8[§c-§8] §7" + player.getName() + " has left.");
 			
@@ -220,7 +227,7 @@ public class PlayerListener implements Listener {
 								player.getInventory().setArmorContents(null);
 								player.setExp(0);
 								
-								PlayerUtils.broadcast(Main.prefix(ChatColor.GREEN) + player.getName() + " §7took too long to come back.");
+								PlayerUtils.broadcast(Main.prefix() + ChatColor.GREEN + player.getName() + " §7took too long to come back.");
 								PlayerDeathEvent event = new PlayerDeathEvent(player, new ArrayList<ItemStack>(), 0, null);
 								Bukkit.getServer().getPluginManager().callEvent(event);
 							}
@@ -237,7 +244,90 @@ public class PlayerListener implements Listener {
 	public void onPlayerDeath(PlayerDeathEvent event) {
 		final Player player = event.getEntity().getPlayer();
 		
-		if (!Arena.getManager().isEnabled()) {
+		if (Arena.getManager().isEnabled()) {
+			for (Player p : Arena.getManager().getPlayers()) {
+				p.sendMessage(event.getDeathMessage());
+			}   	
+			
+	    	event.setDeathMessage(null);
+			Data data = Data.getData(player);
+			data.increaseStat("arenadeaths");
+	 
+	    	ItemStack skull = new ItemStack(Material.GOLDEN_APPLE);
+			ItemMeta skullMeta = skull.getItemMeta();
+			skullMeta.setDisplayName("§6Golden Head");
+			skullMeta.setLore(Arrays.asList(ChatColor.DARK_PURPLE + "Some say consuming the head of a", ChatColor.DARK_PURPLE + "fallen foe strengthens the blood.", ChatColor.AQUA + "Made from the head of: " + player.getName()));
+			skull.setItemMeta(skullMeta);
+	    	
+			event.getDrops().clear();
+			event.getDrops().add(new ItemStack(Material.DIAMOND, 1));
+			event.getDrops().add(new ItemStack(Material.ARROW, 32));
+			event.getDrops().add(skull);
+			
+			Bukkit.getServer().getScheduler().runTaskLater(Main.plugin, new Runnable() {
+				public void run() {
+					Arena.getManager().removePlayer(player, true);
+				}
+			}, 20);
+			
+			Arena.getManager().killstreak.put(player, 0);
+			
+			if (player.getKiller() == null) {
+				Arena.getManager().setScore("§8» §a§lPvE", Arena.getManager().getScore("§8» §a§lPvE") + 1);
+				Arena.getManager().resetScore(player.getName());
+				player.sendMessage(Main.prefix() + "You were killed by PvE.");
+				return;
+			}
+			
+			if (Arena.getManager().killstreak.containsKey(player) && Arena.getManager().killstreak.get(player) > 4) {
+				PlayerUtils.broadcast(Main.prefix() + ChatColor.GREEN + player.getName() + "'s §7killstreak of " + Arena.getManager().killstreak.get(player) + " was shut down by §a" + player.getKiller().getName());
+			}
+			
+			player.getKiller().setLevel(player.getKiller().getLevel() + 1);
+			Data killerData = Data.getData(player.getKiller());
+			killerData.increaseStat("arenakills");
+			player.sendMessage(Main.prefix() + "You were killed by §a" + player.getKiller().getName() + "§7.");
+
+			Arena.getManager().setScore(player.getKiller().getName(), Arena.getManager().getScore(player.getKiller().getName()) + 1);
+		    Arena.getManager().resetScore(player.getName());
+			
+			if (Arena.getManager().killstreak.containsKey(player.getKiller())) {
+				Arena.getManager().killstreak.put(player.getKiller(), Arena.getManager().killstreak.get(player.getKiller()) + 1);
+			} else {
+				Arena.getManager().killstreak.put(player.getKiller(), 0);
+			}
+			if (Arena.getManager().killstreak.containsKey(player.getKiller()) && Arena.getManager().killstreak.get(player.getKiller()) == 5) {
+				PlayerUtils.broadcast(Main.prefix() + ChatColor.GREEN + player.getKiller().getName() + " §7is now on a 5 killstreak");
+			}
+
+			if (Arena.getManager().killstreak.containsKey(player.getKiller()) && Arena.getManager().killstreak.get(player.getKiller()) == 10) {
+				PlayerUtils.broadcast(Main.prefix() + ChatColor.GREEN + player.getKiller().getName() + " §7is now on a 10 killstreak");
+			}
+
+			if (Arena.getManager().killstreak.containsKey(player.getKiller()) && Arena.getManager().killstreak.get(player.getKiller()) == 15) {
+				PlayerUtils.broadcast(Main.prefix() + ChatColor.GREEN + player.getKiller().getName() + " §7is now on a 15 killstreak");
+			}
+
+			if (Arena.getManager().killstreak.containsKey(player.getKiller()) && Arena.getManager().killstreak.get(player.getKiller()) == 20) {
+				PlayerUtils.broadcast(Main.prefix() + ChatColor.GREEN + player.getKiller().getName() + " §7is now on a 20 killstreak");
+			}
+
+			if (Arena.getManager().killstreak.containsKey(player.getKiller()) && Arena.getManager().killstreak.get(player.getKiller()) == 30) {
+				PlayerUtils.broadcast(Main.prefix() + ChatColor.GREEN + player.getKiller().getName() + " §7is now on a 30 killstreak");
+			}
+			
+			if (Arena.getManager().killstreak.containsKey(player.getKiller()) && Arena.getManager().killstreak.get(player.getKiller()) == 50) {
+				PlayerUtils.broadcast(Main.prefix() + ChatColor.GREEN + player.getKiller().getName() + " §7is now on a 50 killstreak");
+			}
+
+			if (Arena.getManager().killstreak.containsKey(player.getKiller()) && Arena.getManager().killstreak.get(player.getKiller()) == 75) {
+				PlayerUtils.broadcast(Main.prefix() + ChatColor.GREEN + player.getKiller().getName() + " §7is now on a 75 killstreak");
+			}
+			
+			if (Arena.getManager().killstreak.containsKey(player.getKiller()) && Arena.getManager().killstreak.get(player.getKiller()) == 100) {
+				PlayerUtils.broadcast(Main.prefix() + ChatColor.GREEN + player.getKiller().getName() + " §7is now on a 100 killstreak");
+			}
+		} else {
 			player.setWhitelisted(false);
 			
 			if (State.isState(State.INGAME)) {
@@ -248,6 +338,8 @@ public class PlayerListener implements Listener {
 			if (Main.deathlightning) {
 			    player.getWorld().strikeLightningEffect(player.getLocation());
 			}
+			
+			event.setDeathMessage("§8» §r" + event.getDeathMessage());
 
 		    if (Main.goldenheads) {
 				Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Main.plugin, new Runnable() {
@@ -260,7 +352,7 @@ public class PlayerListener implements Listener {
 					        Skull skull = (Skull) player.getLocation().add(0, 1, 0).getBlock().getState();
 						    skull.setSkullType(SkullType.PLAYER);
 						    skull.setOwner(player.getName());
-						    skull.setRotation(BlockUtils.getBlockFaceDirection(player.getLocation()));
+						    skull.setRotation(BlockUtils.getBlockDirection(player.getLocation()));
 						    skull.update();
 						    
 						    Block b = player.getLocation().add(0, 1, 0).getBlock();
@@ -273,7 +365,7 @@ public class PlayerListener implements Listener {
 		    }
 
 			if (player.getKiller() == null) {
-		        Scoreboards.getManager().setScore("§a§lPvE", Scoreboards.getManager().getScore("§a§lPvE", true) + 1, true);
+		        Scoreboards.getManager().setScore("§8» §a§lPvE", Scoreboards.getManager().getScore("§8» §a§lPvE") + 1);
 				Scoreboards.getManager().resetScore(player.getName());
 				return;
 			}
@@ -284,8 +376,24 @@ public class PlayerListener implements Listener {
 				Data killerData = Data.getData(killer);
 				killerData.increaseStat("kills");
 			}
+			
+			if (Main.kills.containsKey(killer.getName())) {
+				Main.kills.put(killer.getName(), Main.kills.get(killer.getName()) + 1);
+			} else {
+				Main.kills.put(killer.getName(), 1);
+			}
+			
+			Team team = Teams.getManager().getTeam(killer);
+			
+			if (team != null) {
+				if (Main.teamKills.containsKey(team.getName())) {
+					Main.teamKills.put(team.getName(), Main.teamKills.get(team.getName()) + 1);
+				} else {
+					Main.teamKills.put(team.getName(), 1);
+				}
+			}
 
-	        Scoreboards.getManager().setScore(killer.getName(), Scoreboards.getManager().getScore(killer.getName(), true) + 1, true);
+	        Scoreboards.getManager().setScore(killer.getName(), Scoreboards.getManager().getScore(killer.getName()) + 1);
 			Scoreboards.getManager().resetScore(player.getName());
 		}
 	}
@@ -304,9 +412,11 @@ public class PlayerListener implements Listener {
 		Location loc = new Location(w, x, y, z, yaw, pitch);
 		event.setRespawnLocation(loc);
 		
+		Scoreboards.getManager().resetScore(player.getName());
+		
 		if (!Arena.getManager().isEnabled() && !State.isState(State.LOBBY)) {
 			player.sendMessage(Main.prefix() + "§7Thanks for playing our game, it really means a lot :)");
-			player.sendMessage(Main.prefix() + "§7Follow us on twtter to know when our next games are: @ArcticUHC");
+			player.sendMessage(Main.prefix() + "§7Follow us on twtter to know when our next games are: §a@ArcticUHC");
 			if (player.hasPermission("uhc.prelist")) {
 				player.sendMessage("§8§l» §7You will be put into spectator mode in 15 seconds. (No spoiling please)");
 				
@@ -335,39 +445,36 @@ public class PlayerListener implements Listener {
     public void onAsyncPlayerChat(AsyncPlayerChatEvent event) {
 		Player player = event.getPlayer();
 		Data data = Data.getData(player);
+
+		event.setCancelled(true);
 		
 		if (VoteCommand.vote && (event.getMessage().equalsIgnoreCase("y") || event.getMessage().equalsIgnoreCase("n"))) {
 			if (!State.isState(State.LOBBY) && player.getWorld().getName().equals("lobby")) {
 				player.sendMessage(ChatColor.RED + "You cannot vote when you are dead.");
-				event.setCancelled(true);
 				return;
 			}
 			
 			if (Main.spectating.contains(player.getName())) {
 				player.sendMessage(ChatColor.RED + "You cannot vote as a spectator.");
-				event.setCancelled(true);
 				return;
 			}
 			
 			if (Main.voted.contains(player.getName())) {
 				player.sendMessage(ChatColor.RED + "You have already voted.");
-				event.setCancelled(true);
 				return;
 			}
 			
 			if (event.getMessage().equalsIgnoreCase("y")) {
 				player.sendMessage(Main.prefix() + "You voted yes.");
-				VoteCommand.yes++;
-				event.setCancelled(true);
 				Main.voted.add(player.getName());
+				VoteCommand.yes++;
 				return;
 			}
 			
 			if (event.getMessage().equalsIgnoreCase("n")) {
 				player.sendMessage(Main.prefix() + "You voted no.");
-				VoteCommand.no++;
-				event.setCancelled(true);
 				Main.voted.add(player.getName());
+				VoteCommand.no++;
 			}
 			return;
 		}
@@ -375,7 +482,6 @@ public class PlayerListener implements Listener {
 		if (PermissionsEx.getUser(player).inGroup("Host")) {
 			if (data.isMuted()) {
 				player.sendMessage(Main.prefix() + "You have been muted.");
-				event.setCancelled(true);
 				return;
 			}
 
@@ -390,7 +496,6 @@ public class PlayerListener implements Listener {
 		else if (PermissionsEx.getUser(player).inGroup("Trial")) {
 			if (data.isMuted()) {
 				player.sendMessage(Main.prefix() + "You have been muted.");
-				event.setCancelled(true);
 				return;
 			}
 
@@ -400,7 +505,6 @@ public class PlayerListener implements Listener {
 		else if (PermissionsEx.getUser(player).inGroup("Staff")) {
 			if (data.isMuted()) {
 				player.sendMessage(Main.prefix() + "You have been muted.");
-				event.setCancelled(true);
 				return;
 			}
 
@@ -410,13 +514,11 @@ public class PlayerListener implements Listener {
 		else if (PermissionsEx.getUser(player).inGroup("VIP")) {
 			if (Main.muted) {
 				player.sendMessage(Main.prefix() + "All players are muted.");
-				event.setCancelled(true);
 				return;
 			}
 			
 			if (data.isMuted()) {
 				player.sendMessage(Main.prefix() + "You have been muted.");
-				event.setCancelled(true);
 				return;
 			}
 
@@ -426,19 +528,17 @@ public class PlayerListener implements Listener {
 		else {
 			if (Main.muted) {
 				player.sendMessage(Main.prefix() + "All players are muted.");
-				event.setCancelled(true);
 				return;
 			}
+			
 			if (data.isMuted()) {
 				player.sendMessage(Main.prefix() + "You have been muted.");
-				event.setCancelled(true);
 				return;
 			}
 			
 			Team team = player.getScoreboard().getEntryTeam(player.getName());
 			PlayerUtils.broadcast((team != null ? team.getPrefix() + player.getName() : player.getName()) + "§8 » §f" + event.getMessage());
 		} 
-		event.setCancelled(true);
 	}
 	
 	@EventHandler
@@ -451,26 +551,158 @@ public class PlayerListener implements Listener {
 			}
 		}
 		
+		if (event.getMessage().split(" ")[0].equalsIgnoreCase("/perma")) {
+			if (player.hasPermission("uhc.perma")) {
+				player.getWorld().setGameRuleValue("doDaylightCycle", "false");
+				player.getWorld().setTime(6000);
+				PlayerUtils.broadcast(Main.prefix() + "Permaday enabled.");
+			} else {
+				player.sendMessage(Main.prefix() + ChatColor.RED + "You can't use that command.");
+			}
+			event.setCancelled(true);
+			return;
+		}
+		
+		if (event.getMessage().split(" ")[0].equalsIgnoreCase("/matchpost")) {
+			player.sendMessage(Main.prefix() + "Match post: §a" + settings.getConfig().getString("matchpost"));
+			event.setCancelled(true);
+			return;
+		}
+		
+		if (event.getMessage().split(" ")[0].equalsIgnoreCase("/post")) {
+			player.sendMessage(Main.prefix() + "Match post: §a" + settings.getConfig().getString("matchpost"));
+			event.setCancelled(true);
+			return;
+		}
+		
+		if (event.getMessage().split(" ")[0].equalsIgnoreCase("/board")) {
+			if (player.hasPermission("uhc.board")) {
+				if (Main.board) {
+					for (String e : Scoreboards.getManager().kills.getScoreboard().getEntries()) {
+						Scoreboards.getManager().resetScore(e);
+					}
+					
+					PlayerUtils.broadcast(Main.prefix() + "Pregame board disabled.");
+					Main.board = false;
+				} else {
+					for (String e : Scoreboards.getManager().kills.getScoreboard().getEntries()) {
+						Scoreboards.getManager().resetScore(e);
+					}
+					
+					PlayerUtils.broadcast(Main.prefix() + "Pregame board enabled.");
+					Main.board = true;
+					
+					if (Main.ffa) {
+						Scoreboards.getManager().setScore("§a ", 10);
+						Scoreboards.getManager().setScore("§8» §cArena:", 9);
+						Scoreboards.getManager().setScore("§8» §7/a ", 8);
+						Scoreboards.getManager().setScore("§b ", 7);
+						Scoreboards.getManager().setScore("§8» §cTeamsize:", 6);
+						Scoreboards.getManager().setScore("§8» §7" + GameUtils.getTeamSize(), 5);
+						Scoreboards.getManager().setScore("§c ", 4);
+						Scoreboards.getManager().setScore("§8» §cScenarios:", 3);
+						Scoreboards.getManager().setScore("§8» §7" + settings.getConfig().getString("game.scenarios"), 2);
+						Scoreboards.getManager().setScore("§d ", 1);
+					} else {
+						Scoreboards.getManager().setScore("§e ", 13);
+						Scoreboards.getManager().setScore("§8» §cTeam:", 12);
+						Scoreboards.getManager().setScore("§8» §7/team", 11);
+						Scoreboards.getManager().setScore("§a ", 10);
+						Scoreboards.getManager().setScore("§8» §cArena:", 9);
+						Scoreboards.getManager().setScore("§8» §7/a ", 8);
+						Scoreboards.getManager().setScore("§b ", 7);
+						Scoreboards.getManager().setScore("§8» §cTeamsize:", 6);
+						Scoreboards.getManager().setScore("§8» §7" + GameUtils.getTeamSize(), 5);
+						Scoreboards.getManager().setScore("§c ", 4);
+						Scoreboards.getManager().setScore("§8» §cScenarios:", 3);
+						Scoreboards.getManager().setScore("§8» §7" + settings.getConfig().getString("game.scenarios"), 2);
+						Scoreboards.getManager().setScore("§d ", 1);
+					}
+				}
+			} else {
+				player.sendMessage(Main.prefix() + ChatColor.RED + "You can't use that command.");
+			}
+			event.setCancelled(true);
+			return;
+		}
+		
+		if (event.getMessage().split(" ")[0].equalsIgnoreCase("/aboard")) {
+			if (player.hasPermission("uhc.aboard")) {
+				if (Main.aboard) {
+					for (String e : Arena.getManager().ab.getScoreboard().getEntries()) {
+						Arena.getManager().resetScore(e);
+					}
+					PlayerUtils.broadcast(Main.prefix() + "Arena board has been disabled.");
+					Scoreboards.getManager().kills.setDisplaySlot(DisplaySlot.SIDEBAR);
+					Main.aboard = false;
+				} else {
+					PlayerUtils.broadcast(Main.prefix() + "Arena board has been enabled.");
+					Arena.getManager().ab.setDisplaySlot(DisplaySlot.SIDEBAR);
+					Main.aboard = true;
+					Main.board = false;
+
+					Arena.getManager().setScore("§8» §a§lPvE", 1);
+					Arena.getManager().setScore("§8» §a§lPvE", 0);
+				}
+			} else {
+				player.sendMessage(Main.prefix() + ChatColor.RED + "You can't use that command.");
+			}
+			event.setCancelled(true);
+			return;
+		}
+		
+		if (event.getMessage().split(" ")[0].equalsIgnoreCase("/text")) {
+			event.setCancelled(true);
+			
+			ArrayList<String> ar = new ArrayList<String>();
+			for (String arg : event.getMessage().split(" ")) {
+				ar.add(arg);
+			}
+			ar.remove(0);
+			String[] args = ar.toArray(new String[ar.size()]);
+			
+			if (player.hasPermission("uhc.text")) {
+				if (args.length == 0) {
+					player.sendMessage(Main.prefix() + ChatColor.RED + "Usage: /text <message>");
+					return;
+				}
+				
+				StringBuilder name = new StringBuilder();
+				
+				for (int i = 0; i < args.length; i++) {
+					name.append(args[i]).append(" ");
+				}
+				
+				ArmorStand stand = player.getWorld().spawn(player.getLocation(), ArmorStand.class);
+				stand.setCustomName(ChatColor.translateAlternateColorCodes('&', name.toString().trim()));
+				stand.setCustomNameVisible(true);
+				stand.setGravity(false);
+				stand.setVisible(false);
+			} else {
+				player.sendMessage(Main.prefix() + ChatColor.RED + "You can't use that command.");
+			}
+		}
+		
 		if (event.getMessage().split(" ")[0].startsWith("/me")) {
-			player.sendMessage(ChatColor.RED + "You do not have access to that command.");
+			player.sendMessage(Main.prefix() + ChatColor.RED + "You can't use that command.");
 			event.setCancelled(true);
 			return;
 		}
 		
 		if (event.getMessage().split(" ")[0].startsWith("/bukkit:") && !player.hasPermission("uhc.admin")) {
-			player.sendMessage(ChatColor.RED + "You do not have access to that command.");
+			player.sendMessage(Main.prefix() + ChatColor.RED + "You can't use that command.");
 			event.setCancelled(true);
 			return;
 		}
 		
 		if (event.getMessage().split(" ")[0].startsWith("/minecraft:") && !player.hasPermission("uhc.admin")) {
-			player.sendMessage(ChatColor.RED + "You do not have access to that command.");
+			player.sendMessage(Main.prefix() + ChatColor.RED + "You can't use that command.");
 			event.setCancelled(true);
 			return;
 		}
 		
 		if (event.getMessage().split(" ")[0].equalsIgnoreCase("/kill")) {
-			player.sendMessage(ChatColor.RED + "You do not have access to that command.");
+			player.sendMessage(Main.prefix() + ChatColor.RED + "You can't use that command.");
 			event.setCancelled(true);
 			return;
 		}
@@ -511,140 +743,8 @@ public class PlayerListener implements Listener {
 			return;
 		}
 		
-		if (event.getMessage().split(" ")[0].equalsIgnoreCase("/border3000")) {
-			if (player.hasPermission("uhc.border")) {
-				player.getWorld().getWorldBorder().setSize(2999);
-				if (player.getWorld().getEnvironment() == Environment.NETHER) {
-					player.getWorld().getWorldBorder().setCenter(0, 0);
-				} else {
-					player.getWorld().getWorldBorder().setCenter(0.5, 0.5);
-				}
-				player.getWorld().getWorldBorder().setWarningDistance(0);
-				player.getWorld().getWorldBorder().setWarningTime(60);
-				player.getWorld().getWorldBorder().setDamageAmount(0.1);
-				player.getWorld().getWorldBorder().setDamageBuffer(50);
-				PlayerUtils.broadcast(Main.prefix() + "Border setup with radius of 3000x3000.");
-			} else {
-				player.sendMessage(ChatColor.RED + "You do not have access to that command.");
-			}
-			event.setCancelled(true);
-			return;
-		}
-		
-		if (event.getMessage().split(" ")[0].equalsIgnoreCase("/border2000")) {
-			if (player.hasPermission("uhc.border")) {
-				player.getWorld().getWorldBorder().setSize(1999);
-				if (player.getWorld().getEnvironment() == Environment.NETHER) {
-					player.getWorld().getWorldBorder().setCenter(0, 0);
-				} else {
-					player.getWorld().getWorldBorder().setCenter(0.5, 0.5);
-				}
-				player.getWorld().getWorldBorder().setWarningDistance(0);
-				player.getWorld().getWorldBorder().setWarningTime(60);
-				player.getWorld().getWorldBorder().setDamageAmount(0.1);
-				player.getWorld().getWorldBorder().setDamageBuffer(50);
-				PlayerUtils.broadcast(Main.prefix() + "Border setup with radius of 2000x2000.");
-			} else {
-				player.sendMessage(ChatColor.RED + "You do not have access to that command.");
-			}
-			event.setCancelled(true);
-			return;
-		}
-		
-		if (event.getMessage().split(" ")[0].equalsIgnoreCase("/perma")) {
-			if (player.hasPermission("uhc.perma")) {
-				player.getWorld().setGameRuleValue("doDaylightCycle", "false");
-				player.getWorld().setTime(6000);
-				PlayerUtils.broadcast(Main.prefix() + "Permaday enabled.");
-			} else {
-				player.sendMessage(ChatColor.RED + "You do not have access to that command.");
-			}
-			event.setCancelled(true);
-			return;
-		}
-		
-		if (event.getMessage().split(" ")[0].equalsIgnoreCase("/matchpost")) {
-			player.sendMessage(Main.prefix() + "Match post: §a" + settings.getConfig().getString("matchpost"));
-			event.setCancelled(true);
-			return;
-		}
-		
-		if (event.getMessage().split(" ")[0].equalsIgnoreCase("/post")) {
-			player.sendMessage(Main.prefix() + "Match post: §a" + settings.getConfig().getString("matchpost"));
-			event.setCancelled(true);
-			return;
-		}
-		
-		if (event.getMessage().split(" ")[0].equalsIgnoreCase("/killboard")) {
-			if (player.hasPermission("uhc.killboard")) {
-				if (Main.killboard) {
-					for (String e : Scoreboards.getManager().kills.getScoreboard().getEntries()) {
-						Scoreboards.getManager().resetScore(e);
-					}
-					PlayerUtils.broadcast(Main.prefix() + "Pregame board disabled.");
-					Main.killboard = false;
-				} else {
-					PlayerUtils.broadcast(Main.prefix() + "Pregame board enabled.");
-					if (Main.ffa) {
-						Scoreboards.getManager().setScore("§a ", 10, true);
-						Scoreboards.getManager().setScore("§cArena:", 9, true);
-						Scoreboards.getManager().setScore("§7/a ", 8, true);
-						Scoreboards.getManager().setScore("§b ", 7, true);
-						Scoreboards.getManager().setScore("§cTeamsize:", 6, true);
-						Scoreboards.getManager().setScore("§7" + ServerUtils.getTeamSize(), 5, true);
-						Scoreboards.getManager().setScore("§c ", 4, true);
-						Scoreboards.getManager().setScore("§cScenarios:", 3, true);
-						Scoreboards.getManager().setScore("§7" + settings.getConfig().getString("game.scenarios"), 2, true);
-						Scoreboards.getManager().setScore("§d ", 1, true);
-					} else {
-						Scoreboards.getManager().setScore("§e ", 13, true);
-						Scoreboards.getManager().setScore("§cTeam:", 12, true);
-						Scoreboards.getManager().setScore("§7/team", 11, true);
-						Scoreboards.getManager().setScore("§a ", 10, true);
-						Scoreboards.getManager().setScore("§cArena:", 9, true);
-						Scoreboards.getManager().setScore("§7/a ", 8, true);
-						Scoreboards.getManager().setScore("§b ", 7, true);
-						Scoreboards.getManager().setScore("§cTeamsize:", 6, true);
-						Scoreboards.getManager().setScore("§7" + ServerUtils.getTeamSize(), 5, true);
-						Scoreboards.getManager().setScore("§c ", 4, true);
-						Scoreboards.getManager().setScore("§cScenarios:", 3, true);
-						Scoreboards.getManager().setScore("§7" + settings.getConfig().getString("game.scenarios"), 2, true);
-						Scoreboards.getManager().setScore("§d ", 1, true);
-					}
-					Main.killboard = true;
-				}
-			} else {
-				player.sendMessage(ChatColor.RED + "You do not have access to that command.");
-			}
-			event.setCancelled(true);
-			return;
-		}
-		
-		if (event.getMessage().split(" ")[0].equalsIgnoreCase("/arenaboard")) {
-			if (player.hasPermission("uhc.arenaboard")) {
-				if (Main.arenaboard) {
-					for (String e : Scoreboards.getManager().ab.getScoreboard().getEntries()) {
-						Scoreboards.getManager().resetScore(e);
-					}
-					PlayerUtils.broadcast(Main.prefix() + "Arena board has been disabled.");
-					Scoreboards.getManager().kills.setDisplaySlot(DisplaySlot.SIDEBAR);
-					Main.arenaboard = false;
-				} else {
-					PlayerUtils.broadcast(Main.prefix() + "Arena board has been enabled.");
-					Scoreboards.getManager().ab.setDisplaySlot(DisplaySlot.SIDEBAR);
-					Main.arenaboard = true;
-
-					Scoreboards.getManager().setScore("§a§lPvE", 1, false);
-					Scoreboards.getManager().setScore("§a§lPvE", 0, false);
-				}
-			} else {
-				player.sendMessage(ChatColor.RED + "You do not have access to that command.");
-			}
-			event.setCancelled(true);
-			return;
-		}
-		
-		if (event.getMessage().split(" ")[0].equalsIgnoreCase("/text")) {
+		// Tempoarly here until /setup is done.
+		if (event.getMessage().split(" ")[0].equalsIgnoreCase("/border")) {
 			event.setCancelled(true);
 			
 			ArrayList<String> ar = new ArrayList<String>();
@@ -654,25 +754,65 @@ public class PlayerListener implements Listener {
 			ar.remove(0);
 			String[] args = ar.toArray(new String[ar.size()]);
 			
-			if (player.hasPermission("uhc.text")) {
+			if (player.hasPermission("uhc.border")) {
 				if (args.length == 0) {
-					player.sendMessage(ChatColor.RED + "Usage: /text <message>");
+					player.sendMessage(Main.prefix() + ChatColor.RED + "Usage: /border <radius>");
 					return;
 				}
 				
-				StringBuilder bu = new StringBuilder();
+				int radius;
 				
-				for (int i = 0; i < args.length; i++) {
-					bu.append(args[i]).append(" ");
+				try {
+					radius = Integer.parseInt(args[0]);
+				} catch (Exception e) {
+					player.sendMessage(Main.prefix() + ChatColor.RED + "Invaild radius.");
+					return;
 				}
 				
-				ArmorStand stand = player.getWorld().spawn(player.getLocation(), ArmorStand.class);
-				stand.setCustomName(ChatColor.translateAlternateColorCodes('&', bu.toString().trim()));
-				stand.setCustomNameVisible(true);
-				stand.setGravity(false);
-				stand.setVisible(false);
+				player.getWorld().getWorldBorder().setSize(radius - 1);
+				if (player.getWorld().getEnvironment() == Environment.NETHER) {
+					player.getWorld().getWorldBorder().setCenter(0, 0);
+				} else {
+					player.getWorld().getWorldBorder().setCenter(0.5, 0.5);
+				}
+				player.getWorld().getWorldBorder().setWarningDistance(0);
+				player.getWorld().getWorldBorder().setWarningTime(60);
+				player.getWorld().getWorldBorder().setDamageAmount(0.1);
+				player.getWorld().getWorldBorder().setDamageBuffer(50);
+				PlayerUtils.broadcast(Main.prefix() + "Border setup with radius of " + radius + "x" + radius + ".");
 			} else {
-				player.sendMessage(ChatColor.RED + "You do not have access to that command.");
+				player.sendMessage(Main.prefix() + ChatColor.RED + "You can't use that command.");
+			}
+			return;
+		}
+		
+		// Tempoarly here for testing.
+		if (event.getMessage().split(" ")[0].equalsIgnoreCase("/sound")) {
+			event.setCancelled(true);
+			
+			ArrayList<String> ar = new ArrayList<String>();
+			for (String arg : event.getMessage().split(" ")) {
+				ar.add(arg);
+			}
+			ar.remove(0);
+			String[] args = ar.toArray(new String[ar.size()]);
+			
+			if (player.hasPermission("uhc.sound")) {
+				if (args.length == 0) {
+					player.sendMessage(Main.prefix() + ChatColor.RED + "Usage: /sound <sound> <pitch>");
+					return;
+				}
+				
+				int i = 1;
+				
+				try {
+					i = Integer.parseInt(args[1]);
+				} catch (Exception e) {
+				} 
+				
+				player.playSound(player.getLocation(), args[0], 1, i);
+			} else {
+				player.sendMessage(Main.prefix() + ChatColor.RED + "You can't use that command.");
 			}
 		}
 	}
@@ -688,9 +828,9 @@ public class PlayerListener implements Listener {
 			}
 
 			String reason = Bukkit.getBanList(Type.NAME).getBanEntry(player.getName()).getReason();
-			
-			event.setKickMessage("§8» §cBanned: §7" + reason + " §8«");
+
 			PlayerUtils.broadcast("§c" + player.getName() + " tried to join while being banned for: " + reason, "uhc.staff");
+			event.setKickMessage("§8» §cBanned: §7" + reason + " §8«");
 			return;
 		}
 		
@@ -722,16 +862,13 @@ public class PlayerListener implements Listener {
 			return;
 		}
 		
+		String state = GameUtils.getState();
+		String teamSize = GameUtils.getTeamSize();
 		String scenarios = ChatColor.translateAlternateColorCodes('&', settings.getConfig().getString("game.scenarios"));
+		String host = Settings.getInstance().getConfig().getString("game.host");
 		
-		StringBuilder builder= new StringBuilder();
-		
-		for (String st : scenarios.split(" ")) {
-			builder.append("§6" + st + " ");
-		}
-		
-		event.setMotd("§4§lUltra Hardcore §8- §71.8 §8- §a" + ServerUtils.getState() + "§r \n" + 
-		ChatColor.GOLD + ServerUtils.getTeamSize() + " " + builder.toString().trim() + "§8 - §4Host: §7" + Settings.getInstance().getConfig().getString("game.host"));
+		event.setMotd("§4§lArctic UHC §8- §71.8 §8- §a" + state + "§r \n" + 
+		ChatColor.GOLD + teamSize + " " + scenarios + "§8 - §4Host: §7" + host);
 
 		int max = settings.getConfig().getInt("maxplayers");
 		event.setMaxPlayers(max);
@@ -756,7 +893,10 @@ public class PlayerListener implements Listener {
 	
 	@EventHandler
 	public void onPlayerKick(PlayerKickEvent event) {
+		Player player = event.getPlayer();
+		
 		if (event.getReason().equals("disconnect.spam")) {
+			player.sendMessage(Main.prefix() + "Please stop spamming.");
 			event.setCancelled(true);
 		}
 	}
@@ -767,30 +907,31 @@ public class PlayerListener implements Listener {
         
         if ((event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.LEFT_CLICK_BLOCK) && player.getWorld().getName().equals("lobby") && !player.hasPermission("uhc.build")) {
         	event.setCancelled(true);
+        }
+        
+        if (event.getAction() == Action.PHYSICAL && player.getWorld().getName().equals("lobby")) {
+        	event.setCancelled(true);
         	return;
         }
         
-		if (!Main.spectating.contains(player.getName())) {
-			return;
-		}
-        
-		if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-			InvGUI.getManager().openSelector(player);
-		} 
-		else if (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK) {
-			ArrayList<Player> players = new ArrayList<Player>();
-			for (Player online : PlayerUtils.getPlayers()) {
-				if (!Main.spectating.contains(online.getName())) {
-					players.add(online);
+		if (Main.spectating.contains(player.getName())) {
+			if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+				InvGUI.getManager().openSelector(player);
+			} else if (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK) {
+				ArrayList<Player> players = new ArrayList<Player>();
+				for (Player online : PlayerUtils.getPlayers()) {
+					if (!Main.spectating.contains(online.getName())) {
+						players.add(online);
+					}
 				}
-			}
-			
-			if (players.size() > 0) {
-				Player target = players.get(new Random().nextInt(players.size()));
-				player.teleport(target.getLocation());
-				player.sendMessage(Main.prefix() + "You teleported to §a" + target.getName() + "§7.");
-			} else {
-				player.sendMessage(Main.prefix() + "No players to teleport to.");
+				
+				if (players.size() > 0) {
+					Player target = players.get(new Random().nextInt(players.size()));
+					player.teleport(target.getLocation());
+					player.sendMessage(Main.prefix() + "You teleported to §a" + target.getName() + "§7.");
+				} else {
+					player.sendMessage(Main.prefix() + "No players to teleport to.");
+				}
 			}
 		}
 	}
@@ -822,7 +963,7 @@ public class PlayerListener implements Listener {
 			}
 		}
 		
-		if (event.getInventory().getTitle().equals("Ultra Hardcore Rules")) {
+		if (event.getInventory().getTitle().equals("Arctic UHC Rules")) {
 			event.setCancelled(true);
 		}
 		
@@ -833,7 +974,9 @@ public class PlayerListener implements Listener {
 		if (event.getInventory().getTitle().equals("Player Selector")) {
 			Player target = Bukkit.getServer().getPlayer(event.getCurrentItem().getItemMeta().getDisplayName().substring(2, event.getCurrentItem().getItemMeta().getDisplayName().length()));
 			
-			if (target != null) {
+			if (target == null) {
+				player.sendMessage(Main.prefix() + "Target is not online.");
+			} else {
 				player.teleport(target);
 			}
 			
@@ -880,9 +1023,11 @@ public class PlayerListener implements Listener {
 	
 	@EventHandler
 	public void onInventoryClose(InventoryCloseEvent event) {
-		if (Main.invsee.containsKey(event.getInventory())) {
-			Main.invsee.get(event.getInventory()).cancel();
-			Main.invsee.remove(event.getInventory());
+		Inventory inv = event.getInventory();
+		
+		if (Main.invsee.containsKey(inv)) {
+			Main.invsee.get(inv).cancel();
+			Main.invsee.remove(inv);
 		}
 	}
 	
@@ -893,19 +1038,17 @@ public class PlayerListener implements Listener {
 			return;
 		}
 		
-		if (!(event.getRightClicked() instanceof Player)) {
-			return;
-		}
-		
-    	Player player = (Player) event.getPlayer();
-    	Player clicked = (Player) event.getRightClicked();
+		if (event.getRightClicked() instanceof Player) {
+			Player player = (Player) event.getPlayer();
+	    	Player clicked = (Player) event.getRightClicked();
+					
+			if (Main.spectating.contains(player.getName())) {
+				if (Main.spectating.contains(clicked.getName())) {
+					return;
+				}
 				
-		if (Main.spectating.contains(player.getName())) {
-			if (Main.spectating.contains(clicked.getName())) {
-				return;
+				InvGUI.getManager().openInv(player, clicked);
 			}
-			
-			InvGUI.getManager().openInv(player, clicked);
 		}
     }
 
@@ -927,7 +1070,7 @@ public class PlayerListener implements Listener {
 
 	            targetName = fromName.substring(0, fromName.length() - 7);
 	        } else if (from.getWorld().getEnvironment() == Environment.NORMAL) {
-	            if (!PortalUtils.isPortal(Material.PORTAL, from)) {
+	            if (!BlockUtils.hasBlockNearby(Material.PORTAL, from)) {
 	            	player.sendMessage(Main.prefix() + "Could not teleport you to the nether, contact the staff now.");
 	                return;
 	            }
@@ -964,7 +1107,7 @@ public class PlayerListener implements Listener {
 
 	            targetName = fromName.substring(0, fromName.length() - 4);
 	        } else if (event.getFrom().getWorld().getEnvironment() == Environment.NORMAL) {
-	            if (!PortalUtils.isPortal(Material.ENDER_PORTAL, event.getFrom())) {
+	            if (!BlockUtils.hasBlockNearby(Material.ENDER_PORTAL, event.getFrom())) {
 	            	player.sendMessage(Main.prefix() + "Could not teleport you to the end, contact the staff now.");
 	                return;
 	            }
@@ -1002,7 +1145,7 @@ public class PlayerListener implements Listener {
     }
 	
 	@EventHandler
-	public void onPreCraftEvent(PrepareItemCraftEvent event) {
+	public void onPrepareItemCraft(PrepareItemCraftEvent event) {
 		ItemStack item = event.getRecipe().getResult();
 		
 		/**
@@ -1062,6 +1205,20 @@ public class PlayerListener implements Listener {
     }
 	
 	@EventHandler
+	public void onPlayerAchievementAwarded(PlayerAchievementAwardedEvent event) {
+		Player player = event.getPlayer();
+		
+		if (Main.spectating.contains(player.getName())) {
+			event.setCancelled(true);
+			return;
+		}
+		
+		if (!State.isState(State.INGAME)) {
+			event.setCancelled(true);
+		}
+	}
+	
+	@EventHandler
 	public void onPlayerItemConsume(PlayerItemConsumeEvent event) {
 		final Player player = event.getPlayer();
 		final float before = player.getSaturation();
@@ -1084,7 +1241,7 @@ public class PlayerListener implements Listener {
 		}
 		
 		if (event.getItem().getType() == Material.GOLDEN_APPLE && event.getItem().getItemMeta().getDisplayName() != null && event.getItem().getItemMeta().getDisplayName().equals("§6Golden Head")) {
-			player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 25 * (Settings.getInstance().getConfig().getInt("feature.goldenheads.heal") * 2), 1));
+			player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 25 * (Settings.getInstance().getConfig().getInt("feature.goldenheads.heal")), 1));
 		}
 	}
 	
@@ -1101,26 +1258,5 @@ public class PlayerListener implements Listener {
 		if (event.getFoodLevel() < player.getFoodLevel()) {
 			event.setCancelled(new Random().nextInt(100) < 66);
 	    }
-	}
-	
-	@EventHandler
-	public void onPlayerAchievementAwarded(PlayerAchievementAwardedEvent event) {
-		Player player = event.getPlayer();
-		
-		if (Main.spectating.contains(player.getName())) {
-			event.setCancelled(true);
-			return;
-		}
-		
-		if (!State.isState(State.INGAME)) {
-			event.setCancelled(true);
-		}
-	}
-	
-	@EventHandler
-	public void onPlayerDropItem(PlayerDropItemEvent event) {
-		if (State.isState(State.SCATTER)) {
-			event.setCancelled(true);
-		}
 	}
 }

@@ -76,11 +76,9 @@ import com.leontg77.uhc.cmds.TpsCommand;
 import com.leontg77.uhc.cmds.UnbanCommand;
 import com.leontg77.uhc.cmds.VoteCommand;
 import com.leontg77.uhc.cmds.WhitelistCommand;
-import com.leontg77.uhc.listeners.ArenaListener;
 import com.leontg77.uhc.listeners.BlockListener;
 import com.leontg77.uhc.listeners.EntityListener;
 import com.leontg77.uhc.listeners.PlayerListener;
-import com.leontg77.uhc.listeners.SpecInfoListener;
 import com.leontg77.uhc.listeners.WeatherListener;
 import com.leontg77.uhc.scenario.Scenario;
 import com.leontg77.uhc.scenario.ScenarioManager;
@@ -100,8 +98,8 @@ public class Main extends JavaPlugin {
 	public static Recipe headRecipe;
 	public static Recipe melonRecipe;
 
-	public static boolean arenaboard = false;
-	public static boolean killboard = false;
+	public static boolean aboard = false;
+	public static boolean board = false;
 	public static boolean muted = false;
 	
 	public static boolean ffa;
@@ -131,6 +129,9 @@ public class Main extends JavaPlugin {
 	public static HashMap<Inventory, BukkitRunnable> invsee = new HashMap<Inventory, BukkitRunnable>();
 	public static HashMap<String, BukkitRunnable> relog = new HashMap<String, BukkitRunnable>();
 	
+	public static HashMap<String, Integer> kills = new HashMap<String, Integer>();
+	public static HashMap<String, Integer> teamKills = new HashMap<String, Integer>();
+	
 	@Override
 	public void onDisable() {
 		PluginDescriptionFile pdfFile = this.getDescription();
@@ -158,12 +159,11 @@ public class Main extends JavaPlugin {
 		settings.setup(this);
 		plugin = this;
 		
-		Bukkit.getServer().getPluginManager().registerEvents(new ArenaListener(), this);
 		Bukkit.getServer().getPluginManager().registerEvents(new BlockListener(), this);
 		Bukkit.getServer().getPluginManager().registerEvents(new EntityListener(), this);
 		Bukkit.getServer().getPluginManager().registerEvents(new PlayerListener(), this);
-		Bukkit.getServer().getPluginManager().registerEvents(new SpecInfoListener(), this);
 		Bukkit.getServer().getPluginManager().registerEvents(new WeatherListener(), this);
+		Bukkit.getServer().getPluginManager().registerEvents(new SpecInfo(), this);
 
 		getCommand("arena").setExecutor(new ArenaCommand());
 		getCommand("ban").setExecutor(new BanCommand());
@@ -216,7 +216,7 @@ public class Main extends JavaPlugin {
 
 		ScenarioManager.getInstance().setup();
 		Scoreboards.getManager().setup();
-		Teams.getManager().setupTeams();
+		Teams.getManager().setup();
 		Arena.getManager().setup();
 		
 		State.setState(State.valueOf(settings.getData().getString("state")));
@@ -341,16 +341,6 @@ public class Main extends JavaPlugin {
 	 */
 	public static String prefix() {
 		String prefix = "§4§lUHC §8» §7";
-		return prefix;
-	}
-	
-	/**
-	 * Get the UHC prefix with an ending color.
-	 * @param endcolor the ending color.
-	 * @return The UHC prefix.
-	 */
-	public static String prefix(ChatColor endcolor) {
-		String prefix = "§4§lUHC §8» " + endcolor;
 		return prefix;
 	}
 	

@@ -32,8 +32,8 @@ import org.bukkit.potion.PotionEffectType;
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.Main.State;
 import com.leontg77.uhc.scenario.ScenarioManager;
+import com.leontg77.uhc.util.BlockUtils;
 import com.leontg77.uhc.util.NumberUtils;
-import com.leontg77.uhc.util.PortalUtils;
 
 public class EntityListener implements Listener {
 	
@@ -148,7 +148,7 @@ public class EntityListener implements Listener {
     }
 	
 	@EventHandler
-	public void onShot(final EntityDamageByEntityEvent event) {
+	public void onShot(EntityDamageByEntityEvent event) {
 		if (!(event.getDamager() instanceof Projectile) || !(event.getEntity() instanceof Player)) {
 			return;
 		}
@@ -188,7 +188,7 @@ public class EntityListener implements Listener {
 	}
 	
 	@EventHandler
-	public void onLongShot(EntityDamageByEntityEvent event) {
+	public void onLongshot(EntityDamageByEntityEvent event) {
 		if (!(event.getDamager() instanceof Projectile) || !(event.getEntity() instanceof Player)) {
 			return;
 		}
@@ -236,7 +236,7 @@ public class EntityListener implements Listener {
 
 	            targetName = fromName.substring(0, fromName.length() - 7);
 	        } else if (from.getWorld().getEnvironment() == Environment.NORMAL) {
-	            if (!PortalUtils.isPortal(Material.PORTAL, from)) {
+	            if (!BlockUtils.hasBlockNearby(Material.PORTAL, from)) {
 	                return;
 	            }
 
@@ -270,7 +270,7 @@ public class EntityListener implements Listener {
 
 	            targetName = fromName.substring(0, fromName.length() - 4);
 	        } else if (event.getFrom().getWorld().getEnvironment() == Environment.NORMAL) {
-	            if (!PortalUtils.isPortal(Material.ENDER_PORTAL, event.getFrom())) {
+	            if (!BlockUtils.hasBlockNearby(Material.ENDER_PORTAL, event.getFrom())) {
 	                return;
 	            }
 	            
