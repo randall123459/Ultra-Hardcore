@@ -78,20 +78,20 @@ public class WhitelistCommand implements CommandExecutor, TabCompleter {
            		} 
            		else if (args[0].equalsIgnoreCase("add")) {
 	           		if (target == null) {
-	           			PlayerUtils.broadcast(Main.prefix(ChatColor.GREEN) + offline.getName() + " §7has been whitelisted.");
+	           			PlayerUtils.broadcast(Main.prefix() + ChatColor.GREEN + offline.getName() + " §7has been whitelisted.");
 	           			offline.setWhitelisted(true);
 	           			return true;
 	           		}
-           			PlayerUtils.broadcast(Main.prefix(ChatColor.GREEN) + target.getName() + " §7has been whitelisted.");
+           			PlayerUtils.broadcast(Main.prefix() + ChatColor.GREEN + target.getName() + " §7has been whitelisted.");
            			target.setWhitelisted(true);
 	           	} 
            		else if (args[0].equalsIgnoreCase("remove")) {
 	           		if (target == null) {
-	           			PlayerUtils.broadcast(Main.prefix(ChatColor.GREEN) + offline.getName() + " §7is no longer whitelisted.");
+	           			PlayerUtils.broadcast(Main.prefix() + ChatColor.GREEN + offline.getName() + " §7is no longer whitelisted.");
 	           			offline.setWhitelisted(false);
 	           			return true;
 	           		}
-           			PlayerUtils.broadcast(Main.prefix(ChatColor.GREEN) + target.getName() + " §7is no longer whitelisted.");
+           			PlayerUtils.broadcast(Main.prefix() + ChatColor.GREEN + target.getName() + " §7is no longer whitelisted.");
 	           		target.setWhitelisted(false);
 	           	}  
            		else if (args[0].equalsIgnoreCase("all")) {
