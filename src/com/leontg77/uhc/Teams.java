@@ -6,20 +6,23 @@ import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.NameTagVisibility;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
 /**
- * Team class for uhc.
+ * Team management class.
+ * <p>
+ * Contains methods for adding players to a team, removing players from a team, getting the team for a player and setting up teams.
+ * 
  * @author LeonTG77
  */
 public class Teams {
 	private Scoreboard sb = Bukkit.getScoreboardManager().getMainScoreboard();
-	private ArrayList<Team> teams = new ArrayList<Team>();
+	private List<Team> teams = new ArrayList<Team>();
 	private static Teams manager = new Teams();
-	private Teams() {}
 	
 	/**
 	 * Gets the instance of the class.
@@ -28,64 +31,13 @@ public class Teams {
 	public static Teams getManager() {
 		return manager;
 	}
-
-	/**
-	 * Joins a team.
-	 * @param teamName the team joining.
-	 * @param player the player joining.
-	 */
-	public void joinTeam(String teamName, Player player) {	
-		Team team = sb.getTeam(teamName);
-		team.addEntry(player.getName());
-	}
-	
-	/**
-	 * Leaves the current team of the player.
-	 * @param player the player leaving.
-	 */
-	public void leaveTeam(Player player) {	
-		if (this.getTeam(player) != null) {
-			this.getTeam(player).removeEntry(player.getName());
-		}
-	}
-
-	/**
-	 * Gets the team of a player.
-	 * @param player the player wanting.
-	 * @return The team.
-	 */
-	public Team getTeam(Player player) {
-		return player.getScoreboard().getEntryTeam(player.getName());
-	}
-	
-	/**
-	 * Gets a list of all teams.
-	 * @return the list of teams.
-	 */
-	public List<Team> getTeams() {
-		return teams;
-	}
-	
-	/**
-	 * Gets a list of all teams.
-	 * @return the list of teams.
-	 */
-	public List<Team> getTeamsWithPlayers() {
-		List<Team> list = new ArrayList<Team>();
-		for (Team team : teams) {
-			if (team.getSize() > 0) {
-				list.add(team);
-			}
-		}
-		return list;
-	}
 	
 	/**
 	 * Sets up all the teams.
 	 */
-	public void setupTeams() {
+	public void setup() {
 		ArrayList<String> list = new ArrayList<String>();
-		
+
 		list.add(ChatColor.BLACK.toString());
 		list.add(ChatColor.DARK_BLUE.toString());
 		list.add(ChatColor.DARK_GREEN.toString());
@@ -123,31 +75,156 @@ public class Teams {
 			tempList.add(li + ChatColor.STRIKETHROUGH);
 		}
 		
-		list.remove(ChatColor.WHITE.toString());
 		list.remove(ChatColor.GRAY.toString() + ChatColor.ITALIC.toString());
+		list.remove(ChatColor.WHITE.toString());
 
 		list.addAll(tempList);
 		
 		Team spec = (sb.getTeam("spec") == null ? sb.registerNewTeam("spec") : sb.getTeam("spec"));
-		
 		spec.setDisplayName("spec");
 		spec.setPrefix("§7§o");
 		spec.setSuffix("§r");
+		
 		spec.setAllowFriendlyFire(false);
 		spec.setCanSeeFriendlyInvisibles(true);	
+		spec.setNameTagVisibility(NameTagVisibility.HIDE_FOR_OTHER_TEAMS);
 		
 		for (int i = 0; i < list.size(); i++) {
-			Team team = (sb.getTeam("UHC" + (i + 1)) == null ? sb.registerNewTeam("UHC" + (i + 1)) : sb.getTeam("UHC" + (i + 1)));
+			String teamName = "UHC" + (i + 1);
 			
-			team.setDisplayName("UHC" + (i + 1));
+			Team team = (sb.getTeam(teamName) == null ? sb.registerNewTeam(teamName) : sb.getTeam(teamName));
+			team.setDisplayName(teamName);
 			team.setPrefix(list.get(i));
 			team.setSuffix("§r");
+			
 			team.setAllowFriendlyFire(true);
 			team.setCanSeeFriendlyInvisibles(true);
 			team.setNameTagVisibility(NameTagVisibility.ALWAYS);
+			
 			teams.add(team);
 		}
 
-		Bukkit.getLogger().info("§a[UHC] Setup " + teams.size() + " teams.");
+		Bukkit.getLogger().info("[UHC] Setup " + (teams.size() + 1) + " teams.");
+	}
+	
+	/**
+	 * Find the first available team.
+	 * 
+	 * @return the available team, null if not found.
+	 */
+	public Team findAvailableTeam() {
+		for (Team team : getTeams()) {
+			if (team.getSize() == 0) {
+				return team;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Joins the specified team for the given player.
+	 * <p>
+	 * If the team is null nothing will happen.
+	 * 
+	 * @param team the team joining.
+	 * @param player the player joining.
+	 */
+	public void joinTeam(Team team, OfflinePlayer player) {	
+		if (team != null) {
+			team.addEntry(player.getName());
+		}
+	}
+
+	/**
+	 * Joins the specified team for the given player.
+	 * <p>
+	 * If the team is null nothing will happen.
+	 * 
+	 * @param name the name of the team joining.
+	 * @param player the player joining.
+	 */
+	public void joinTeam(String name, OfflinePlayer player) {	
+		Team team = sb.getTeam(name);
+		
+		if (team != null) {
+			team.addEntry(player.getName());
+		}
+	}
+	
+	/**
+	 * Leaves the current team of the given player.
+	 * <p>
+	 * If the team is null nothing will happen.
+	 * 
+	 * @param player the player thats leaving the team.
+	 */
+	public void leaveTeam(OfflinePlayer player) {
+		Team team = getTeam(player);
+		
+		if (team != null) {
+			team.removeEntry(player.getName());
+		}
+	}
+	
+	/**
+	 * Sends a message to everyone on the given team.
+	 * 
+	 * @param team the team.
+	 * @param message the message to send.
+	 */
+	public void sendMessage(Team team, String message) {
+		for (String entry : team.getEntries()) {
+			Player teammate = Bukkit.getServer().getPlayer(entry);
+			
+			if (teammate != null) {
+				teammate.sendMessage(message);
+			}
+		}
+	}
+
+	/**
+	 * Gets the team of the given player player.
+	 * 
+	 * @param player the player in the team.
+	 * @return The team, null if the player isn't on a team.
+	 */
+	public Team getTeam(OfflinePlayer player) {
+		return sb.getEntryTeam(player.getName());
+	}
+
+	/**
+	 * Gets the team by a name.
+	 * 
+	 * @param name the name.
+	 * @return The team.
+	 */
+	public Team getTeam(String name) {
+		return sb.getTeam(name);
+	}
+	
+	/**
+	 * Get a list of all teams.
+	 * 
+	 * @return A list of all teams.
+	 */
+	public List<Team> getTeams() {
+		return teams;
+	}
+	
+	/**
+	 * Get a list of all teams that has players on it.
+	 * 
+	 * @return A list of teams with players.
+	 */
+	public List<Team> getTeamsWithPlayers() {
+		ArrayList<Team> list = new ArrayList<Team>();
+		
+		for (Team team : teams) {
+			if (team.getSize() > 0) {
+				list.add(team);
+			}
+		}
+		
+		return list;
 	}
 }

@@ -29,34 +29,9 @@ public class ScatterUtils {
 		for (int i = 0; i < count; i++) {
 			double min = 150;
 			
-			for (int j = 0; j < 2002; j++) {
-				if (j == 2001) {
-					for (int l = 0; l < 2002; l++) {
-						if (l == 2001) {
-							PlayerUtils.broadcast(ChatColor.RED + "Could not scatter " + i, "uhc.admin");
-							break;
-						}
-						
-						Random rand = new Random();
-						int x = rand.nextInt(radius * 2) - radius;
-						int z = rand.nextInt(radius * 2) - radius;
-
-						Location r = new Location(world, x + 0.5, 0, z + 0.5);
-
-						boolean close = false;
-						for (Location lo : locs) {
-							if (lo.distanceSquared(r) < min) {
-								close = true;
-							}
-						}
-						
-						if (!close && isValidSpawnLocation(r.clone())) {
-							locs.add(r);
-							break;
-						} else {
-							min -= 1;
-						}
-					}
+			for (int j = 0; j < 4004; j++) {
+				if (j == 4003) {
+					PlayerUtils.broadcast(ChatColor.RED + "Could not scatter " + i, "uhc.admin");
 					break;
 				}
 				
@@ -73,7 +48,7 @@ public class ScatterUtils {
 					}
 				}
 				
-				if (!close && isValidSpawnLocation(r.clone())) {
+				if (!close && isVaildLocation(r.clone())) {
 					locs.add(r);
 					break;
 				} else {
@@ -87,6 +62,7 @@ public class ScatterUtils {
 			double y = BlockUtils.highestBlock(loc).getY();
 			loc.setY(y + 2);
 		}
+		
 		return locs;
 	}
 
@@ -95,18 +71,22 @@ public class ScatterUtils {
 	 * @param l the location .
 	 * @return True if its vaild, false otherwise.
 	 */
-	private static boolean isValidSpawnLocation(Location l) {
+	private static boolean isVaildLocation(Location l) {
 		l.setY(l.getWorld().getHighestBlockYAt(l));
+		
 		Material m = l.add(0, -1, 0).getBlock().getType();
-		boolean noHazard = true;
+		boolean vaild = true;
+		
 		if (l.getBlockY() < 60) {
-			noHazard = false;
+			vaild = false;
 		}	
+		
 		for (Material no : nospawn) {
 			if (m == no) {
-				noHazard = false;
+				vaild = false;
 			}
 		}
-		return noHazard;
+		
+		return vaild;
 	}
 }

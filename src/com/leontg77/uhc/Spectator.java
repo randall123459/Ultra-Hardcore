@@ -17,11 +17,13 @@ import com.leontg77.uhc.util.PlayerUtils;
 
 /**
  * The spectator class to manage spectating.
+ * <p>
+ * This class contains methods for enabling/disabling spec mode, toggling spec mode and managing vanishing.
+ * 
  * @author LeonTG77
  */
 public class Spectator {
 	private static Spectator manager = new Spectator();
-	private Spectator() {}
 	
 	/**
 	 * Gets the instance of the class.
@@ -32,9 +34,11 @@ public class Spectator {
 	}
 	
 	/**
-	 * Manage the players spectator mode.
-	 * @param player the player you're setting for.
-	 * @param enable true or false if what you want for spectating.
+	 * Enable or disable the spectator mode for the given player.
+	 * 
+	 * @param player the player setting for.
+	 * @param enable True to enable spec mode, false to disable.
+	 * @param command True if the mode was set by a command.
 	 */
 	public void set(Player player, boolean enable, boolean command) {
 		if (enable) {
@@ -55,20 +59,27 @@ public class Spectator {
 			compassMeta.setLore(Arrays.asList(ChatColor.GRAY + "Left click to teleport to a random player.", ChatColor.GRAY + "Right click to open a player teleporter."));
 			compass.setItemMeta(compassMeta);
 			
-			ItemStack night = new ItemStack (Material.INK_SACK, 1, (short) 12);
-			ItemMeta nightMeta = night.getItemMeta();
-			nightMeta.setDisplayName(ChatColor.GREEN + "Toggle Night Vision");
-			nightMeta.setLore(Arrays.asList(ChatColor.GRAY + "Right click to toggle the night vision effect."));
-			night.setItemMeta(nightMeta);
+			ItemStack vision = new ItemStack (Material.INK_SACK, 1, (short) 12);
+			ItemMeta visionMeta = vision.getItemMeta();
+			visionMeta.setDisplayName(ChatColor.GREEN + "Toggle Night Vision");
+			visionMeta.setLore(Arrays.asList(ChatColor.GRAY + "Click to toggle the night vision effect."));
+			vision.setItemMeta(visionMeta);
+			
+			ItemStack nether = new ItemStack (Material.INK_SACK, 1, (short) 12);
+			ItemMeta netherMeta = nether.getItemMeta();
+			netherMeta.setDisplayName(ChatColor.GREEN + "Players in the nether");
+			netherMeta.setLore(Arrays.asList(ChatColor.GRAY + "Click to toggle get a list of players in the nether."));
+			nether.setItemMeta(netherMeta);
 			
 			ItemStack tp = new ItemStack (Material.FEATHER);
 			ItemMeta tpMeta = tp.getItemMeta();
 			tpMeta.setDisplayName(ChatColor.GREEN + "Teleport to 0,0");
-			tpMeta.setLore(Arrays.asList(ChatColor.GRAY + "Right click to telepor to 0,0."));
+			tpMeta.setLore(Arrays.asList(ChatColor.GRAY + "Click to teleport to 0,0."));
 			tp.setItemMeta(tpMeta);
 			
 			player.getInventory().remove(compass);
-			player.getInventory().remove(night);
+			player.getInventory().remove(vision);
+			player.getInventory().remove(nether);
 			player.getInventory().remove(tp);
 			
 			for (ItemStack content : player.getInventory().getContents()) {
@@ -85,14 +96,20 @@ public class Spectator {
 				}
 			}
 			
-			ExperienceOrb exp = player.getWorld().spawn(player.getLocation().getBlock().getLocation().add(0.5, 0.7, 0.5), ExperienceOrb.class);
-			exp.setExperience((int) player.getExp());
-			exp.setVelocity(new Vector(0, 0.2, 0));
+			if (player.getExp() > 0) {
+				ExperienceOrb exp = player.getWorld().spawn(player.getLocation().getBlock().getLocation().add(0.5, 0.7, 0.5), ExperienceOrb.class);
+				exp.setExperience((int) player.getExp());
+				exp.setVelocity(new Vector(0, 0.2, 0));
+			}
 			
 			player.setGameMode(GameMode.SPECTATOR);
+			player.setWalkSpeed((float) 0.2);
+			player.setFlySpeed((float) 0.1);
 			player.setAllowFlight(true);
 			player.setFlying(true);
-			player.setFlySpeed((float) 0.1);
+			
+			player.getInventory().setArmorContents(null);
+			player.getInventory().clear();
 			
 			Teams.getManager().joinTeam("spec", player);
 			
@@ -101,8 +118,9 @@ public class Spectator {
 			}
 			
 			player.getInventory().setItem(1, tp);
-			player.getInventory().setItem(4, compass);
-			player.getInventory().setItem(7, night);
+			player.getInventory().setItem(3, compass);
+			player.getInventory().setItem(5, nether);
+			player.getInventory().setItem(7, vision);
 			
 			for (Player online : PlayerUtils.getPlayers()) {
 				if (!Main.spectating.contains(online.getName())) {
@@ -123,50 +141,52 @@ public class Spectator {
 			}
 			
 			player.setGameMode(GameMode.SURVIVAL);
+			player.setWalkSpeed((float) 0.2);
+			player.setFlySpeed((float) 0.1);
 			player.setAllowFlight(false);
 			player.setFlying(false);
-			player.setFlySpeed((float) 0.1);
-			
-			if (Teams.getManager().getTeam(player) != null) {
-				Teams.getManager().leaveTeam(player);
-			}
+
+			Teams.getManager().leaveTeam(player);
 			
 			if (Main.spectating.contains(player.getName())) {
 				Main.spectating.remove(player.getName());
 			}
 			
 			player.removePotionEffect(PotionEffectType.NIGHT_VISION);
+			player.getInventory().setArmorContents(null);
 			player.getInventory().clear();
 			
 			for (Player online : PlayerUtils.getPlayers()) {
-				if (!Main.spectating.contains(online.getName())) {
-					player.showPlayer(online);
-				} else {
+				if (Main.spectating.contains(online.getName())) {
 					player.hidePlayer(online);
+				} else {
+					player.showPlayer(online);
 				}
 				online.showPlayer(player);
-				hideAll(online);
+				manageVanish(online);
 			}
 		}
 	}
 	
 	/**
-	 * Toggles the players spectator mode.
-	 * @param player the player toggling.
+	 * Toggles the given player's spectator mode.
+	 * 
+	 * @param player the player toggling for.
 	 */
 	public void toggle(Player player, boolean command) {
 		if (Main.spectating.contains(player.getName())) {
-			this.set(player, false, command);
+			set(player, false, command);
 		} else {
-			this.set(player, true, command);
+			set(player, true, command);
 		}
 	}
 	
 	/**
 	 * Hides all spectators from non spectators.
-	 * @param player The players not spectating.
+	 * 
+	 * @param player The player not spectating.
 	 */
-	public void hideAll(Player player) {
+	public void manageVanish(Player player) {
 		for (Player online : PlayerUtils.getPlayers()) {
 			if (Main.spectating.contains(online.getName()) && !Main.spectating.contains(player.getName())) {
 				player.hidePlayer(online);

@@ -10,7 +10,10 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
  
 /**
- * A class to manage all the config files
+ * Settings class to manage all the config files.
+ * <p>
+ * This class contains methods for saving, getting and reloading the config, hof and data.yml!
+ * 
  * @author LeonTG77
  */
 public class Settings {
@@ -36,14 +39,15 @@ public class Settings {
        
 	/**
 	 * Sets the settings manager up and creates missing files.
-	 * @param p the main class.
+	 * 
+	 * @param plugin the main class.
 	 */
-	public void setup(Plugin p) {      
-		if (!p.getDataFolder().exists()) {
-			p.getDataFolder().mkdir();
+	public void setup(Plugin plugin) {      
+		if (!plugin.getDataFolder().exists()) {
+			plugin.getDataFolder().mkdir();
 		}
         
-		cfile = new File(p.getDataFolder(), "config.yml");
+		cfile = new File(plugin.getDataFolder(), "config.yml");
 	        
 		if (!cfile.exists()) {
 			Bukkit.getLogger().info("§a[UHC] Could not find config.yml file, creating...");
@@ -57,7 +61,7 @@ public class Settings {
 	        
 		config = YamlConfiguration.loadConfiguration(cfile);
 	    
-		dfile = new File(p.getDataFolder(), "data.yml");
+		dfile = new File(plugin.getDataFolder(), "data.yml");
 		    
 		if (!dfile.exists()) {
 			Bukkit.getLogger().info("§a[UHC] Could not find data.yml file, creating...");
@@ -71,7 +75,7 @@ public class Settings {
 		    
 		data = YamlConfiguration.loadConfiguration(dfile);
                
-		hfile = new File(p.getDataFolder(), "hof.yml");
+		hfile = new File(plugin.getDataFolder(), "hof.yml");
                
 		if (!hfile.exists()) {
 			Bukkit.getLogger().info("§a[UHC] Could not find hof.yml file, creating...");

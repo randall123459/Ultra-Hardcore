@@ -10,7 +10,6 @@ import net.minecraft.server.v1_8_R3.PacketPlayOutChat;
 import net.minecraft.server.v1_8_R3.PacketPlayOutPlayerListHeaderFooter;
 import net.minecraft.server.v1_8_R3.PacketPlayOutTitle;
 import net.minecraft.server.v1_8_R3.PacketPlayOutTitle.EnumTitleAction;
-import net.minecraft.server.v1_8_R3.PlayerConnection;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -35,14 +34,18 @@ public class PlayerUtils {
 	 */
 	public static List<Player> getPlayers() {
 		ArrayList<Player> list = new ArrayList<Player>();
+		
 		for (Player online : Bukkit.getServer().getOnlinePlayers()) {
 			list.add(online);
 		}
+		
 		return list;
 	}
 	
 	/**
 	 * Gets an offline player by a name.
+	 * <p>
+	 * This is just because of the deprecation on Bukkit.getOfflinePlayer(String) 
 	 * @param name The name.
 	 * @return the offline player.
 	 */
@@ -61,6 +64,7 @@ public class PlayerUtils {
 				online.sendMessage(message);
 			}
 		}
+		
 		Bukkit.getLogger().info(message.replaceAll("§l", ""));
 	}
 	
@@ -72,6 +76,7 @@ public class PlayerUtils {
 		for (Player online : getPlayers()) {
 			online.sendMessage(message);
 		}
+		
 		Bukkit.getLogger().info(message.replaceAll("§l", ""));
 	}
 
@@ -96,6 +101,7 @@ public class PlayerUtils {
 		} else if (length > 45 && length <= 54) {
 			return 54;
 		}
+		
 		return 54;
 	}
 	
@@ -107,6 +113,7 @@ public class PlayerUtils {
 	 */
 	public static List<Entity> getNearby(Location loc, int distance) {
 		List<Entity> list = new ArrayList<Entity>();
+		
 		for (Entity e : loc.getWorld().getEntities()) {
 			if (e instanceof Player) {
 				continue;
@@ -116,6 +123,7 @@ public class PlayerUtils {
 				list.add(e);
 			}
 		}
+		
 		for (Player online : getPlayers()) {
 			if (online.getWorld() == loc.getWorld()) {
 				if (loc.distance(online.getLocation()) <= distance) {
@@ -123,6 +131,7 @@ public class PlayerUtils {
 				}
 			}
 		}
+		
 		return list;
 	}
 	
@@ -132,7 +141,8 @@ public class PlayerUtils {
 	 * @return the players ping
 	 */
 	public static int getPing(Player player) {
-		return ((CraftPlayer) player).getHandle().ping;
+		CraftPlayer craft = (CraftPlayer) player;
+		return craft.getHandle().ping;
 	}
 	
 	/**
@@ -140,19 +150,23 @@ public class PlayerUtils {
 	 * @param player the player.
 	 */
 	public static void setTabList(Player player) {
-		PlayerConnection connection = ((CraftPlayer) player).getHandle().playerConnection;
-        IChatBaseComponent tabTitle = ChatSerializer.a("{text:'Ultra Hardcore',color:'dark_red',bold:'true'}");
-        IChatBaseComponent tabFoot = ChatSerializer.a("{text:'" + ServerUtils.getTeamSize() + " " + Settings.getInstance().getConfig().getString("game.scenarios") + "',color:'gray'}");
-        PacketPlayOutPlayerListHeaderFooter headerPacket = new PacketPlayOutPlayerListHeaderFooter(tabTitle);
+		CraftPlayer craft = (CraftPlayer) player;
+
+        IChatBaseComponent headerJSON = ChatSerializer.a("{text:'Ultra Hardcore',color:'dark_red',bold:'true'}");
+        IChatBaseComponent footerJSON = ChatSerializer.a("{text:'" + GameUtils.getTeamSize() + " " + Settings.getInstance().getConfig().getString("game.scenarios") + "',color:'gray'}");
+
+        PacketPlayOutPlayerListHeaderFooter headerPacket = new PacketPlayOutPlayerListHeaderFooter(headerJSON);
  
         try {
             Field field = headerPacket.getClass().getDeclaredField("b");
             field.setAccessible(true);
-            field.set(headerPacket, tabFoot);
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            connection.sendPacket(headerPacket);
+            field.set(headerPacket, footerJSON);
+        }
+        catch (Exception e) {
+            Bukkit.getServer().getLogger().severe("§cCould not send tab list packets to " + player.getName());
+        }
+        finally {
+            craft.getHandle().playerConnection.sendPacket(headerPacket);
         }
 	}
 	
@@ -162,35 +176,39 @@ public class PlayerUtils {
 	 * @param msg the message.
 	 */
 	public static void sendAction(Player player, String msg) {
-		CraftPlayer p = (CraftPlayer) player;
+		CraftPlayer craft = (CraftPlayer) player;
+
+        IChatBaseComponent actionJSON = ChatSerializer.a("{text:'" + msg + "'}");
+        PacketPlayOutChat actionPacket = new PacketPlayOutChat(actionJSON, (byte) 2);
         
-        IChatBaseComponent cbc = ChatSerializer.a("{text:'" + msg + "'}");
-        PacketPlayOutChat ppoc = new PacketPlayOutChat(cbc, (byte) 2);
-        p.getHandle().playerConnection.sendPacket(ppoc);
+        craft.getHandle().playerConnection.sendPacket(actionPacket);
 	}
 	
 	/**
 	 * Sends a title message to a player.
+	 * @param player the player displaying to.
 	 * @param title the title.
 	 * @param subtitle the subtitle.
 	 * @param in how long it uses to fade in.
 	 * @param out how long it uses to fade out.
 	 * @param stay how long it stays.
-	 * @param player the player displaying to.
 	 */
 	public static void sendTitle(Player player, String title, String subtitle, int in, int stay, int out) {
-        PlayerConnection connection = ((CraftPlayer) player).getHandle().playerConnection;
+        CraftPlayer craft = (CraftPlayer) player;
+        
         IChatBaseComponent titleJSON = ChatSerializer.a("{'text': '" + title + "'}");
         IChatBaseComponent subtitleJSON = ChatSerializer.a("{'text': '" + subtitle + "'}");
+        
         PacketPlayOutTitle titlePacket = new PacketPlayOutTitle(EnumTitleAction.TITLE, titleJSON, in, stay, out);
         PacketPlayOutTitle subtitlePacket = new PacketPlayOutTitle(EnumTitleAction.SUBTITLE, subtitleJSON);
-        connection.sendPacket(titlePacket);
-        connection.sendPacket(subtitlePacket);
+        
+        craft.getHandle().playerConnection.sendPacket(titlePacket);
+        craft.getHandle().playerConnection.sendPacket(subtitlePacket);
     }
 
 	/**
-	 * Handle the permissions for a 
-	 * @param player
+	 * Handle the permissions for a player.
+	 * @param player the player.
 	 */
 	public static void handlePermissions(Player player) {
 		
