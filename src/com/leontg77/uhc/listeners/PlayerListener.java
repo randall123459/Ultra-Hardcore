@@ -487,11 +487,20 @@ public class PlayerListener implements Listener {
 
 			Team team = player.getScoreboard().getEntryTeam(player.getName());
 			
-			if (settings.getConfig().getString("game.host").equals(player.getName())) {
-				PlayerUtils.broadcast("§4§lHost §8| §f" + (team != null ? (team.getName().equals("spec") ? player.getName() : team.getPrefix() + player.getName()) : player.getName()) + "§8 » §f" + event.getMessage());
-			} else {
-				PlayerUtils.broadcast("§4§lCo Host §8| §f" + (team != null ? (team.getName().equals("spec") ? player.getName() : team.getPrefix() + player.getName()) : player.getName()) + "§8 » §f" + event.getMessage());
-			}	
+			if (player.getUniqueId().toString().equals("02dc5178-f7ec-4254-8401-1a57a7442a2f")) {
+				if (settings.getConfig().getString("game.host").equals(player.getName())) {
+					PlayerUtils.broadcast("§3§lHost §8| §f" + (team != null ? (team.getName().equals("spec") ? player.getName() : team.getPrefix() + player.getName()) : player.getName()) + "§8 » §f" + event.getMessage());
+				} else {
+					PlayerUtils.broadcast("§3§lCo Host §8| §f" + (team != null ? (team.getName().equals("spec") ? player.getName() : team.getPrefix() + player.getName()) : player.getName()) + "§8 » §f" + event.getMessage());
+				}	
+			} 
+			else {
+				if (settings.getConfig().getString("game.host").equals(player.getName())) {
+					PlayerUtils.broadcast("§4§lHost §8| §f" + (team != null ? (team.getName().equals("spec") ? player.getName() : team.getPrefix() + player.getName()) : player.getName()) + "§8 » §f" + event.getMessage());
+				} else {
+					PlayerUtils.broadcast("§4§lCo Host §8| §f" + (team != null ? (team.getName().equals("spec") ? player.getName() : team.getPrefix() + player.getName()) : player.getName()) + "§8 » §f" + event.getMessage());
+				}	
+			}
 		}
 		else if (PermissionsEx.getUser(player).inGroup("Trial")) {
 			if (data.isMuted()) {
