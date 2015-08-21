@@ -1,5 +1,7 @@
 package com.leontg77.uhc.cmds;
 
+import java.util.ArrayList;
+
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -9,7 +11,9 @@ import com.leontg77.uhc.Main;
 import com.leontg77.uhc.util.PlayerUtils;
 
 public class VoteCommand implements CommandExecutor {
-	public static boolean vote = false;
+	public static ArrayList<String> voted = new ArrayList<String>();
+	public static boolean running = false;
+	
 	public static int yes = 0;
 	public static int no = 0;
 	
@@ -22,20 +26,20 @@ public class VoteCommand implements CommandExecutor {
 				}
 				
 				if (args[0].equalsIgnoreCase("end")) {
-					if (!vote) {
+					if (!running) {
 						sender.sendMessage(ChatColor.RED + "No votes are running.");
 						return true;
 					}
 					
 					PlayerUtils.broadcast(Main.prefix() + "The vote has ended, §a" + yes + " yes §7and §c" + no + " no§7.");
-					vote = false;
+					running = false;
 					yes = 0;
 					no = 0;
-					Main.voted.clear();
+					voted.clear();
 					return true;
 				}
 				
-				if (vote) {
+				if (running) {
 					sender.sendMessage(ChatColor.RED + "Theres already a vote running.");
 					return true;
 				}
@@ -48,8 +52,8 @@ public class VoteCommand implements CommandExecutor {
 		        }
 		        
 		        String msg = message.toString().trim();
-		        vote = true;
-		        Main.voted.clear();
+		        running = true;
+		        voted.clear();
 		        
 		        PlayerUtils.broadcast(Main.prefix() + "A vote has started for " + msg + ".");
 		        PlayerUtils.broadcast("§8§l» §7Say §a'y'§7 or §c'n'§7 in chat to vote.");

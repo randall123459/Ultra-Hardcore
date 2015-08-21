@@ -30,11 +30,19 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import com.leontg77.uhc.Main;
+import com.leontg77.uhc.Spectator;
 import com.leontg77.uhc.Main.State;
 import com.leontg77.uhc.scenario.ScenarioManager;
 import com.leontg77.uhc.util.BlockUtils;
 import com.leontg77.uhc.util.NumberUtils;
 
+/**
+ * Entity listener class.
+ * <p> 
+ * Contains all eventhandlers for entity releated events.
+ * 
+ * @author LeonTG77
+ */
 public class EntityListener implements Listener {
 	
 	@EventHandler
@@ -160,7 +168,7 @@ public class EntityListener implements Listener {
 		final Player player = (Player) event.getEntity();
 		final Projectile damager = (Projectile) event.getDamager();
 
-		if (Main.spectating.contains(player.getName())) {
+		if (Spectator.getManager().isSpectating(player)) {
 			return;
 		}
 		
@@ -200,7 +208,7 @@ public class EntityListener implements Listener {
 		Player player = (Player) event.getEntity();
 		Projectile damager = (Projectile) event.getDamager();
 
-		if (Main.spectating.contains(player.getName())) {
+		if (Spectator.getManager().isSpectating(player)) {
 			return;
 		}
 		

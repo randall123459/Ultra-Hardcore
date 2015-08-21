@@ -1,6 +1,7 @@
 package com.leontg77.uhc.cmds;
 
-import java.util.List;
+import java.util.ArrayList;
+import java.util.Collections;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -17,29 +18,31 @@ public class ListCommand implements CommandExecutor {
 
 	public boolean onCommand(CommandSender sender, Command cmd, String label, final String[] args) {
 		if (cmd.getName().equalsIgnoreCase("list")) {
-			List<Player> players = PlayerUtils.getPlayers();
-	    	StringBuilder onlineList = new StringBuilder();
-	    	int p = 0;
+			ArrayList<Player> players = new ArrayList<Player>(PlayerUtils.getPlayers());
+			Collections.shuffle(players);
+			
+	    	StringBuilder list = new StringBuilder();
+	    	int p = 1;
 	    		
 	    	for (int i = 0; i < players.size(); i++) {
 	    		if (sender instanceof Player && !((Player) sender).canSee(players.get(i))) {
 	    			continue;
 	    		}
 	    		
-				if (onlineList.length() > 0 && i == players.size() - 1) {
-					onlineList.append(" §7and §f");
-				}
-				else if (onlineList.length() > 0 && onlineList.length() != players.size()) {
-					onlineList.append("§7, §f");
+				if (list.length() > 0) {
+					if (p == players.size()) {
+						list.append(" §7and §f");
+					} else {
+						list.append("§7, §f");
+					}
 				}
 				
-				onlineList.append(players.get(i).getName());
+				list.append(players.get(i).getName());
 				p++;
 			}
 	    			
-	    	sender.sendMessage(Main.prefix() + "There are currently " + ChatColor.GOLD + p + ChatColor.GRAY + " out of " + ChatColor.GOLD + settings.getConfig().getInt("maxplayers") + ChatColor.GRAY + " players online.");
-	    	sender.sendMessage("§7Players: §f" + onlineList.toString());
-	    	p = 0;
+	    	sender.sendMessage(Main.prefix() + "There are currently " + ChatColor.GOLD + (p - 1) + ChatColor.GRAY + " out of " + ChatColor.GOLD + settings.getConfig().getInt("maxplayers") + ChatColor.GRAY + " players online.");
+	    	sender.sendMessage("§7Players: §f" + list.toString());
         }
 		return true;
 	}

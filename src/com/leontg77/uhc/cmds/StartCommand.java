@@ -8,6 +8,7 @@ import org.bukkit.command.CommandSender;
 
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.Runnables;
+import com.leontg77.uhc.Settings;
 import com.leontg77.uhc.Main.State;
 import com.leontg77.uhc.util.PlayerUtils;
 
@@ -50,14 +51,14 @@ public class StartCommand implements CommandExecutor {
 						return true;
 					}
 					
-					Runnables.finalheal = a;
+					Runnables.heal = a;
 					Runnables.pvp = b;
 					Runnables.meetup = c;
 					
 					Runnables.timer();
 					Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer cancel");
 					
-					if (Runnables.finalheal > 0) {
+					if (Runnables.heal > 0) {
 						Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer 60 &aFinal heal in:&7");
 					} else if (Runnables.pvp > 0) {
 						Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer " + (Runnables.pvp * 60) + " &aPvP in:&7");
@@ -72,6 +73,8 @@ public class StartCommand implements CommandExecutor {
 					break;
 				case SCATTER:
 					PlayerUtils.broadcast(Main.prefix() + "The game is starting.");
+					PlayerUtils.broadcast(Main.prefix() + "Remember to read the match post: " + Settings.getInstance().getConfig().getString("matchpost"));
+					PlayerUtils.broadcast(Main.prefix() + "If you have any questions, use /helpop.");
 					Runnables.start();
 					break;
 				default:

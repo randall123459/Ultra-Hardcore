@@ -18,8 +18,8 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
-import com.leontg77.uhc.Main;
-import com.leontg77.uhc.SpecInfo;
+import com.leontg77.uhc.Spectator;
+import com.leontg77.uhc.Spectator.SpecInfo;
 import com.leontg77.uhc.scenario.Scenario;
 import com.leontg77.uhc.scenario.ScenarioManager;
 import com.leontg77.uhc.util.BlockUtils;
@@ -126,15 +126,15 @@ public class CutClean extends Scenario implements Listener {
 					}
 				}
 				
-				if (SpecInfo.totalG.containsKey(player.getName())) {
-					SpecInfo.totalG.put(player.getName(), SpecInfo.totalG.get(player.getName()) + amount);
+				if (SpecInfo.totalGold.containsKey(player.getName())) {
+					SpecInfo.totalGold.put(player.getName(), SpecInfo.totalGold.get(player.getName()) + amount);
 				} else {
-					SpecInfo.totalG.put(player.getName(), amount);
+					SpecInfo.totalGold.put(player.getName(), amount);
 				}
 				
 				for (Player online : PlayerUtils.getPlayers()) {
-					if (Main.spectating.contains(online.getName())) {
-						online.sendMessage("[§4S§f] §7" + player.getName() + "§f:§6GOLD §f[V:§6" + amount + "§f] [T:§6" + SpecInfo.totalG.get(player.getName()) + "§f]");
+					if (Spectator.getManager().isSpectating(online)) {
+						online.sendMessage("[§4S§f] §7" + player.getName() + "§f:§6GOLD §f[V:§6" + amount + "§f] [T:§6" + SpecInfo.totalGold.get(player.getName()) + "§f]");
 					}
 				}
 				amount = 0;

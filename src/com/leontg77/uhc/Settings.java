@@ -1,13 +1,13 @@
 package com.leontg77.uhc;
- 
+
+import static com.leontg77.uhc.Main.plugin;
+
 import java.io.File;
-import java.io.IOException;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.plugin.Plugin;
  
 /**
  * Settings class to manage all the config files.
@@ -17,8 +17,7 @@ import org.bukkit.plugin.Plugin;
  * @author LeonTG77
  */
 public class Settings {
-	private static Settings instance = new Settings(); 
-	private Settings() {}   
+	private static Settings instance = new Settings();
 	
 	private FileConfiguration config;
 	private File cfile;
@@ -31,7 +30,8 @@ public class Settings {
 
 	/**
 	 * Gets the instance of the class.
-	 * @return the instance.
+	 * 
+	 * @return The instance.
 	 */
 	public static Settings getInstance() {
 		return instance;
@@ -39,10 +39,8 @@ public class Settings {
        
 	/**
 	 * Sets the settings manager up and creates missing files.
-	 * 
-	 * @param plugin the main class.
 	 */
-	public void setup(Plugin plugin) {      
+	public void setup() {      
 		if (!plugin.getDataFolder().exists()) {
 			plugin.getDataFolder().mkdir();
 		}
@@ -50,11 +48,9 @@ public class Settings {
 		cfile = new File(plugin.getDataFolder(), "config.yml");
 	        
 		if (!cfile.exists()) {
-			Bukkit.getLogger().info("§a[UHC] Could not find config.yml file, creating...");
 			try {
 				cfile.createNewFile();
-				Bukkit.getLogger().info("§a[UHC] File created.");
-			} catch (IOException ex) {
+			} catch (Exception e) {
 				Bukkit.getServer().getLogger().severe(ChatColor.RED + "Could not create config.yml!");
 			}
 		}
@@ -64,11 +60,9 @@ public class Settings {
 		dfile = new File(plugin.getDataFolder(), "data.yml");
 		    
 		if (!dfile.exists()) {
-			Bukkit.getLogger().info("§a[UHC] Could not find data.yml file, creating...");
 			try {
 				dfile.createNewFile();
-				Bukkit.getLogger().info("§a[UHC] File created.");
-			} catch (IOException ex) {
+			} catch (Exception e) {
 				Bukkit.getServer().getLogger().severe(ChatColor.RED + "Could not create data.yml!");
 			}
 		}
@@ -78,22 +72,21 @@ public class Settings {
 		hfile = new File(plugin.getDataFolder(), "hof.yml");
                
 		if (!hfile.exists()) {
-			Bukkit.getLogger().info("§a[UHC] Could not find hof.yml file, creating...");
 			try {
 				hfile.createNewFile();
-				Bukkit.getLogger().info("§a[UHC] File created.");
-			} catch (IOException ex) {
+			} catch (Exception e) {
 				Bukkit.getServer().getLogger().severe(ChatColor.RED + "Could not create hof.yml!");
 			}
 		}
                
 		hof = YamlConfiguration.loadConfiguration(hfile);
-		Bukkit.getLogger().info("§a[UHC] Configs has been setup.");
+		Bukkit.getLogger().info("[UHC] Configs has been setup.");
 	}
     
 	/**
 	 * Gets the config file.
-	 * @return the file.
+	 * 
+	 * @return The file.
 	 */
 	public FileConfiguration getConfig() {
 		return config;
@@ -105,7 +98,7 @@ public class Settings {
 	public void saveConfig() {
 		try {
 			config.save(cfile);
-		} catch (IOException ex) {
+		} catch (Exception e) {
 			Bukkit.getServer().getLogger().severe(ChatColor.RED + "Could not save config.yml!");
 		}
 	}
@@ -120,7 +113,8 @@ public class Settings {
     
 	/**
 	 * Gets the data file.
-	 * @return the file.
+	 * 
+	 * @return The file.
 	 */
 	public FileConfiguration getData() {
 		return data;
@@ -132,7 +126,7 @@ public class Settings {
 	public void saveData() {
 		try {
 			data.save(dfile);
-		} catch (IOException ex) {
+		} catch (Exception e) {
 			Bukkit.getServer().getLogger().severe(ChatColor.RED + "Could not save data.yml!");
 		}
 	}
@@ -147,7 +141,8 @@ public class Settings {
     
 	/**
 	 * Gets the hof file.
-	 * @return the file.
+	 * 
+	 * @return The file.
 	 */
 	public FileConfiguration getHOF() {
 		return hof;
@@ -159,7 +154,7 @@ public class Settings {
 	public void saveHOF() {
 		try {
 			hof.save(hfile);
-		} catch (Exception ex) {
+		} catch (Exception e) {
 			Bukkit.getServer().getLogger().severe(ChatColor.RED + "Could not save hof.yml!");
 		}
 	}

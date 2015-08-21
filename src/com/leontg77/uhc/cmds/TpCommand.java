@@ -8,12 +8,13 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.leontg77.uhc.Main;
+import com.leontg77.uhc.Spectator;
 
 public class TpCommand implements CommandExecutor {
 
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (cmd.getName().equalsIgnoreCase("tp")) {
-			if (sender.hasPermission("uhc.tp") || Main.spectating.contains(sender.getName())) {
+			if (sender.hasPermission("uhc.tp") || Spectator.getManager().isSpectating(sender.getName())) {
 				if (args.length == 0) {
 					sender.sendMessage(ChatColor.RED + "Usage: /tp <player>");
 					return true;

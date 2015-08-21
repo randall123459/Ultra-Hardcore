@@ -8,7 +8,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.leontg77.uhc.InvGUI;
-import com.leontg77.uhc.Main;
+import com.leontg77.uhc.Spectator;
 
 public class InvseeCommand implements CommandExecutor {
 
@@ -21,7 +21,7 @@ public class InvseeCommand implements CommandExecutor {
 		Player player = (Player) sender;
 		
 		if (cmd.getName().equalsIgnoreCase("invsee")) {
-			if (player.hasPermission("uhc.invsee") || Main.spectating.contains(player.getName())) {
+			if (player.hasPermission("uhc.invsee") || Spectator.getManager().isSpectating(sender.getName())) {
 				if (args.length == 0) {
 		    		player.sendMessage(ChatColor.RED + "Usage: /invsee <player>");
 		    		return true;

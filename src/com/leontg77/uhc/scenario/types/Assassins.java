@@ -1,8 +1,8 @@
 package com.leontg77.uhc.scenario.types;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -35,7 +35,7 @@ public class Assassins extends Scenario implements Listener {
 		
 		if (enable) {
 			PlayerUtils.broadcast(Main.prefix() + "Assigning targets...");
-			List<Player> players = PlayerUtils.getPlayers();
+			ArrayList<Player> players = new ArrayList<Player>(PlayerUtils.getPlayers());
 			Collections.shuffle(players);
 	          
 			for (int i = 0; i < players.size(); i++) {

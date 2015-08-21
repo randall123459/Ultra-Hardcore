@@ -69,7 +69,7 @@ public class SpreadCommand implements CommandExecutor {
 					}
 					
 					for (OfflinePlayer online : Bukkit.getServer().getWhitelistedPlayers()) {
-						if (Scoreboards.getManager().sb.getEntryTeam(online.getName()) == null) {
+						if (Scoreboards.getManager().board.getEntryTeam(online.getName()) == null) {
 							s++;
 						}
 					}
@@ -106,7 +106,7 @@ public class SpreadCommand implements CommandExecutor {
 								}
 								
 								for (OfflinePlayer online : Bukkit.getServer().getWhitelistedPlayers()) {
-									if (Scoreboards.getManager().sb.getEntryTeam(online.getName()) == null) {
+									if (Scoreboards.getManager().board.getEntryTeam(online.getName()) == null) {
 										scatterLocs.put(online.getName(), loc.get(index));
 										index++;
 									}

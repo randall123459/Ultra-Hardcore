@@ -11,7 +11,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
-import com.leontg77.uhc.Main;
 import com.leontg77.uhc.Spectator;
 import com.leontg77.uhc.util.PlayerUtils;
 
@@ -29,17 +28,17 @@ public class SpectateCommand implements CommandExecutor, TabCompleter {
 					if (sender instanceof Player) {
 						Player player = (Player) sender;
 						if (args[0].equalsIgnoreCase("toggle")) {
-							Spectator.getManager().toggle(player, true);
+							Spectator.getManager().toggle(player, false);
 							return true;
 						}
 						
 						if (args[0].equalsIgnoreCase("on")) {
-							Spectator.getManager().set(player, true, true);
+							Spectator.getManager().enableSpecmode(player, false);
 							return true;
 						}
 						
 						if (args[0].equalsIgnoreCase("off")) {
-							Spectator.getManager().set(player, false, true);
+							Spectator.getManager().disableSpecmode(player, false);
 							return true;
 						}
 						player.sendMessage(ChatColor.RED + "Usage: /spec <on|off|toggle> [player]");
@@ -58,17 +57,17 @@ public class SpectateCommand implements CommandExecutor, TabCompleter {
 					} 
 					
 					if (args[0].equalsIgnoreCase("toggle")) {
-						Spectator.getManager().toggle(target, true);
+						Spectator.getManager().toggle(target, false);
 						return true;
 					}
 					
 					if (args[0].equalsIgnoreCase("on")) {
-						Spectator.getManager().set(target, true, true);
+						Spectator.getManager().enableSpecmode(target, false);
 						return true;
 					}
 					
 					if (args[0].equalsIgnoreCase("off")) {
-						Spectator.getManager().set(target, false, true);
+						Spectator.getManager().disableSpecmode(target, false);
 			    		return true;
 					}
 					sender.sendMessage(ChatColor.RED + "Usage: /spec <on|off|toggle> [player]");
@@ -76,17 +75,17 @@ public class SpectateCommand implements CommandExecutor, TabCompleter {
 					if (sender instanceof Player) {
 						Player player = (Player) sender;
 						if (args[0].equalsIgnoreCase("toggle")) {
-							Spectator.getManager().toggle(player, true);
+							Spectator.getManager().toggle(player, false);
 							return true;
 						}
 						
 						if (args[0].equalsIgnoreCase("on")) {
-							Spectator.getManager().set(player, true, true);
+							Spectator.getManager().enableSpecmode(player, false);
 							return true;
 						}
 						
 						if (args[0].equalsIgnoreCase("off")) {
-							Spectator.getManager().set(player, false, true);
+							Spectator.getManager().disableSpecmode(player, false);
 							return true;
 						}
 						player.sendMessage(ChatColor.RED + "Usage: /spec <on|off|toggle> [player]");
@@ -134,7 +133,7 @@ public class SpectateCommand implements CommandExecutor, TabCompleter {
 				        	if (!args[1].equals("")) {
 				        		for (Player online : PlayerUtils.getPlayers()) {
 				        			if (online.getName().toLowerCase().startsWith(args[1].toLowerCase())) {
-				        				if (!Main.spectating.contains(online.getName())) {
+				        				if (!Spectator.getManager().isSpectating(online)) {
 					        				arg.add(online.getName());
 				        				}
 				        			}
@@ -142,7 +141,7 @@ public class SpectateCommand implements CommandExecutor, TabCompleter {
 				        	}
 				        	else {
 				        		for (Player online : PlayerUtils.getPlayers()) {
-			        				if (!Main.spectating.contains(online.getName())) {
+			        				if (!Spectator.getManager().isSpectating(online)) {
 				        				arg.add(online.getName());
 			        				}
 				        		}
@@ -152,7 +151,7 @@ public class SpectateCommand implements CommandExecutor, TabCompleter {
 				        	if (!args[1].equals("")) {
 				        		for (Player online : PlayerUtils.getPlayers()) {
 				        			if (online.getName().toLowerCase().startsWith(args[1].toLowerCase())) {
-				        				if (Main.spectating.contains(online.getName())) {
+				        				if (Spectator.getManager().isSpectating(online)) {
 					        				arg.add(online.getName());
 				        				}
 				        			}
@@ -160,7 +159,7 @@ public class SpectateCommand implements CommandExecutor, TabCompleter {
 				        	}
 				        	else {
 				        		for (Player online : PlayerUtils.getPlayers()) {
-			        				if (Main.spectating.contains(online.getName())) {
+			        				if (Spectator.getManager().isSpectating(online)) {
 				        				arg.add(online.getName());
 			        				}
 				        		}

@@ -8,7 +8,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Team;
 
-import com.leontg77.uhc.Main;
+import com.leontg77.uhc.Spectator;
 
 public class PmCommand implements CommandExecutor {
 
@@ -45,7 +45,7 @@ public class PmCommand implements CommandExecutor {
 				Player teammate = Bukkit.getServer().getPlayer(entry);
 				
 				if (teammate != null) {
-					teammate.sendMessage(Main.spectating.contains(player.getName()) ? "§5§lSpecChat §8§l» §7" + player.getName() + ": §f" + msg : "§9§lTeam §8§l» §7" + player.getName() + ": §f" + msg);
+					teammate.sendMessage(Spectator.getManager().isSpectating(player) ? "§5§lSpecChat §8§l» §7" + player.getName() + ": §f" + msg : "§9§lTeam §8§l» §7" + player.getName() + ": §f" + msg);
 				}
 			}
 		}

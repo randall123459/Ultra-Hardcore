@@ -8,7 +8,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Team;
 
-import com.leontg77.uhc.Main;
+import com.leontg77.uhc.Spectator;
 
 public class TlCommand implements CommandExecutor {
 
@@ -21,7 +21,7 @@ public class TlCommand implements CommandExecutor {
 		Player player = (Player) sender;
 		
 		if (cmd.getName().equalsIgnoreCase("teamloc")) {
-			if (Main.spectating.contains(player.getName())) {
+			if (Spectator.getManager().isSpectating(player)) {
 				player.sendMessage(ChatColor.RED + "You can't do this as a spectator.");
 	        	return true;
 	        }

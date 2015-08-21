@@ -26,14 +26,15 @@ public class Teams {
 	
 	/**
 	 * Gets the instance of the class.
-	 * @return the instance.
+	 * 
+	 * @return The instance.
 	 */
 	public static Teams getManager() {
 		return manager;
 	}
 	
 	/**
-	 * Sets up all the teams.
+	 * Set up all the teams.
 	 */
 	public void setup() {
 		ArrayList<String> list = new ArrayList<String>();
@@ -60,11 +61,11 @@ public class Teams {
 		ArrayList<String> tempList = new ArrayList<String>();
 		
 		for (String li : list) {
-			tempList.add(li + ChatColor.BOLD);
+			tempList.add(li + ChatColor.ITALIC);
 		}
 		
 		for (String li : list) {
-			tempList.add(li + ChatColor.ITALIC);
+			tempList.add(li + ChatColor.BOLD);
 		}
 		
 		for (String li : list) {
@@ -110,7 +111,7 @@ public class Teams {
 	/**
 	 * Find the first available team.
 	 * 
-	 * @return the available team, null if not found.
+	 * @return The available team, null if not found.
 	 */
 	public Team findAvailableTeam() {
 		for (Team team : getTeams()) {

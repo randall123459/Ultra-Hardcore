@@ -8,6 +8,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 import com.leontg77.uhc.Main;
+import com.leontg77.uhc.Spectator;
 import com.leontg77.uhc.util.PlayerUtils;
 
 public class NearCommand implements CommandExecutor {
@@ -21,7 +22,7 @@ public class NearCommand implements CommandExecutor {
 		Player player = (Player) sender;
 		
 		if (cmd.getName().equalsIgnoreCase("near")) {
-			if (player.hasPermission("uhc.near") || Main.spectating.contains(player.getName())) {
+			if (player.hasPermission("uhc.near") || Spectator.getManager().isSpectating(sender.getName())) {
 				StringBuilder nearby = new StringBuilder("");
 				
 				for (Entity near : PlayerUtils.getNearby(player.getLocation(), 200)) {

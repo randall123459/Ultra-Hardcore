@@ -6,12 +6,16 @@ import java.util.Random;
 
 /**
  * Number utilities class.
+ * <p>
+ * Contains number related methods.
+ * 
  * @author LeonTG77
  */
 public class NumberUtils {
 	
 	/**
 	 * Convert endless decimal health to a 2 lengthed one.
+	 * 
 	 * @param damage the amount of damage to convert.
 	 * @return The new damage amount with 2 lenghted decimal.
 	 */
@@ -22,6 +26,7 @@ public class NumberUtils {
 	
 	/**
 	 * Turn the health given into percent.
+	 * 
 	 * @param health the health of the player.
 	 * @return the percent of the health.
 	 */
@@ -33,6 +38,7 @@ public class NumberUtils {
 	
 	/**
 	 * Get a random integer between two ints.
+	 * 
 	 * @param min minimum integer value.
 	 * @param max maximum integer value.
 	 * @return Random integer between two ints.

@@ -23,8 +23,8 @@ import com.leontg77.uhc.Main.State;
 import com.leontg77.uhc.Runnables;
 import com.leontg77.uhc.Scoreboards;
 import com.leontg77.uhc.Settings;
-import com.leontg77.uhc.SpecInfo;
 import com.leontg77.uhc.Spectator;
+import com.leontg77.uhc.Spectator.SpecInfo;
 import com.leontg77.uhc.util.GameUtils;
 import com.leontg77.uhc.util.PlayerUtils;
 
@@ -80,20 +80,20 @@ public class EndCommand implements CommandExecutor {
 				Main.teamKills.clear();
 				TeamCommand.sTeam.clear();
 				
-				Team team = Scoreboards.getManager().sb.getEntryTeam(args[0]);
+				Team team = Scoreboards.getManager().board.getEntryTeam(args[0]);
 				
 				if (team != null) {
 					for (String entry : team.getEntries()) {
 						OfflinePlayer m8 = PlayerUtils.getOfflinePlayer(entry);
 						
-						Data data = Data.getData(m8);
+						Data data = Data.getFor(m8);
 						data.increaseStat("wins");
 					}
 				} else {
 					for (String entry : winners) {
 						OfflinePlayer m9 = PlayerUtils.getOfflinePlayer(entry);
 						
-						Data data = Data.getData(m9);
+						Data data = Data.getFor(m9);
 						data.increaseStat("wins");
 					}
 				}
@@ -118,8 +118,8 @@ public class EndCommand implements CommandExecutor {
 				
 				for (Player online : PlayerUtils.getPlayers()) {
 					online.sendMessage(Main.prefix() + "The UHC has ended, the winners are " + win.toString().trim() + " with " + kills + " kills.");
-					if (Main.spectating.contains(online.getName())) {
-						Spectator.getManager().set(online, false, false);
+					if (Spectator.getManager().isSpectating(online)) {
+						Spectator.getManager().disableSpecmode(online, true);
 					}
 					online.setMaxHealth(20.0);
 					online.setHealth(20.0);
@@ -159,10 +159,11 @@ public class EndCommand implements CommandExecutor {
 				}
 
 				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer cancel");
+				Spectator.getManager().spectators.clear();
+				SpecInfo.totalDiamonds.clear();
 				State.setState(State.LOBBY);
+				SpecInfo.totalGold.clear();
 				Main.relog.clear();
-				SpecInfo.totalG.clear();
-				SpecInfo.totalD.clear();
 			} else {
 				sender.sendMessage(ChatColor.RED + "You do not have access to that command.");
 			}

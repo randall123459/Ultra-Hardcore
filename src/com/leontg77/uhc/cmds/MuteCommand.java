@@ -35,7 +35,7 @@ public class MuteCommand implements CommandExecutor {
 					return true;
 				}
 				
-				Data data = Data.getData(target);
+				Data data = Data.getFor(target);
 	
 				if (data.isMuted()) {
 					data.setMuted(false);

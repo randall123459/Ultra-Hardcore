@@ -9,7 +9,10 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 /**
- * Block utilties class
+ * Block utilities class.
+ * <p>
+ * Contains block related methods.
+ * 
  * @author LeonTG77
  */
 @SuppressWarnings("deprecation")
@@ -17,6 +20,7 @@ public class BlockUtils {
 	
 	/**
 	 * Display the breaking particles and sound.
+	 * 
 	 * @param player the player mining the block.
 	 * @param loc the location of the block.
 	 * @param type the type of the block.
@@ -37,9 +41,10 @@ public class BlockUtils {
 	
 	/**
 	 * Display the breaking particles and sound.
+	 * 
 	 * @param player the player mining the block.
 	 * @param loc the location of the block.
-	 * @param type the type of the block.
+	 * @param id the id of the block.
 	 */
 	public static void blockCrack(Player player, Location loc, int id) {
 		for (Entity e : PlayerUtils.getNearby(player.getLocation(), 20)) {
@@ -56,10 +61,11 @@ public class BlockUtils {
 	}
 	
 	/**
-	 * Check if the given block is nearby a location.
+	 * Check if the given block is nearby the given location.
+	 * 
 	 * @param material the type of the block
 	 * @param location the location.
-	 * @return True if blocks nearby has the checked type, false otherwise.
+	 * @return <code>True</code> if blocks nearby has the checked type, <code>false</code> otherwise.
 	 */
     public static boolean hasBlockNearby(Material material, Location location) {
         Block block = location.getBlock();
@@ -75,10 +81,12 @@ public class BlockUtils {
     }
 	
 	/**
-	 * Get the block face direction bases on a locations yaw
-	 * @param loc the location
-	 * @return the block face.
+	 * Get the block face direction bases on the given locations yaw.
+	 * 
 	 * @author ghowden
+	 * 
+	 * @param loc the location.
+	 * @return the block face.
 	 */
 	public static BlockFace getBlockDirection(Location loc) {
         double rotation = (loc.getYaw()+180) % 360;
@@ -143,20 +151,17 @@ public class BlockUtils {
     }
 
 	/**
-	 * Get the highest block at an location.
-	 * @param l the location.
-	 * @return the highest block.
+	 * Get the highest block at the given location.
+	 * 
+	 * @param loc the location.
+	 * @return The highest block.
 	 */
-	public static Location highestBlock(Location l) {
-		Location loc = l.clone();
-		
+	public static Location highestBlock(Location loc) {
 		for (int i = 255; i >= 0; i--) {
 			if (loc.getWorld().getBlockAt(loc.getBlockX(), i, loc.getBlockZ()).getType() != Material.AIR) {
-				loc.setY(i);
-				break;
+				return loc.getWorld().getBlockAt(loc.getBlockX(), i, loc.getBlockZ()).getLocation();
 			}
 		}
-		
 		return loc;
 	}
 }

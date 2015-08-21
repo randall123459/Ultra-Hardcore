@@ -22,6 +22,7 @@ import org.bukkit.scoreboard.Team;
 
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.Scoreboards;
+import com.leontg77.uhc.Spectator;
 import com.leontg77.uhc.Teams;
 import com.leontg77.uhc.util.PlayerUtils;
 
@@ -96,7 +97,7 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
 				else if (args[0].equalsIgnoreCase("info")) {
 					Team team = teams.getTeam(player);
 					
-					if (team == null || Main.spectating.contains(player.getName())) {
+					if (team == null || Spectator.getManager().isSpectating(player)) {
 						player.sendMessage(Main.prefix() + "You are not on a team.");
 						return true;
 					}
@@ -131,7 +132,7 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
 				}
 				else if (args[0].equalsIgnoreCase("clear")) {
 					if (player.hasPermission("uhc.teamadmin")) {
-						for (Team team : Scoreboards.getManager().sb.getTeams()) {
+						for (Team team : Scoreboards.getManager().board.getTeams()) {
 							for (String p : team.getEntries()) {
 								team.removeEntry(p);
 							}
@@ -278,7 +279,7 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
 			}
 			else if (args[0].equalsIgnoreCase("clear")) {
 				if (player.hasPermission("uhc.teamadmin")) {
-					for (Team team : Scoreboards.getManager().sb.getTeams()) {
+					for (Team team : Scoreboards.getManager().board.getTeams()) {
 						for (String p : team.getEntries()) {
 							team.removeEntry(p);
 						}
@@ -354,7 +355,7 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
 					
 					Team team = player.getScoreboard().getEntryTeam(target.getName());
 					
-					if (team == null || Main.spectating.contains(target.getName())) {
+					if (team == null || Spectator.getManager().isSpectating(target)) {
 						player.sendMessage(Main.prefix() + ChatColor.GREEN + target.getName() + "'s §7team info:");
 						player.sendMessage("§8» §7Team: §cNone");
 						if (Main.kills.containsKey(player.getName())) {
@@ -599,7 +600,7 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
 						return true;
 					}
 					
-					for (Team team : Scoreboards.getManager().sb.getTeams()) {
+					for (Team team : Scoreboards.getManager().board.getTeams()) {
 						team.setAllowFriendlyFire(enable);
 					}
 					

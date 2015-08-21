@@ -81,6 +81,13 @@ import com.leontg77.uhc.util.GameUtils;
 import com.leontg77.uhc.util.PlayerUtils;
 import com.leontg77.uhc.util.RecipeUtils;
 
+/**
+ * Player listener class.
+ * <p> 
+ * Contains all eventhandlers for player releated events.
+ * 
+ * @author LeonTG77
+ */
 public class PlayerListener implements Listener {
 	private Settings settings = Settings.getInstance();
 	
@@ -89,13 +96,13 @@ public class PlayerListener implements Listener {
 		Player player = event.getPlayer();
 		event.setJoinMessage(null);
 		
-		Data data = Data.getData(player);
+		Data data = Data.getFor(player);
 		data.getFile().set("username", player.getName());
 		data.saveFile();
 		
 		player.setNoDamageTicks(0);
 		
-		Spectator.getManager().manageVanish(player);
+		Spectator.getManager().hideSpectators(player);
 		PlayerUtils.handlePermissions(player);
 		PlayerUtils.setTabList(player);
 		
@@ -108,24 +115,24 @@ public class PlayerListener implements Listener {
 			TeamCommand.invites.put(player, new ArrayList<Player>());
 		}
 		
-		if (Main.spectating.contains(player.getName())) {
-			player.getInventory().clear();
+		if (Spectator.getManager().isSpectating(player)) {
 			player.getInventory().setArmorContents(null);
+			player.getInventory().clear();
 			
-			Spectator.getManager().set(player, true, false);
+			Spectator.getManager().enableSpecmode(player, true);
 		}
 		
-		if (State.isState(State.INGAME) && !player.isWhitelisted() && !Main.spectating.contains(player.getName())) {
+		if (State.isState(State.INGAME) && !player.isWhitelisted() && !Spectator.getManager().isSpectating(player)) {
 			player.sendMessage(Main.prefix() + "You joined a game that you didn't play from the start (or you was idle for too long).");
-			
-			player.getInventory().clear();
+
 			player.getInventory().setArmorContents(null);
+			player.getInventory().clear();
 			player.setExp(0);
 			
-			Spectator.getManager().set(player, true, false);
+			Spectator.getManager().enableSpecmode(player, true);
 		}
 		
-		if (!Main.spectating.contains(player.getName())) {
+		if (!Spectator.getManager().isSpectating(player)) {
 			PlayerUtils.broadcast("§8[§a+§8] §7" + player.getName() + " has joined.");
 			if (data.isNew()) {
 				PlayerUtils.broadcast(Main.prefix() + ChatColor.GREEN + player.getName() + " §7just joined for the first time.");
@@ -193,7 +200,7 @@ public class PlayerListener implements Listener {
 			player.getInventory().setArmorContents(null);
 		}
 		
-		if (!Main.spectating.contains(player.getName())) {
+		if (!Spectator.getManager().isSpectating(player)) {
 			PlayerUtils.broadcast("§8[§c-§8] §7" + player.getName() + " has left.");
 			
 			if (State.isState(State.INGAME)) {
@@ -222,12 +229,14 @@ public class PlayerListener implements Listener {
 								ExperienceOrb exp = player.getWorld().spawn(player.getLocation().add(0.5, 0.7, 0.5), ExperienceOrb.class);
 								exp.setExperience((int) player.getExp());
 								exp.setVelocity(new Vector(0, 0.2, 0));
-								
-								player.getInventory().clear();
+
 								player.getInventory().setArmorContents(null);
+								player.getInventory().clear();
 								player.setExp(0);
 								
-								PlayerUtils.broadcast(Main.prefix() + ChatColor.GREEN + player.getName() + " §7took too long to come back.");
+								Team team = Teams.getManager().getTeam(player);
+								
+								PlayerUtils.broadcast("§8» " + (team == null ? "§f" : team.getPrefix()) + player.getName() + " took too long to come back");
 								PlayerDeathEvent event = new PlayerDeathEvent(player, new ArrayList<ItemStack>(), 0, null);
 								Bukkit.getServer().getPluginManager().callEvent(event);
 							}
@@ -246,11 +255,11 @@ public class PlayerListener implements Listener {
 		
 		if (Arena.getManager().isEnabled()) {
 			for (Player p : Arena.getManager().getPlayers()) {
-				p.sendMessage(event.getDeathMessage());
+				p.sendMessage("§8» " + event.getDeathMessage());
 			}   	
 			
 	    	event.setDeathMessage(null);
-			Data data = Data.getData(player);
+			Data data = Data.getFor(player);
 			data.increaseStat("arenadeaths");
 	 
 	    	ItemStack skull = new ItemStack(Material.GOLDEN_APPLE);
@@ -284,7 +293,7 @@ public class PlayerListener implements Listener {
 			}
 			
 			player.getKiller().setLevel(player.getKiller().getLevel() + 1);
-			Data killerData = Data.getData(player.getKiller());
+			Data killerData = Data.getFor(player.getKiller());
 			killerData.increaseStat("arenakills");
 			player.sendMessage(Main.prefix() + "You were killed by §a" + player.getKiller().getName() + "§7.");
 
@@ -331,7 +340,7 @@ public class PlayerListener implements Listener {
 			player.setWhitelisted(false);
 			
 			if (State.isState(State.INGAME)) {
-				Data data = Data.getData(player);
+				Data data = Data.getFor(player);
 				data.increaseStat("deaths");
 			}
 			
@@ -373,7 +382,7 @@ public class PlayerListener implements Listener {
 			Player killer = player.getKiller();
 
 			if (State.isState(State.INGAME)) {
-				Data killerData = Data.getData(killer);
+				Data killerData = Data.getFor(killer);
 				killerData.increaseStat("kills");
 			}
 			
@@ -422,8 +431,8 @@ public class PlayerListener implements Listener {
 				
 				Bukkit.getServer().getScheduler().runTaskLater(Main.plugin, new Runnable() {
 					public void run() {
-						if (!State.isState(State.LOBBY) && player.isOnline() && !Main.spectating.contains(player.getName())) {
-							Spectator.getManager().set(player, true, false);
+						if (!State.isState(State.LOBBY) && player.isOnline() && !Spectator.getManager().isSpectating(player)) {
+							Spectator.getManager().enableSpecmode(player, true);
 						}
 					}
 				}, 300);
@@ -432,7 +441,7 @@ public class PlayerListener implements Listener {
 				
 				Bukkit.getServer().getScheduler().runTaskLater(Main.plugin, new Runnable() {
 					public void run() {
-						if (!State.isState(State.LOBBY) && player.isOnline() && !Main.spectating.contains(player.getName())) {
+						if (!State.isState(State.LOBBY) && player.isOnline() && !Spectator.getManager().isSpectating(player)) {
 							player.kickPlayer("§8» §7Thanks for playing! §8«");
 						}
 					}
@@ -444,36 +453,36 @@ public class PlayerListener implements Listener {
 	@EventHandler(priority = EventPriority.HIGH)
     public void onAsyncPlayerChat(AsyncPlayerChatEvent event) {
 		Player player = event.getPlayer();
-		Data data = Data.getData(player);
+		Data data = Data.getFor(player);
 
 		event.setCancelled(true);
 		
-		if (VoteCommand.vote && (event.getMessage().equalsIgnoreCase("y") || event.getMessage().equalsIgnoreCase("n"))) {
+		if (VoteCommand.running && (event.getMessage().equalsIgnoreCase("y") || event.getMessage().equalsIgnoreCase("n"))) {
 			if (!State.isState(State.LOBBY) && player.getWorld().getName().equals("lobby")) {
 				player.sendMessage(ChatColor.RED + "You cannot vote when you are dead.");
 				return;
 			}
 			
-			if (Main.spectating.contains(player.getName())) {
+			if (Spectator.getManager().isSpectating(player)) {
 				player.sendMessage(ChatColor.RED + "You cannot vote as a spectator.");
 				return;
 			}
 			
-			if (Main.voted.contains(player.getName())) {
+			if (VoteCommand.voted.contains(player.getName())) {
 				player.sendMessage(ChatColor.RED + "You have already voted.");
 				return;
 			}
 			
 			if (event.getMessage().equalsIgnoreCase("y")) {
 				player.sendMessage(Main.prefix() + "You voted yes.");
-				Main.voted.add(player.getName());
+				VoteCommand.voted.add(player.getName());
 				VoteCommand.yes++;
 				return;
 			}
 			
 			if (event.getMessage().equalsIgnoreCase("n")) {
 				player.sendMessage(Main.prefix() + "You voted no.");
-				Main.voted.add(player.getName());
+				VoteCommand.voted.add(player.getName());
 				VoteCommand.no++;
 			}
 			return;
@@ -555,7 +564,7 @@ public class PlayerListener implements Listener {
 		Player player = event.getPlayer();
 		
 		for (Player online : PlayerUtils.getPlayers()) {
-			if (online.hasPermission("uhc.commandspy") && (online.getGameMode() == GameMode.CREATIVE || Main.spectating.contains(online.getName())) && online != player) {
+			if (online.hasPermission("uhc.commandspy") && (online.getGameMode() == GameMode.CREATIVE || Spectator.getManager().isSpectating(online)) && online != player) {
 				online.sendMessage(ChatColor.YELLOW + player.getName() + ": §7" + event.getMessage());
 			}
 		}
@@ -638,7 +647,7 @@ public class PlayerListener implements Listener {
 		if (event.getMessage().split(" ")[0].equalsIgnoreCase("/aboard")) {
 			if (player.hasPermission("uhc.aboard")) {
 				if (Main.aboard) {
-					for (String e : Arena.getManager().ab.getScoreboard().getEntries()) {
+					for (String e : Arena.getManager().arenaKills.getScoreboard().getEntries()) {
 						Arena.getManager().resetScore(e);
 					}
 					PlayerUtils.broadcast(Main.prefix() + "Arena board has been disabled.");
@@ -646,7 +655,7 @@ public class PlayerListener implements Listener {
 					Main.aboard = false;
 				} else {
 					PlayerUtils.broadcast(Main.prefix() + "Arena board has been enabled.");
-					Arena.getManager().ab.setDisplaySlot(DisplaySlot.SIDEBAR);
+					Arena.getManager().arenaKills.setDisplaySlot(DisplaySlot.SIDEBAR);
 					Main.aboard = true;
 					Main.board = false;
 
@@ -923,13 +932,13 @@ public class PlayerListener implements Listener {
         	return;
         }
         
-		if (Main.spectating.contains(player.getName())) {
+		if (Spectator.getManager().isSpectating(player)) {
 			if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
 				InvGUI.getManager().openSelector(player);
 			} else if (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK) {
 				ArrayList<Player> players = new ArrayList<Player>();
 				for (Player online : PlayerUtils.getPlayers()) {
-					if (!Main.spectating.contains(online.getName())) {
+					if (!Spectator.getManager().isSpectating(online)) {
 						players.add(online);
 					}
 				}
@@ -976,7 +985,7 @@ public class PlayerListener implements Listener {
 			event.setCancelled(true);
 		}
 		
-		if (!Main.spectating.contains(player.getName())) {
+		if (!Spectator.getManager().isSpectating(player)) {
 			return;
 		}
         
@@ -996,7 +1005,7 @@ public class PlayerListener implements Listener {
 			if (event.isLeftClick()) {
 				ArrayList<Player> players = new ArrayList<Player>();
 				for (Player online : PlayerUtils.getPlayers()) {
-					if (!Main.spectating.contains(online.getName())) {
+					if (!Spectator.getManager().isSpectating(online)) {
 						players.add(online);
 					}
 				}
@@ -1051,8 +1060,8 @@ public class PlayerListener implements Listener {
 			Player player = (Player) event.getPlayer();
 	    	Player clicked = (Player) event.getRightClicked();
 					
-			if (Main.spectating.contains(player.getName())) {
-				if (Main.spectating.contains(clicked.getName())) {
+			if (Spectator.getManager().isSpectating(player)) {
+				if (Spectator.getManager().isSpectating(clicked)) {
 					return;
 				}
 				
@@ -1217,7 +1226,7 @@ public class PlayerListener implements Listener {
 	public void onPlayerAchievementAwarded(PlayerAchievementAwardedEvent event) {
 		Player player = event.getPlayer();
 		
-		if (Main.spectating.contains(player.getName())) {
+		if (Spectator.getManager().isSpectating(player)) {
 			event.setCancelled(true);
 			return;
 		}

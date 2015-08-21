@@ -9,13 +9,17 @@ import com.leontg77.uhc.Settings;
 import com.leontg77.uhc.Main.State;
 
 /**
- * Server utilities class.
+ * Game utilities class.
+ * <p>
+ * Contains game related methods.
+ * 
  * @author LeonTG77
  */
 public class GameUtils {
 	
 	/**
 	 * Gets the servers tps.
+	 * 
 	 * @return The servers tps.
 	 */
 	public static double getTps() {
@@ -24,7 +28,8 @@ public class GameUtils {
 	
 	/**
 	 * Gets a string version of the current state.
-	 * @return the string version.
+	 * 
+	 * @return The string version.
 	 */
 	public static String getState() {
 		State current = State.getState();
@@ -47,7 +52,8 @@ public class GameUtils {
 	
 	/**
 	 * Get the teamsize in a string format.
-	 * @return the string format.
+	 * 
+	 * @return The string format.
 	 */
 	public static String getTeamSize() {
 		if (Main.ffa) {
@@ -67,7 +73,8 @@ public class GameUtils {
 	
 	/**
 	 * Get the current host hof name.
-	 * @return the hof name.
+	 * 
+	 * @return The hof name.
 	 */
 	public static String getCurrentHost() {
 		String host = Settings.getInstance().getConfig().getString("game.host");
@@ -88,7 +95,8 @@ public class GameUtils {
 	}
 
 	/**
-	 * Get the hof name for a host.
+	 * Get the hof name for the given host.
+	 * 
 	 * @param host The host.
 	 * @return The hof name.
 	 */

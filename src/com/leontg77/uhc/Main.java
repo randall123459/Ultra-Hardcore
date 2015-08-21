@@ -28,6 +28,7 @@ import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Score;
 import org.bukkit.scoreboard.Scoreboard;
 
+import com.leontg77.uhc.Spectator.SpecInfo;
 import com.leontg77.uhc.cmds.ArenaCommand;
 import com.leontg77.uhc.cmds.BanCommand;
 import com.leontg77.uhc.cmds.BroadcastCommand;
@@ -87,6 +88,9 @@ import com.leontg77.uhc.util.PlayerUtils;
 
 /**
  * Main class of the UHC plugin.
+ * <p>
+ * This class contains methods for prefixes, adding recipes, enabling and disabling.
+ * 
  * @author LeonTG77
  */
 public class Main extends JavaPlugin {
@@ -121,9 +125,6 @@ public class Main extends JavaPlugin {
 	public static boolean shears;
 	public static int shearrate;
 	public static int flintrate;
-	
-	public static ArrayList<String> spectating = new ArrayList<String>();
-	public static ArrayList<String> voted = new ArrayList<String>();
 
 	public static HashMap<CommandSender, CommandSender> msg = new HashMap<CommandSender, CommandSender>();
 	public static HashMap<Inventory, BukkitRunnable> invsee = new HashMap<Inventory, BukkitRunnable>();
@@ -156,8 +157,9 @@ public class Main extends JavaPlugin {
 	public void onEnable() {
 		PluginDescriptionFile pdfFile = this.getDescription();
 		this.logger.info(pdfFile.getName() + " v" + pdfFile.getVersion() + " is now enabled.");
-		settings.setup(this);
+		
 		plugin = this;
+		settings.setup();
 		
 		Bukkit.getServer().getPluginManager().registerEvents(new BlockListener(), this);
 		Bukkit.getServer().getPluginManager().registerEvents(new EntityListener(), this);
@@ -216,8 +218,8 @@ public class Main extends JavaPlugin {
 
 		ScenarioManager.getInstance().setup();
 		Scoreboards.getManager().setup();
-		Teams.getManager().setup();
 		Arena.getManager().setup();
+		Teams.getManager().setup();
 		
 		State.setState(State.valueOf(settings.getData().getString("state")));
 		addRecipes();
@@ -278,7 +280,7 @@ public class Main extends JavaPlugin {
 		Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
 			public void run() {
 				for (Player online : PlayerUtils.getPlayers()) {	
-					if (spectating.contains(online.getName()) && online.getGameMode() != GameMode.SPECTATOR) {
+					if (Spectator.getManager().isSpectating(online) && online.getGameMode() != GameMode.SPECTATOR) {
 						online.setGameMode(GameMode.SPECTATOR);
 					}
 					
@@ -304,14 +306,14 @@ public class Main extends JavaPlugin {
 					Scoreboard sb = Bukkit.getScoreboardManager().getMainScoreboard();
 					int percent = NumberUtils.makePercent(online.getHealth());
 					
-					Objective tabList = sb.getObjective("HP");
+					Objective tabList = sb.getObjective("tabHealth");
 					
 					if (tabList != null) {
 						Score score = tabList.getScore(online.getName());
 						score.setScore(percent);
 					}
 					
-					Objective bellowName = sb.getObjective("HP2");
+					Objective bellowName = sb.getObjective("nameHealth");
 					
 					if (bellowName != null) {
 						Score score = bellowName.getScore(online.getName());

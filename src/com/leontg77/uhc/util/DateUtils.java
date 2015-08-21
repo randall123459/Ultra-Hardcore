@@ -7,7 +7,10 @@ import java.util.regex.Pattern;
 
 /**
  * Date utilities class.
- * @author Essentials and LeonTG77
+ * <p>
+ * Contains time and date related methods.
+ * 
+ * @author Essentials
  */
 public class DateUtils {
 	private static Pattern timePattern = Pattern.compile("(?:([0-9]+)\\s*y[a-z]*[,\\s]*)?" + "(?:([0-9]+)\\s*mo[a-z]*[,\\s]*)?" + "(?:([0-9]+)\\s*w[a-z]*[,\\s]*)?" + "(?:([0-9]+)\\s*d[a-z]*[,\\s]*)?" + "(?:([0-9]+)\\s*h[a-z]*[,\\s]*)?" + "(?:([0-9]+)\\s*m[a-z]*[,\\s]*)?" + "(?:([0-9]+)\\s*(?:s[a-z]*)?)?", Pattern.CASE_INSENSITIVE);
@@ -15,14 +18,20 @@ public class DateUtils {
 	private static final long SECONDS_PER_HOUR = 3600;
 	private static final long SECONDS_PER_MINUTE = 60;
 
+	/**
+     * Idk how to explain it, essentials made it, ask them xD
+     */
 	public static String removeTimePattern(String input) {
 		return timePattern.matcher(input).replaceFirst("").trim();
 	}
 
     /**
-     * Converts the seconds to human readable
-     * @param ticks the  number of ticks
-     * @return the human readable version
+     * Converts the seconds to hours, minutes and seconds.
+     * 
+     * @author ghowden, modified by LeonTG77
+     * 
+     * @param ticks the number of seconds
+     * @return The converted version.
      */
     public static String ticksToString(long ticks) {
         int hours = (int) Math.floor(ticks / (double) SECONDS_PER_HOUR);
@@ -46,6 +55,9 @@ public class DateUtils {
         return output.toString();
     }
 
+    /**
+     * Idk, essentials made this...
+     */
 	public static long parseDateDiff(String time, boolean future) throws Exception {
 		Matcher m = timePattern.matcher(time);
 		int years = 0;
@@ -123,7 +135,10 @@ public class DateUtils {
 		}
 		return c.getTimeInMillis();
 	}
-
+	
+	/**
+     * Idk how to explain it, essentials made it, ask them xD
+     */
 	static int dateDiff(int type, Calendar fromDate, Calendar toDate, boolean future) {
 		int diff = 0;
 		long savedDate = fromDate.getTimeInMillis();
@@ -137,6 +152,9 @@ public class DateUtils {
 		return diff;
 	}
 
+	/**
+     * Idk how to explain it, essentials made it, ask them xD
+     */
 	public static String formatDateDiff(long date) {
 		Calendar c = new GregorianCalendar();
 		c.setTimeInMillis(date);
@@ -144,6 +162,9 @@ public class DateUtils {
 		return DateUtils.formatDateDiff(now, c);
 	}
 
+	/**
+     * Idk how to explain it, essentials made it, ask them xD
+     */
 	public static String formatDateDiff(Calendar fromDate, Calendar toDate) {
 		boolean future = false;
 		if (toDate.equals(fromDate)) {

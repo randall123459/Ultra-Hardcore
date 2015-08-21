@@ -7,6 +7,13 @@ import org.bukkit.event.weather.WeatherChangeEvent;
 
 import com.leontg77.uhc.Runnables;
 
+/**
+ * Weather listener class.
+ * <p> 
+ * Contains all eventhandlers for weather releated events.
+ * 
+ * @author LeonTG77
+ */
 public class WeatherListener implements Listener {
 
 	@EventHandler

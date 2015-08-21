@@ -3,7 +3,6 @@ package com.leontg77.uhc;
 import static com.leontg77.uhc.Main.plugin;
 
 import java.io.File;
-import java.io.IOException;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -16,35 +15,48 @@ import com.leontg77.uhc.util.PlayerUtils;
 
 /**
  * Player data class.
+ * <p>
+ * This class contains methods for setting and getting stats, ranks, mute status and getting/saving/reloading the data file.
+ * 
  * @author LeonTG77
  */
 public class Data {
+	private Player player;
+	private boolean creating = false;
+	
 	private FileConfiguration config;
 	private File file;
 	
-	private boolean creating = false;
-	private Player player;
-	
 	/**
-	 * Gets the data of a player.
+	 * Gets the data of the given player.
+	 * <p>
+	 * If the data doesn't exist it will create a new data file and threat the player as a newly joined one.
+	 * 
 	 * @param player the player.
-	 * @return the data class.
+	 * @return the data instance for the player.
 	 */
-	public static Data getData(Player player) {
+	public static Data getFor(Player player) {
 		return new Data(player, player.getUniqueId().toString());
 	}
 
 	/**
-	 * Gets the data of a player.
-	 * @param player the player.
-	 * @return the data class.
+	 * Gets the data of the given OFFLINE player.
+	 * <p>
+	 * If the data doesn't exist it will create a new data file and threat the player as a newly joined one.
+	 * 
+	 * @param offline the offline player.
+	 * @return the data instance for the player.
 	 */
-	public static Data getData(OfflinePlayer player) {
-		return new Data(player.getPlayer(), player.getUniqueId().toString());
+	public static Data getFor(OfflinePlayer offline) {
+		return new Data(offline.getPlayer(), offline.getUniqueId().toString());
 	}
 	
 	/**
-	 * Constuctor for playerdata.
+	 * Constuctor for player data.
+	 * <p>
+	 * This will set up the data for the player and create missing data.
+	 * 
+	 * @param uuid the player.
 	 * @param uuid the uuid of the player.
 	 */
 	private Data(Player player, String uuid) {
@@ -64,7 +76,7 @@ public class Data {
         	try {
         		file.createNewFile();
         		creating = true;
-        	} catch (IOException e) {
+        	} catch (Exception e) {
         		Bukkit.getServer().getLogger().severe(ChatColor.RED + "Could not create " + uuid + ".yml!");
         	}
         }
@@ -73,6 +85,10 @@ public class Data {
         this.player = player;
         
         if (creating) {
+        	if (player != null) {
+            	config.set("username", player.getName());
+        	}
+        	
         	config.set("firstjoined", System.currentTimeMillis());
         	config.set("rank", Rank.USER.name());
         	config.set("muted", false);
@@ -88,7 +104,8 @@ public class Data {
 	
 	/**
 	 * Check if the user just joined for the first time.
-	 * @return True if it's the first time, false otherwise
+	 * 
+	 * @return <code>True</code> if it's the first time, <code>false</code> otherwise
 	 */
 	public boolean isNew() {
 		return creating;
@@ -96,7 +113,8 @@ public class Data {
 	
 	/**
 	 * Get the player class for the data owner.
-	 * @return the player class.
+	 * 
+	 * @return The player class.
 	 */
 	public Player getPlayer() {
 		return player;
@@ -104,7 +122,8 @@ public class Data {
 	
 	/**
 	 * Get the configuration file for the player.
-	 * @return the configuratiob file.
+	 * 
+	 * @return The configuration file.
 	 */
 	public FileConfiguration getFile() {
 		return config;
@@ -116,7 +135,7 @@ public class Data {
 	public void saveFile() {
 		try {
 			config.save(file);
-		} catch (IOException e) {
+		} catch (Exception e) {
     		Bukkit.getServer().getLogger().severe(ChatColor.RED + "Could not save " + file.getName() + "!");
 		}
 	}
@@ -137,6 +156,7 @@ public class Data {
 
 	/**
 	 * Get the players rank.
+	 * 
 	 * @return the rank.
 	 */
 	public Rank getRank() {
@@ -144,22 +164,28 @@ public class Data {
 	}
 	
 	/**
-	 * Sets if the player is muted or not
-	 * @param mute mute the player.
+	 * Sets if the player is muted or not.
+	 * 
+	 * @param mute <code>true</code> to mute the player, <code>false</code> to unmute.
 	 */
 	public void setMuted(boolean mute) {
 		config.set("muted", mute);
 		saveFile();
 	}
 	
+	/**
+	 * Check if the player is muted.
+	 * 
+	 * @return <code>true</code> if the player is muted, <code>false</code> otherwise.
+	 */
 	public boolean isMuted() {
 		return config.getBoolean("muted");
 	}
 	
 	/**
 	 * Adds an amount from the stats.
-	 * @param stat stat type.
-	 * @param newValue how much to add.
+	 * 
+	 * @param stat the stat name.
 	 */
 	public void increaseStat(String stat) {
 		config.set("stats." + stat, config.getInt("stats." + stat) + 1);
@@ -168,8 +194,8 @@ public class Data {
 	
 	/**
 	 * Removes an amount from the stats.
-	 * @param stat stat type.
-	 * @param newValue how much to remove.
+	 * 
+	 * @param stat the stat name.
 	 */
 	public void decreaseStat(String stat) {
 		config.set("stats." + stat, config.getInt("stats." + stat) - 1);
@@ -178,13 +204,19 @@ public class Data {
 	
 	/**
 	 * Gets the amount from a stat.
-	 * @param stat the stat.
-	 * @return the amount in a int.
+	 * 
+	 * @param stat the stat name.
+	 * @return The amount in an integer.
 	 */
 	public int getStat(String stat) {
 		return config.getInt("stats." + stat);
 	}
 	
+	/**
+	 * The ranking enum class.
+	 * 
+	 * @author LeonTG77
+	 */
 	public enum Rank {
 		USER, VIP, STAFF, HOST;
 	}

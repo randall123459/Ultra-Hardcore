@@ -2,7 +2,9 @@ package com.leontg77.uhc.util;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import net.minecraft.server.v1_8_R3.IChatBaseComponent;
 import net.minecraft.server.v1_8_R3.IChatBaseComponent.ChatSerializer;
@@ -20,9 +22,13 @@ import org.bukkit.entity.Player;
 
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.Settings;
+import com.leontg77.uhc.Spectator;
 
 /**
  * Player utilities class.
+ * <p>
+ * Contains player related methods.
+ * 
  * @author LeonTG77
  */
 @SuppressWarnings("deprecation")
@@ -30,10 +36,11 @@ public class PlayerUtils {
 	
 	/**
 	 * Get a list of players online.
+	 * 
 	 * @return A list of online players.
 	 */
-	public static List<Player> getPlayers() {
-		ArrayList<Player> list = new ArrayList<Player>();
+	public static Set<Player> getPlayers() {
+		HashSet<Player> list = new HashSet<Player>();
 		
 		for (Player online : Bukkit.getServer().getOnlinePlayers()) {
 			list.add(online);
@@ -45,7 +52,8 @@ public class PlayerUtils {
 	/**
 	 * Gets an offline player by a name.
 	 * <p>
-	 * This is just because of the deprecation on Bukkit.getOfflinePlayer(String) 
+	 * This is just because of the deprecation on <code>Bukkit.getOfflinePlayer(String)</code> 
+	 * 
 	 * @param name The name.
 	 * @return the offline player.
 	 */
@@ -55,6 +63,7 @@ public class PlayerUtils {
 	
 	/**
 	 * Broadcasts a message to everyone online with a specific permission.
+	 * 
 	 * @param message the message.
 	 * @param permission the permission.
 	 */
@@ -70,6 +79,7 @@ public class PlayerUtils {
 	
 	/**
 	 * Broadcasts a message to everyone online.
+	 * 
 	 * @param message the message.
 	 */
 	public static void broadcast(String message) {
@@ -82,11 +92,12 @@ public class PlayerUtils {
 
 	/**
 	 * Get the inv size of # players online.
+	 * 
 	 * @return the inv size.
 	 */
 	public static int playerInvSize() {
 		int length = getPlayers().size();
-		length = (length - Main.spectating.size());
+		length = (length - Spectator.getManager().spectators.size());
 		
 		if (length <= 9) {
 			return 9;
@@ -107,6 +118,7 @@ public class PlayerUtils {
 	
 	/**
 	 * Get a list of entites within a distance of a location.
+	 * 
 	 * @param loc the location.
 	 * @param distance the distance.
 	 * @return A list of entites nearby.
@@ -116,6 +128,10 @@ public class PlayerUtils {
 		
 		for (Entity e : loc.getWorld().getEntities()) {
 			if (e instanceof Player) {
+				continue;
+			}
+			
+			if (!e.getType().isAlive()) {
 				continue;
 			}
 			
@@ -136,7 +152,8 @@ public class PlayerUtils {
 	}
 	
 	/**
-	 * Get a players ping.
+	 * Get the given player's ping.
+	 * 
 	 * @param player the player
 	 * @return the players ping
 	 */
@@ -146,14 +163,15 @@ public class PlayerUtils {
 	}
 	
 	/**
-	 * Sets a tablist for a player.
+	 * Sets a tablist for the given player.
+	 * 
 	 * @param player the player.
 	 */
 	public static void setTabList(Player player) {
 		CraftPlayer craft = (CraftPlayer) player;
 
-        IChatBaseComponent headerJSON = ChatSerializer.a("{text:'Ultra Hardcore',color:'dark_red',bold:'true'}");
-        IChatBaseComponent footerJSON = ChatSerializer.a("{text:'" + GameUtils.getTeamSize() + " " + Settings.getInstance().getConfig().getString("game.scenarios") + "',color:'gray'}");
+        IChatBaseComponent headerJSON = ChatSerializer.a("{text:'§4§LArctic UHC\n'}");
+        IChatBaseComponent footerJSON = ChatSerializer.a("{text:'\n§7" + GameUtils.getTeamSize() + " " + Settings.getInstance().getConfig().getString("game.scenarios") + (Main.teamSize > 0 ? " §8| §4Host: §a" + Settings.getInstance().getConfig().getString("game.host") : "") + "\n§6/rules for more info!'}");
 
         PacketPlayOutPlayerListHeaderFooter headerPacket = new PacketPlayOutPlayerListHeaderFooter(headerJSON);
  
@@ -171,7 +189,7 @@ public class PlayerUtils {
 	}
 	
 	/**
-	 * Sends a message in action bar to a player.
+	 * Sends a message in action bar to the given player.
 	 * @param player the player.
 	 * @param msg the message.
 	 */
@@ -185,7 +203,8 @@ public class PlayerUtils {
 	}
 	
 	/**
-	 * Sends a title message to a player.
+	 * Sends a title message to the given player.
+	 * 
 	 * @param player the player displaying to.
 	 * @param title the title.
 	 * @param subtitle the subtitle.
@@ -207,7 +226,8 @@ public class PlayerUtils {
     }
 
 	/**
-	 * Handle the permissions for a player.
+	 * Handle the permissions for the given player.
+	 * 
 	 * @param player the player.
 	 */
 	public static void handlePermissions(Player player) {

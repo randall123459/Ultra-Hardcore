@@ -16,8 +16,8 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
-import com.leontg77.uhc.Main;
-import com.leontg77.uhc.SpecInfo;
+import com.leontg77.uhc.Spectator;
+import com.leontg77.uhc.Spectator.SpecInfo;
 import com.leontg77.uhc.scenario.Scenario;
 import com.leontg77.uhc.scenario.ScenarioManager;
 import com.leontg77.uhc.util.BlockUtils;
@@ -97,15 +97,15 @@ public class TripleOres extends Scenario implements Listener {
 					}
 				}
 				
-				if (SpecInfo.totalG.containsKey(player.getName())) {
-					SpecInfo.totalG.put(player.getName(), SpecInfo.totalG.get(player.getName()) + amount);
+				if (SpecInfo.totalGold.containsKey(player.getName())) {
+					SpecInfo.totalGold.put(player.getName(), SpecInfo.totalGold.get(player.getName()) + amount);
 				} else {
-					SpecInfo.totalG.put(player.getName(), amount);
+					SpecInfo.totalGold.put(player.getName(), amount);
 				}
 				
 				for (Player online : PlayerUtils.getPlayers()) {
-					if (Main.spectating.contains(online.getName())) {
-						online.sendMessage("[§4S§f] §7" + player.getName() + "§f:§6GOLD §f[V:§6" + amount + "§f] [T:§6" + SpecInfo.totalG.get(player.getName()) + "§f]");
+					if (Spectator.getManager().isSpectating(online)) {
+						online.sendMessage("[§4S§f] §7" + player.getName() + "§f:§6GOLD §f[V:§6" + amount + "§f] [T:§6" + SpecInfo.totalGold.get(player.getName()) + "§f]");
 					}
 				}
 				amount = 0;
@@ -178,15 +178,15 @@ public class TripleOres extends Scenario implements Listener {
 					}
 				}
 				
-				if (SpecInfo.totalD.containsKey(player.getName())) {
-					SpecInfo.totalD.put(player.getName(), SpecInfo.totalD.get(player.getName()) + amount);
+				if (SpecInfo.totalDiamonds.containsKey(player.getName())) {
+					SpecInfo.totalDiamonds.put(player.getName(), SpecInfo.totalDiamonds.get(player.getName()) + amount);
 				} else {
-					SpecInfo.totalD.put(player.getName(), amount);
+					SpecInfo.totalDiamonds.put(player.getName(), amount);
 				}
 				
 				for (Player online : PlayerUtils.getPlayers()) {
-					if (Main.spectating.contains(online.getName())) {
-						online.sendMessage("[§4S§f] §7" + player.getName() + "§f:§3DIAMOND §f[V:§3" + amount + "§f] [T:§3" + SpecInfo.totalD.get(player.getName()) + "§f]");
+					if (Spectator.getManager().isSpectating(online)) {
+						online.sendMessage("[§4S§f] §7" + player.getName() + "§f:§3DIAMOND §f[V:§3" + amount + "§f] [T:§3" + SpecInfo.totalDiamonds.get(player.getName()) + "§f]");
 					}
 				}
 				amount = 0;

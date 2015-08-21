@@ -11,17 +11,21 @@ import org.bukkit.World;
 
 /**
  * Scatter utilities class.
+ * <p>
+ * Contains scatter related methods.
+ * 
  * @author LeonTG77
  */
 public class ScatterUtils {
 	private static Material[] nospawn = { Material.STATIONARY_WATER, Material.WATER, Material.STATIONARY_LAVA, Material.LAVA, Material.CACTUS };
 	
 	/**
-	 * Get a list of available scatter locations
+	 * Get a list of available scatter locations.
+	 * 
 	 * @param world the world to scatter in.
 	 * @param radius the maximum radius to scatter.
 	 * @param count the amount of scatter locations needed.
-	 * @return List of scatter locations.
+	 * @return A list of scatter locations.
 	 */
 	public static List<Location> getScatterLocations(World world, int radius, int count) {
 		List<Location> locs = new ArrayList<>();
@@ -39,17 +43,17 @@ public class ScatterUtils {
 				int x = rand.nextInt(radius * 2) - radius;
 				int z = rand.nextInt(radius * 2) - radius;
 
-				Location r = new Location(world, x + 0.5, 0, z + 0.5);
+				Location loc = new Location(world, x + 0.5, 0, z + 0.5);
 
 				boolean close = false;
 				for (Location l : locs) {
-					if (l.distanceSquared(r) < min) {
+					if (l.distanceSquared(loc) < min) {
 						close = true;
 					}
 				}
 				
-				if (!close && isVaildLocation(r.clone())) {
-					locs.add(r);
+				if (!close && isVaildLocation(loc.clone())) {
+					locs.add(loc);
 					break;
 				} else {
 					min -= 1;
@@ -68,6 +72,7 @@ public class ScatterUtils {
 
 	/**
 	 * Check if a location is a vaild scatter point.
+	 * 
 	 * @param l the location .
 	 * @return True if its vaild, false otherwise.
 	 */

@@ -12,16 +12,20 @@ import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.ShapelessRecipe;
 
 /**
- * Recipe utilities class
- * @author Ghowden
+ * Recipe utilities class.
+ * <p>
+ * Contains reciple related methods.
+ * 
+ * @author ghowden
  */
 public class RecipeUtils {
 
 	/**
 	 * Check if two recipes are equal
+	 * 
 	 * @param one The 1st recipe
 	 * @param two The 2nd recipe
-	 * @return True if they are equal
+	 * @return <code>True</code> if they are equal, <code>false</code> otherwise.
 	 */
 	public static boolean areEqual(Recipe one, Recipe two) {
 		return one == two || one != null && two != null && one.getResult().equals(two.getResult()) && match(one, two);
@@ -29,9 +33,10 @@ public class RecipeUtils {
 
 	/**
 	 * Check if two recipes are similar
+	 * 
 	 * @param one The 1st recipe
 	 * @param two The 2nd recipe
-	 * @return True if they are similar
+	 * @return <code>True</code> if they are similar, <code>false</code> otherwise.
 	 */
 	public static boolean areSimilar(Recipe one, Recipe two) {
 		return one == two || one != null && two != null && match(one, two);
@@ -39,9 +44,10 @@ public class RecipeUtils {
 
 	/**
 	 * Matches two recipes
+	 * 
 	 * @param one The 1st recipe
 	 * @param two The 2nd recipe
-	 * @return True if they match
+	 * @return <code>True</code> if they match, <code>false</code> otherwise.
 	 */
 	private static boolean match(Recipe one, Recipe two) {
 		if (one instanceof ShapedRecipe) {
@@ -100,6 +106,9 @@ public class RecipeUtils {
 		}
 	}
 	
+	/**
+	 * Idk... xD
+	 */
 	private static ItemStack[] shapeToMatrix(String as[], Map<Character, ItemStack> map) {
 		ItemStack aitemstack[] = new ItemStack[9];
 		int i = 0;
@@ -118,6 +127,9 @@ public class RecipeUtils {
 		return aitemstack;
 	}
 
+	/**
+	 * Idk... xD
+	 */
 	private static void mirrorMatrix(ItemStack item[]) {
 		for (int i = 0; i < 3; i++) {
 			ItemStack itemstack = item[i * 3];

@@ -27,6 +27,13 @@ import com.leontg77.uhc.Main;
 import com.leontg77.uhc.Main.State;
 import com.leontg77.uhc.util.BlockUtils;
 
+/**
+ * Block listener class.
+ * <p> 
+ * Contains all eventhandlers for block releated events.
+ * 
+ * @author LeonTG77
+ */
 public class BlockListener implements Listener {
 
 	@EventHandler(priority = EventPriority.HIGHEST)

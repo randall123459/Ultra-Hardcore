@@ -16,48 +16,63 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import com.leontg77.uhc.Main.Border;
 import com.leontg77.uhc.util.DateUtils;
+import com.leontg77.uhc.util.NameUtils;
 import com.leontg77.uhc.util.NumberUtils;
 import com.leontg77.uhc.util.PlayerUtils;
 import com.leontg77.uhc.util.GameUtils;
 
 /**
  * The inventory managing class.
+ * <p>
+ * This class contains methods for opening the selector inventory, rules inventory and player inventories.
+ * 
  * @author LeonTG77
  */
 public class InvGUI {
-	private InvGUI() {}
 	private static InvGUI manager = new InvGUI();
+	
+	/**
+	 * Gets the instance of this class
+	 * 
+	 * @return The instance.
+	 */
 	public static InvGUI getManager() {
 		return manager;
 	}
 	
 	/**
 	 * Opens an inventory of all the online players that is playing.
+	 * 
 	 * @param player the player opening for.
+	 * @return The opened inventory.
 	 */
-	public void openSelector(Player player) {
+	public Inventory openSelector(Player player) {
 		Inventory inv = Bukkit.createInventory(null, PlayerUtils.playerInvSize(), "Player Selector");
 	
 		for (Player online : PlayerUtils.getPlayers()) {
-			if (!Main.spectating.contains(online.getName())) {
+			if (!Spectator.getManager().isSpectating(online)) {
 				ItemStack item = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
 				SkullMeta meta = (SkullMeta) item.getItemMeta();
-				meta.setDisplayName(ChatColor.GREEN + online.getName());
+				meta.setDisplayName(ChatColor.GOLD + online.getName());
 				meta.setOwner(online.getName());
-				meta.setLore(Arrays.asList(ChatColor.GRAY + "Click to teleport to " + online.getName() + "."));
+				meta.setLore(Arrays.asList(ChatColor.GRAY + "Click to teleport to §a" + online.getName() + "§f."));
 				item.setItemMeta(meta);
 				inv.addItem(item);
 			}	
 		}
+		
 		player.openInventory(inv);
+		return inv;
 	}
 	
 	/**
 	 * Opens the inventory of a target player.
+	 * 
 	 * @param player player to open for.
 	 * @param target the players inv to use.
+	 * @return The opened inventory.
 	 */
-	public void openInv(Player player, final Player target) {
+	public Inventory openInv(Player player, final Player target) {
 		final Inventory inv = Bukkit.getServer().createInventory(target, 54, "Player Inventory");
 	
 		Main.invsee.put(inv, new BukkitRunnable() {
@@ -97,14 +112,16 @@ public class InvGUI {
 				lore.add("§a% Health: §7" + NumberUtils.makePercent(target.getHealth()) + "%");
 				lore.add("§aHunger: §7" + (target.getFoodLevel() / 2));
 				lore.add("§aXp level: §7" + target.getLevel());
-				lore.add("§aLocation: §7" + target.getWorld().getEnvironment().name().replaceAll("_", "").toLowerCase().replaceAll("normal", "overworld") + ", x:" + target.getLocation().getBlockX() + ", y:" + target.getLocation().getBlockY() + ", z:" + target.getLocation().getBlockZ());
+				lore.add("§aLocation: §7x:" + target.getLocation().getBlockX() + ", y:" + target.getLocation().getBlockY() + ", z:" + target.getLocation().getBlockZ() + " (" + target.getWorld().getEnvironment().name().replaceAll("_", "").toLowerCase().replaceAll("normal", "overworld") + ")");
 				lore.add(" ");
 				lore.add("§cPotion effects:");
 				if (target.getActivePotionEffects().size() == 0) {
 					lore.add(ChatColor.GRAY + "None");
 				}
-				for (PotionEffect l : target.getActivePotionEffects()) {
-					lore.add(ChatColor.GRAY + l.getType().getName().substring(0, 1).toUpperCase() + l.getType().getName().substring(1).toLowerCase().replaceAll("_", "") + " §atier: §7" + (l.getAmplifier() + 1) + " §aLength: §7" + DateUtils.ticksToString(l.getDuration() / 20));
+				for (PotionEffect effects : target.getActivePotionEffects()) {
+					if ((effects.getDuration() / 20) > 0) {
+						lore.add("§aP:§7" + NameUtils.getPotionName(effects.getType()) + " §aT:§7" + (effects.getAmplifier() + 1) + " §aD:§7" + DateUtils.ticksToString(effects.getDuration() / 20));
+					}
 				}
 				infoMeta.setLore(lore);
 				info.setItemMeta(infoMeta);
@@ -135,13 +152,16 @@ public class InvGUI {
 		Main.invsee.get(inv).runTaskTimer(Main.plugin, 1, 1);
 		
 		player.openInventory(inv);
+		return inv;
 	}
 
 	/**
-	 * Open the rules inventory for a player
+	 * Open the rules inventory for the given player
+	 * 
 	 * @param player the player
+	 * @return The opened inventory.
 	 */
-	public void openRules(Player player) {
+	public Inventory openRules(Player player) {
 		Inventory inv = Bukkit.getServer().createInventory(null, 9, "Arctic UHC Rules");
 		
 		ItemStack general = new ItemStack (Material.SIGN);
@@ -160,7 +180,7 @@ public class InvGUI {
 		lore.add("§aHorse Armor: §7Enabled.");
 		lore.add(" ");
 		lore.add("§aAbsorption: §7" + (Main.absorption ? "Enabled." : "Disabled."));
-		lore.add("§aGolden Heads: §7" + (Main.goldenheads ? "Enabled, they heal " + Settings.getInstance().getConfig().getInt("feature.goldenheads.heal") + " hearts." : "Disabled."));
+		lore.add("§aGolden Heads: §7" + (Main.goldenheads ? "Enabled, they heal " + (Settings.getInstance().getConfig().getInt("feature.goldenheads.heal") / 2) + " hearts." : "Disabled."));
 		lore.add("§aPearl Damage: §7" + (Main.pearldamage ? "Enabled." : "Disabled."));
 		lore.add("§aNotch Apples: §7" + (Main.notchapples ? "Enabled." : "Disabled."));
 		lore.add("§aDeath Lightning: §7" + (Main.deathlightning ? "Enabled." : "Disabled."));
@@ -240,5 +260,6 @@ public class InvGUI {
 		inv.setItem(8, rates);
 		
 		player.openInventory(inv);
+		return inv;
 	}
 }

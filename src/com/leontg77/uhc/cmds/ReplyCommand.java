@@ -6,6 +6,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
 import com.leontg77.uhc.Main;
+import com.leontg77.uhc.Spectator;
 
 public class ReplyCommand implements CommandExecutor {
 
@@ -36,7 +37,7 @@ public class ReplyCommand implements CommandExecutor {
             
 	        String msg = message.toString().trim();			
 	        
-	        if (Main.spectating.contains(sender.getName()) && !sender.hasPermission("uhc.seemsg") && !Main.spectating.contains(target.getName())) {
+	        if (Spectator.getManager().isSpectating(sender.getName()) && !sender.hasPermission("uhc.seemsg") && !Spectator.getManager().isSpectating(target.getName())) {
 	        	if (!target.hasPermission("uhc.seemsg")) {
 	        		sender.sendMessage(ChatColor.RED + "You cannot message players that's not spectating.");
 		        	return true;
