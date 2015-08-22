@@ -218,6 +218,6 @@ public class Data {
 	 * @author LeonTG77
 	 */
 	public enum Rank {
-		USER, VIP, STAFF, HOST;
+		USER, VIP, STAFF, TRIAL, HOST;
 	}
 }
