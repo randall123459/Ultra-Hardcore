@@ -76,7 +76,7 @@ public class Teams {
 			tempList.add(li + ChatColor.STRIKETHROUGH);
 		}
 		
-		list.remove(ChatColor.GRAY.toString() + ChatColor.ITALIC.toString());
+		tempList.remove(ChatColor.GRAY.toString() + ChatColor.ITALIC.toString());
 		list.remove(ChatColor.WHITE.toString());
 
 		list.addAll(tempList);
@@ -84,7 +84,7 @@ public class Teams {
 		Team spec = (sb.getTeam("spec") == null ? sb.registerNewTeam("spec") : sb.getTeam("spec"));
 		spec.setDisplayName("spec");
 		spec.setPrefix("§7§o");
-		spec.setSuffix("§r");
+		spec.setSuffix("§f");
 		
 		spec.setAllowFriendlyFire(false);
 		spec.setCanSeeFriendlyInvisibles(true);	
@@ -96,7 +96,7 @@ public class Teams {
 			Team team = (sb.getTeam(teamName) == null ? sb.registerNewTeam(teamName) : sb.getTeam(teamName));
 			team.setDisplayName(teamName);
 			team.setPrefix(list.get(i));
-			team.setSuffix("§r");
+			team.setSuffix("§f");
 			
 			team.setAllowFriendlyFire(true);
 			team.setCanSeeFriendlyInvisibles(true);
