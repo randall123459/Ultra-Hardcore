@@ -169,14 +169,14 @@ public class Spectator {
 	 */
 	public void disableSpecmode(Player player, boolean force) {
 		if (force) {
-			player.sendMessage(Main.prefix() + "You are no longer is spectator mode.");
+			player.sendMessage(Main.prefix() + "You are no longer in spectator mode.");
 		} else {
 			if (!isSpectating(player)) {
 				player.sendMessage(Main.prefix() + "Your spectator mode is not enabled.");
 				return;
 			}
 
-			player.sendMessage(Main.prefix() + "You are no longer is spectator mode.");
+			player.sendMessage(Main.prefix() + "You are no longer in spectator mode.");
 		}
 		
 		player.setGameMode(GameMode.SURVIVAL);
@@ -432,7 +432,7 @@ public class Spectator {
 				for (Player online : PlayerUtils.getPlayers()) {
 					if (Spectator.getManager().isSpectating(online)) {
 						for (PotionEffect e : pot.getEffects()) {
-							online.sendMessage("[§9S§f] §5Potion: §a" + player.getName() + "§f<-> P:§d" + NameUtils.getPotionName(e.getType()) + " §fT:§d" + pot.getLevel() + ((e.getDuration() / 20) > 0 ? " §fD:§d" + DateUtils.ticksToString(e.getDuration() / 20) : "") + " §fT:§dNormal");
+							online.sendMessage("[§9S§f] §5Potion: §a" + player.getName() + "§f <-> P:§d" + NameUtils.getPotionName(e.getType()) + " §fT:§d" + pot.getLevel() + ((e.getDuration() / 20) > 0 ? " §fD:§d" + DateUtils.ticksToString(e.getDuration() / 20) : "") + " §fT:§dNormal");
 						}
 					}
 				}
@@ -465,7 +465,7 @@ public class Spectator {
 				for (Player online : PlayerUtils.getPlayers()) {
 					if (Spectator.getManager().isSpectating(online)) {
 						for (PotionEffect e : pot.getEffects()) {
-							online.sendMessage("[§9S§f] §5Potion: §a" + player.getName() + "§f<-> P:§d" + NameUtils.getPotionName(e.getType()) + " §fT:§d" + pot.getLevel() + ((e.getDuration() / 20) > 0 ? " §fD:§d" + DateUtils.ticksToString(e.getDuration() / 20) : "") + " §fT:§dSplash");
+							online.sendMessage("[§9S§f] §5Potion: §a" + player.getName() + "§f <-> P:§d" + NameUtils.getPotionName(e.getType()) + " §fT:§d" + pot.getLevel() + ((e.getDuration() / 20) > 0 ? " §fD:§d" + DateUtils.ticksToString(e.getDuration() / 20) : "") + " §fT:§dSplash");
 						}
 					}
 				}
