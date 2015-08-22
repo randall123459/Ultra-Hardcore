@@ -102,8 +102,10 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
 						return true;
 					}
 					
-					ArrayList<String> players = new ArrayList<String>(team.getEntries());
-					TeamCommand.sTeam.put(team.getName(), players);
+					if (!sTeam.containsKey(team.getName())) {
+						ArrayList<String> players = new ArrayList<String>(team.getEntries());
+						TeamCommand.sTeam.put(team.getName(), players);
+					}
 					
 					StringBuilder list = new StringBuilder("");
 					int i = 1;
@@ -364,8 +366,10 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
 						return true;
 					}
 					
-					ArrayList<String> players = new ArrayList<String>(team.getEntries());
-					TeamCommand.sTeam.put(team.getName(), players);
+					if (!sTeam.containsKey(team.getName())) {
+						ArrayList<String> players = new ArrayList<String>(team.getEntries());
+						TeamCommand.sTeam.put(team.getName(), players);
+					}
 					
 					StringBuilder list = new StringBuilder("");
 					int i = 1;
