@@ -134,7 +134,7 @@ public class CutClean extends Scenario implements Listener {
 				
 				for (Player online : PlayerUtils.getPlayers()) {
 					if (Spectator.getManager().isSpectating(online)) {
-						online.sendMessage("[§4S§f] §7" + player.getName() + "§f:§6GOLD §f[V:§6" + amount + "§f] [T:§6" + SpecInfo.totalGold.get(player.getName()) + "§f]");
+						online.sendMessage("[§9S§f] §7" + player.getName() + "§f:§6GOLD §f[V:§6" + amount + "§f] [T:§6" + SpecInfo.totalGold.get(player.getName()) + "§f]");
 					}
 				}
 				amount = 0;
