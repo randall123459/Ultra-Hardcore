@@ -170,8 +170,8 @@ public class PlayerUtils {
 	public static void setTabList(Player player) {
 		CraftPlayer craft = (CraftPlayer) player;
 
-        IChatBaseComponent headerJSON = ChatSerializer.a("{text:'§4§LArctic UHC\n'}");
-        IChatBaseComponent footerJSON = ChatSerializer.a("{text:'\n§7" + GameUtils.getTeamSize() + " " + Settings.getInstance().getConfig().getString("game.scenarios") + (Main.teamSize > 0 ? " §8| §4Host: §a" + Settings.getInstance().getConfig().getString("game.host") : "") + "\n§6/rules for more info!'}");
+        IChatBaseComponent headerJSON = ChatSerializer.a("{text:'§4Arctic UHC\n§6Remember to read the /rules\n'}");
+        IChatBaseComponent footerJSON = ChatSerializer.a("{text:'\n§7" + GameUtils.getTeamSize() + " " + Settings.getInstance().getConfig().getString("game.scenarios") + (Main.teamSize > 0 ? "\n§4Host: §a" + Settings.getInstance().getConfig().getString("game.host") : "") + "'}");
 
         PacketPlayOutPlayerListHeaderFooter headerPacket = new PacketPlayOutPlayerListHeaderFooter(headerJSON);
  
@@ -230,7 +230,75 @@ public class PlayerUtils {
 	 * 
 	 * @param player the player.
 	 */
-	public static void handlePermissions(Player player) {
+	public static void handlePermissions(Player... players) {
+		/*for (Player player : players) {
+			if (Main.permissions.get(player.getName()) == null) {
+				Main.permissions.put(player.getName(), player.addAttachment(Main.plugin));
+			}
+
+			PermissionAttachment perm = Main.permissions.get(player.getName());
+			Data data = Data.getFor(player);
+			
+			for (String perms : Main.permissions.get(player.getName()).getPermissions().keySet()) {
+				perm.setPermission(perms, false);
+			}
+			
+			if (data.getRank() == Rank.VIP) {
+				perm.setPermission("uhc.prelist", true);
+			}
+			
+			if (data.getRank() == Rank.STAFF) {
+				perm.setPermission("uhc.prelist", true);
+				perm.setPermission("uhc.seemsg", true);
+				perm.setPermission("uhc.spectate", true);
+				perm.setPermission("uhc.whitelist", true);
+				perm.setPermission("uhc.commandspy", true);
+				perm.setPermission("uhc.mute", true);
+				perm.setPermission("uhc.admin", true);
+				perm.setPermission("uhc.kick", true);
+				perm.setPermission("uhc.staff", true);
+				perm.setPermission("uhc.ban", true);
+			}
+			
+			if (data.getRank() == Rank.TRIAL) {
+				perm.setPermission("uhc.prelist", true);
+				perm.setPermission("uhc.seemsg", true);
+				perm.setPermission("uhc.spectate", true);
+				perm.setPermission("uhc.whitelist", true);
+				perm.setPermission("uhc.commandspy", true);
+				perm.setPermission("uhc.mute", true);
+				perm.setPermission("uhc.admin", true);
+				perm.setPermission("uhc.kick", true);
+				perm.setPermission("uhc.staff", true);
+				perm.setPermission("uhc.ban", true);
+			}
+			
+			if (data.getRank() == Rank.HOST) {
+				perm.setPermission("uhc.prelist", true);
+				perm.setPermission("uhc.seemsg", true);
+				perm.setPermission("uhc.spectate", true);
+				perm.setPermission("uhc.whitelist", true);
+				perm.setPermission("uhc.commandspy", true);
+				perm.setPermission("uhc.mute", true);
+				perm.setPermission("uhc.admin", true);
+				perm.setPermission("uhc.kick", true);
+				perm.setPermission("uhc.staff", true);
+				perm.setPermission("uhc.ban", true);
+			}
+		}*/
+	}
+	
+	/**
+	 * Handle the permissions for the given player if he leaves.
+	 * 
+	 * @param player the player.
+	 */
+	public static void handleLeavePermissions(Player player) {
+		/*if (Main.permissions.get(player.getName()) == null) {
+			return;
+		}
 		
+		player.removeAttachment(Main.permissions.get(player.getName()));
+		Main.permissions.remove(player.getName());*/
 	}
 }
