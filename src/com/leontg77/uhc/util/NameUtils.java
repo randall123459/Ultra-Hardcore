@@ -1,5 +1,10 @@
 package com.leontg77.uhc.util;
 
+import java.lang.reflect.Method;
+import java.util.logging.Level;
+
+import org.bukkit.Bukkit;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffectType;
 
 /**
@@ -83,5 +88,36 @@ public class NameUtils {
 		default:
 			return "?";
 		}
+	}
+	
+	/**
+	* Converts an {@link org.bukkit.inventory.ItemStack} to a Json string
+	* for sending with {@link net.md_5.bungee.api.chat.BaseComponent}'s.
+	*
+	* @param itemStack the item to convert
+	* @return the Json string representation of the item
+	*/
+	public static String convertItemStackToJson(ItemStack itemStack) {
+	    Class<?> craftItemStackClazz = ReflectionUtils.getOBCClass("inventory.CraftItemStack");
+	    Method asNMSCopyMethod = ReflectionUtils.getMethod(craftItemStackClazz, "asNMSCopy", ItemStack.class);
+
+	    Class<?> nmsItemStackClazz = ReflectionUtils.getNMSClass("ItemStack");
+	    Class<?> nbtTagCompoundClazz = ReflectionUtils.getNMSClass("NBTTagCompound");
+	    Method saveNmsItemStackMethod = ReflectionUtils.getMethod(nmsItemStackClazz, "save", nbtTagCompoundClazz);
+
+	    Object nmsNbtTagCompoundObj; 
+	    Object nmsItemStackObj; 
+	    Object itemAsJsonObject; 
+
+	    try {
+	        nmsNbtTagCompoundObj = nbtTagCompoundClazz.newInstance();
+	        nmsItemStackObj = asNMSCopyMethod.invoke(null, itemStack);
+	        itemAsJsonObject = saveNmsItemStackMethod.invoke(nmsItemStackObj, nmsNbtTagCompoundObj);
+	    } catch (Throwable t) {
+	        Bukkit.getLogger().log(Level.SEVERE, "failed to serialize itemstack to nms item", t);
+	        return null;
+	    }
+
+	    return itemAsJsonObject.toString();
 	}
 }
