@@ -21,6 +21,7 @@ import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.MaterialData;
+import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -126,6 +127,7 @@ public class Main extends JavaPlugin {
 	public static int shearrate;
 	public static int flintrate;
 
+	public static HashMap<String, PermissionAttachment> permissions = new HashMap<String, PermissionAttachment>();
 	public static HashMap<CommandSender, CommandSender> msg = new HashMap<CommandSender, CommandSender>();
 	public static HashMap<Inventory, BukkitRunnable> invsee = new HashMap<Inventory, BukkitRunnable>();
 	public static HashMap<String, BukkitRunnable> relog = new HashMap<String, BukkitRunnable>();
