@@ -25,6 +25,8 @@ import com.leontg77.uhc.Scoreboards;
 import com.leontg77.uhc.Settings;
 import com.leontg77.uhc.Spectator;
 import com.leontg77.uhc.Spectator.SpecInfo;
+import com.leontg77.uhc.scenario.Scenario;
+import com.leontg77.uhc.scenario.ScenarioManager;
 import com.leontg77.uhc.util.GameUtils;
 import com.leontg77.uhc.util.PlayerUtils;
 
@@ -144,6 +146,10 @@ public class EndCommand implements CommandExecutor {
 				for (OfflinePlayer whitelisted : Bukkit.getWhitelistedPlayers()) {
        				whitelisted.setWhitelisted(false);
        			}
+
+				for (Scenario scen : ScenarioManager.getInstance().getEnabledScenarios()) {
+       				scen.setEnabled(false);
+       			}
 				
 				for (BukkitRunnable run : Main.relog.values()) {
 					try {
@@ -152,10 +158,11 @@ public class EndCommand implements CommandExecutor {
 						Bukkit.getLogger().warning("§cCould not cancel task " + run.getTaskId());
 					}
 				}
+				
 				try {
 					Bukkit.getServer().getScheduler().cancelTask(Runnables.task);;
 				} catch (Exception e) {
-					Bukkit.getLogger().warning("§cCould not cancel a task.");
+					Bukkit.getLogger().warning("§cCould not cancel timer task.");
 				}
 
 				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer cancel");
