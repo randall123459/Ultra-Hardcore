@@ -1,6 +1,8 @@
 package com.leontg77.uhc.util;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
@@ -120,4 +122,34 @@ public class NameUtils {
 
 	    return itemAsJsonObject.toString();
 	}
+	
+	public static String[] parseLine(String line)
+	  {
+	    List<String> fields = new ArrayList<String>();
+	    StringBuilder sb = new StringBuilder();
+	    for (int i = 0; i < line.length(); i++)
+	    {
+	      char c = line.charAt(i);
+	      if (c == ',')
+	      {
+	        fields.add(sb.toString());
+	        sb = new StringBuilder();
+	      }
+	      else if (c == '"')
+	      {
+	        int ends = line.indexOf('"', i + 1);
+	        if (ends == -1) {
+	          throw new IllegalArgumentException("Expected double-quote to terminate (" + i + "): " + line);
+	        }
+	        sb.append(line.substring(i + 1, ends - 1));
+	        i = ends;
+	      }
+	      else
+	      {
+	        sb.append(c);
+	      }
+	    }
+	    fields.add(sb.toString());
+	    return (String[])fields.toArray(new String[fields.size()]);
+	  }
 }
