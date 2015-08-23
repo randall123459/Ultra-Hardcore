@@ -139,7 +139,8 @@ public class ScenarioManager {
 		/* TODO: Test */ scenarios.add(new TrainingRabbits());
 		scenarios.add(new TripleOres());
 		scenarios.add(new VengefulSpirits());
-		Bukkit.getLogger().info("§a[UHC] All scenarios has been setup.");
+		
+		Bukkit.getLogger().info("[UHC] All scenarios has been setup.");
 	}
 	
 	/**

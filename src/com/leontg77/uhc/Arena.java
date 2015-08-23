@@ -56,7 +56,7 @@ public class Arena {
 		}
 		arenaKills.setDisplayName("§4Open PvP §8- §7Join with /a");
 		
-		Bukkit.getLogger().info("§a[UHC] The arena has been setup.");
+		Bukkit.getLogger().info("[UHC] The arena has been setup.");
 	}
 	
 	/**
