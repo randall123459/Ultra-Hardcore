@@ -37,10 +37,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerAchievementAwardedEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
@@ -55,7 +54,6 @@ import org.bukkit.event.player.PlayerPortalEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.server.ServerListPingEvent;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -78,7 +76,7 @@ import com.leontg77.uhc.Scoreboards;
 import com.leontg77.uhc.Settings;
 import com.leontg77.uhc.Spectator;
 import com.leontg77.uhc.Teams;
-import com.leontg77.uhc.cmds.HOFCommand;
+import com.leontg77.uhc.UBL;
 import com.leontg77.uhc.cmds.SpreadCommand;
 import com.leontg77.uhc.cmds.TeamCommand;
 import com.leontg77.uhc.cmds.VoteCommand;
@@ -918,21 +916,28 @@ public class PlayerListener implements Listener {
 		}
 	}
 	
+	@EventHandler(priority = EventPriority.HIGHEST)
+    public void onAsyncPlayerPreLogin(AsyncPlayerPreLoginEvent event) {
+		if (UBL.getManager().isBanned(event.getName(), event.getUniqueId())) {
+            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_BANNED, UBL.getManager().getBanMessage(event.getUniqueId()));
+        }
+		
+        if (UBL.getManager().isBanned(event.getName())) {
+            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_BANNED, UBL.getManager().getBanMessage(event.getName()));
+        }
+    }
+	
 	@EventHandler
 	public void onServerListPing(ServerListPingEvent event) {
-		if (settings.getConfig().getString("game.scenarios") == null) {
-			return;
-		}
-		
 		String state = GameUtils.getState();
 		String teamSize = GameUtils.getTeamSize();
-		String scenarios = ChatColor.translateAlternateColorCodes('&', settings.getConfig().getString("game.scenarios"));
-		String host = Settings.getInstance().getConfig().getString("game.host");
+		String scenarios = ChatColor.translateAlternateColorCodes('&', settings.getConfig().getString("game.scenarios", "games scheduled."));
+		String host = Settings.getInstance().getConfig().getString("game.host", "None");
 		
 		event.setMotd("§4§lArctic UHC §8- §71.8 §8- §a" + state + "§r \n" + 
 		ChatColor.GOLD + teamSize + " " + scenarios + "§8 - §4Host: §7" + host);
 
-		int max = settings.getConfig().getInt("maxplayers");
+		int max = settings.getConfig().getInt("maxplayers", 80);
 		event.setMaxPlayers(max);
 	}
 	
@@ -995,101 +1000,6 @@ public class PlayerListener implements Listener {
 					player.sendMessage(Main.prefix() + "No players to teleport to.");
 				}
 			}
-		}
-	}
-	
-	@EventHandler
-    public void onInventoryClick(InventoryClickEvent event) {	
-        if (event.getCurrentItem() == null) {
-        	return;
-        }
-        
-		Player player = (Player) event.getWhoClicked();
-		ItemStack item = event.getCurrentItem();
-		
-		if (event.getInventory().getTitle().equals("Player Inventory")) {
-			event.setCancelled(true);
-		}
-		
-		if (event.getInventory().getTitle().endsWith("Fame")) {
-			event.setCancelled(true);
-			
-			if (item.hasItemMeta() && item.getItemMeta().hasDisplayName() && item.getItemMeta().getDisplayName().equalsIgnoreCase("§aNext page")) {
-				HOFCommand.page.put(player, HOFCommand.page.get(player) + 1);
-				player.openInventory(HOFCommand.pages.get(player).get(HOFCommand.page.get(player)));
-			}
-			
-			if (item.hasItemMeta() && item.getItemMeta().hasDisplayName() && item.getItemMeta().getDisplayName().equalsIgnoreCase("§aPrevious page")) {
-				HOFCommand.page.put(player, HOFCommand.page.get(player) - 1); 
-				player.openInventory(HOFCommand.pages.get(player).get(HOFCommand.page.get(player)));
-			}
-		}
-		
-		if (event.getInventory().getTitle().equals("Arctic UHC Rules")) {
-			event.setCancelled(true);
-		}
-		
-		if (!Spectator.getManager().isSpectating(player)) {
-			return;
-		}
-        
-		if (event.getInventory().getTitle().equals("Player Selector")) {
-			Player target = Bukkit.getServer().getPlayer(event.getCurrentItem().getItemMeta().getDisplayName().substring(2, event.getCurrentItem().getItemMeta().getDisplayName().length()));
-			
-			if (target == null) {
-				player.sendMessage(Main.prefix() + "Target is not online.");
-			} else {
-				player.teleport(target);
-			}
-			
-			event.setCancelled(true);
-		}
-		
-		if (item.getType() == Material.COMPASS) {
-			if (event.isLeftClick()) {
-				ArrayList<Player> players = new ArrayList<Player>();
-				for (Player online : PlayerUtils.getPlayers()) {
-					if (!Spectator.getManager().isSpectating(online)) {
-						players.add(online);
-					}
-				}
-				
-				if (players.size() > 0) {
-					Player target = players.get(new Random().nextInt(players.size()));
-					player.teleport(target.getLocation());
-					player.sendMessage(Main.prefix() + "You teleported to §a" + target.getName() + "§7.");
-				} else {
-					player.sendMessage(Main.prefix() + "No players to teleport to.");
-				}
-				event.setCancelled(true);
-				return;
-			}
-			InvGUI.getManager().openSelector(player);
-			event.setCancelled(true);
-		}
-		
-		if (item.getType() == Material.INK_SACK) {
-			if (player.hasPotionEffect(PotionEffectType.NIGHT_VISION)) {
-				player.removePotionEffect(PotionEffectType.NIGHT_VISION);
-			} else {
-				player.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, 10000000, 0));
-			}
-			event.setCancelled(true);
-		}
-		
-		if (item.getType() == Material.FEATHER) {
-			player.teleport(new Location(player.getWorld(), 0, 100, 0));
-			event.setCancelled(true);
-		}
-	}
-	
-	@EventHandler
-	public void onInventoryClose(InventoryCloseEvent event) {
-		Inventory inv = event.getInventory();
-		
-		if (Main.invsee.containsKey(inv)) {
-			Main.invsee.get(inv).cancel();
-			Main.invsee.remove(inv);
 		}
 	}
 	
