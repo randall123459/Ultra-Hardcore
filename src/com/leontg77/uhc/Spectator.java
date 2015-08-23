@@ -97,7 +97,7 @@ public class Spectator {
 		visionMeta.setLore(Arrays.asList(ChatColor.GRAY + "Click to toggle the night vision effect."));
 		vision.setItemMeta(visionMeta);
 		
-		ItemStack nether = new ItemStack (Material.INK_SACK, 1, (short) 12);
+		ItemStack nether = new ItemStack (Material.LAVA_BUCKET, 1, (short) 12);
 		ItemMeta netherMeta = nether.getItemMeta();
 		netherMeta.setDisplayName(ChatColor.GREEN + "Players in the nether");
 		netherMeta.setLore(Arrays.asList(ChatColor.GRAY + "Click to get a list of players in the nether."));
