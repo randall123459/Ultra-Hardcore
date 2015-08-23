@@ -36,17 +36,29 @@ public class GameUtils {
 		
 		switch (current) {
 		case INGAME:
-			return "Started.";
+			if (getTeamSize().startsWith("No")) {
+				return "No games running.";
+			} else {
+				return "Started.";
+			}
 		case LOBBY:
 			if (Bukkit.getServer().hasWhitelist()) {
-				return "Not running.";
+				if (getTeamSize().startsWith("No")) {
+					return "No games running.";
+				} else {
+					return "Not open yet.";
+				}
 			} else {
 				return "Waiting for players...";
 			}
 		case SCATTER:
-			return "Starting...";
+			if (getTeamSize().startsWith("No")) {
+				return "No games running.";
+			} else {
+				return "Scattering...";
+			}
 		default:
-			return "Not running.";
+			return "No games running.";
 		}
 	}
 	
