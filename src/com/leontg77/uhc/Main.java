@@ -222,6 +222,7 @@ public class Main extends JavaPlugin {
 
 		ScenarioManager.getInstance().setup();
 		Scoreboards.getManager().setup();
+		BiomeSwap.getManager().setup();
 		Arena.getManager().setup();
 		Teams.getManager().setup();
 		UBL.getManager().setup();
