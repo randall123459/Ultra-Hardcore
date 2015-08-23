@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World.Environment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -42,6 +44,7 @@ public class InventoryListener implements Listener {
 		
 		if (event.getInventory().getTitle().equals("Player Inventory")) {
 			event.setCancelled(true);
+			return;
 		}
 		
 		if (event.getInventory().getTitle().endsWith("Fame")) {
@@ -50,16 +53,19 @@ public class InventoryListener implements Listener {
 			if (item.hasItemMeta() && item.getItemMeta().hasDisplayName() && item.getItemMeta().getDisplayName().equalsIgnoreCase("§aNext page")) {
 				HOFCommand.page.put(player, HOFCommand.page.get(player) + 1);
 				player.openInventory(HOFCommand.pages.get(player).get(HOFCommand.page.get(player)));
+				return;
 			}
 			
 			if (item.hasItemMeta() && item.getItemMeta().hasDisplayName() && item.getItemMeta().getDisplayName().equalsIgnoreCase("§aPrevious page")) {
 				HOFCommand.page.put(player, HOFCommand.page.get(player) - 1); 
 				player.openInventory(HOFCommand.pages.get(player).get(HOFCommand.page.get(player)));
 			}
+			return;
 		}
 		
 		if (event.getInventory().getTitle().equals("Arctic UHC Rules")) {
 			event.setCancelled(true);
+			return;
 		}
 		
 		if (!Spectator.getManager().isSpectating(player)) {
@@ -76,6 +82,7 @@ public class InventoryListener implements Listener {
 			}
 			
 			event.setCancelled(true);
+			return;
 		}
 		
 		if (item.getType() == Material.COMPASS) {
@@ -97,8 +104,10 @@ public class InventoryListener implements Listener {
 				event.setCancelled(true);
 				return;
 			}
+			
 			InvGUI.getManager().openSelector(player);
 			event.setCancelled(true);
+			return;
 		}
 		
 		if (item.getType() == Material.INK_SACK) {
@@ -108,6 +117,37 @@ public class InventoryListener implements Listener {
 				player.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, 10000000, 0));
 			}
 			event.setCancelled(true);
+			return;
+		}
+		
+		if (item.getType() == Material.LAVA_BUCKET) {
+			StringBuilder nether = new StringBuilder();
+			int i = 1;
+			
+			for (Player online : PlayerUtils.getPlayers()) {
+				if (online.getWorld().getEnvironment() == Environment.NETHER) {
+					if (nether.length() > 0) {
+						if (i == PlayerUtils.getPlayers().size()) {
+							nether.append(" §7and §a");
+						} else {
+							nether.append("§7, §a");
+						}
+					}
+
+					nether.append(ChatColor.GREEN + online.getName());
+				}
+			}
+			
+			if (nether.length() == 0) {
+				player.sendMessage(Main.prefix() + "No players are in the nether.");
+				event.setCancelled(true);
+				return;
+			}
+
+			player.sendMessage(Main.prefix() + "Players in the nether:");
+			player.sendMessage("§8» §7" + nether.toString().trim());
+			event.setCancelled(true);
+			return;
 		}
 		
 		if (item.getType() == Material.FEATHER) {
