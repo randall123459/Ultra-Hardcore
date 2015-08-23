@@ -27,6 +27,9 @@ public class Settings {
 	
 	private FileConfiguration hof;
 	private File hfile;
+	
+	private FileConfiguration swap;
+	private File sfile;
 
 	/**
 	 * Gets the instance of the class.
@@ -68,9 +71,9 @@ public class Settings {
 		}
 		    
 		data = YamlConfiguration.loadConfiguration(dfile);
-               
+        
 		hfile = new File(plugin.getDataFolder(), "hof.yml");
-               
+        
 		if (!hfile.exists()) {
 			try {
 				hfile.createNewFile();
@@ -78,8 +81,20 @@ public class Settings {
 				Bukkit.getServer().getLogger().severe(ChatColor.RED + "Could not create hof.yml!");
 			}
 		}
-               
+		
 		hof = YamlConfiguration.loadConfiguration(hfile);
+               
+		sfile = new File(plugin.getDataFolder(), "swap.yml");
+               
+		if (!sfile.exists()) {
+			try {
+				sfile.createNewFile();
+			} catch (Exception e) {
+				Bukkit.getServer().getLogger().severe(ChatColor.RED + "Could not create swap.yml!");
+			}
+		}
+               
+		swap = YamlConfiguration.loadConfiguration(sfile);
 		Bukkit.getLogger().info("[UHC] Configs has been setup.");
 	}
     
@@ -108,7 +123,6 @@ public class Settings {
 	 */
 	public void reloadConfig() {
 		config = YamlConfiguration.loadConfiguration(cfile);
-		Bukkit.getLogger().info("§a[UHC] Config has been reloaded.");
 	}
     
 	/**
@@ -136,7 +150,6 @@ public class Settings {
 	 */
 	public void reloadData() {
 		data = YamlConfiguration.loadConfiguration(dfile);
-		Bukkit.getLogger().info("§a[UHC] Data has been reloaded.");
 	}
     
 	/**
@@ -164,6 +177,32 @@ public class Settings {
 	 */
 	public void reloadHOF() {
 		hof = YamlConfiguration.loadConfiguration(hfile);
-		Bukkit.getLogger().info("§a[UHC] HOF has been reloaded.");
+	}
+    
+	/**
+	 * Gets the swap file.
+	 * 
+	 * @return The file.
+	 */
+	public FileConfiguration getSwap() {
+		return swap;
+	}
+    
+	/**
+	 * Saves the swap config.
+	 */
+	public void saveSwap() {
+		try {
+			swap.save(sfile);
+		} catch (Exception e) {
+			Bukkit.getServer().getLogger().severe(ChatColor.RED + "Could not save swap.yml!");
+		}
+	}
+    
+	/**
+	 * Reloads the swap file.
+	 */
+	public void reloadSwap() {
+		swap = YamlConfiguration.loadConfiguration(sfile);
 	}
 }
