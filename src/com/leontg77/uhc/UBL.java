@@ -185,14 +185,39 @@ public class UBL implements Runnable {
     public void reload() {
         cancel();
         
-        new BukkitRunnable() {
-            @Override
+        reloadConfigAsync(new BukkitRunnable() {
             public void run() {
+                Bukkit.getLogger().info("Configuration reloaded, checking UBL for updates");
+                
                 int autoCheckInterval = 60;
                 schedule(autoCheckInterval);
                 updateBanlist();
             }
-        };
+        });
+    }
+    
+    /**
+     * Load the configuration file asynchronously, and run a task when it is
+     * completed
+     *
+     * @param notifier The task to be run
+     */
+    public void reloadConfigAsync(BukkitRunnable notifier) {
+        new BukkitRunnable() {
+            private BukkitRunnable notifier;
+
+            public BukkitRunnable setNotifier(BukkitRunnable notifier) {
+                this.notifier = notifier;
+
+                // Allow this method to be chain-called
+                return this;
+            }
+
+            @Override
+            public void run() {
+                notifier.runTask(plugin);
+            }
+        }.setNotifier(notifier).runTaskAsynchronously(plugin);
     }
 
     /**
@@ -272,8 +297,9 @@ public class UBL implements Runnable {
         	Bukkit.getLogger().warning("There is no matching UUID field (" + getUUIDFieldName() + ") in the ban-list data. Please check the UBL spreadsheet and set 'fields.uuid' in your config.yml to the correct field name");
             Bukkit.getServer().broadcast("[AutoUBL] No UUID field found in the ban-list data. If Mojang has not yet allowed name-changing, this is not a problem. Otherwise, please check your server logs for details on how to fix this issue", "bukkit.op");
         }
-        this.banlistByIGN = new HashMap<>();
-        this.banlistByUUID = new HashMap<>();
+        this.banlistByIGN = new HashMap<String, BanEntry>();
+        this.banlistByUUID = new HashMap<UUID, BanEntry>();
+        
         for (String rawCSV : banlist) {
             BanEntry banEntry = new BanEntry(fieldNames, rawCSV);
             String ign = banEntry.getData(getIGNFieldName());
@@ -359,7 +385,6 @@ public class UBL implements Runnable {
      * @throws InterruptedException The time limit was exceeded
      */
     private String downloadBanlist(BufferedReader in, int bufferSize, int timeout) throws IOException, InterruptedException {
-        // Set up an interrupt on this thread when the time limit expires
         final Thread iothread = Thread.currentThread();
         BukkitTask timer = new BukkitRunnable() {
             @Override
@@ -372,34 +397,26 @@ public class UBL implements Runnable {
             char[] buffer = new char[bufferSize];
             StringBuilder sb = new StringBuilder();
 
-            // Loop until interrupted or end of stream
             while (true) {
-                // Attempt to read up to the buffer size
                 int bytesRead = in.read(buffer);
 
-                // End of stream has been reached, return the raw data
                 if (bytesRead == -1) {
                     return sb.toString();
                 }
 
-                // Append what was read to the raw data string
                 sb.append(buffer, 0, bytesRead);
 
-                // Wait one server tick
                 Thread.sleep(50);
             }
         } finally {
-            // Whatever happens, make sure the thread doesn't get interrupted!
             timer.cancel();
         }
     }
 
     private void parseData(final String data) {
-        // Schedule to run in the main thread
         new BukkitRunnable() {
             @Override
             public void run() {
-                // Split on EOL
                 String[] lines = data.split("\\r?\\n");
                 if (lines.length < 2) {
                     plugin.getLogger().warning("Banlist is empty!");
