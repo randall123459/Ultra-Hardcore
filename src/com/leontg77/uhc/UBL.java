@@ -30,14 +30,13 @@ import com.leontg77.uhc.util.PlayerUtils;
 /**
  * Universial Ban List class.
  * <p>
- * This class contains methods for checking if a player is banned on the UBL and
- * getting the UBL list.
+ * This class contains methods for checking if a player is banned on the UBL and getting the UBL list.
  * 
  * @author XHawk87, modified by LeonTG77
  */
 public class UBL implements Runnable {
-    private Map<String, BanEntry> banlistByIGN;
-    private Map<UUID, BanEntry> banlistByUUID;
+    public Map<String, BanEntry> banlistByIGN;
+    public Map<UUID, BanEntry> banlistByUUID;
 	private static UBL manager = new UBL();
     private BukkitTask autoChecker;
 
@@ -187,7 +186,7 @@ public class UBL implements Runnable {
         
         reloadConfigAsync(new BukkitRunnable() {
             public void run() {
-                Bukkit.getLogger().info("Configuration reloaded, checking UBL for updates");
+            	plugin.getLogger().info("Configuration reloaded, checking UBL for updates");
                 
                 int autoCheckInterval = 60;
                 schedule(autoCheckInterval);
@@ -208,8 +207,6 @@ public class UBL implements Runnable {
 
             public BukkitRunnable setNotifier(BukkitRunnable notifier) {
                 this.notifier = notifier;
-
-                // Allow this method to be chain-called
                 return this;
             }
 
@@ -237,7 +234,10 @@ public class UBL implements Runnable {
     public boolean isBanned(String ign) {
         String lname = ign.toLowerCase();
         
-        return banlistByIGN.containsKey(lname);
+    	if (banlistByIGN != null) {
+            return banlistByIGN.containsKey(lname);
+    	}
+		return false;
     }
 
     /**
@@ -249,7 +249,10 @@ public class UBL implements Runnable {
      * @return True, if the player is banned and not exempt, otherwise false
      */
     public boolean isBanned(String ign, UUID uuid) {
-        return banlistByUUID.containsKey(uuid);
+    	if (banlistByUUID != null) {
+            return banlistByUUID.containsKey(uuid);
+    	}
+		return false;
     }
 
     /**
@@ -263,7 +266,7 @@ public class UBL implements Runnable {
             return "Not on the UBL";
         }
         
-        return "§cYou have been banned from Arctic UHC \n\n§aReason: §7UBL - " + banEntry.getData();
+        return "§cYou have been banned from Arctic UHC \n\n§aReason: §7UBL - " + banEntry.getData("Reason");
     }
 
     /**
@@ -277,7 +280,7 @@ public class UBL implements Runnable {
             return "Not on the UBL";
         }
         
-        return "§cYou have been banned from Arctic UHC \n\n§aReason: §7UBL - " + banEntry.getData();
+        return "§cYou have been banned from Arctic UHC \n\n§aReason: §7UBL - " + banEntry.getData("Reason");
     }
 
     /**
