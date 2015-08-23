@@ -14,6 +14,7 @@ import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 
+import org.bukkit.BanEntry;
 import org.bukkit.BanList.Type;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -887,10 +888,10 @@ public class PlayerListener implements Listener {
 				return;
 			}
 
-			String reason = Bukkit.getBanList(Type.NAME).getBanEntry(player.getName()).getReason();
+			BanEntry ban = Bukkit.getBanList(Type.NAME).getBanEntry(player.getName());
 
-			PlayerUtils.broadcast("§c" + player.getName() + " tried to join while being banned for: " + reason, "uhc.staff");
-			event.setKickMessage("§8» §cBanned: §7" + reason + " §8«");
+			PlayerUtils.broadcast(Main.prefix() + ChatColor.RED + player.getName() + " §7tried to join while being banned for:§c " + ban.getReason(), "uhc.staff");
+			event.setKickMessage("§8» §7You have been banned from Arctic UHC\n\n§8» §cReason: §7" + ban.getReason() + "\n§8» §cBanned by: §7" + ban.getSource() + "\n\n§8» §7If you could like to appeal, DM our twitter §a@ArcticUHC");
 			return;
 		}
 		
@@ -900,17 +901,32 @@ public class PlayerListener implements Listener {
 				return;
 			}
 			
-			event.setKickMessage("§8» §7You are not whitelisted §8«");
+			String game;
+			
+			if (GameUtils.getTeamSize().startsWith("No")) {
+				game = "There are no games running.";
+			} else if (GameUtils.getTeamSize().startsWith("Open")) {
+				event.allow();
+				return;
+			} else {
+				if (State.isState(State.LOBBY)) {
+					game = "The game has not opened yet, check the post for open time!";
+				} else {
+					game = "The game has already started, you were too late!";
+				}
+			}
+			
+			event.setKickMessage("§8» §7You are not whitelisted.\n\n§a" + game);
 			return;
 		}
 		
-		if (PlayerUtils.getPlayers().size() >= settings.getConfig().getInt("maxplayers")) {
+		if (PlayerUtils.getPlayers().size() >= settings.getConfig().getInt("maxplayers", 80)) {
 			if (player.hasPermission("uhc.staff") && State.isState(State.INGAME)) {
 				event.allow();
 				return;
 			} 
 			
-			event.disallow(Result.KICK_FULL, "§8» §7The server is full §8«");
+			event.disallow(Result.KICK_FULL, "§8» §7The server is currently full\n\n§cTry again later.");
 		} else {
 			event.allow();
 		}
@@ -919,11 +935,18 @@ public class PlayerListener implements Listener {
 	@EventHandler(priority = EventPriority.HIGHEST)
     public void onAsyncPlayerPreLogin(AsyncPlayerPreLoginEvent event) {
 		if (UBL.getManager().isBanned(event.getName(), event.getUniqueId())) {
+            UBL.BanEntry banEntry = UBL.getManager().banlistByIGN.get(event.getName().toLowerCase());
+        	PlayerUtils.broadcast(Main.prefix() + ChatColor.RED + event.getName() + " §7tried to join while being UBL'ed for:§c " + banEntry.getData("Reason"), "uhc.staff");
+        	
             event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_BANNED, UBL.getManager().getBanMessage(event.getUniqueId()));
+            return;
         }
 		
         if (UBL.getManager().isBanned(event.getName())) {
-            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_BANNED, UBL.getManager().getBanMessage(event.getName()));
+            UBL.BanEntry banEntry = UBL.getManager().banlistByIGN.get(event.getName().toLowerCase());
+        	PlayerUtils.broadcast(Main.prefix() + ChatColor.RED + event.getName() + " §7tried to join while being UBL'ed for:§c " + banEntry.getData("Reason"), "uhc.staff");
+        	
+			event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_BANNED, UBL.getManager().getBanMessage(event.getName()));
         }
     }
 	
