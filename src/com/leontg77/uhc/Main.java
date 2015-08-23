@@ -80,6 +80,7 @@ import com.leontg77.uhc.cmds.VoteCommand;
 import com.leontg77.uhc.cmds.WhitelistCommand;
 import com.leontg77.uhc.listeners.BlockListener;
 import com.leontg77.uhc.listeners.EntityListener;
+import com.leontg77.uhc.listeners.InventoryListener;
 import com.leontg77.uhc.listeners.PlayerListener;
 import com.leontg77.uhc.listeners.WeatherListener;
 import com.leontg77.uhc.scenario.Scenario;
@@ -165,6 +166,7 @@ public class Main extends JavaPlugin {
 		
 		Bukkit.getServer().getPluginManager().registerEvents(new BlockListener(), this);
 		Bukkit.getServer().getPluginManager().registerEvents(new EntityListener(), this);
+		Bukkit.getServer().getPluginManager().registerEvents(new InventoryListener(), this);
 		Bukkit.getServer().getPluginManager().registerEvents(new PlayerListener(), this);
 		Bukkit.getServer().getPluginManager().registerEvents(new WeatherListener(), this);
 		Bukkit.getServer().getPluginManager().registerEvents(new SpecInfo(), this);
@@ -222,29 +224,30 @@ public class Main extends JavaPlugin {
 		Scoreboards.getManager().setup();
 		Arena.getManager().setup();
 		Teams.getManager().setup();
+		UBL.getManager().setup();
 		
-		State.setState(State.valueOf(settings.getData().getString("state")));
+		State.setState(State.valueOf(settings.getData().getString("state", State.LOBBY.name())));
 		addRecipes();
 		
-		ffa = settings.getConfig().getBoolean("game.ffa");
-		teamSize = settings.getConfig().getInt("game.teamsize");
+		ffa = settings.getConfig().getBoolean("game.ffa", true);
+		teamSize = settings.getConfig().getInt("game.teamsize", 1);
 		
-		border = Border.valueOf(settings.getConfig().getString("feature.border.shrinkAt"));
-		absorption = settings.getConfig().getBoolean("feature.absorption.enabled");
-		goldenheads = settings.getConfig().getBoolean("feature.goldenheads.enabled");
-		pearldamage = settings.getConfig().getBoolean("feature.pearldamage.enabled");
-		notchapples = settings.getConfig().getBoolean("feature.notchapples.enabled");
-		deathlightning = settings.getConfig().getBoolean("feature.deathlightning.enabled");
-		nether = settings.getConfig().getBoolean("feature.nether.enabled");
-		theend = settings.getConfig().getBoolean("feature.theend.enabled");
-		ghastdrops = settings.getConfig().getBoolean("feature.ghastdrops.enabled");
-		nerfedStrength = settings.getConfig().getBoolean("feature.nerfedStrength.enabled");
-		tabcolors = settings.getConfig().getBoolean("feature.tabcolors.enabled");
-		harderCrafting = settings.getConfig().getBoolean("feature.harderCrafting.tabcolors");
+		border = Border.valueOf(settings.getConfig().getString("feature.border.shrinkAt", Border.MEETUP.name()));
+		absorption = settings.getConfig().getBoolean("feature.absorption.enabled", false);
+		goldenheads = settings.getConfig().getBoolean("feature.goldenheads.enabled", true);
+		pearldamage = settings.getConfig().getBoolean("feature.pearldamage.enabled", false);
+		notchapples = settings.getConfig().getBoolean("feature.notchapples.enabled", true);
+		deathlightning = settings.getConfig().getBoolean("feature.deathlightning.enabled", true);
+		nether = settings.getConfig().getBoolean("feature.nether.enabled", false);
+		theend = settings.getConfig().getBoolean("feature.theend.enabled", false);
+		ghastdrops = settings.getConfig().getBoolean("feature.ghastdrops.enabled", true);
+		nerfedStrength = settings.getConfig().getBoolean("feature.nerfedStrength.enabled", true);
+		tabcolors = settings.getConfig().getBoolean("feature.tabcolors.enabled", false);
+		harderCrafting = settings.getConfig().getBoolean("feature.harderCrafting.tabcolors", true);
 
-		shears = settings.getConfig().getBoolean("rates.shears.enabled");
-		shearrate = settings.getConfig().getInt("rates.shears.rate");
-		flintrate = settings.getConfig().getInt("rates.flint.rate");
+		shears = settings.getConfig().getBoolean("rates.shears.enabled", true);
+		shearrate = settings.getConfig().getInt("rates.shears.rate", 5);
+		flintrate = settings.getConfig().getInt("rates.flint.rate", 35);
 		
 		Bukkit.getLogger().info("[UHC] Config values has been setup.");
 
