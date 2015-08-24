@@ -16,7 +16,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
 
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.scenario.Scenario;
-import com.leontg77.uhc.util.PlayerUtils;
+import com.leontg77.uhc.utils.PlayerUtils;
 
 /**
  * Assassins scenario class

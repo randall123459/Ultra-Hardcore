@@ -9,7 +9,7 @@ import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Player;
 
 import com.leontg77.uhc.Main;
-import com.leontg77.uhc.util.PlayerUtils;
+import com.leontg77.uhc.utils.PlayerUtils;
 
 public class SethealthCommand implements CommandExecutor {
 

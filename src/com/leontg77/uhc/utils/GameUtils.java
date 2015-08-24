@@ -1,4 +1,4 @@
-package com.leontg77.uhc.util;
+package com.leontg77.uhc.utils;
 
 import net.minecraft.server.v1_8_R3.MinecraftServer;
 

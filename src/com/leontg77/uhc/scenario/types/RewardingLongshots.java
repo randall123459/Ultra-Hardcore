@@ -9,8 +9,8 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
 
 import com.leontg77.uhc.scenario.Scenario;
-import com.leontg77.uhc.util.NumberUtils;
-import com.leontg77.uhc.util.PlayerUtils;
+import com.leontg77.uhc.utils.NumberUtils;
+import com.leontg77.uhc.utils.PlayerUtils;
 
 public class RewardingLongshots extends Scenario implements Listener {
 	private boolean enabled = false;

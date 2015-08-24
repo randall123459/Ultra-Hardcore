@@ -25,7 +25,7 @@ import org.bukkit.util.Vector;
 import com.leontg77.uhc.Arena;
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.Main.State;
-import com.leontg77.uhc.util.BlockUtils;
+import com.leontg77.uhc.utils.BlockUtils;
 
 /**
  * Block listener class.

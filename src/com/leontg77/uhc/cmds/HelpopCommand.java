@@ -11,7 +11,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.leontg77.uhc.Main;
-import com.leontg77.uhc.util.PlayerUtils;
+import com.leontg77.uhc.utils.PlayerUtils;
 
 public class HelpopCommand implements CommandExecutor {
 	public static ArrayList<CommandSender> cooldown = new ArrayList<CommandSender>();

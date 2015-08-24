@@ -15,7 +15,7 @@ import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Score;
 import org.bukkit.scoreboard.Scoreboard;
 
-import com.leontg77.uhc.util.ScatterUtils;
+import com.leontg77.uhc.utils.ScatterUtils;
 
 /**
  * PvP Arena class.

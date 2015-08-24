@@ -12,7 +12,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import com.leontg77.uhc.scenario.Scenario;
-import com.leontg77.uhc.util.PlayerUtils;
+import com.leontg77.uhc.utils.PlayerUtils;
 
 public class TrainingRabbits extends Scenario implements Listener {
 	public static HashMap<String, Integer> jump = new HashMap<String, Integer>();

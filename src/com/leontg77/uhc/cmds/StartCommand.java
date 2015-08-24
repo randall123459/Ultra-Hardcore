@@ -10,7 +10,7 @@ import com.leontg77.uhc.Main;
 import com.leontg77.uhc.Runnables;
 import com.leontg77.uhc.Settings;
 import com.leontg77.uhc.Main.State;
-import com.leontg77.uhc.util.PlayerUtils;
+import com.leontg77.uhc.utils.PlayerUtils;
 
 public class StartCommand implements CommandExecutor {
 

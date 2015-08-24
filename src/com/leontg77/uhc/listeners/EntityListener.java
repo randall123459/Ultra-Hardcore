@@ -33,8 +33,8 @@ import com.leontg77.uhc.Main;
 import com.leontg77.uhc.Spectator;
 import com.leontg77.uhc.Main.State;
 import com.leontg77.uhc.scenario.ScenarioManager;
-import com.leontg77.uhc.util.BlockUtils;
-import com.leontg77.uhc.util.NumberUtils;
+import com.leontg77.uhc.utils.BlockUtils;
+import com.leontg77.uhc.utils.NumberUtils;
 
 /**
  * Entity listener class.

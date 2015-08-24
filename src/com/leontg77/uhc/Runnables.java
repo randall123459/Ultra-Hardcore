@@ -22,7 +22,7 @@ import com.leontg77.uhc.Main.Border;
 import com.leontg77.uhc.Main.State;
 import com.leontg77.uhc.cmds.TeamCommand;
 import com.leontg77.uhc.scenario.ScenarioManager;
-import com.leontg77.uhc.util.PlayerUtils;
+import com.leontg77.uhc.utils.PlayerUtils;
 
 /**
  * The runnable class for all the runnables

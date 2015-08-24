@@ -20,7 +20,7 @@ import org.bukkit.potion.PotionEffectType;
 
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.scenario.Scenario;
-import com.leontg77.uhc.util.PlayerUtils;
+import com.leontg77.uhc.utils.PlayerUtils;
 
 public class Superheroes extends Scenario implements Listener {
 	private HashMap<String, HeroType> type = new HashMap<String, HeroType>();

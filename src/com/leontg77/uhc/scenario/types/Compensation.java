@@ -2,7 +2,6 @@ package com.leontg77.uhc.scenario.types;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -48,9 +47,7 @@ public class Compensation extends Scenario implements Listener {
 		}
 		
 		Player victim = event.getEntity();
-    	Damageable dmg = victim;
-
-        double victimMaxHealth = dmg.getMaxHealth();
+        double victimMaxHealth = victim.getMaxHealth();
 
         Team victimTeam = victim.getScoreboard().getEntryTeam(victim.getName());
 
@@ -71,11 +68,10 @@ public class Compensation extends Scenario implements Listener {
             		continue;
             	}
             	
-            	Damageable dmgt = p.getPlayer();
-                p.getPlayer().setMaxHealth(dmgt.getMaxHealth() + healthPerPerson);
-                p.getPlayer().setHealth(dmgt.getHealth() + excessHealth);
-                p.getPlayer().removePotionEffect(PotionEffectType.REGENERATION);
-                p.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, ticksRegen, 0));
+                p.setMaxHealth(p.getMaxHealth() + healthPerPerson);
+                p.setHealth(p.getHealth() + excessHealth);
+                p.removePotionEffect(PotionEffectType.REGENERATION);
+                p.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, ticksRegen, 0));
             }
         }
     }
@@ -87,17 +83,16 @@ public class Compensation extends Scenario implements Listener {
     	}
     	
     	Player player = event.getPlayer();
-    	Damageable dmg = player;
 
         if (event.getItem().getType() == Material.GOLDEN_APPLE) {
         	player.removePotionEffect(PotionEffectType.REGENERATION);
 
-            double regenTicks = (dmg.getMaxHealth() / 5) * 25;
+            double regenTicks = (player.getMaxHealth() / 5) * 25;
             int regenTicksRounded = (int) regenTicks;
 
             double excessHealth = regenTicks - regenTicksRounded;
 
-            player.setHealth(dmg.getHealth() + excessHealth);
+            player.setHealth(player.getHealth() + excessHealth);
             player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, regenTicksRounded, 1));
 
         }

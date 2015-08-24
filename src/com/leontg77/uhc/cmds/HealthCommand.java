@@ -8,7 +8,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.leontg77.uhc.Main;
-import com.leontg77.uhc.util.NumberUtils;
+import com.leontg77.uhc.utils.NumberUtils;
 
 public class HealthCommand implements CommandExecutor {
 

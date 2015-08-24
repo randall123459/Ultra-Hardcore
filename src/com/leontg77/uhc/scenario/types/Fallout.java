@@ -5,7 +5,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.scenario.Scenario;
-import com.leontg77.uhc.util.PlayerUtils;
+import com.leontg77.uhc.utils.PlayerUtils;
 
 public class Fallout extends Scenario {
 	private boolean enabled = false;

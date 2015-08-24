@@ -82,11 +82,11 @@ import com.leontg77.uhc.cmds.SpreadCommand;
 import com.leontg77.uhc.cmds.TeamCommand;
 import com.leontg77.uhc.cmds.VoteCommand;
 import com.leontg77.uhc.scenario.ScenarioManager;
-import com.leontg77.uhc.util.BlockUtils;
-import com.leontg77.uhc.util.GameUtils;
-import com.leontg77.uhc.util.NameUtils;
-import com.leontg77.uhc.util.PlayerUtils;
-import com.leontg77.uhc.util.RecipeUtils;
+import com.leontg77.uhc.utils.BlockUtils;
+import com.leontg77.uhc.utils.GameUtils;
+import com.leontg77.uhc.utils.NameUtils;
+import com.leontg77.uhc.utils.PlayerUtils;
+import com.leontg77.uhc.utils.RecipeUtils;
 
 /**
  * Player listener class.
@@ -413,8 +413,10 @@ public class PlayerListener implements Listener {
 				}
 				builder.event(new HoverEvent(HoverEvent.Action.SHOW_ITEM, new BaseComponent[] { new TextComponent(NameUtils.convertItemStackToJson(killer.getItemInHand())) }));
 				
+				BaseComponent[] result = builder.create();
+				
 				for (Player online : PlayerUtils.getPlayers()) {
-					online.spigot().sendMessage(builder.create());
+					online.spigot().sendMessage(result);
 				}
 				
 				Bukkit.getLogger().info("§8» §f" + event.getDeathMessage());

@@ -85,8 +85,8 @@ import com.leontg77.uhc.listeners.PlayerListener;
 import com.leontg77.uhc.listeners.WeatherListener;
 import com.leontg77.uhc.scenario.Scenario;
 import com.leontg77.uhc.scenario.ScenarioManager;
-import com.leontg77.uhc.util.NumberUtils;
-import com.leontg77.uhc.util.PlayerUtils;
+import com.leontg77.uhc.utils.NumberUtils;
+import com.leontg77.uhc.utils.PlayerUtils;
 
 /**
  * Main class of the UHC plugin.

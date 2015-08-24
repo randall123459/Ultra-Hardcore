@@ -24,8 +24,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
-import com.leontg77.uhc.util.NameUtils;
-import com.leontg77.uhc.util.PlayerUtils;
+import com.leontg77.uhc.utils.NameUtils;
+import com.leontg77.uhc.utils.PlayerUtils;
 
 /**
  * Universial Ban List class.

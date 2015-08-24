@@ -18,7 +18,7 @@ import com.leontg77.uhc.Main.State;
 import com.leontg77.uhc.Runnables;
 import com.leontg77.uhc.Scoreboards;
 import com.leontg77.uhc.Settings;
-import com.leontg77.uhc.util.PlayerUtils;
+import com.leontg77.uhc.utils.PlayerUtils;
 
 public class ConfigCommand implements CommandExecutor, TabCompleter {
 	private Settings settings = Settings.getInstance();
@@ -571,7 +571,6 @@ public class ConfigCommand implements CommandExecutor, TabCompleter {
 						}
 						break;
 					default:
-						sender.sendMessage(ChatColor.RED + "You typed the wrong type or value.");
 						break;
 					}
 		        	return arg;

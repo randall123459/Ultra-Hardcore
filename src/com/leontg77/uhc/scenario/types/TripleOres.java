@@ -20,8 +20,8 @@ import com.leontg77.uhc.Spectator;
 import com.leontg77.uhc.Spectator.SpecInfo;
 import com.leontg77.uhc.scenario.Scenario;
 import com.leontg77.uhc.scenario.ScenarioManager;
-import com.leontg77.uhc.util.BlockUtils;
-import com.leontg77.uhc.util.PlayerUtils;
+import com.leontg77.uhc.utils.BlockUtils;
+import com.leontg77.uhc.utils.PlayerUtils;
 
 public class TripleOres extends Scenario implements Listener {
 	private HashSet<Location> locs = new HashSet<Location>();

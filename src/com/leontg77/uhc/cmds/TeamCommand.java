@@ -24,7 +24,7 @@ import com.leontg77.uhc.Main;
 import com.leontg77.uhc.Scoreboards;
 import com.leontg77.uhc.Spectator;
 import com.leontg77.uhc.Teams;
-import com.leontg77.uhc.util.PlayerUtils;
+import com.leontg77.uhc.utils.PlayerUtils;
 
 public class TeamCommand implements CommandExecutor, TabCompleter {
 	public static HashMap<Player, ArrayList<Player>> invites = new HashMap<Player, ArrayList<Player>>();

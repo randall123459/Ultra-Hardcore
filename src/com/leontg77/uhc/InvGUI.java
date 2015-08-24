@@ -15,11 +15,11 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.leontg77.uhc.Main.Border;
-import com.leontg77.uhc.util.DateUtils;
-import com.leontg77.uhc.util.NameUtils;
-import com.leontg77.uhc.util.NumberUtils;
-import com.leontg77.uhc.util.PlayerUtils;
-import com.leontg77.uhc.util.GameUtils;
+import com.leontg77.uhc.utils.DateUtils;
+import com.leontg77.uhc.utils.GameUtils;
+import com.leontg77.uhc.utils.NameUtils;
+import com.leontg77.uhc.utils.NumberUtils;
+import com.leontg77.uhc.utils.PlayerUtils;
 
 /**
  * The inventory managing class.

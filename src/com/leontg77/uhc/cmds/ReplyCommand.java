@@ -44,8 +44,8 @@ public class ReplyCommand implements CommandExecutor {
 	        	}
 	        }
 	   
-	    	sender.sendMessage("§6me §8-> §6" + target.getName() + " §8§l» §f" + msg);
-	    	target.sendMessage("§6" + sender.getName() + " §8-> §6me §8§l» §f" + msg);
+	    	sender.sendMessage("§6me §8-> §a" + target.getName() + " §8§l» §f" + msg);
+	    	target.sendMessage("§a" + sender.getName() + " §8-> §6me §8§l» §f" + msg);
 	    	Main.msg.put(target, sender);
 	    	Main.msg.put(sender, target);
 	    }

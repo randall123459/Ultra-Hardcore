@@ -16,7 +16,7 @@ import org.bukkit.util.Vector;
 
 import com.leontg77.uhc.scenario.Scenario;
 import com.leontg77.uhc.scenario.ScenarioManager;
-import com.leontg77.uhc.util.BlockUtils;
+import com.leontg77.uhc.utils.BlockUtils;
 
 public class Barebones extends Scenario implements Listener {
 	private boolean enabled = false;

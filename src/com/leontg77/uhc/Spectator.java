@@ -41,10 +41,10 @@ import org.bukkit.potion.PotionType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
-import com.leontg77.uhc.util.DateUtils;
-import com.leontg77.uhc.util.NameUtils;
-import com.leontg77.uhc.util.NumberUtils;
-import com.leontg77.uhc.util.PlayerUtils;
+import com.leontg77.uhc.utils.DateUtils;
+import com.leontg77.uhc.utils.NameUtils;
+import com.leontg77.uhc.utils.NumberUtils;
+import com.leontg77.uhc.utils.PlayerUtils;
 
 /**
  * The spectator class to manage spectating.
@@ -97,7 +97,7 @@ public class Spectator {
 		visionMeta.setLore(Arrays.asList(ChatColor.GRAY + "Click to toggle the night vision effect."));
 		vision.setItemMeta(visionMeta);
 		
-		ItemStack nether = new ItemStack (Material.LAVA_BUCKET, 1, (short) 12);
+		ItemStack nether = new ItemStack (Material.LAVA_BUCKET, 1);
 		ItemMeta netherMeta = nether.getItemMeta();
 		netherMeta.setDisplayName(ChatColor.GREEN + "Players in the nether");
 		netherMeta.setLore(Arrays.asList(ChatColor.GRAY + "Click to get a list of players in the nether."));
@@ -447,9 +447,9 @@ public class Spectator {
 				Potion pot;
 
 				if (item.getDurability() == 16453) {
-					pot = new Potion(PotionType.INSTANT_HEAL, 0);
-				} else if (item.getDurability() == 16421) {
 					pot = new Potion(PotionType.INSTANT_HEAL, 1);
+				} else if (item.getDurability() == 16421) {
+					pot = new Potion(PotionType.INSTANT_HEAL, 2);
 				} else {
 					try {
 						pot = Potion.fromItemStack(item);

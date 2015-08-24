@@ -17,7 +17,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.scenario.Scenario;
-import com.leontg77.uhc.util.PlayerUtils;
+import com.leontg77.uhc.utils.PlayerUtils;
 
 public class BigCrack extends Scenario implements Listener {
 	private static final int CHUNK_HEIGHT_LIMIT = 128;

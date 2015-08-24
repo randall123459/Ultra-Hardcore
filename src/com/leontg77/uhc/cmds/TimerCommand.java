@@ -12,8 +12,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.leontg77.uhc.Main;
-import com.leontg77.uhc.util.DateUtils;
-import com.leontg77.uhc.util.PlayerUtils;
+import com.leontg77.uhc.utils.DateUtils;
+import com.leontg77.uhc.utils.PlayerUtils;
 
 public class TimerCommand implements CommandExecutor, TabCompleter {
 	private String message;

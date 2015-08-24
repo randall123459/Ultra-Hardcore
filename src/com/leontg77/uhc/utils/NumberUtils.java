@@ -1,4 +1,4 @@
-package com.leontg77.uhc.util;
+package com.leontg77.uhc.utils;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;

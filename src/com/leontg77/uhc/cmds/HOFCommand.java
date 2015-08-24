@@ -18,7 +18,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import com.leontg77.uhc.Settings;
-import com.leontg77.uhc.util.GameUtils;
+import com.leontg77.uhc.utils.GameUtils;
 
 public class HOFCommand implements CommandExecutor, TabCompleter {
 	public static HashMap<Player, HashMap<Integer, Inventory>> pages = new HashMap<Player, HashMap<Integer, Inventory>>();

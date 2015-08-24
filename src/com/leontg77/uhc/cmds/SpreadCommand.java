@@ -22,8 +22,8 @@ import com.leontg77.uhc.Main.State;
 import com.leontg77.uhc.Scoreboards;
 import com.leontg77.uhc.Settings;
 import com.leontg77.uhc.Teams;
-import com.leontg77.uhc.util.PlayerUtils;
-import com.leontg77.uhc.util.ScatterUtils;
+import com.leontg77.uhc.utils.PlayerUtils;
+import com.leontg77.uhc.utils.ScatterUtils;
 
 public class SpreadCommand implements CommandExecutor {
 	public static final HashMap<String, Location> scatterLocs = new HashMap<String, Location>();
@@ -101,6 +101,8 @@ public class SpreadCommand implements CommandExecutor {
 								for (Team tem : Teams.getManager().getTeamsWithPlayers()) {
 									for (String player : tem.getEntries()) {
 										scatterLocs.put(player, loc.get(index));
+										
+										PlayerUtils.getOfflinePlayer(player).setWhitelisted(true);
 									}
 									index++;
 								}

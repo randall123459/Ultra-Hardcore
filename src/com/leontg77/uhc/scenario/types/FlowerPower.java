@@ -12,7 +12,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
 import com.leontg77.uhc.scenario.Scenario;
-import com.leontg77.uhc.util.BlockUtils;
+import com.leontg77.uhc.utils.BlockUtils;
 
 @SuppressWarnings("deprecation")
 public class FlowerPower extends Scenario implements Listener {

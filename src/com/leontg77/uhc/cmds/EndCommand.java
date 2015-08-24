@@ -27,8 +27,8 @@ import com.leontg77.uhc.Spectator;
 import com.leontg77.uhc.Spectator.SpecInfo;
 import com.leontg77.uhc.scenario.Scenario;
 import com.leontg77.uhc.scenario.ScenarioManager;
-import com.leontg77.uhc.util.GameUtils;
-import com.leontg77.uhc.util.PlayerUtils;
+import com.leontg77.uhc.utils.GameUtils;
+import com.leontg77.uhc.utils.PlayerUtils;
 
 public class EndCommand implements CommandExecutor {
 	private Settings settings = Settings.getInstance();
