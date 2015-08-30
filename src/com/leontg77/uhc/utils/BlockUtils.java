@@ -79,6 +79,21 @@ public class BlockUtils {
 
         return false;
     }
+
+	/**
+	 * Get the highest block at the given location.
+	 * 
+	 * @param loc the location.
+	 * @return The highest block.
+	 */
+	public static Location highestBlock(Location loc) {
+		for (int i = 255; i >= 0; i--) {
+			if (loc.getWorld().getBlockAt(loc.getBlockX(), i, loc.getBlockZ()).getType() != Material.AIR) {
+				return loc.getWorld().getBlockAt(loc.getBlockX(), i, loc.getBlockZ()).getLocation();
+			}
+		}
+		return loc;
+	}
 	
 	/**
 	 * Get the block face direction bases on the given locations yaw.
@@ -149,19 +164,4 @@ public class BlockUtils {
             return null;
         }
     }
-
-	/**
-	 * Get the highest block at the given location.
-	 * 
-	 * @param loc the location.
-	 * @return The highest block.
-	 */
-	public static Location highestBlock(Location loc) {
-		for (int i = 255; i >= 0; i--) {
-			if (loc.getWorld().getBlockAt(loc.getBlockX(), i, loc.getBlockZ()).getType() != Material.AIR) {
-				return loc.getWorld().getBlockAt(loc.getBlockX(), i, loc.getBlockZ()).getLocation();
-			}
-		}
-		return loc;
-	}
 }
