@@ -98,6 +98,9 @@ commands:
   team:
     description: Team command, check usage.
     aliases: [party]
+  tempban:
+    description: Tempban a player.
+    aliases: [tban]
   timeleft:
     description: Chec the time left.
   timer:
