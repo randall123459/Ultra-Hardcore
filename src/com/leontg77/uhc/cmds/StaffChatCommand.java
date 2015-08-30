@@ -25,7 +25,7 @@ public class StaffChatCommand implements CommandExecutor {
 		               
 		        String msg = message.toString().trim();
 
-				PlayerUtils.broadcast("§6§lStaffChat §8» §a" + sender.getName() + "§8: §f" + msg, "uhc.staff");
+				PlayerUtils.broadcast("§c§lStaffChat §8» §a" + sender.getName() + "§8: §f" + msg, "uhc.staff");
 			} else {
 				sender.sendMessage(ChatColor.RED + "You do not have access to that command.");
 			}
