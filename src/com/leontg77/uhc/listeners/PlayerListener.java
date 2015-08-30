@@ -12,7 +12,6 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
-import net.minecraft.server.v1_8_R3.NBTTagCompound;
 
 import org.bukkit.BanEntry;
 import org.bukkit.BanList.Type;
@@ -21,13 +20,13 @@ import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.SkullType;
 import org.bukkit.TravelAgent;
 import org.bukkit.World;
 import org.bukkit.World.Environment;
 import org.bukkit.block.Block;
 import org.bukkit.block.Skull;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.ExperienceOrb;
 import org.bukkit.entity.Item;
@@ -66,10 +65,9 @@ import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Team;
 import org.bukkit.util.Vector;
 
-import ru.tehkode.permissions.bukkit.PermissionsEx;
-
 import com.leontg77.uhc.Arena;
 import com.leontg77.uhc.Data;
+import com.leontg77.uhc.Data.Rank;
 import com.leontg77.uhc.InvGUI;
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.Main.State;
@@ -110,7 +108,6 @@ public class PlayerListener implements Listener {
 		player.setNoDamageTicks(0);
 		
 		Spectator.getManager().hideSpectators(player);
-		PlayerUtils.handlePermissions(player);
 		PlayerUtils.setTabList(player);
 		
 		if (Main.relog.containsKey(player.getName())) {
@@ -152,9 +149,9 @@ public class PlayerListener implements Listener {
 		player.sendMessage("§8---------------------------");
 		player.sendMessage(" §8» §6Welcome to Arctic UHC");
 		player.sendMessage("§8---------------------------");
-		if (GameUtils.getTeamSize().equals("No")) {
+		if (GameUtils.getTeamSize().startsWith("No")) {
 			player.sendMessage(" §8» §cNo games scheduled");
-		} else if (GameUtils.getTeamSize().equals("Open")) {
+		} else if (GameUtils.getTeamSize().startsWith("Open")) {
 			player.sendMessage(" §8» §7Open PvP, use §a/a §7to join.");
 		} else {
 			player.sendMessage(" §8» §aHost: §7" + Settings.getInstance().getConfig().getString("game.host"));
@@ -400,12 +397,9 @@ public class PlayerListener implements Listener {
 			
 			Player killer = player.getKiller();
 			
-			if (killer.getItemInHand() != null && killer.getItemInHand().hasItemMeta() && killer.getItemInHand().getItemMeta().hasDisplayName()) {
-				net.minecraft.server.v1_8_R3.ItemStack nmsItemStack = CraftItemStack.asNMSCopy(killer.getItemInHand());
-			    NBTTagCompound compound = new NBTTagCompound();
-			    compound = nmsItemStack.save(compound);
-				
+			if (event.getDeathMessage().contains(killer.getName()) && killer.getItemInHand() != null && killer.getItemInHand().hasItemMeta() && killer.getItemInHand().getItemMeta().hasDisplayName()) {
 				ComponentBuilder builder = new ComponentBuilder("§8» §r" + event.getDeathMessage().replace("[" + killer.getItemInHand().getItemMeta().getDisplayName() + "]", ""));
+				
 				if (killer.getItemInHand().getEnchantments().isEmpty()) {
 					builder.append("[" + killer.getItemInHand().getItemMeta().getDisplayName() + "]");
 				} else {
@@ -533,7 +527,7 @@ public class PlayerListener implements Listener {
 			return;
 		}
     	
-		if (PermissionsEx.getUser(player).inGroup("Host")) {
+		if (data.getRank() == Rank.HOST) {
 			if (data.isMuted()) {
 				player.sendMessage(Main.prefix() + "You have been muted.");
 				return;
@@ -556,7 +550,7 @@ public class PlayerListener implements Listener {
 				}	
 			}
 		}
-		else if (PermissionsEx.getUser(player).inGroup("Trial")) {
+		else if (data.getRank() == Rank.TRIAL) {
 			if (data.isMuted()) {
 				player.sendMessage(Main.prefix() + "You have been muted.");
 				return;
@@ -565,7 +559,7 @@ public class PlayerListener implements Listener {
 			Team team = player.getScoreboard().getEntryTeam(player.getName());
 			PlayerUtils.broadcast("§4§lTrial Host §8| §f" + (team != null ? (team.getName().equals("spec") ? player.getName() : team.getPrefix() + player.getName()) : player.getName()) + "§8 » §f" + event.getMessage());
 		}
-		else if (PermissionsEx.getUser(player).inGroup("Staff")) {
+		else if (data.getRank() == Rank.STAFF) {
 			if (data.isMuted()) {
 				player.sendMessage(Main.prefix() + "You have been muted.");
 				return;
@@ -574,7 +568,7 @@ public class PlayerListener implements Listener {
 			Team team = player.getScoreboard().getEntryTeam(player.getName());
 			PlayerUtils.broadcast("§c§lStaff §8| §f" + (team != null ? (team.getName().equals("spec") ? player.getName() : team.getPrefix() + player.getName()) : player.getName()) + "§8 » §f" + event.getMessage());
 		}
-		else if (PermissionsEx.getUser(player).inGroup("VIP")) {
+		else if (data.getRank() == Rank.VIP) {
 			if (Main.muted) {
 				player.sendMessage(Main.prefix() + "All players are muted.");
 				return;
@@ -741,9 +735,68 @@ public class PlayerListener implements Listener {
 				stand.setCustomNameVisible(true);
 				stand.setGravity(false);
 				stand.setVisible(false);
+				stand.setSmall(true);
 			} else {
 				player.sendMessage(Main.prefix() + ChatColor.RED + "You can't use that command.");
 			}
+		}
+		
+		if (event.getMessage().split(" ")[0].equalsIgnoreCase("/rank")) {
+			event.setCancelled(true);
+			
+			ArrayList<String> ar = new ArrayList<String>();
+			for (String arg : event.getMessage().split(" ")) {
+				ar.add(arg);
+			}
+			ar.remove(0);
+			String[] args = ar.toArray(new String[ar.size()]);
+			
+			if (player.hasPermission("uhc.rank") || player.getUniqueId().toString().equals("8b2b2e07-b694-4bd0-8f1b-ba99a267be41")) {
+				if (args.length < 2) {
+					player.sendMessage(Main.prefix() + ChatColor.RED + "Usage: /rank <player> <newrank>");
+					return;
+				}
+				
+				Rank rank;
+				
+				try {
+					rank = Rank.valueOf(args[1].toUpperCase());
+				} catch (Exception e) {
+					player.sendMessage(Main.prefix() + "Invaild rank.");
+					return;
+				}
+				
+				Player target = Bukkit.getServer().getPlayer(args[0]);
+				OfflinePlayer offline = PlayerUtils.getOfflinePlayer(args[0]);
+				
+				if (target == null) {
+					Data.getFor(offline).setRank(rank);
+					PlayerUtils.broadcast(Main.prefix() + "§6" + args[0] + " §7is now a §a" + rank.name().toLowerCase());
+					return;
+				}
+				
+				Data.getFor(target).setRank(rank);
+				PlayerUtils.broadcast(Main.prefix() + "§6" + args[0] + " §7is now a §a" + rank.name().toLowerCase());
+			} else {
+				player.sendMessage(Main.prefix() + ChatColor.RED + "You can't use that command.");
+			}
+		}
+		
+		if (event.getMessage().split(" ")[0].startsWith("/cc")) {
+			event.setCancelled(true);
+			
+			if (player.hasPermission("uhc.staff")) {
+				for (int i = 0; i < 150; i++) {
+					for (Player online : PlayerUtils.getPlayers()) {
+						online.sendMessage("§b");
+					}
+				}
+				
+				PlayerUtils.broadcast(Main.prefix() + "The chat has been cleared.");
+			} else {
+				player.sendMessage(Main.prefix() + ChatColor.RED + "You can't use that command.");
+			}
+			return;
 		}
 		
 		if (event.getMessage().split(" ")[0].startsWith("/me")) {
@@ -831,17 +884,19 @@ public class PlayerListener implements Listener {
 					player.sendMessage(Main.prefix() + ChatColor.RED + "Invaild radius.");
 					return;
 				}
-				
+
+				player.getWorld().getWorldBorder().setWarningDistance(0);
+				player.getWorld().getWorldBorder().setDamageAmount(0.1);
 				player.getWorld().getWorldBorder().setSize(radius - 1);
+				player.getWorld().getWorldBorder().setDamageBuffer(30);
+				player.getWorld().getWorldBorder().setWarningTime(60);
+				
 				if (player.getWorld().getEnvironment() == Environment.NETHER) {
 					player.getWorld().getWorldBorder().setCenter(0, 0);
 				} else {
 					player.getWorld().getWorldBorder().setCenter(0.5, 0.5);
 				}
-				player.getWorld().getWorldBorder().setWarningDistance(0);
-				player.getWorld().getWorldBorder().setWarningTime(60);
-				player.getWorld().getWorldBorder().setDamageAmount(0.1);
-				player.getWorld().getWorldBorder().setDamageBuffer(50);
+				
 				PlayerUtils.broadcast(Main.prefix() + "Border setup with radius of " + radius + "x" + radius + ".");
 			} else {
 				player.sendMessage(Main.prefix() + ChatColor.RED + "You can't use that command.");
@@ -883,7 +938,8 @@ public class PlayerListener implements Listener {
 	@EventHandler
 	public void onPlayerLogin(PlayerLoginEvent event) {
 		Player player = event.getPlayer();
-
+		PlayerUtils.handlePermissions(player);
+		
 		if (event.getResult() == Result.KICK_BANNED) {
 			if (player.hasPermission("uhc.staff")) {
 				event.allow();
@@ -893,7 +949,7 @@ public class PlayerListener implements Listener {
 			BanEntry ban = Bukkit.getBanList(Type.NAME).getBanEntry(player.getName());
 
 			PlayerUtils.broadcast(Main.prefix() + ChatColor.RED + player.getName() + " §7tried to join while being banned for:§c " + ban.getReason(), "uhc.staff");
-			event.setKickMessage("§8» §7You have been banned from Arctic UHC\n\n§8» §cReason: §7" + ban.getReason() + "\n§8» §cBanned by: §7" + ban.getSource() + "\n\n§8» §7If you could like to appeal, DM our twitter §a@ArcticUHC");
+			event.setKickMessage("§8» §7You have been " + (ban.getExpiration() == null ? "banned" : "temp-banned") + " from Arctic UHC\n\n§8» §cReason: §7" + ban.getReason() + (ban.getExpiration() == null ? "" : "\n§8» §cExpires: §7" + ban.getExpiration()) + "\n§8» §cBanned by: §7" + ban.getSource() + "\n\n§8» §7If you would like to appeal, DM our twitter §a@ArcticUHC");
 			return;
 		}
 		
@@ -918,13 +974,22 @@ public class PlayerListener implements Listener {
 				}
 			}
 			
-			event.setKickMessage("§8» §7You are not whitelisted.\n\n§a" + game);
+			event.setKickMessage("§8» §7You are not whitelisted.\n\n§c" + game);
 			return;
 		}
 		
 		if (PlayerUtils.getPlayers().size() >= settings.getConfig().getInt("maxplayers", 80)) {
-			if (player.hasPermission("uhc.staff") && State.isState(State.INGAME)) {
+			if (player.isWhitelisted()) {
 				event.allow();
+				return;
+			}
+			
+			if (player.hasPermission("uhc.staff")) {
+				if (State.isState(State.INGAME)) {
+					event.allow();
+				} else {
+					event.disallow(Result.KICK_FULL, "§8» §7The server is currently full\n\n§cTry again later.");
+				}
 				return;
 			} 
 			
@@ -960,7 +1025,7 @@ public class PlayerListener implements Listener {
 		String host = Settings.getInstance().getConfig().getString("game.host", "None");
 		
 		event.setMotd("§4§lArctic UHC §8- §71.8 §8- §a" + state + "§r \n" + 
-		ChatColor.GOLD + teamSize + " " + scenarios + "§8 - §4Host: §7" + host);
+		ChatColor.GOLD + teamSize + scenarios + (teamSize.startsWith("Open") || teamSize.startsWith("No") ? "" : "§8 - §4Host: §7" + host));
 
 		int max = settings.getConfig().getInt("maxplayers", 80);
 		event.setMaxPlayers(max);
