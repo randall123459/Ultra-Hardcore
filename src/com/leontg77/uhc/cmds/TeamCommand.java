@@ -360,8 +360,8 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
 					if (team == null || Spectator.getManager().isSpectating(target)) {
 						player.sendMessage(Main.prefix() + ChatColor.GREEN + target.getName() + "'s §7team info:");
 						player.sendMessage("§8» §7Team: §cNone");
-						if (Main.kills.containsKey(player.getName())) {
-							player.sendMessage("§8» §7Kills:" + Main.kills.get(player.getName()));
+						if (Main.kills.containsKey(target.getName())) {
+							player.sendMessage("§8» §7Kills:" + Main.kills.get(target.getName()));
 						}
 						return true;
 					}
@@ -395,8 +395,8 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
 					
 					player.sendMessage(Main.prefix() + ChatColor.GREEN + target.getName() + "'s §7team info:");
 					player.sendMessage("§8» §7Team: " + team.getPrefix() + team.getName());
-					if (Main.kills.containsKey(player.getName())) {
-						player.sendMessage("§8» §7Kills: §a" + Main.kills.get(player.getName()));
+					if (Main.kills.containsKey(target.getName())) {
+						player.sendMessage("§8» §7Kills: §a" + Main.kills.get(target.getName()));
 					}
 					if (Main.teamKills.containsKey(team.getName())) {
 						player.sendMessage("§8» §7Team Kills: §a" + Main.teamKills.get(team.getName()));
@@ -548,7 +548,20 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
 			else if (args[0].equalsIgnoreCase("remove")) {
 				if (player.hasPermission("uhc.teamadmin")) {
 					if (target == null) {
-						player.sendMessage(Main.prefix() + "That player is not online.");
+						OfflinePlayer offline = PlayerUtils.getOfflinePlayer(args[1]);
+						
+						Team team = teams.getTeam(offline);
+						
+						if (team == null) {
+							player.sendMessage(Main.prefix() + "That player is not on a team.");
+							return true;
+						}
+						
+						player.sendMessage(Main.prefix() + ChatColor.GREEN + offline.getName() + " §7was removed from his team.");
+						teams.leaveTeam(offline);
+
+						ArrayList<String> players = new ArrayList<String>(team.getEntries());
+						TeamCommand.sTeam.put(team.getName(), players);
 						return true;
 					}
 					
