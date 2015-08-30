@@ -2,8 +2,6 @@ package com.leontg77.uhc;
 
 import static com.leontg77.uhc.Main.plugin;
 
-import java.lang.reflect.Field;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -48,7 +46,7 @@ public class BiomeSwap {
 				if (biomes[0].equalsIgnoreCase("all")) {
 					SwappableBiome newBiome = fromString(biomes[1]);
 					if (newBiome != null) {
-						plugin.getLogger().info("Swapping all with: " + newBiome.toString());
+						plugin.getLogger().info("Swapping all biomes with " + newBiome.toString().toLowerCase().replaceAll("_", ""));
 						swapBiome(newBiome);
 					} else {
 						plugin.getLogger().warning("Invalid biome swap config value in: " + s);
@@ -59,7 +57,7 @@ public class BiomeSwap {
 					SwappableBiome oldBiome = fromString(biomes[0]);
 					
 					if (oldBiome != null) {
-						plugin.getLogger().info("Swapping " + oldBiome.toString() + " with: " + newBiome.toString());
+						plugin.getLogger().info("Swapping " + oldBiome.toString().toLowerCase().replaceAll("_", "") + " with " + newBiome.toString().toLowerCase().replaceAll("_", ""));
 						swapBiome(oldBiome, newBiome);
 					} else {
 						plugin.getLogger().warning("Invalid biome swap config value: " + biomes[0]);
@@ -70,7 +68,7 @@ public class BiomeSwap {
 					SwappableBiome newBiome = fromString(biomes[1]);
 					
 					if ((oldBiome != null) && (newBiome != null)) {
-						plugin.getLogger().info("Swapping " + oldBiome.toString() + " with: " + newBiome.toString());
+						plugin.getLogger().info("Swapping " + oldBiome.toString().toLowerCase().replaceAll("_", "") + " with " + newBiome.toString().toLowerCase().replaceAll("_", ""));
 						swapBiome(oldBiome, newBiome);
 					} else {
 						plugin.getLogger().warning("Invalid biome swap config value in: " + s);
@@ -85,6 +83,7 @@ public class BiomeSwap {
 	public void swapBiome(SwappableBiome oldBiome, SwappableBiome newBiome) {
 		if (oldBiome.getId() != SwappableBiome.SKY.getId()) {
 			BiomeBase[] biomes = getMcBiomes();
+
 			biomes[oldBiome.getId()] = getOrigBiome(newBiome.getId());
 		} else {
 			plugin.getLogger().warning("Cannot swap SKY biome!");
@@ -102,13 +101,6 @@ public class BiomeSwap {
 		}
 	}
 
-	public void resetBiomes() {
-		BiomeBase[] biomes = getMcBiomes();
-		for (SwappableBiome b : SwappableBiome.values()) {
-			biomes[b.getId()] = getOrigBiome(b.getId());
-		}
-	}
-
 	public SwappableBiome getRandomBiome() {
 		return SwappableBiome.values()[random.nextInt(SwappableBiome.values().length)];
 	}
@@ -122,14 +114,20 @@ public class BiomeSwap {
 		return null;
 	}
 
+	public void resetBiomes() {
+		BiomeBase[] biomes = getMcBiomes();
+		for (SwappableBiome b : SwappableBiome.values()) {
+			biomes[b.getId()] = getOrigBiome(b.getId());
+		}
+	}
+
 	/**
 	 * Gets a copy of the mc biome bases.
 	 * 
 	 * @return Copy of mc biome bases.
 	 */
 	private BiomeBase[] getMcBiomesCopy() {
-		BiomeBase[] b = getMcBiomes();
-		return Arrays.copyOf(b, b.length);
+		return BiomeBase.getBiomes().clone();
 	}
 
 	/**
@@ -138,14 +136,7 @@ public class BiomeSwap {
 	 * @return Array of MC biomebases.
 	 */
 	private BiomeBase[] getMcBiomes() {
-		try {
-			Field biomeF = BiomeBase.class.getDeclaredField("biomes");
-			biomeF.setAccessible(true);
-			return (BiomeBase[]) biomeF.get(null);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return new BiomeBase[256];
+		return BiomeBase.getBiomes();
 	}
 
 	/**
