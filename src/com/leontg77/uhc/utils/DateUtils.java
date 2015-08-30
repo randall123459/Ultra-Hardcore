@@ -58,7 +58,7 @@ public class DateUtils {
     /**
      * Idk, essentials made this...
      */
-	public static long parseDateDiff(String time, boolean future) throws Exception {
+	public static long parseDateDiff(String time, boolean future) {
 		Matcher m = timePattern.matcher(time);
 		int years = 0;
 		int months = 0;
