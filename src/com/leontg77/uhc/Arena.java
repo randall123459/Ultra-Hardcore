@@ -140,7 +140,7 @@ public class Arena {
 	 */
 	public void addPlayer(Player player) {
 		players.add(player);
-		Location loc = ScatterUtils.getScatterLocations(Bukkit.getWorld("arena"), 200, 1).get(0);
+		Location loc = ScatterUtils.getScatterLocations(Bukkit.getWorld("arena"), 100, 1).get(0);
 		loc.setY(loc.getWorld().getHighestBlockYAt(loc) + 2);
 		player.teleport(loc);
 		giveKit(player);
