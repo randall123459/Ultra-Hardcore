@@ -8,12 +8,18 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.leontg77.uhc.Main;
+import com.leontg77.uhc.scenario.ScenarioManager;
 import com.leontg77.uhc.utils.NumberUtils;
 
 public class HealthCommand implements CommandExecutor {
 
 	public boolean onCommand(CommandSender sender, Command cmd, String label, final String[] args) {
 		if (cmd.getName().equalsIgnoreCase("health")) {
+			if (ScenarioManager.getInstance().getScenario("Paranoia").isEnabled()) {
+				sender.sendMessage(ChatColor.RED + "You cannot view peoples health in paranoia.");
+				return true;
+			}
+			
 			if (args.length == 0) {
 				sender.sendMessage(ChatColor.RED + "Usage: /health <player>");
 				return true;
