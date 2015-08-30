@@ -194,6 +194,10 @@ public class ConfigCommand implements CommandExecutor, TabCompleter {
 					
 					Scoreboards.getManager().kills.setDisplayName("§4UHC §8- §7" + args[1]);
 					sender.sendMessage(Main.prefix() + "You set the host to §a" + args[1] + "§7.");
+
+					for (Player online : PlayerUtils.getPlayers()) {
+						PlayerUtils.setTabList(online);
+					}
 					break;
 				case MATCHPOST:
 					settings.getConfig().set("matchpost", args[1]);
