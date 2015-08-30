@@ -8,6 +8,7 @@ import org.bukkit.Material;
 import org.bukkit.TravelAgent;
 import org.bukkit.World;
 import org.bukkit.World.Environment;
+import org.bukkit.entity.Creeper;
 import org.bukkit.entity.Damageable;
 import org.bukkit.entity.EnderPearl;
 import org.bukkit.entity.Entity;
@@ -30,8 +31,8 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import com.leontg77.uhc.Main;
-import com.leontg77.uhc.Spectator;
 import com.leontg77.uhc.Main.State;
+import com.leontg77.uhc.Spectator;
 import com.leontg77.uhc.scenario.ScenarioManager;
 import com.leontg77.uhc.utils.BlockUtils;
 import com.leontg77.uhc.utils.NumberUtils;
@@ -91,6 +92,12 @@ public class EntityListener implements Listener {
             }
     	}
     	
+    	if (entity instanceof Creeper) {
+    		if (((Creeper) entity).isPowered()) {
+    			event.setDroppedExp(0);
+    		}
+    	}
+    	
     	ItemStack potion = new ItemStack (Material.POTION, 1, (short) 8261);
     	
     	if (entity instanceof Witch) {
@@ -142,7 +149,7 @@ public class EntityListener implements Listener {
 	        }
 	        
 	        for (PotionEffect potionEffect : attacker.getActivePotionEffects()) {
-	            if (potionEffect.getType() == PotionEffectType.INCREASE_DAMAGE) {
+	            if (potionEffect.getType().equals(PotionEffectType.INCREASE_DAMAGE)) {
 	                strengthAmplifier = potionEffect.getAmplifier() + 1;
 	                break;
 	            }
