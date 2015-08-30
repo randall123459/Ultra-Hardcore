@@ -124,7 +124,7 @@ public class UBL implements Runnable {
 
             try {
                 data = downloadBanlist(in, bufferSize, timeout * 20);
-                plugin.getLogger().info("UBL successfully updated from banlist server");
+                plugin.getLogger().info("UBL has been updated.");
                 
                 for (Player online : PlayerUtils.getPlayers()) {
                 	if (isBanned(online.getName(), online.getUniqueId())) {
@@ -186,7 +186,7 @@ public class UBL implements Runnable {
         
         reloadConfigAsync(new BukkitRunnable() {
             public void run() {
-            	plugin.getLogger().info("Configuration reloaded, checking UBL for updates");
+            	plugin.getLogger().info("Checking UBL for updates...");
                 
                 int autoCheckInterval = 60;
                 schedule(autoCheckInterval);
