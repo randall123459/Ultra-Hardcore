@@ -275,6 +275,10 @@ public class Spectator {
 		public static HashMap<String, Integer> totalDiamonds = new HashMap<String, Integer>();
 		public static HashMap<String, Integer> totalGold = new HashMap<String, Integer>();
 		public static HashSet<Location> locs = new HashSet<Location>();
+		
+		public static String prefix() {
+			return "§8[§9S§8] ";
+		}
 
 		@EventHandler
 		public void onBlockBreak(BlockBreakEvent event) {
@@ -308,7 +312,7 @@ public class Spectator {
 				
 				for (Player online : PlayerUtils.getPlayers()) {
 					if (Spectator.getManager().isSpectating(online)) {
-						online.sendMessage("[§9S§f] §7" + player.getName() + "§f:§6GOLD §f[V:§6" + amount + "§f] [T:§6" + totalGold.get(player.getName()) + "§f]");
+						online.sendMessage(prefix() + "§7" + player.getName() + "§f:§6GOLD §f[V:§6" + amount + "§f] [T:§6" + totalGold.get(player.getName()) + "§f]");
 					}
 				}
 				return;
@@ -342,7 +346,7 @@ public class Spectator {
 				
 				for (Player online : PlayerUtils.getPlayers()) {
 					if (Spectator.getManager().isSpectating(online)) {
-						online.sendMessage("[§9S§f] §7" + player.getName() + "§f:§3DIAMOND §f[V:§3" + amount + "§f] [T:§3" + totalDiamonds.get(player.getName()) + "§f]");
+						online.sendMessage(prefix() + "§7" + player.getName() + "§f:§3DIAMOND §f[V:§3" + amount + "§f] [T:§3" + totalDiamonds.get(player.getName()) + "§f]");
 					}
 				}
 			}
@@ -373,7 +377,7 @@ public class Spectator {
 				
 				for (Player online : PlayerUtils.getPlayers()) {
 					if (Spectator.getManager().isSpectating(online)) {
-						online.sendMessage("[§9S§f] §5Pearl:§6" + player.getName() + "§f->§d" + NumberUtils.convertDouble(event.getFrom().distance(event.getTo())) + " blocks.");
+						online.sendMessage(prefix() + "§5Pearl:§6" + player.getName() + "§f->§d" + NumberUtils.convertDouble(event.getFrom().distance(event.getTo())) + " blocks.");
 					}
 				}
 			}
@@ -390,7 +394,7 @@ public class Spectator {
 			if (!event.getFrom().getName().equals("lobby") && !player.getWorld().getName().equals("lobby")) {
 				for (Player online : PlayerUtils.getPlayers()) {
 					if (Spectator.getManager().isSpectating(online)) {
-						online.sendMessage("[§9S§f] §dPortal:§6" + player.getName() + "§f from §a" + event.getFrom().getName() + "§f to §c" + player.getWorld().getName());
+						online.sendMessage(prefix() + "§dPortal:§6" + player.getName() + "§f from §a" + event.getFrom().getName() + "§f to §c" + player.getWorld().getName());
 					}
 				}
 			}
@@ -408,7 +412,7 @@ public class Spectator {
 			if (event.getItem().getType() == Material.GOLDEN_APPLE) {
 				for (Player online : PlayerUtils.getPlayers()) {
 					if (Spectator.getManager().isSpectating(online)) {
-						online.sendMessage("[§9S§f] §aHeal: §6" + player.getName() + "§f<->§6" + (item.hasItemMeta() && item.getItemMeta().hasDisplayName() && item.getItemMeta().getDisplayName().equalsIgnoreCase("§6Golden Head") ? "§5Golden Head" : "Golden Apple"));
+						online.sendMessage(prefix() + "§aHeal: §6" + player.getName() + "§f<->§6" + (item.hasItemMeta() && item.getItemMeta().hasDisplayName() && item.getItemMeta().getDisplayName().equalsIgnoreCase("§6Golden Head") ? "§5Golden Head" : "Golden Apple"));
 					}
 				}
 				return;
@@ -432,7 +436,7 @@ public class Spectator {
 				for (Player online : PlayerUtils.getPlayers()) {
 					if (Spectator.getManager().isSpectating(online)) {
 						for (PotionEffect e : pot.getEffects()) {
-							online.sendMessage("[§9S§f] §5Potion: §a" + player.getName() + "§f <-> P:§d" + NameUtils.getPotionName(e.getType()) + " §fT:§d" + pot.getLevel() + ((e.getDuration() / 20) > 0 ? " §fD:§d" + DateUtils.ticksToString(e.getDuration() / 20) : "") + " §fT:§dNormal");
+							online.sendMessage(prefix() + "§5Potion: §a" + player.getName() + "§f <-> P:§d" + NameUtils.getPotionName(e.getType()) + " §fT:§d" + pot.getLevel() + ((e.getDuration() / 20) > 0 ? " §fD:§d" + DateUtils.ticksToString(e.getDuration() / 20) : "") + " §fV:§dNormal");
 						}
 					}
 				}
@@ -465,7 +469,7 @@ public class Spectator {
 				for (Player online : PlayerUtils.getPlayers()) {
 					if (Spectator.getManager().isSpectating(online)) {
 						for (PotionEffect e : pot.getEffects()) {
-							online.sendMessage("[§9S§f] §5Potion: §a" + player.getName() + "§f <-> P:§d" + NameUtils.getPotionName(e.getType()) + " §fT:§d" + pot.getLevel() + ((e.getDuration() / 20) > 0 ? " §fD:§d" + DateUtils.ticksToString(e.getDuration() / 20) : "") + " §fT:§dSplash");
+							online.sendMessage(prefix() + "§5Potion: §a" + player.getName() + "§f <-> P:§d" + NameUtils.getPotionName(e.getType()) + " §fT:§d" + pot.getLevel() + ((e.getDuration() / 20) > 0 ? " §fD:§d" + DateUtils.ticksToString(e.getDuration() / 20) : "") + " §fV:§dSplash");
 						}
 					}
 				}
@@ -484,7 +488,7 @@ public class Spectator {
 			if (item.getType() == Material.GOLDEN_APPLE) {
 				for (Player online : PlayerUtils.getPlayers()) {
 					if (Spectator.getManager().isSpectating(online.getName())) {
-						online.sendMessage("[§9S§f] §2Craft§f: §a" + player.getName() + "§f<->§6" + (item.hasItemMeta() && item.getItemMeta().hasDisplayName() && item.getItemMeta().getDisplayName().equalsIgnoreCase("§6Golden Head") ? "§5Golden Head" : "Golden Apple"));
+						online.sendMessage(prefix() + "§2Craft§f: §a" + player.getName() + "§f<->§6" + (item.hasItemMeta() && item.getItemMeta().hasDisplayName() && item.getItemMeta().getDisplayName().equalsIgnoreCase("§6Golden Head") ? "§5Golden Head" : "Golden Apple"));
 					}
 				}
 				return;
@@ -493,7 +497,7 @@ public class Spectator {
 			if (item.getType() == Material.DIAMOND_HELMET) {
 				for (Player online : PlayerUtils.getPlayers()) {
 					if (Spectator.getManager().isSpectating(online.getName())) {
-						online.sendMessage("[§9S§f] §2Craft§f: §a" + player.getName() + "§f<->§bDia. Helmet");
+						online.sendMessage(prefix() + "§2Craft§f: §a" + player.getName() + "§f<->§bDia. Helmet");
 					}
 				}
 				return;
@@ -502,7 +506,7 @@ public class Spectator {
 			if (item.getType() == Material.DIAMOND_CHESTPLATE) {
 				for (Player online : PlayerUtils.getPlayers()) {
 					if (Spectator.getManager().isSpectating(online.getName())) {
-						online.sendMessage("[§9S§f] §2Craft§f: §a" + player.getName() + "§f<->§bDia. Chest");
+						online.sendMessage(prefix() + "§2Craft§f: §a" + player.getName() + "§f<->§bDia. Chest");
 					}
 				}
 				return;
@@ -511,7 +515,7 @@ public class Spectator {
 			if (item.getType() == Material.DIAMOND_LEGGINGS) {
 				for (Player online : PlayerUtils.getPlayers()) {
 					if (Spectator.getManager().isSpectating(online.getName())) {
-						online.sendMessage("[§9S§f] §2Craft§f: §a" + player.getName() + "§f<->§bDia. Leggings");
+						online.sendMessage(prefix() + "§2Craft§f: §a" + player.getName() + "§f<->§bDia. Leggings");
 					}
 				}
 				return;
@@ -520,7 +524,7 @@ public class Spectator {
 			if (item.getType() == Material.DIAMOND_BOOTS) {
 				for (Player online : PlayerUtils.getPlayers()) {
 					if (Spectator.getManager().isSpectating(online.getName())) {
-						online.sendMessage("[§9S§f] §2Craft§f: §a" + player.getName() + "§f<->§bDia. Boots");
+						online.sendMessage(prefix() + "§2Craft§f: §a" + player.getName() + "§f<->§bDia. Boots");
 					}
 				}
 				return;
@@ -529,7 +533,7 @@ public class Spectator {
 			if (item.getType() == Material.DIAMOND_SWORD) {
 				for (Player online : PlayerUtils.getPlayers()) {
 					if (Spectator.getManager().isSpectating(online.getName())) {
-						online.sendMessage("[§9S§f] §2Craft§f: §a" + player.getName() + "§f<->§bDia. Sword");
+						online.sendMessage(prefix() + "§2Craft§f: §a" + player.getName() + "§f<->§bDia. Sword");
 					}
 				}
 				return;
@@ -538,7 +542,7 @@ public class Spectator {
 			if (item.getType() == Material.BOW) {
 				for (Player online : PlayerUtils.getPlayers()) {
 					if (Spectator.getManager().isSpectating(online.getName())) {
-						online.sendMessage("[§9S§f] §2Craft§f: §a" + player.getName() + "§f<->§dBow");
+						online.sendMessage(prefix() + "§2Craft§f: §a" + player.getName() + "§f<->§dBow");
 					}
 				}
 				return;
@@ -547,7 +551,7 @@ public class Spectator {
 			if (item.getType() == Material.ANVIL) {
 				for (Player online : PlayerUtils.getPlayers()) {
 					if (Spectator.getManager().isSpectating(online.getName())) {
-						online.sendMessage("[§9S§f] §2Craft§f: §a" + player.getName() + "§f<->§dAnvil");
+						online.sendMessage(prefix() + "§2Craft§f: §a" + player.getName() + "§f<->§dAnvil");
 					}
 				}
 				return;
@@ -556,7 +560,7 @@ public class Spectator {
 			if (item.getType() == Material.ENCHANTMENT_TABLE) {
 				for (Player online : PlayerUtils.getPlayers()) {
 					if (Spectator.getManager().isSpectating(online.getName())) {
-						online.sendMessage("[§9S§f] §2Craft§f: §a" + player.getName() + "§f<->§dEnchant. Table");
+						online.sendMessage(prefix() + "§2Craft§f: §a" + player.getName() + "§f<->§dEnchant. Table");
 					}
 				}
 				return;
@@ -565,7 +569,7 @@ public class Spectator {
 			if (item.getType() == Material.BREWING_STAND_ITEM) {
 				for (Player online : PlayerUtils.getPlayers()) {
 					if (Spectator.getManager().isSpectating(online.getName())) {
-						online.sendMessage("[§9S§f] §2Craft§f: §a" + player.getName() + "§f<->§dBrewing Stand");
+						online.sendMessage(prefix() + "§2Craft§f: §a" + player.getName() + "§f<->§dBrewing Stand");
 					}
 				}
 			}
@@ -611,7 +615,7 @@ public class Spectator {
 					if (cause == DamageCause.LAVA) {
 						for (Player online : PlayerUtils.getPlayers()) {
 							if (Spectator.getManager().isSpectating(online.getName()) && online.hasPermission("uhc.admin")) {
-								online.sendMessage("[§9S§f] §5PvE§f:§c" + player.getName() + "§f<-§dLava §f[§c" + NumberUtils.convertDouble((player.getHealth() / 2)) + "§f] [§6" + NumberUtils.convertDouble((damage / 2)) + "§f]");
+								online.sendMessage(prefix() + "§5PvE§f:§c" + player.getName() + "§f<-§dLava §f[§c" + NumberUtils.convertDouble((player.getHealth() / 2)) + "§f] [§6" + NumberUtils.convertDouble((damage / 2)) + "§f]");
 							}
 						}
 						return;
@@ -619,7 +623,7 @@ public class Spectator {
 					else if (cause == DamageCause.FIRE || cause == DamageCause.FIRE_TICK) {
 						for (Player online : PlayerUtils.getPlayers()) {
 							if (Spectator.getManager().isSpectating(online.getName())) {
-								online.sendMessage("[§9S§f] §5PvE§f:§c" + player.getName() + "§f<-§dFire §f[§c" + NumberUtils.convertDouble((player.getHealth() / 2)) + "§f] [§6" + NumberUtils.convertDouble((damage / 2)) + "§f]");
+								online.sendMessage(prefix() + "§5PvE§f:§c" + player.getName() + "§f<-§dFire §f[§c" + NumberUtils.convertDouble((player.getHealth() / 2)) + "§f] [§6" + NumberUtils.convertDouble((damage / 2)) + "§f]");
 							}
 						}
 						return;
@@ -627,7 +631,7 @@ public class Spectator {
 					else if (cause == DamageCause.CONTACT) {
 						for (Player online : PlayerUtils.getPlayers()) {
 							if (Spectator.getManager().isSpectating(online.getName())) {
-								online.sendMessage("[§9S§f] §5PvE§f:§c" + player.getName() + "§f<-§dCactus §f[§c" + NumberUtils.convertDouble((player.getHealth() / 2)) + "§f] [§6" + NumberUtils.convertDouble((damage / 2)) + "§f]");
+								online.sendMessage(prefix() + "§5PvE§f:§c" + player.getName() + "§f<-§dCactus §f[§c" + NumberUtils.convertDouble((player.getHealth() / 2)) + "§f] [§6" + NumberUtils.convertDouble((damage / 2)) + "§f]");
 							}
 						}
 						return;
@@ -635,7 +639,7 @@ public class Spectator {
 					else if (cause == DamageCause.DROWNING) {
 						for (Player online : PlayerUtils.getPlayers()) {
 							if (Spectator.getManager().isSpectating(online.getName())) {
-								online.sendMessage("[§9S§f] §5PvE§f:§c" + player.getName() + "§f<-§dDrowning §f[§c" + NumberUtils.convertDouble((player.getHealth() / 2)) + "§f] [§6" + NumberUtils.convertDouble((damage / 2)) + "§f]");
+								online.sendMessage(prefix() + "§5PvE§f:§c" + player.getName() + "§f<-§dDrowning §f[§c" + NumberUtils.convertDouble((player.getHealth() / 2)) + "§f] [§6" + NumberUtils.convertDouble((damage / 2)) + "§f]");
 							}
 						}
 						return;
@@ -643,7 +647,7 @@ public class Spectator {
 					else if (cause == DamageCause.FALL) {
 						for (Player online : PlayerUtils.getPlayers()) {
 							if (Spectator.getManager().isSpectating(online.getName())) {
-								online.sendMessage("[§9S§f] §5PvE§f:§c" + player.getName() + "§f<-§dFall §f[§c" + NumberUtils.convertDouble((player.getHealth() / 2)) + "§f] [§6" + NumberUtils.convertDouble((damage / 2)) + "§f]");
+								online.sendMessage(prefix() + "§5PvE§f:§c" + player.getName() + "§f<-§dFall §f[§c" + NumberUtils.convertDouble((player.getHealth() / 2)) + "§f] [§6" + NumberUtils.convertDouble((damage / 2)) + "§f]");
 							}
 						}
 						return;
@@ -651,7 +655,7 @@ public class Spectator {
 					else if (cause == DamageCause.LIGHTNING) {
 						for (Player online : PlayerUtils.getPlayers()) {
 							if (Spectator.getManager().isSpectating(online.getName())) {
-								online.sendMessage("[§9S§f] §5PvE§f:§c" + player.getName() + "§f<-§dLightning §f[§c" + NumberUtils.convertDouble((player.getHealth() / 2)) + "§f] [§6" + NumberUtils.convertDouble((damage / 2)) + "§f]");
+								online.sendMessage(prefix() + "§5PvE§f:§c" + player.getName() + "§f<-§dLightning §f[§c" + NumberUtils.convertDouble((player.getHealth() / 2)) + "§f] [§6" + NumberUtils.convertDouble((damage / 2)) + "§f]");
 							}
 						}
 						return;
@@ -659,7 +663,7 @@ public class Spectator {
 					else if (cause == DamageCause.MAGIC) {
 						for (Player online : PlayerUtils.getPlayers()) {
 							if (Spectator.getManager().isSpectating(online.getName())) {
-								online.sendMessage("[§9S§f] §5PvE§f:§c" + player.getName() + "§f<-§dMagic §f[§c" + NumberUtils.convertDouble((player.getHealth() / 2)) + "§f] [§6" + NumberUtils.convertDouble((damage / 2)) + "§f]");
+								online.sendMessage(prefix() + "§5PvE§f:§c" + player.getName() + "§f<-§dMagic §f[§c" + NumberUtils.convertDouble((player.getHealth() / 2)) + "§f] [§6" + NumberUtils.convertDouble((damage / 2)) + "§f]");
 							}
 						}
 						return;
@@ -667,7 +671,7 @@ public class Spectator {
 					else if (cause == DamageCause.POISON) {
 						for (Player online : PlayerUtils.getPlayers()) {
 							if (Spectator.getManager().isSpectating(online.getName())) {
-								online.sendMessage("[§9S§f] §5PvE§f:§c" + player.getName() + "§f<-§dPoison §f[§c" + NumberUtils.convertDouble((player.getHealth() / 2)) + "§f] [§6" + NumberUtils.convertDouble((damage / 2)) + "§f]");
+								online.sendMessage(prefix() + "§5PvE§f:§c" + player.getName() + "§f<-§dPoison §f[§c" + NumberUtils.convertDouble((player.getHealth() / 2)) + "§f] [§6" + NumberUtils.convertDouble((damage / 2)) + "§f]");
 							}
 						}
 						return;
@@ -675,7 +679,7 @@ public class Spectator {
 					else if (cause == DamageCause.STARVATION) {
 						for (Player online : PlayerUtils.getPlayers()) {
 							if (Spectator.getManager().isSpectating(online.getName())) {
-								online.sendMessage("[§9S§f] §5PvE§f:§c" + player.getName() + "§f<-§dStarving §f[§c" + NumberUtils.convertDouble((player.getHealth() / 2)) + "§f] [§6" + NumberUtils.convertDouble((damage / 2)) + "§f]");
+								online.sendMessage(prefix() + "§5PvE§f:§c" + player.getName() + "§f<-§dStarving §f[§c" + NumberUtils.convertDouble((player.getHealth() / 2)) + "§f] [§6" + NumberUtils.convertDouble((damage / 2)) + "§f]");
 							}
 						}
 						return;
@@ -683,7 +687,7 @@ public class Spectator {
 					else if (cause == DamageCause.SUFFOCATION) {
 						for (Player online : PlayerUtils.getPlayers()) {
 							if (Spectator.getManager().isSpectating(online.getName())) {
-								online.sendMessage("[§9S§f] §5PvE§f:§c" + player.getName() + "§f<-§dSuffocation §f[§c" + NumberUtils.convertDouble((player.getHealth() / 2)) + "§f] [§6" + NumberUtils.convertDouble((damage / 2)) + "§f]");
+								online.sendMessage(prefix() + "§5PvE§f:§c" + player.getName() + "§f<-§dSuffocation §f[§c" + NumberUtils.convertDouble((player.getHealth() / 2)) + "§f] [§6" + NumberUtils.convertDouble((damage / 2)) + "§f]");
 							}
 						}
 						return;
@@ -691,14 +695,14 @@ public class Spectator {
 					else if (cause == DamageCause.VOID) {
 						for (Player online : PlayerUtils.getPlayers()) {
 							if (Spectator.getManager().isSpectating(online.getName())) {
-								online.sendMessage("[§9S§f] §5PvE§f:§c" + player.getName() + "§f<-§dVoid §f[§c" + NumberUtils.convertDouble((player.getHealth() / 2)) + "§f] [§6" + NumberUtils.convertDouble((damage / 2)) + "§f]");
+								online.sendMessage(prefix() + "§5PvE§f:§c" + player.getName() + "§f<-§dVoid §f[§c" + NumberUtils.convertDouble((player.getHealth() / 2)) + "§f] [§6" + NumberUtils.convertDouble((damage / 2)) + "§f]");
 							}
 						}
 					} 
 					else if (cause == DamageCause.WITHER) {
 						for (Player online : PlayerUtils.getPlayers()) {
 							if (Spectator.getManager().isSpectating(online.getName())) {
-								online.sendMessage("[§9S§f] §5PvE§f:§c" + player.getName() + "§f<-§dWither §f[§c" + NumberUtils.convertDouble((player.getHealth() / 2)) + "§f] [§6" + NumberUtils.convertDouble((damage / 2)) + "§f]");
+								online.sendMessage(prefix() + "§5PvE§f:§c" + player.getName() + "§f<-§dWither §f[§c" + NumberUtils.convertDouble((player.getHealth() / 2)) + "§f] [§6" + NumberUtils.convertDouble((damage / 2)) + "§f]");
 							}
 						}
 						return;
@@ -706,7 +710,7 @@ public class Spectator {
 					else if (cause == DamageCause.BLOCK_EXPLOSION) {
 						for (Player online : PlayerUtils.getPlayers()) {
 							if (Spectator.getManager().isSpectating(online.getName())) {
-								online.sendMessage("[§9S§f] §5PvE§f:§c" + player.getName() + "§f<-§dTNT §f[§c" + NumberUtils.convertDouble((player.getHealth() / 2)) + "§f] [§6" + NumberUtils.convertDouble((damage / 2)) + "§f]");
+								online.sendMessage(prefix() + "§5PvE§f:§c" + player.getName() + "§f<-§dTNT §f[§c" + NumberUtils.convertDouble((player.getHealth() / 2)) + "§f] [§6" + NumberUtils.convertDouble((damage / 2)) + "§f]");
 							}
 						}
 						return;
@@ -714,7 +718,7 @@ public class Spectator {
 					else {
 						for (Player online : PlayerUtils.getPlayers()) {
 							if (Spectator.getManager().isSpectating(online.getName())) {
-								online.sendMessage("[§9S§f] §5PvE§f:§c" + player.getName() + "§f<-§d??? §f[§c" + NumberUtils.convertDouble((player.getHealth() / 2)) + "§f] [§6" + NumberUtils.convertDouble((damage / 2)) + "§f]");
+								online.sendMessage(prefix() + "§5PvE§f:§c" + player.getName() + "§f<-§d??? §f[§c" + NumberUtils.convertDouble((player.getHealth() / 2)) + "§f] [§6" + NumberUtils.convertDouble((damage / 2)) + "§f]");
 							}
 						}
 					}
@@ -746,7 +750,7 @@ public class Spectator {
 						
 						for (Player online : PlayerUtils.getPlayers()) {
 							if (Spectator.getManager().isSpectating(online.getName())) {
-								online.sendMessage("[§9S§f] §4PvP§f:§a" + killer.getName() + "§f-M>§c" + player.getName() + " §f[§a" + NumberUtils.convertDouble((killer.getHealth() / 2)) + "§f:§c" + NumberUtils.convertDouble((player.getHealth() / 2)) + "§f] [§6" + NumberUtils.convertDouble((damage / 2)) + "§f]");
+								online.sendMessage(prefix() + "§4PvP§f:§a" + killer.getName() + "§f-M>§c" + player.getName() + " §f[§a" + NumberUtils.convertDouble((killer.getHealth() / 2)) + "§f:§c" + NumberUtils.convertDouble((player.getHealth() / 2)) + "§f] [§6" + NumberUtils.convertDouble((damage / 2)) + "§f]");
 							}
 						}
 						return;
@@ -760,7 +764,7 @@ public class Spectator {
 							if (p instanceof Arrow) {
 								for (Player online : PlayerUtils.getPlayers()) {
 									if (Spectator.getManager().isSpectating(online.getName())) {
-										online.sendMessage("[§9S§f] §4PvP§f:§a" + shooter.getName() + "§f-B>§c" + player.getName() + " §f[§a" + NumberUtils.convertDouble((shooter.getHealth() / 2)) + "§f:§c" + NumberUtils.convertDouble((player.getHealth() / 2)) + "§f] [§6" + NumberUtils.convertDouble((damage / 2)) + "§f]");
+										online.sendMessage(prefix() + "§4PvP§f:§a" + shooter.getName() + "§f-B>§c" + player.getName() + " §f[§a" + NumberUtils.convertDouble((shooter.getHealth() / 2)) + "§f:§c" + NumberUtils.convertDouble((player.getHealth() / 2)) + "§f] [§6" + NumberUtils.convertDouble((damage / 2)) + "§f]");
 									}
 								}
 								return;
@@ -768,7 +772,7 @@ public class Spectator {
 							else {
 								for (Player online : PlayerUtils.getPlayers()) {
 									if (Spectator.getManager().isSpectating(online.getName())) {
-										online.sendMessage("[§9S§f] §4PvP§f:§a" + shooter.getName() + "§f-?P>§c" + player.getName() + " §f[§a" + NumberUtils.convertDouble((shooter.getHealth() / 2)) + "§f:§c" + NumberUtils.convertDouble((player.getHealth() / 2)) + "§f] [§6" + NumberUtils.convertDouble((damage / 2)) + "§f]");
+										online.sendMessage(prefix() + "§4PvP§f:§a" + shooter.getName() + "§f-?P>§c" + player.getName() + " §f[§a" + NumberUtils.convertDouble((shooter.getHealth() / 2)) + "§f:§c" + NumberUtils.convertDouble((player.getHealth() / 2)) + "§f] [§6" + NumberUtils.convertDouble((damage / 2)) + "§f]");
 									}
 								}
 							}
@@ -780,7 +784,7 @@ public class Spectator {
 								
 								for (Player online : PlayerUtils.getPlayers()) {
 									if (Spectator.getManager().isSpectating(online.getName())) {
-										online.sendMessage("[§9S§f] §5PvE§f:§c" + player.getName() + "§f<-§d" + entity.getType().name().substring(0, 1).toUpperCase() + entity.getType().name().substring(1).toLowerCase().replaceAll("_", "") + " §f[§c" + NumberUtils.convertDouble((player.getHealth() / 2)) + "§f] [§6" + NumberUtils.convertDouble((damage / 2)) + "§f]");
+										online.sendMessage(prefix() + "§5PvE§f:§c" + player.getName() + "§f<-§d" + entity.getType().name().substring(0, 1).toUpperCase() + entity.getType().name().substring(1).toLowerCase().replaceAll("_", "") + " §f[§c" + NumberUtils.convertDouble((player.getHealth() / 2)) + "§f] [§6" + NumberUtils.convertDouble((damage / 2)) + "§f]");
 									}
 								}
 								return;
@@ -788,7 +792,7 @@ public class Spectator {
 							else {
 								for (Player online : PlayerUtils.getPlayers()) {
 									if (Spectator.getManager().isSpectating(online.getName())) {
-										online.sendMessage("[§9S§f] §5PvE§f:§c" + player.getName() + "§f<-§d??? §f[§c" + NumberUtils.convertDouble((player.getHealth() / 2)) + "§f] [§6" + NumberUtils.convertDouble((damage / 2)) + "§f]");
+										online.sendMessage(prefix() + "§5PvE§f:§c" + player.getName() + "§f<-§d??? §f[§c" + NumberUtils.convertDouble((player.getHealth() / 2)) + "§f] [§6" + NumberUtils.convertDouble((damage / 2)) + "§f]");
 									}
 								}
 							}
@@ -800,7 +804,7 @@ public class Spectator {
 						
 						for (Player online : PlayerUtils.getPlayers()) {
 							if (Spectator.getManager().isSpectating(online.getName())) {
-								online.sendMessage("[§9S§f] §5PvE§f:§c" + player.getName() + "§f<-§d" + e.getType().name().substring(0, 1).toUpperCase() + e.getType().name().substring(1).toLowerCase().replaceAll("_", "") + " §f[§c" + NumberUtils.convertDouble((player.getHealth() / 2)) + "§f] [§6" + NumberUtils.convertDouble((damage / 2)) + "§f]");
+								online.sendMessage(prefix() + "§5PvE§f:§c" + player.getName() + "§f<-§d" + e.getType().name().substring(0, 1).toUpperCase() + e.getType().name().substring(1).toLowerCase().replaceAll("_", "") + " §f[§c" + NumberUtils.convertDouble((player.getHealth() / 2)) + "§f] [§6" + NumberUtils.convertDouble((damage / 2)) + "§f]");
 							}
 						}
 						return;
@@ -808,7 +812,7 @@ public class Spectator {
 					else {
 						for (Player online : PlayerUtils.getPlayers()) {
 							if (Spectator.getManager().isSpectating(online.getName())) {
-								online.sendMessage("[§9S§f] §5PvE§f:§c" + player.getName() + "§f<-§d??? §f[§c" + NumberUtils.convertDouble((player.getHealth() / 2)) + "§f] [§6" + NumberUtils.convertDouble((damage / 2)) + "§f]");
+								online.sendMessage(prefix() + "§5PvE§f:§c" + player.getName() + "§f<-§d??? §f[§c" + NumberUtils.convertDouble((player.getHealth() / 2)) + "§f] [§6" + NumberUtils.convertDouble((damage / 2)) + "§f]");
 							}
 						}
 					}
@@ -822,6 +826,11 @@ public class Spectator {
 			}
 			
 			final Block block = event.getDamager();
+			
+			if (block == null) {
+				return;
+			}
+			
 			final double olddamage = player.getHealth();
 			
 			new BukkitRunnable() {
@@ -834,7 +843,7 @@ public class Spectator {
 					
 					for (Player online : PlayerUtils.getPlayers()) {
 						if (Spectator.getManager().isSpectating(online.getName())) {
-							online.sendMessage("[§9S§f] §5PvE§f:§c" + player.getName() + "§f<-§d" + block.getType().name().toUpperCase().substring(0, 1) + block.getType().name().toLowerCase().substring(1).replaceAll("_", "") + " §f[§c" + NumberUtils.convertDouble((player.getHealth() / 2)) + "§f] [§6" + NumberUtils.convertDouble((damage / 2)) + "§f]");
+							online.sendMessage(prefix() + "§5PvE§f:§c" + player.getName() + "§f<-§d" + block.getType().name().toUpperCase().substring(0, 1) + block.getType().name().toLowerCase().substring(1).replaceAll("_", "") + " §f[§c" + NumberUtils.convertDouble((player.getHealth() / 2)) + "§f] [§6" + NumberUtils.convertDouble((damage / 2)) + "§f]");
 						}
 					}
 				}
