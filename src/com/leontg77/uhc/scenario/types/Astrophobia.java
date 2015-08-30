@@ -37,6 +37,9 @@ import com.leontg77.uhc.Main;
 import com.leontg77.uhc.Settings;
 import com.leontg77.uhc.scenario.Scenario;
 
+/**
+ * @author Bergasms
+ */
 public class Astrophobia extends Scenario implements Listener {
 	private boolean enabled = false;
 
