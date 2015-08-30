@@ -1,5 +1,7 @@
 package com.leontg77.uhc.cmds;
 
+import java.util.Date;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -21,6 +23,7 @@ public class StatsCommand implements CommandExecutor {
 					
 					player.sendMessage("§8---------------------------");
 					player.sendMessage(" §8» §6Your stats");
+					player.sendMessage(" §8» §6First joined: §7" + new Date(data.getFile().getLong("firstjoined")));
 					player.sendMessage("§8---------------------------");
 					player.sendMessage(" §8» §aWins: §7" + data.getStat("wins"));
 					player.sendMessage(" §8» §aKills: §7" + data.getStat("kills"));
@@ -56,6 +59,7 @@ public class StatsCommand implements CommandExecutor {
 			
 			sender.sendMessage("§8---------------------------");
 			sender.sendMessage(" §8» §6" + target.getName() + "'s stats");
+			sender.sendMessage(" §8» §6First joined: §7" + new Date(data.getFile().getLong("firstjoined")));
 			sender.sendMessage("§8---------------------------");
 			sender.sendMessage(" §8» §aWins: §7" + data.getStat("wins"));
 			sender.sendMessage(" §8» §aKills: §7" + data.getStat("kills"));
