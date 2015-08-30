@@ -70,6 +70,7 @@ import com.leontg77.uhc.cmds.StaffChatCommand;
 import com.leontg77.uhc.cmds.StartCommand;
 import com.leontg77.uhc.cmds.StatsCommand;
 import com.leontg77.uhc.cmds.TeamCommand;
+import com.leontg77.uhc.cmds.TempbanCommand;
 import com.leontg77.uhc.cmds.TimeLeftCommand;
 import com.leontg77.uhc.cmds.TimerCommand;
 import com.leontg77.uhc.cmds.TlCommand;
@@ -96,7 +97,7 @@ import com.leontg77.uhc.utils.PlayerUtils;
  * @author LeonTG77
  */
 public class Main extends JavaPlugin {
-	private final Logger logger = Bukkit.getServer().getLogger();
+	private Logger logger = Bukkit.getServer().getLogger();
 	private Settings settings = Settings.getInstance();
 	public static Main plugin;
 	
@@ -138,8 +139,8 @@ public class Main extends JavaPlugin {
 	
 	@Override
 	public void onDisable() {
-		PluginDescriptionFile pdfFile = this.getDescription();
-		this.logger.info(pdfFile.getName() + " is now disabled.");
+		PluginDescriptionFile file = this.getDescription();
+		logger.info(file.getName() + " is now disabled.");
 		
 		settings.getData().set("state", State.getState().name());
 		settings.saveData();
@@ -153,13 +154,15 @@ public class Main extends JavaPlugin {
 		settings.getData().set("scenarios", scens);
 		settings.saveData();
 		
+		BiomeSwap.getManager().resetBiomes();
+		
 		plugin = null;
 	}
 	
 	@Override
 	public void onEnable() {
-		PluginDescriptionFile pdfFile = this.getDescription();
-		this.logger.info(pdfFile.getName() + " v" + pdfFile.getVersion() + " is now enabled.");
+		PluginDescriptionFile file = this.getDescription();
+		logger.info(file.getName() + " v" + file.getVersion() + " is now enabled.");
 		
 		plugin = this;
 		settings.setup();
@@ -211,6 +214,7 @@ public class Main extends JavaPlugin {
 		getCommand("start").setExecutor(new StartCommand());
 		getCommand("stats").setExecutor(new StatsCommand());
 		getCommand("team").setExecutor(new TeamCommand());
+		getCommand("tempban").setExecutor(new TempbanCommand());
 		getCommand("timeleft").setExecutor(new TimeLeftCommand());
 		getCommand("timer").setExecutor(new TimerCommand());
 		getCommand("teamloc").setExecutor(new TlCommand());
@@ -259,11 +263,11 @@ public class Main extends JavaPlugin {
 		Bukkit.getLogger().info("[UHC] Scenario listeners are now setup.");
 		
 		if (State.isState(State.LOBBY)) {
-			File file = new File(Bukkit.getWorlds().get(0).getWorldFolder(), "playerdata");
-			File file2 = new File(Bukkit.getWorlds().get(0).getWorldFolder(), "stats");
+			File playerData = new File(Bukkit.getWorlds().get(0).getWorldFolder(), "playerdata");
+			File stats = new File(Bukkit.getWorlds().get(0).getWorldFolder(), "stats");
 		
 			int i = 0;
-			for (File f : file.listFiles()) {
+			for (File f : playerData.listFiles()) {
 				f.delete();
 				i++;
 			}
@@ -271,7 +275,7 @@ public class Main extends JavaPlugin {
 			Bukkit.getLogger().info("[UHC] Deleted " + i + " player data files.");
 			
 			int j = 0;
-			for (File f2 : file2.listFiles()) {
+			for (File f2 : stats.listFiles()) {
 				f2.delete();
 				j++;
 			}
@@ -281,6 +285,10 @@ public class Main extends JavaPlugin {
 		
 		for (String scen : settings.getData().getStringList("scenarios")) {
 			ScenarioManager.getInstance().getScenario(scen).setEnabled(true);
+		}
+		
+		for (Player online : PlayerUtils.getPlayers()) {	
+			PlayerUtils.handlePermissions(online);
 		}
 		
 		Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
