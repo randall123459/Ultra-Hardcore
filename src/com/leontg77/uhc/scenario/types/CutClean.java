@@ -5,15 +5,19 @@ import java.util.Random;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Chicken;
+import org.bukkit.entity.Cow;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.ExperienceOrb;
 import org.bukkit.entity.Item;
+import org.bukkit.entity.Pig;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.TNTPrimed;
+import org.bukkit.entity.Rabbit;
+import org.bukkit.entity.Sheep;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
@@ -46,22 +50,29 @@ public class CutClean extends Scenario implements Listener {
 			return;
 		}
 		
-		for (ItemStack drops : event.getDrops()) {
-			if (drops.getType() == Material.PORK) {
-				drops.setType(Material.GRILLED_PORK);
-			}
-			if (drops.getType() == Material.RAW_BEEF) {
-				drops.setType(Material.COOKED_BEEF);
-			}
-			if (drops.getType() == Material.RAW_CHICKEN) {
-				drops.setType(Material.COOKED_CHICKEN);
-			}
-			if (drops.getType() == Material.RABBIT) {
-				drops.setType(Material.COOKED_RABBIT);
-			}
-			if (drops.getType() == Material.MUTTON) {
-				drops.setType(Material.COOKED_MUTTON);
-			}
+		Entity entity = event.getEntity();
+		
+		if (entity instanceof Cow) {
+			event.getDrops().clear();
+			event.getDrops().add(new ItemStack(Material.COOKED_BEEF, 3));
+			event.getDrops().add(new ItemStack(Material.LEATHER));
+		} 
+		else if (entity instanceof Chicken) {
+			event.getDrops().clear();
+			event.getDrops().add(new ItemStack(Material.COOKED_CHICKEN, 3));
+			event.getDrops().add(new ItemStack(Material.FEATHER, 2));
+		}
+		else if (entity instanceof Pig) {
+			event.getDrops().clear();
+			event.getDrops().add(new ItemStack(Material.GRILLED_PORK, 3));
+		}
+		else if (entity instanceof Sheep) {
+			event.getDrops().clear();
+			event.getDrops().add(new ItemStack(Material.COOKED_MUTTON, 2));
+		}
+		else if (entity instanceof Rabbit) {
+			event.getDrops().clear();
+			event.getDrops().add(new ItemStack(Material.COOKED_RABBIT, 1));
 		}
 	}
 	
@@ -134,7 +145,7 @@ public class CutClean extends Scenario implements Listener {
 				
 				for (Player online : PlayerUtils.getPlayers()) {
 					if (Spectator.getManager().isSpectating(online)) {
-						online.sendMessage("[§9S§f] §7" + player.getName() + "§f:§6GOLD §f[V:§6" + amount + "§f] [T:§6" + SpecInfo.totalGold.get(player.getName()) + "§f]");
+						online.sendMessage(SpecInfo.prefix() + "§7" + player.getName() + "§f:§6GOLD §f[V:§6" + amount + "§f] [T:§6" + SpecInfo.totalGold.get(player.getName()) + "§f]");
 					}
 				}
 				amount = 0;
@@ -148,23 +159,6 @@ public class CutClean extends Scenario implements Listener {
 			exp.setExperience(7);
 			Item item = block.getWorld().dropItem(block.getLocation().add(0.5, 0.7, 0.5), new ItemStack (Material.GOLD_INGOT));
 			item.setVelocity(new Vector(0, 0.2, 0));
-		}
-	}
-	
-	@EventHandler
-	public void onBlockPlace(BlockPlaceEvent event) {
-		if (!isEnabled()) {
-			return;
-		}
-		
-		Player player = event.getPlayer();
-		Block block = event.getBlockPlaced();
-		
-		if (block.getType() == Material.TNT) {
-			block.setType(Material.AIR);
-			Location loc = new Location(block.getWorld(), block.getLocation().getBlockX() + 0.5, block.getLocation().getBlockY() + 0.2, block.getLocation().getBlockZ() + 0.5);
-        	TNTPrimed tnt = player.getWorld().spawn(loc, TNTPrimed.class);
-        	tnt.setFuseTicks(80);
 		}
 	}
 }
