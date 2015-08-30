@@ -19,7 +19,11 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.permissions.PermissionAttachment;
+import org.bukkit.plugin.Plugin;
 
+import com.leontg77.uhc.Data;
+import com.leontg77.uhc.Data.Rank;
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.Settings;
 import com.leontg77.uhc.Spectator;
@@ -171,7 +175,7 @@ public class PlayerUtils {
 		CraftPlayer craft = (CraftPlayer) player;
 
         IChatBaseComponent headerJSON = ChatSerializer.a("{text:'§4Arctic UHC\n§6Remember to read the /rules\n'}");
-        IChatBaseComponent footerJSON = ChatSerializer.a("{text:'\n§7" + GameUtils.getTeamSize() + " " + Settings.getInstance().getConfig().getString("game.scenarios") + (Main.teamSize > 0 ? "\n§4Host: §a" + Settings.getInstance().getConfig().getString("game.host") : "") + "'}");
+        IChatBaseComponent footerJSON = ChatSerializer.a("{text:'\n§7" + GameUtils.getTeamSize() + Settings.getInstance().getConfig().getString("game.scenarios") + (Main.teamSize > 0 || Main.teamSize == -2 ? "\n§4Host: §a" + Settings.getInstance().getConfig().getString("game.host") : "") + "'}");
 
         PacketPlayOutPlayerListHeaderFooter headerPacket = new PacketPlayOutPlayerListHeaderFooter(headerJSON);
  
@@ -230,62 +234,194 @@ public class PlayerUtils {
 	 * 
 	 * @param player the player.
 	 */
-	public static void handlePermissions(Player... players) {
-		/*for (Player player : players) {
-			if (Main.permissions.get(player.getName()) == null) {
-				Main.permissions.put(player.getName(), player.addAttachment(Main.plugin));
-			}
+	public static void handlePermissions(Player player) {
+		if (Main.permissions.get(player.getName()) == null) {
+			Main.permissions.put(player.getName(), player.addAttachment(Main.plugin));
+		}
 
-			PermissionAttachment perm = Main.permissions.get(player.getName());
-			Data data = Data.getFor(player);
+		PermissionAttachment perm = Main.permissions.get(player.getName());
+		Data data = Data.getFor(player);
+		
+		for (String perms : Main.permissions.get(player.getName()).getPermissions().keySet()) {
+			perm.setPermission(perms, false);
+		}
+		
+		perm.setPermission("mv.bypass.gamemode.*", true);
+		
+		if (data.getRank() == Rank.VIP) {
+			perm.setPermission("uhc.prelist", true);
+		}
+		
+		if (data.getRank() == Rank.STAFF) {
+			perm.setPermission("uhc.prelist", true);
+			perm.setPermission("uhc.seemsg", true);
+			perm.setPermission("uhc.spectate", true);
+			perm.setPermission("uhc.whitelist", true);
+			perm.setPermission("uhc.commandspy", true);
+			perm.setPermission("uhc.mute", true);
+			perm.setPermission("uhc.admin", true);
+			perm.setPermission("uhc.kick", true);
+			perm.setPermission("uhc.staff", true);
+			perm.setPermission("uhc.ban", true);
+			perm.setPermission("uhc.tempban", true);
+		}
+		
+		if (data.getRank() == Rank.TRIAL) {
+			perm.setPermission("uhc.prelist", true);
+			perm.setPermission("uhc.seemsg", true);
+			perm.setPermission("uhc.spectate", true);
+			perm.setPermission("uhc.whitelist", true);
+			perm.setPermission("uhc.commandspy", true);
+			perm.setPermission("uhc.mute", true);
+			perm.setPermission("uhc.admin", true);
+			perm.setPermission("uhc.kick", true);
+			perm.setPermission("uhc.tempban", true);
+			perm.setPermission("uhc.staff", true);
+			perm.setPermission("uhc.ban", true);
+			perm.setPermission("uhc.teamadmin", true);
+			perm.setPermission("uhc.board", true);
+			perm.setPermission("uhc.sethealth", true);
+			perm.setPermission("uhc.setmaxhealth", true);
+			perm.setPermission("uhc.vote", true);
+			perm.setPermission("uhc.arenaadmin", true);
+			perm.setPermission("multiverse.teleport.*", true);
+			perm.setPermission("multiverse.core.teleport.*", true);
+			perm.setPermission("multiverse.teleport", true);
+			perm.setPermission("multiverse.core.teleport", true);
+			perm.setPermission("multiverse.core.unload", true);
+			perm.setPermission("multiverse.core.remove", true);
+			perm.setPermission("multiverse.core.create", true);
+			perm.setPermission("multiverse.core.load", true);
+			perm.setPermission("multiverse.core.confirm", true);
+			perm.setPermission("uhc.start", true);
+			perm.setPermission("uhc.spread", true);
+			perm.setPermission("uhc.scenario", true);
+			perm.setPermission("uhc.broadcast", true);
+			perm.setPermission("uhc.clearinv", true);
+			perm.setPermission("uhc.clearxp", true);
+			perm.setPermission("uhc.heal", true);
+			perm.setPermission("uhc.feed", true);
+			perm.setPermission("uhc.random", true);
+			perm.setPermission("uhc.clearinv.other", true);
+			perm.setPermission("uhc.clearxp.other", true);
+			perm.setPermission("uhc.heal.other", true);
+			perm.setPermission("uhc.feed.other", true);
+			perm.setPermission("uhc.pvp", true);
+			perm.setPermission("uhc.giveall", true);
+			perm.setPermission("uhc.end", true);
+			perm.setPermission("uhc.border", true);
+			perm.setPermission("uhc.gamemode", true);
+			perm.setPermission("uhc.config", true);
+			perm.setPermission("worldborder.*", true);
+		}
+		
+		if (data.getRank() == Rank.HOST) {
+			perm.setPermission("uhc.sethealth", true);
+			perm.setPermission("uhc.setmaxhealth", true);
+			perm.setPermission("uhc.prelist", true);
+			perm.setPermission("uhc.seemsg", true);
+			perm.setPermission("uhc.spectate", true);
+			perm.setPermission("uhc.whitelist", true);
+			perm.setPermission("uhc.commandspy", true);
+			perm.setPermission("uhc.mute", true);
+			perm.setPermission("uhc.admin", true);
+			perm.setPermission("uhc.kick", true);
+			perm.setPermission("uhc.staff", true);
+			perm.setPermission("uhc.tempban", true);
+			perm.setPermission("uhc.ban", true);
+			perm.setPermission("uhc.teamadmin", true);
+			perm.setPermission("uhc.board", true);
+			perm.setPermission("uhc.vote", true);
+			perm.setPermission("uhc.arenaadmin", true);
+			perm.setPermission("multiverse.teleport.*", true);
+			perm.setPermission("multiverse.core.teleport.*", true);
+			perm.setPermission("multiverse.teleport", true);
+			perm.setPermission("multiverse.core.teleport", true);
+			perm.setPermission("multiverse.core.unload", true);
+			perm.setPermission("multiverse.core.remove", true);
+			perm.setPermission("multiverse.core.create", true);
+			perm.setPermission("multiverse.core.load", true);
+			perm.setPermission("multiverse.core.list.worlds", true);
+			perm.setPermission("multiverse.core.confirm", true);
+			perm.setPermission("multiverse.core.list.*", true);
+			perm.setPermission("multiverse.core.list", true);
+			perm.setPermission("multiverse.core.list.self", true);
+			perm.setPermission("multiverse.*", true);
+			perm.setPermission("multiverse.core.*", true);
+			perm.setPermission("uhc.start", true);
+			perm.setPermission("uhc.spread", true);
+			perm.setPermission("uhc.scenario", true);
+			perm.setPermission("uhc.broadcast", true);
+			perm.setPermission("uhc.clearinv", true);
+			perm.setPermission("uhc.clearxp", true);
+			perm.setPermission("uhc.heal", true);
+			perm.setPermission("uhc.feed", true);
+			perm.setPermission("uhc.clearinv.other", true);
+			perm.setPermission("uhc.clearxp.other", true);
+			perm.setPermission("uhc.heal.other", true);
+			perm.setPermission("uhc.feed.other", true);
+			perm.setPermission("uhc.border", true);
+			perm.setPermission("uhc.gamemode", true);
+			perm.setPermission("uhc.config", true);
+			perm.setPermission("worldborder.*", true);
+			perm.setPermission("multiverse.*", true);
+			perm.setPermission("multiverse.core.*", true);
+			perm.setPermission("uhc.skull", true);
+			perm.setPermission("uhc.speed", true);
+			perm.setPermission("uhc.tp", true);
+			perm.setPermission("uhc.moles", true);
+			perm.setPermission("uhc.unban", true);
+			perm.setPermission("uhc.random", true);
+			perm.setPermission("uhc.pvp", true);
+			perm.setPermission("uhc.giveall", true);
+			perm.setPermission("uhc.end", true);
+		}
+		
+		if (player.getUniqueId().toString().equals("02dc5178-f7ec-4254-8401-1a57a7442a2f")) { // Polar UUID
+			perm.setPermission("bukkit.command.timings", true);
+			perm.setPermission("spigot.commands.timings", true);
+			perm.setPermission("minecraft.command.scoreboard", true);
+			perm.setPermission("minecraft.command.tp", true);
+			perm.setPermission("minecraft.command.time", true);
+			perm.setPermission("minecraft.command.gamerule", true);
+			perm.setPermission("minecraft.command.scoreboard", true);
+			perm.setPermission("minecraft.command.worldborder", true);
+			perm.setPermission("bukkit.command.reload", true);
+			perm.setPermission("worldedit.*", true);
+			perm.setPermission("uhc.*", true);
+			perm.setPermission("uhc.gamemode.other", true);
+			perm.setPermission("uhc.sound", true);
+			perm.setPermission("uhc.text", true);
+			perm.setPermission("uhc.build", true);
 			
-			for (String perms : Main.permissions.get(player.getName()).getPermissions().keySet()) {
-				perm.setPermission(perms, false);
+			for (Plugin pl : Bukkit.getPluginManager().getPlugins()) {
+				perm.setPermission(pl.getName().toLowerCase() + ".*", true);
 			}
+		} else if (player.getUniqueId().toString().equals("8b2b2e07-b694-4bd0-8f1b-ba99a267be41")) { // Leon UUID
+			perm.setPermission("bukkit.command.timings", true);
+			perm.setPermission("spigot.commands.timings", true);
+			perm.setPermission("minecraft.command.scoreboard", true);
+			perm.setPermission("minecraft.command.tp", true);
+			perm.setPermission("minecraft.command.time", true);
+			perm.setPermission("minecraft.command.gamerule", true);
+			perm.setPermission("minecraft.command.scoreboard", true);
+			perm.setPermission("minecraft.command.worldborder", true);
+			perm.setPermission("bukkit.command.reload", true);
+			perm.setPermission("worldedit.*", true);
+			perm.setPermission("uhc.*", true);
+			perm.setPermission("uhc.gamemode.other", true);
+			perm.setPermission("uhc.sound", true);
+			perm.setPermission("uhc.text", true);
+			perm.setPermission("uhc.build", true);
 			
-			if (data.getRank() == Rank.VIP) {
-				perm.setPermission("uhc.prelist", true);
+			for (Plugin pl : Bukkit.getPluginManager().getPlugins()) {
+				perm.setPermission(pl.getName().toLowerCase() + ".*", true);
 			}
-			
-			if (data.getRank() == Rank.STAFF) {
-				perm.setPermission("uhc.prelist", true);
-				perm.setPermission("uhc.seemsg", true);
-				perm.setPermission("uhc.spectate", true);
-				perm.setPermission("uhc.whitelist", true);
-				perm.setPermission("uhc.commandspy", true);
-				perm.setPermission("uhc.mute", true);
-				perm.setPermission("uhc.admin", true);
-				perm.setPermission("uhc.kick", true);
-				perm.setPermission("uhc.staff", true);
-				perm.setPermission("uhc.ban", true);
-			}
-			
-			if (data.getRank() == Rank.TRIAL) {
-				perm.setPermission("uhc.prelist", true);
-				perm.setPermission("uhc.seemsg", true);
-				perm.setPermission("uhc.spectate", true);
-				perm.setPermission("uhc.whitelist", true);
-				perm.setPermission("uhc.commandspy", true);
-				perm.setPermission("uhc.mute", true);
-				perm.setPermission("uhc.admin", true);
-				perm.setPermission("uhc.kick", true);
-				perm.setPermission("uhc.staff", true);
-				perm.setPermission("uhc.ban", true);
-			}
-			
-			if (data.getRank() == Rank.HOST) {
-				perm.setPermission("uhc.prelist", true);
-				perm.setPermission("uhc.seemsg", true);
-				perm.setPermission("uhc.spectate", true);
-				perm.setPermission("uhc.whitelist", true);
-				perm.setPermission("uhc.commandspy", true);
-				perm.setPermission("uhc.mute", true);
-				perm.setPermission("uhc.admin", true);
-				perm.setPermission("uhc.kick", true);
-				perm.setPermission("uhc.staff", true);
-				perm.setPermission("uhc.ban", true);
-			}
-		}*/
+		} else if (player.getUniqueId().toString().equals("679021a8-67c1-4317-8323-4b2b839a01f6")) { // D4 UUID
+			perm.setPermission("bukkit.command.timings", true);
+			perm.setPermission("spigot.commands.timings", true);
+			perm.setPermission("minecraft.command.scoreboard", true);
+		}
 	}
 	
 	/**
@@ -294,11 +430,11 @@ public class PlayerUtils {
 	 * @param player the player.
 	 */
 	public static void handleLeavePermissions(Player player) {
-		/*if (Main.permissions.get(player.getName()) == null) {
+		if (Main.permissions.get(player.getName()) == null) {
 			return;
 		}
 		
 		player.removeAttachment(Main.permissions.get(player.getName()));
-		Main.permissions.remove(player.getName());*/
+		Main.permissions.remove(player.getName());
 	}
 }
