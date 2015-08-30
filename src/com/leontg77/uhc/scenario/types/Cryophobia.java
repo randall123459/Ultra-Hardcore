@@ -99,7 +99,7 @@ public class Cryophobia extends Scenario implements Listener {
 		this.chunkQueue = new HashMap<String, ChunkProcess>();
 		this.priorityQueue = new LinkedList<String>();
 		this.theworld = Bukkit.getWorld(Settings.getInstance().getConfig().getString("game.world"));
-		this.replaceMaterial = Material.LAVA;
+		this.replaceMaterial = Material.ICE;
 		this.heightCountdown = 150;
 		this.levelHeight = 0;
 		this.biomeLookup = new boolean[500][500];
