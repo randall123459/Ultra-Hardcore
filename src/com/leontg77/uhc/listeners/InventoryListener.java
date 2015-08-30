@@ -73,6 +73,10 @@ public class InventoryListener implements Listener {
 		}
         
 		if (event.getInventory().getTitle().equals("Player Selector")) {
+			if (!event.getCurrentItem().hasItemMeta() || !event.getCurrentItem().getItemMeta().hasDisplayName()) {
+				return;
+			}
+			
 			Player target = Bukkit.getServer().getPlayer(event.getCurrentItem().getItemMeta().getDisplayName().substring(2, event.getCurrentItem().getItemMeta().getDisplayName().length()));
 			
 			if (target == null) {
@@ -121,13 +125,34 @@ public class InventoryListener implements Listener {
 		}
 		
 		if (item.getType() == Material.LAVA_BUCKET) {
+			if (!Main.nether) {
+				player.sendMessage(Main.prefix() + "Nether is disabled.");
+				event.setCancelled(true);
+				return;
+			}
+			
 			StringBuilder nether = new StringBuilder();
 			int i = 1;
+			int j = 1;
 			
 			for (Player online : PlayerUtils.getPlayers()) {
 				if (online.getWorld().getEnvironment() == Environment.NETHER) {
+					if (Spectator.getManager().isSpectating(online)) {
+						continue;
+					}
+					
+					j++;
+				}
+			}
+			
+			for (Player online : PlayerUtils.getPlayers()) {
+				if (online.getWorld().getEnvironment() == Environment.NETHER) {
+					if (Spectator.getManager().isSpectating(online)) {
+						continue;
+					}
+					
 					if (nether.length() > 0) {
-						if (i == PlayerUtils.getPlayers().size()) {
+						if (i == j) {
 							nether.append(" §7and §a");
 						} else {
 							nether.append("§7, §a");
@@ -135,6 +160,7 @@ public class InventoryListener implements Listener {
 					}
 
 					nether.append(ChatColor.GREEN + online.getName());
+					i++;
 				}
 			}
 			
