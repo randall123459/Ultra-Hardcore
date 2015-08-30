@@ -62,7 +62,7 @@ public class Pyrophobia extends Scenario implements Listener {
 		Player player = event.getPlayer();
 		
 		if (event.getItemStack().getType() == Material.WATER_BUCKET) {
-			player.sendMessage(ChatColor.DARK_RED + "You aren't allowed to have water buckets in pyrophobia.");
+			player.sendMessage(Main.prefix().replace("UHC", "Pyrophobia") + ChatColor.RED + "You cannot have water in PyroPhobia.");
 			event.setItemStack(new ItemStack (Material.BUCKET));
 			event.setCancelled(true);
 		}
