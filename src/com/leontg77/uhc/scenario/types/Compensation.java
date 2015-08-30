@@ -57,7 +57,8 @@ public class Compensation extends Scenario implements Listener {
             double healthPerPerson = victimMaxHealth / victimTeam.getSize();
             int healthPerPersonRounded = (int) healthPerPerson;
 
-            double excessHealth = healthPerPerson - healthPerPersonRounded;
+            @SuppressWarnings("unused")
+			double excessHealth = healthPerPerson - healthPerPersonRounded;
 
             int ticksRegen = healthPerPersonRounded * 50;
 
@@ -69,9 +70,9 @@ public class Compensation extends Scenario implements Listener {
             	}
             	
                 p.setMaxHealth(p.getMaxHealth() + healthPerPerson);
-                p.setHealth(p.getHealth() + excessHealth);
                 p.removePotionEffect(PotionEffectType.REGENERATION);
                 p.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, ticksRegen, 0));
+                /*p.setHealth(p.getHealth() + excessHealth);*/
             }
         }
     }
