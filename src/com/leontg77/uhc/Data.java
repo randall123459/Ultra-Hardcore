@@ -21,7 +21,7 @@ import com.leontg77.uhc.utils.PlayerUtils;
  * @author LeonTG77
  */
 public class Data {
-	private Player player;
+	private Player user;
 	private boolean creating = false;
 	
 	private FileConfiguration config;
@@ -82,11 +82,11 @@ public class Data {
         }
                
         config = YamlConfiguration.loadConfiguration(file);
-        this.player = player;
+        this.user = player;
         
         if (creating) {
-        	if (player != null) {
-            	config.set("username", player.getName());
+        	if (user != null) {
+            	config.set("username", user.getName());
         	}
         	
         	config.set("firstjoined", System.currentTimeMillis());
@@ -117,7 +117,7 @@ public class Data {
 	 * @return The player class.
 	 */
 	public Player getPlayer() {
-		return player;
+		return user;
 	}
 	
 	/**
@@ -151,7 +151,9 @@ public class Data {
 		config.set("rank", rank.name());
 		saveFile();
 		
-		PlayerUtils.handlePermissions(player);
+		if (user != null) {
+			PlayerUtils.handlePermissions(user);
+		}
 	}
 
 	/**
