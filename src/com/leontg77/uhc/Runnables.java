@@ -194,6 +194,10 @@ public class Runnables {
 	 * Start the timers.
 	 */
 	public static void timer() {
+		if (Bukkit.getScheduler().isQueued(task) || Bukkit.getScheduler().isCurrentlyRunning(task)) {
+			Bukkit.getScheduler().cancelTask(task);
+		}
+		
 		task = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(Main.plugin, new Runnable() {
 			public void run() {
 				heal--;
