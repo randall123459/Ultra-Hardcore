@@ -70,16 +70,18 @@ public class GameUtils {
 	public static String getTeamSize() {
 		if (Main.ffa) {
 			if (Main.teamSize == 1) {
-				return "FFA";
+				return "FFA ";
 			} else if (Main.teamSize == 0) {
-				return "No";
-			} else if (Main.teamSize < 0) {
-				return "Open";
+				return "No ";
+			} else if (Main.teamSize == -1) {
+				return "Open ";
+			} else if (Main.teamSize < -1) {
+				return "";
 			} else {
-				return "rTo" + Main.teamSize;
+				return "rTo" + Main.teamSize + " ";
 			}
 		} else {
-			return "To" + Main.teamSize;
+			return "To" + Main.teamSize + " ";
 		}
 	}
 	
