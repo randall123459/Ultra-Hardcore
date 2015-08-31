@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+import java.util.TimeZone;
 
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -20,7 +21,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.SkullType;
 import org.bukkit.TravelAgent;
 import org.bukkit.World;
@@ -61,7 +61,6 @@ import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Team;
 import org.bukkit.util.Vector;
 
@@ -608,223 +607,32 @@ public class PlayerListener implements Listener {
 			}
 		}
 		
-		if (event.getMessage().split(" ")[0].equalsIgnoreCase("/perma")) {
-			if (player.hasPermission("uhc.perma")) {
-				player.getWorld().setGameRuleValue("doDaylightCycle", "false");
-				player.getWorld().setTime(6000);
-				PlayerUtils.broadcast(Main.prefix() + "Permaday enabled.");
-			} else {
-				player.sendMessage(Main.prefix() + ChatColor.RED + "You can't use that command.");
-			}
-			event.setCancelled(true);
-			return;
-		}
-		
-		if (event.getMessage().split(" ")[0].equalsIgnoreCase("/matchpost")) {
-			player.sendMessage(Main.prefix() + "Match post: §a" + settings.getConfig().getString("matchpost"));
-			event.setCancelled(true);
-			return;
-		}
-		
-		if (event.getMessage().split(" ")[0].equalsIgnoreCase("/post")) {
-			player.sendMessage(Main.prefix() + "Match post: §a" + settings.getConfig().getString("matchpost"));
-			event.setCancelled(true);
-			return;
-		}
-		
-		if (event.getMessage().split(" ")[0].equalsIgnoreCase("/board")) {
-			if (player.hasPermission("uhc.board")) {
-				if (Main.board) {
-					for (String e : Scoreboards.getManager().kills.getScoreboard().getEntries()) {
-						Scoreboards.getManager().resetScore(e);
-					}
-					
-					PlayerUtils.broadcast(Main.prefix() + "Pregame board disabled.");
-					Main.board = false;
-				} else {
-					for (String e : Scoreboards.getManager().kills.getScoreboard().getEntries()) {
-						Scoreboards.getManager().resetScore(e);
-					}
-					
-					PlayerUtils.broadcast(Main.prefix() + "Pregame board enabled.");
-					Main.board = true;
-					
-					if (Main.ffa) {
-						Scoreboards.getManager().setScore("§a ", 10);
-						Scoreboards.getManager().setScore("§8» §cArena:", 9);
-						Scoreboards.getManager().setScore("§8» §7/a ", 8);
-						Scoreboards.getManager().setScore("§b ", 7);
-						Scoreboards.getManager().setScore("§8» §cTeamsize:", 6);
-						Scoreboards.getManager().setScore("§8» §7" + GameUtils.getTeamSize(), 5);
-						Scoreboards.getManager().setScore("§c ", 4);
-						Scoreboards.getManager().setScore("§8» §cScenarios:", 3);
-						Scoreboards.getManager().setScore("§8» §7" + settings.getConfig().getString("game.scenarios"), 2);
-						Scoreboards.getManager().setScore("§d ", 1);
-					} else {
-						Scoreboards.getManager().setScore("§e ", 13);
-						Scoreboards.getManager().setScore("§8» §cTeam:", 12);
-						Scoreboards.getManager().setScore("§8» §7/team", 11);
-						Scoreboards.getManager().setScore("§a ", 10);
-						Scoreboards.getManager().setScore("§8» §cArena:", 9);
-						Scoreboards.getManager().setScore("§8» §7/a ", 8);
-						Scoreboards.getManager().setScore("§b ", 7);
-						Scoreboards.getManager().setScore("§8» §cTeamsize:", 6);
-						Scoreboards.getManager().setScore("§8» §7" + GameUtils.getTeamSize(), 5);
-						Scoreboards.getManager().setScore("§c ", 4);
-						Scoreboards.getManager().setScore("§8» §cScenarios:", 3);
-						Scoreboards.getManager().setScore("§8» §7" + settings.getConfig().getString("game.scenarios"), 2);
-						Scoreboards.getManager().setScore("§d ", 1);
-					}
-				}
-			} else {
-				player.sendMessage(Main.prefix() + ChatColor.RED + "You can't use that command.");
-			}
-			event.setCancelled(true);
-			return;
-		}
-		
-		if (event.getMessage().split(" ")[0].equalsIgnoreCase("/aboard")) {
-			if (player.hasPermission("uhc.aboard")) {
-				if (Main.aboard) {
-					for (String e : Arena.getManager().arenaKills.getScoreboard().getEntries()) {
-						Arena.getManager().resetScore(e);
-					}
-					PlayerUtils.broadcast(Main.prefix() + "Arena board has been disabled.");
-					Scoreboards.getManager().kills.setDisplaySlot(DisplaySlot.SIDEBAR);
-					Main.aboard = false;
-				} else {
-					PlayerUtils.broadcast(Main.prefix() + "Arena board has been enabled.");
-					Arena.getManager().arenaKills.setDisplaySlot(DisplaySlot.SIDEBAR);
-					Main.aboard = true;
-					Main.board = false;
-
-					Arena.getManager().setScore("§8» §a§lPvE", 1);
-					Arena.getManager().setScore("§8» §a§lPvE", 0);
-				}
-			} else {
-				player.sendMessage(Main.prefix() + ChatColor.RED + "You can't use that command.");
-			}
-			event.setCancelled(true);
-			return;
-		}
-		
-		if (event.getMessage().split(" ")[0].equalsIgnoreCase("/text")) {
-			event.setCancelled(true);
-			
-			ArrayList<String> ar = new ArrayList<String>();
-			for (String arg : event.getMessage().split(" ")) {
-				ar.add(arg);
-			}
-			ar.remove(0);
-			String[] args = ar.toArray(new String[ar.size()]);
-			
-			if (player.hasPermission("uhc.text")) {
-				if (args.length == 0) {
-					player.sendMessage(Main.prefix() + ChatColor.RED + "Usage: /text <message>");
-					return;
-				}
-				
-				StringBuilder name = new StringBuilder();
-				
-				for (int i = 0; i < args.length; i++) {
-					name.append(args[i]).append(" ");
-				}
-				
-				ArmorStand stand = player.getWorld().spawn(player.getLocation(), ArmorStand.class);
-				stand.setCustomName(ChatColor.translateAlternateColorCodes('&', name.toString().trim()));
-				stand.setCustomNameVisible(true);
-				stand.setGravity(false);
-				stand.setVisible(false);
-				stand.setSmall(true);
-			} else {
-				player.sendMessage(Main.prefix() + ChatColor.RED + "You can't use that command.");
-			}
-		}
-		
-		if (event.getMessage().split(" ")[0].equalsIgnoreCase("/rank")) {
-			event.setCancelled(true);
-			
-			ArrayList<String> ar = new ArrayList<String>();
-			for (String arg : event.getMessage().split(" ")) {
-				ar.add(arg);
-			}
-			ar.remove(0);
-			String[] args = ar.toArray(new String[ar.size()]);
-			
-			if (player.hasPermission("uhc.rank") || player.getUniqueId().toString().equals("8b2b2e07-b694-4bd0-8f1b-ba99a267be41")) {
-				if (args.length < 2) {
-					player.sendMessage(Main.prefix() + ChatColor.RED + "Usage: /rank <player> <newrank>");
-					return;
-				}
-				
-				Rank rank;
-				
-				try {
-					rank = Rank.valueOf(args[1].toUpperCase());
-				} catch (Exception e) {
-					player.sendMessage(Main.prefix() + "Invaild rank.");
-					return;
-				}
-				
-				Player target = Bukkit.getServer().getPlayer(args[0]);
-				OfflinePlayer offline = PlayerUtils.getOfflinePlayer(args[0]);
-				
-				if (target == null) {
-					Data.getFor(offline).setRank(rank);
-					PlayerUtils.broadcast(Main.prefix() + "§6" + args[0] + " §7is now a §a" + rank.name().toLowerCase());
-					return;
-				}
-				
-				Data.getFor(target).setRank(rank);
-				PlayerUtils.broadcast(Main.prefix() + "§6" + args[0] + " §7is now a §a" + rank.name().toLowerCase());
-			} else {
-				player.sendMessage(Main.prefix() + ChatColor.RED + "You can't use that command.");
-			}
-		}
-		
-		if (event.getMessage().split(" ")[0].startsWith("/cc")) {
-			event.setCancelled(true);
-			
-			if (player.hasPermission("uhc.staff")) {
-				for (int i = 0; i < 150; i++) {
-					for (Player online : PlayerUtils.getPlayers()) {
-						online.sendMessage("§b");
-					}
-				}
-				
-				PlayerUtils.broadcast(Main.prefix() + "The chat has been cleared.");
-			} else {
-				player.sendMessage(Main.prefix() + ChatColor.RED + "You can't use that command.");
-			}
-			return;
-		}
-		
-		if (event.getMessage().split(" ")[0].startsWith("/me")) {
-			player.sendMessage(Main.prefix() + ChatColor.RED + "You can't use that command.");
+		if (event.getMessage().split(" ")[0].equalsIgnoreCase("/me")) {
+			player.sendMessage(Main.prefix() + "You can't use that command.");
 			event.setCancelled(true);
 			return;
 		}
 		
 		if (event.getMessage().split(" ")[0].startsWith("/bukkit:") && !player.hasPermission("uhc.admin")) {
-			player.sendMessage(Main.prefix() + ChatColor.RED + "You can't use that command.");
+			player.sendMessage(Main.prefix() + "You can't use that command.");
 			event.setCancelled(true);
 			return;
 		}
 		
 		if (event.getMessage().split(" ")[0].startsWith("/minecraft:") && !player.hasPermission("uhc.admin")) {
-			player.sendMessage(Main.prefix() + ChatColor.RED + "You can't use that command.");
+			player.sendMessage(Main.prefix() + "You can't use that command.");
 			event.setCancelled(true);
 			return;
 		}
 		
 		if (event.getMessage().split(" ")[0].equalsIgnoreCase("/kill")) {
-			player.sendMessage(Main.prefix() + ChatColor.RED + "You can't use that command.");
+			player.sendMessage(Main.prefix() + "You can't use that command.");
 			event.setCancelled(true);
 			return;
 		}
 		
 		if (event.getMessage().split(" ")[0].equalsIgnoreCase("/rl")) {
-			if (!State.isState(State.LOBBY)) {
+			if (!State.isState(State.LOBBY) && player.hasPermission("bukkit.command.reload")) {
 				player.sendMessage(ChatColor.RED + "You might not want to reload when the game is running.");
 				player.sendMessage(ChatColor.RED + "If you still want to reload, do it in the console.");
 				event.setCancelled(true);
@@ -833,7 +641,7 @@ public class PlayerListener implements Listener {
 		}
 		
 		if (event.getMessage().split(" ")[0].equalsIgnoreCase("/reload")) {
-			if (!State.isState(State.LOBBY)) {
+			if (!State.isState(State.LOBBY) && player.hasPermission("bukkit.command.reload")) {
 				player.sendMessage(ChatColor.RED + "You might not want to reload when the game is running.");
 				player.sendMessage(ChatColor.RED + "If you still want to reload, do it in the console.");
 				event.setCancelled(true);
@@ -842,7 +650,7 @@ public class PlayerListener implements Listener {
 		}
 		
 		if (event.getMessage().split(" ")[0].equalsIgnoreCase("/stop")) {
-			if (!State.isState(State.LOBBY)) {
+			if (!State.isState(State.LOBBY) && player.hasPermission("bukkit.command.stop")) {
 				player.sendMessage(ChatColor.RED + "You might not want to stop when the game is running.");
 				player.sendMessage(ChatColor.RED + "If you still want to stop, do it in the console.");
 				event.setCancelled(true);
@@ -851,7 +659,7 @@ public class PlayerListener implements Listener {
 		}
 		
 		if (event.getMessage().split(" ")[0].equalsIgnoreCase("/restart")) {
-			if (!State.isState(State.LOBBY)) {
+			if (!State.isState(State.LOBBY) && player.hasPermission("spigot.command.restart")) {
 				player.sendMessage(ChatColor.RED + "You might not want to restart when the game is running.");
 				player.sendMessage(ChatColor.RED + "If you still want to restart, do it in the console.");
 				event.setCancelled(true);
@@ -872,7 +680,7 @@ public class PlayerListener implements Listener {
 			
 			if (player.hasPermission("uhc.border")) {
 				if (args.length == 0) {
-					player.sendMessage(Main.prefix() + ChatColor.RED + "Usage: /border <radius>");
+					player.sendMessage(Main.prefix() + "Usage: /border <radius>");
 					return;
 				}
 				
@@ -899,7 +707,7 @@ public class PlayerListener implements Listener {
 				
 				PlayerUtils.broadcast(Main.prefix() + "Border setup with radius of " + radius + "x" + radius + ".");
 			} else {
-				player.sendMessage(Main.prefix() + ChatColor.RED + "You can't use that command.");
+				player.sendMessage(Main.prefix() + "You can't use that command.");
 			}
 			return;
 		}
@@ -917,7 +725,7 @@ public class PlayerListener implements Listener {
 			
 			if (player.hasPermission("uhc.sound")) {
 				if (args.length == 0) {
-					player.sendMessage(Main.prefix() + ChatColor.RED + "Usage: /sound <sound> <pitch>");
+					player.sendMessage(Main.prefix() + "Usage: /sound <sound> <pitch>");
 					return;
 				}
 				
@@ -930,7 +738,7 @@ public class PlayerListener implements Listener {
 				
 				player.playSound(player.getLocation(), args[0], 1, i);
 			} else {
-				player.sendMessage(Main.prefix() + ChatColor.RED + "You can't use that command.");
+				player.sendMessage(Main.prefix() + "You can't use that command.");
 			}
 		}
 	}
@@ -947,6 +755,7 @@ public class PlayerListener implements Listener {
 			}
 
 			BanEntry ban = Bukkit.getBanList(Type.NAME).getBanEntry(player.getName());
+			TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 
 			PlayerUtils.broadcast(Main.prefix() + ChatColor.RED + player.getName() + " §7tried to join while being banned for:§c " + ban.getReason(), "uhc.staff");
 			event.setKickMessage("§8» §7You have been " + (ban.getExpiration() == null ? "banned" : "temp-banned") + " from Arctic UHC\n\n§8» §cReason: §7" + ban.getReason() + (ban.getExpiration() == null ? "" : "\n§8» §cExpires: §7" + ban.getExpiration()) + "\n§8» §cBanned by: §7" + ban.getSource() + "\n\n§8» §7If you would like to appeal, DM our twitter §a@ArcticUHC");
