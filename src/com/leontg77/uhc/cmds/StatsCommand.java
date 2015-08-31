@@ -1,6 +1,7 @@
 package com.leontg77.uhc.cmds;
 
 import java.util.Date;
+import java.util.TimeZone;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -16,6 +17,8 @@ public class StatsCommand implements CommandExecutor {
 	
 	public boolean onCommand(final CommandSender sender, Command cmd, String label, String[] args) {
 		if (cmd.getName().equalsIgnoreCase("stats")) {
+			TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+			
 			if (args.length == 0) {
 				if (sender instanceof Player) {
 					Player player = (Player) sender;
