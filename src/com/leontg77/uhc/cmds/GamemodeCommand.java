@@ -54,7 +54,7 @@ public class GamemodeCommand implements CommandExecutor {
 					return true;
 				}
 				
-				if (!sender.hasPermission("tgn.gamemode.other")) {
+				if (!sender.hasPermission("uhc.gamemode.other")) {
 					if (sender instanceof Player) {
 						Player player = (Player) sender;
 						player.setGameMode(mode);
