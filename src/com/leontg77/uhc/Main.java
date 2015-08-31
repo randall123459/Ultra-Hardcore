@@ -30,12 +30,15 @@ import org.bukkit.scoreboard.Score;
 import org.bukkit.scoreboard.Scoreboard;
 
 import com.leontg77.uhc.Spectator.SpecInfo;
+import com.leontg77.uhc.cmds.AboardCommand;
 import com.leontg77.uhc.cmds.ArenaCommand;
 import com.leontg77.uhc.cmds.BanCommand;
+import com.leontg77.uhc.cmds.BoardCommand;
 import com.leontg77.uhc.cmds.BroadcastCommand;
 import com.leontg77.uhc.cmds.ButcherCommand;
 import com.leontg77.uhc.cmds.ClearInvCommand;
 import com.leontg77.uhc.cmds.ClearXpCommand;
+import com.leontg77.uhc.cmds.ClearChatCommand;
 import com.leontg77.uhc.cmds.ConfigCommand;
 import com.leontg77.uhc.cmds.EditCommand;
 import com.leontg77.uhc.cmds.EndCommand;
@@ -53,9 +56,11 @@ import com.leontg77.uhc.cmds.MsCommand;
 import com.leontg77.uhc.cmds.MsgCommand;
 import com.leontg77.uhc.cmds.MuteCommand;
 import com.leontg77.uhc.cmds.NearCommand;
+import com.leontg77.uhc.cmds.PermaCommand;
 import com.leontg77.uhc.cmds.PmCommand;
 import com.leontg77.uhc.cmds.PvPCommand;
 import com.leontg77.uhc.cmds.RandomCommand;
+import com.leontg77.uhc.cmds.RankCommand;
 import com.leontg77.uhc.cmds.ReplyCommand;
 import com.leontg77.uhc.cmds.RulesCommand;
 import com.leontg77.uhc.cmds.ScenarioCommand;
@@ -71,6 +76,7 @@ import com.leontg77.uhc.cmds.StartCommand;
 import com.leontg77.uhc.cmds.StatsCommand;
 import com.leontg77.uhc.cmds.TeamCommand;
 import com.leontg77.uhc.cmds.TempbanCommand;
+import com.leontg77.uhc.cmds.TextCommand;
 import com.leontg77.uhc.cmds.TimeLeftCommand;
 import com.leontg77.uhc.cmds.TimerCommand;
 import com.leontg77.uhc.cmds.TlCommand;
@@ -166,6 +172,16 @@ public class Main extends JavaPlugin {
 		
 		plugin = this;
 		settings.setup();
+
+		ScenarioManager.getInstance().setup();
+		Scoreboards.getManager().setup();
+		BiomeSwap.getManager().setup();
+		Arena.getManager().setup();
+		Teams.getManager().setup();
+		UBL.getManager().setup();
+		
+		State.setState(State.valueOf(settings.getData().getString("state", State.LOBBY.name())));
+		addRecipes();
 		
 		Bukkit.getServer().getPluginManager().registerEvents(new BlockListener(), this);
 		Bukkit.getServer().getPluginManager().registerEvents(new EntityListener(), this);
@@ -174,10 +190,13 @@ public class Main extends JavaPlugin {
 		Bukkit.getServer().getPluginManager().registerEvents(new WeatherListener(), this);
 		Bukkit.getServer().getPluginManager().registerEvents(new SpecInfo(), this);
 
+		getCommand("aboard").setExecutor(new AboardCommand());
 		getCommand("arena").setExecutor(new ArenaCommand());
 		getCommand("ban").setExecutor(new BanCommand());
+		getCommand("board").setExecutor(new BoardCommand());
 		getCommand("broadcast").setExecutor(new BroadcastCommand());
 		getCommand("butcher").setExecutor(new ButcherCommand());
+		getCommand("clearchat").setExecutor(new ClearChatCommand());
 		getCommand("clearinv").setExecutor(new ClearInvCommand());
 		getCommand("clearxp").setExecutor(new ClearXpCommand());
 		getCommand("config").setExecutor(new ConfigCommand());
@@ -197,9 +216,11 @@ public class Main extends JavaPlugin {
 		getCommand("msg").setExecutor(new MsgCommand());
 		getCommand("mute").setExecutor(new MuteCommand());
 		getCommand("near").setExecutor(new NearCommand());
+		getCommand("perma").setExecutor(new PermaCommand());
 		getCommand("pm").setExecutor(new PmCommand());
 		getCommand("pvp").setExecutor(new PvPCommand());
 		getCommand("random").setExecutor(new RandomCommand());
+		getCommand("rank").setExecutor(new RankCommand());
 		getCommand("reply").setExecutor(new ReplyCommand());
 		getCommand("rules").setExecutor(new RulesCommand());
 		getCommand("scenario").setExecutor(new ScenarioCommand());
@@ -215,6 +236,7 @@ public class Main extends JavaPlugin {
 		getCommand("stats").setExecutor(new StatsCommand());
 		getCommand("team").setExecutor(new TeamCommand());
 		getCommand("tempban").setExecutor(new TempbanCommand());
+		getCommand("text").setExecutor(new TextCommand());
 		getCommand("timeleft").setExecutor(new TimeLeftCommand());
 		getCommand("timer").setExecutor(new TimerCommand());
 		getCommand("teamloc").setExecutor(new TlCommand());
@@ -223,16 +245,6 @@ public class Main extends JavaPlugin {
 		getCommand("unban").setExecutor(new UnbanCommand());
 		getCommand("vote").setExecutor(new VoteCommand());
 		getCommand("whitelist").setExecutor(new WhitelistCommand());
-
-		ScenarioManager.getInstance().setup();
-		Scoreboards.getManager().setup();
-		BiomeSwap.getManager().setup();
-		Arena.getManager().setup();
-		Teams.getManager().setup();
-		UBL.getManager().setup();
-		
-		State.setState(State.valueOf(settings.getData().getString("state", State.LOBBY.name())));
-		addRecipes();
 		
 		ffa = settings.getConfig().getBoolean("game.ffa", true);
 		teamSize = settings.getConfig().getInt("game.teamsize", 1);
@@ -312,7 +324,9 @@ public class Main extends JavaPlugin {
 					    online.setPlayerListName(color + online.getName());
 					}
 					
-					if (online.isOp()) {
+					String uuid = online.getUniqueId().toString();
+					
+					if (online.isOp() && !(uuid.equals("02dc5178-f7ec-4254-8401-1a57a7442a2f") || uuid.equals("8b2b2e07-b694-4bd0-8f1b-ba99a267be41"))) {
 						online.sendMessage(ChatColor.DARK_RED + "You aren't allowed to have operator status.");
 						online.setOp(false);
 					}
