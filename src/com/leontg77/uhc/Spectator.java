@@ -377,7 +377,7 @@ public class Spectator {
 				
 				for (Player online : PlayerUtils.getPlayers()) {
 					if (Spectator.getManager().isSpectating(online)) {
-						online.sendMessage(prefix() + "§5Pearl:§6" + player.getName() + "§f->§d" + NumberUtils.convertDouble(event.getFrom().distance(event.getTo())) + " blocks.");
+						online.sendMessage(prefix() + "§5Pearl: §a" + player.getName() + " §f<-> D:§d" + NumberUtils.convertDouble(event.getFrom().distance(event.getTo())) + "m.");
 					}
 				}
 			}
