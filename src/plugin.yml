@@ -12,7 +12,6 @@ commands:
     aliases: [a, p]
   ban:
     description: Ban a player.
-    aliases: [dq]
   board:
     description: Toggle the pregame board.
   broadcast:
