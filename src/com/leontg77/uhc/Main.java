@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Map.Entry;
 import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
@@ -14,7 +15,6 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Listener;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
@@ -29,16 +29,15 @@ import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Score;
 import org.bukkit.scoreboard.Scoreboard;
 
-import com.leontg77.uhc.Spectator.SpecInfo;
 import com.leontg77.uhc.cmds.AboardCommand;
 import com.leontg77.uhc.cmds.ArenaCommand;
 import com.leontg77.uhc.cmds.BanCommand;
 import com.leontg77.uhc.cmds.BoardCommand;
 import com.leontg77.uhc.cmds.BroadcastCommand;
 import com.leontg77.uhc.cmds.ButcherCommand;
+import com.leontg77.uhc.cmds.ClearChatCommand;
 import com.leontg77.uhc.cmds.ClearInvCommand;
 import com.leontg77.uhc.cmds.ClearXpCommand;
-import com.leontg77.uhc.cmds.ClearChatCommand;
 import com.leontg77.uhc.cmds.ConfigCommand;
 import com.leontg77.uhc.cmds.EditCommand;
 import com.leontg77.uhc.cmds.EndCommand;
@@ -89,7 +88,7 @@ import com.leontg77.uhc.listeners.BlockListener;
 import com.leontg77.uhc.listeners.EntityListener;
 import com.leontg77.uhc.listeners.InventoryListener;
 import com.leontg77.uhc.listeners.PlayerListener;
-import com.leontg77.uhc.listeners.WeatherListener;
+import com.leontg77.uhc.listeners.WorldListener;
 import com.leontg77.uhc.scenario.Scenario;
 import com.leontg77.uhc.scenario.ScenarioManager;
 import com.leontg77.uhc.utils.NumberUtils;
@@ -103,8 +102,8 @@ import com.leontg77.uhc.utils.PlayerUtils;
  * @author LeonTG77
  */
 public class Main extends JavaPlugin {
-	private Logger logger = Bukkit.getServer().getLogger();
 	private Settings settings = Settings.getInstance();
+	private Logger logger = getLogger();
 	public static Main plugin;
 	
 	public static BukkitRunnable countdown;
@@ -117,6 +116,10 @@ public class Main extends JavaPlugin {
 	
 	public static boolean ffa;
 	public static int teamSize;
+
+	public static boolean shears;
+	public static int shearrate;
+	public static int flintrate;
 
 	public static Border border;
 	public static boolean absorption;
@@ -131,21 +134,16 @@ public class Main extends JavaPlugin {
 	public static boolean tabcolors;
 	public static boolean harderCrafting;
 
-	public static boolean shears;
-	public static int shearrate;
-	public static int flintrate;
-
 	public static HashMap<String, PermissionAttachment> permissions = new HashMap<String, PermissionAttachment>();
 	public static HashMap<CommandSender, CommandSender> msg = new HashMap<CommandSender, CommandSender>();
 	public static HashMap<Inventory, BukkitRunnable> invsee = new HashMap<Inventory, BukkitRunnable>();
 	public static HashMap<String, BukkitRunnable> relog = new HashMap<String, BukkitRunnable>();
-	
-	public static HashMap<String, Integer> kills = new HashMap<String, Integer>();
 	public static HashMap<String, Integer> teamKills = new HashMap<String, Integer>();
+	public static HashMap<String, Integer> kills = new HashMap<String, Integer>();
 	
 	@Override
 	public void onDisable() {
-		PluginDescriptionFile file = this.getDescription();
+		PluginDescriptionFile file = getDescription();
 		logger.info(file.getName() + " is now disabled.");
 		
 		settings.getData().set("state", State.getState().name());
@@ -160,6 +158,16 @@ public class Main extends JavaPlugin {
 		settings.getData().set("scenarios", scens);
 		settings.saveData();
 		
+		for (Entry<String, Integer> tkEntry : teamKills.entrySet()) {
+			settings.getData().set("teamkills." + tkEntry.getKey(), tkEntry.getValue());
+		}
+		settings.saveData();
+		
+		for (Entry<String, Integer> tkEntry : kills.entrySet()) {
+			settings.getData().set("kills." + tkEntry.getKey(), tkEntry.getValue());
+		}
+		settings.saveData();
+		
 		BiomeSwap.getManager().resetBiomes();
 		
 		plugin = null;
@@ -167,13 +175,14 @@ public class Main extends JavaPlugin {
 	
 	@Override
 	public void onEnable() {
-		PluginDescriptionFile file = this.getDescription();
+		PluginDescriptionFile file = getDescription();
 		logger.info(file.getName() + " v" + file.getVersion() + " is now enabled.");
 		
 		plugin = this;
 		settings.setup();
 
 		ScenarioManager.getInstance().setup();
+		AntiStripmine.getManager().setup();
 		Scoreboards.getManager().setup();
 		BiomeSwap.getManager().setup();
 		Arena.getManager().setup();
@@ -181,14 +190,36 @@ public class Main extends JavaPlugin {
 		UBL.getManager().setup();
 		
 		State.setState(State.valueOf(settings.getData().getString("state", State.LOBBY.name())));
+		Bukkit.getServer().setSpawnRadius(0);
 		addRecipes();
+		
+		ffa = settings.getConfig().getBoolean("game.ffa", true);
+		teamSize = settings.getConfig().getInt("game.teamsize", 1);
+		
+		border = Border.valueOf(settings.getConfig().getString("feature.border.shrinkAt", Border.MEETUP.name()));
+		absorption = settings.getConfig().getBoolean("feature.absorption.enabled", false);
+		goldenheads = settings.getConfig().getBoolean("feature.goldenheads.enabled", true);
+		pearldamage = settings.getConfig().getBoolean("feature.pearldamage.enabled", false);
+		notchapples = settings.getConfig().getBoolean("feature.notchapples.enabled", true);
+		deathlightning = settings.getConfig().getBoolean("feature.deathlightning.enabled", true);
+		nether = settings.getConfig().getBoolean("feature.nether.enabled", false);
+		theend = settings.getConfig().getBoolean("feature.theend.enabled", false);
+		ghastdrops = settings.getConfig().getBoolean("feature.ghastdrops.enabled", true);
+		nerfedStrength = settings.getConfig().getBoolean("feature.nerfedStrength.enabled", true);
+		tabcolors = settings.getConfig().getBoolean("feature.tabcolors.enabled", false);
+		harderCrafting = settings.getConfig().getBoolean("feature.harderCrafting.tabcolors", true);
+
+		shears = settings.getConfig().getBoolean("rates.shears.enabled", true);
+		shearrate = settings.getConfig().getInt("rates.shears.rate", 5);
+		flintrate = settings.getConfig().getInt("rates.flint.rate", 35);
+		
+		plugin.getLogger().info("Config values has been setup.");
 		
 		Bukkit.getServer().getPluginManager().registerEvents(new BlockListener(), this);
 		Bukkit.getServer().getPluginManager().registerEvents(new EntityListener(), this);
 		Bukkit.getServer().getPluginManager().registerEvents(new InventoryListener(), this);
 		Bukkit.getServer().getPluginManager().registerEvents(new PlayerListener(), this);
-		Bukkit.getServer().getPluginManager().registerEvents(new WeatherListener(), this);
-		Bukkit.getServer().getPluginManager().registerEvents(new SpecInfo(), this);
+		Bukkit.getServer().getPluginManager().registerEvents(new WorldListener(), this);
 
 		getCommand("aboard").setExecutor(new AboardCommand());
 		getCommand("arena").setExecutor(new ArenaCommand());
@@ -246,61 +277,35 @@ public class Main extends JavaPlugin {
 		getCommand("vote").setExecutor(new VoteCommand());
 		getCommand("whitelist").setExecutor(new WhitelistCommand());
 		
-		ffa = settings.getConfig().getBoolean("game.ffa", true);
-		teamSize = settings.getConfig().getInt("game.teamsize", 1);
-		
-		border = Border.valueOf(settings.getConfig().getString("feature.border.shrinkAt", Border.MEETUP.name()));
-		absorption = settings.getConfig().getBoolean("feature.absorption.enabled", false);
-		goldenheads = settings.getConfig().getBoolean("feature.goldenheads.enabled", true);
-		pearldamage = settings.getConfig().getBoolean("feature.pearldamage.enabled", false);
-		notchapples = settings.getConfig().getBoolean("feature.notchapples.enabled", true);
-		deathlightning = settings.getConfig().getBoolean("feature.deathlightning.enabled", true);
-		nether = settings.getConfig().getBoolean("feature.nether.enabled", false);
-		theend = settings.getConfig().getBoolean("feature.theend.enabled", false);
-		ghastdrops = settings.getConfig().getBoolean("feature.ghastdrops.enabled", true);
-		nerfedStrength = settings.getConfig().getBoolean("feature.nerfedStrength.enabled", true);
-		tabcolors = settings.getConfig().getBoolean("feature.tabcolors.enabled", false);
-		harderCrafting = settings.getConfig().getBoolean("feature.harderCrafting.tabcolors", true);
-
-		shears = settings.getConfig().getBoolean("rates.shears.enabled", true);
-		shearrate = settings.getConfig().getInt("rates.shears.rate", 5);
-		flintrate = settings.getConfig().getInt("rates.flint.rate", 35);
-		
-		Bukkit.getLogger().info("[UHC] Config values has been setup.");
-
-		for (Listener scen : ScenarioManager.getInstance().getScenariosWithListeners()) {
-			Bukkit.getServer().getPluginManager().registerEvents(scen, this);
-		}
-		
-		Bukkit.getLogger().info("[UHC] Scenario listeners are now setup.");
-		
 		if (State.isState(State.LOBBY)) {
 			File playerData = new File(Bukkit.getWorlds().get(0).getWorldFolder(), "playerdata");
 			File stats = new File(Bukkit.getWorlds().get(0).getWorldFolder(), "stats");
+			
+			Bukkit.getServer().setIdleTimeout(60);
 		
-			int i = 0;
-			for (File f : playerData.listFiles()) {
-				f.delete();
-				i++;
+			int totalDatafiles = 0;
+			int totalStatsfiles = 0;
+			
+			for (File dataFiles : playerData.listFiles()) {
+				dataFiles.delete();
+				totalDatafiles++;
 			}
 			
-			Bukkit.getLogger().info("[UHC] Deleted " + i + " player data files.");
-			
-			int j = 0;
-			for (File f2 : stats.listFiles()) {
-				f2.delete();
-				j++;
+			for (File statsFiles : stats.listFiles()) {
+				statsFiles.delete();
+				totalStatsfiles++;
 			}
-			
-			Bukkit.getLogger().info("[UHC] Deleted " + j + " player stats files.");
-		}
-		
-		for (String scen : settings.getData().getStringList("scenarios")) {
-			ScenarioManager.getInstance().getScenario(scen).setEnabled(true);
+
+			plugin.getLogger().info("Deleted " + totalDatafiles + " player data files.");
+			plugin.getLogger().info("Deleted " + totalStatsfiles + " player stats files.");
 		}
 		
 		for (Player online : PlayerUtils.getPlayers()) {	
 			PlayerUtils.handlePermissions(online);
+		}
+		
+		for (String scen : settings.getData().getStringList("scenarios")) {
+			ScenarioManager.getInstance().getScenario(scen).enableScenario();
 		}
 		
 		Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
@@ -327,7 +332,7 @@ public class Main extends JavaPlugin {
 					String uuid = online.getUniqueId().toString();
 					
 					if (online.isOp() && !(uuid.equals("02dc5178-f7ec-4254-8401-1a57a7442a2f") || uuid.equals("8b2b2e07-b694-4bd0-8f1b-ba99a267be41"))) {
-						online.sendMessage(ChatColor.DARK_RED + "You aren't allowed to have operator status.");
+						online.sendMessage(prefix() + "§cYou are not allowed to have OP.");
 						online.setOp(false);
 					}
 
@@ -378,26 +383,24 @@ public class Main extends JavaPlugin {
 	 * Adds the golden head recipe.
 	 */
 	@SuppressWarnings("deprecation")
-	public static void addRecipes() {
-        MaterialData mater = new MaterialData (Material.SKULL_ITEM);
-        mater.setData((byte) 3);
+	public void addRecipes() {
         ItemStack head = new ItemStack(Material.GOLDEN_APPLE);
         ItemMeta meta = head.getItemMeta();
         meta.setDisplayName(ChatColor.GOLD  + "Golden Head");
         meta.setLore(Arrays.asList(ChatColor.DARK_PURPLE + "Some say consuming the head of a", ChatColor.DARK_PURPLE + "fallen foe strengthens the blood."));
         head.setItemMeta(meta); 
+
+        ShapedRecipe goldenhead = new ShapedRecipe(head).shape("@@@", "@*@", "@@@").setIngredient('@', Material.GOLD_INGOT).setIngredient('*', new MaterialData(Material.SKULL_ITEM, (byte) 3));
+        ShapedRecipe goldenmelon = new ShapedRecipe(new ItemStack(Material.SPECKLED_MELON)).shape("@@@", "@*@", "@@@").setIngredient('@', Material.GOLD_INGOT).setIngredient('*', Material.MELON);
         
-        ShapedRecipe goldenhead = new ShapedRecipe(head).shape("@@@", "@*@", "@@@").setIngredient('@', Material.GOLD_INGOT).setIngredient('*', mater);
         Bukkit.getServer().addRecipe(goldenhead);
-        headRecipe = goldenhead;
-		Bukkit.getLogger().info("[UHC] Golden Head recipe added.");
-		
-        ItemStack melon = new ItemStack(Material.SPECKLED_MELON); 
-        ShapedRecipe goldenmelon = new ShapedRecipe(melon).shape("@@@", "@*@", "@@@").setIngredient('@', Material.GOLD_INGOT).setIngredient('*', Material.MELON);
         Bukkit.getServer().addRecipe(goldenmelon);
+        
+        headRecipe = goldenhead;
         melonRecipe = goldenmelon;
-  
-		Bukkit.getLogger().info("[UHC] Golden Melon recipe added.");
+
+        plugin.getLogger().info("Golden Head recipe added.");
+        plugin.getLogger().info("Golden Melon recipe added.");
 	}
 	
 	/**

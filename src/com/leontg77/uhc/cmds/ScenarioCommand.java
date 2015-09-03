@@ -89,7 +89,7 @@ public class ScenarioCommand implements CommandExecutor, TabCompleter {
 				}
 
 				PlayerUtils.broadcast(Main.prefix() + ChatColor.GOLD + s.getName() + " §7has been enabled.");
-				s.setEnabled(true);
+				s.enableScenario();
 			} else if (args[0].equalsIgnoreCase("disable")) {
 				if (!sender.hasPermission("uhc.scenario")) {
 					if (ScenarioManager.getInstance().getEnabledScenarios().size() <= 0) {
@@ -117,7 +117,7 @@ public class ScenarioCommand implements CommandExecutor, TabCompleter {
 				}
 
 				PlayerUtils.broadcast(Main.prefix() + ChatColor.GOLD + s.getName() + " §7has been disabled.");
-				s.setEnabled(false);
+				s.disableScenario();
 			} else if (args[0].equalsIgnoreCase("list")) {
 				Scenario s = ScenarioManager.getInstance().getScenario(args[1]);
 				

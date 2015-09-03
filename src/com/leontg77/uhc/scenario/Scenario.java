@@ -1,5 +1,11 @@
 package com.leontg77.uhc.scenario;
 
+import org.bukkit.Bukkit;
+import org.bukkit.event.HandlerList;
+import org.bukkit.event.Listener;
+
+import com.leontg77.uhc.Main;
+
 /**
  * Scenario super class
  * @author LeonTG77
@@ -34,10 +40,36 @@ public abstract class Scenario {
 	}
 	
 	/**
+	 * Enable the scenario.
+	 * <p>
+	 * Registers listeners if needed.
+	 */
+	public void enableScenario() {
+		if (this instanceof Listener) {
+			Bukkit.getServer().getPluginManager().registerEvents((Listener) this, Main.plugin);
+		}
+		
+		setEnabled(true);
+	}
+	
+	/**
+	 * Disable the scenario.
+	 * <p>
+	 * Unregisters listeners if needed.
+	 */
+	public void disableScenario() {
+		if (this instanceof Listener) {
+			HandlerList.unregisterAll((Listener) this);
+		}
+		
+		setEnabled(false);
+	}
+	
+	/**
 	 * Sets the scenario to enable or disable
 	 * @param enable true to enable, false to disable.
 	 */
-	public abstract void setEnabled(boolean enable);
+	protected abstract void setEnabled(boolean enable);
 	
 	/**
 	 * Check if the scenario is enabled

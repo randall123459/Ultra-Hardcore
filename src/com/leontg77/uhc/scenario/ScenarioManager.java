@@ -5,9 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.bukkit.Bukkit;
-import org.bukkit.event.Listener;
-
+import com.leontg77.uhc.Main;
 import com.leontg77.uhc.scenario.types.Assassins;
 import com.leontg77.uhc.scenario.types.AssaultAndBattery;
 import com.leontg77.uhc.scenario.types.Astrophobia;
@@ -140,7 +138,7 @@ public class ScenarioManager {
 		scenarios.add(new TripleOres());
 		scenarios.add(new VengefulSpirits());
 		
-		Bukkit.getLogger().info("[UHC] All scenarios has been setup.");
+		Main.plugin.getLogger().info("All scenarios has been setup.");
 	}
 	
 	/**
@@ -163,22 +161,6 @@ public class ScenarioManager {
 	 */
 	public Set<Scenario> getScenarios() {
 		return scenarios;
-	}
-
-	/**
-	 * Get an array of all scenarios that implements listener.
-	 * @return the array of scenarios that implements listener.
-	 */
-	public Listener[] getScenariosWithListeners() {
-		ArrayList<Listener> list = new ArrayList<Listener>();
-		
-		for (Scenario s : scenarios) {
-			if (s instanceof Listener) {
-				list.add((Listener) s);
-			}
-		}
-		
-		return list.toArray(new Listener[list.size()]);
 	}
 
 	/**

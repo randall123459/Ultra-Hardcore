@@ -46,10 +46,6 @@ public class CutClean extends Scenario implements Listener {
 	
 	@EventHandler
 	public void onEntityDeath(EntityDeathEvent event) {
-		if (!isEnabled()) {
-			return;
-		}
-		
 		Entity entity = event.getEntity();
 		
 		if (entity instanceof Cow) {
@@ -78,10 +74,6 @@ public class CutClean extends Scenario implements Listener {
 	
 	@EventHandler(priority = EventPriority.LOW)
 	public void onBlockBreak(BlockBreakEvent event) {
-		if (!isEnabled()) {
-			return;
-		}
-		
 		Block block = event.getBlock();
 		
 		if (block.getType() == Material.IRON_ORE) {

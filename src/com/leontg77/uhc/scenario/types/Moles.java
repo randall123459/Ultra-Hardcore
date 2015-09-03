@@ -283,7 +283,7 @@ public class Moles extends Scenario implements Listener {
 		
 		Player player = (Player) event.getWhoClicked();
 		
-		if (event.getCurrentItem().getItemMeta().getDisplayName() != null && event.getCurrentItem().getItemMeta().getDisplayName().equals("§aThe Mobber")) {
+		if (event.getCurrentItem().hasItemMeta() && event.getCurrentItem().getItemMeta().hasDisplayName() && event.getCurrentItem().getItemMeta().getDisplayName().equals("§aThe Mobber")) {
 			ItemStack wool1 = new ItemStack (Material.MONSTER_EGG, 1, (short) 50);
 			
 			ItemStack wool2 = new ItemStack (Material.MONSTER_EGG, 2, (short) 51);
@@ -309,7 +309,7 @@ public class Moles extends Scenario implements Listener {
 			event.setCancelled(true);
 		}
 		
-		if (event.getCurrentItem().getItemMeta().getDisplayName() != null && event.getCurrentItem().getItemMeta().getDisplayName().equals("§aThe Potter")) {
+		if (event.getCurrentItem().hasItemMeta() && event.getCurrentItem().getItemMeta().hasDisplayName() && event.getCurrentItem().getItemMeta().getDisplayName().equals("§aThe Potter")) {
 			ItemStack wool1 = new ItemStack (Material.POTION, 1, (short) 16388);
 			
 			ItemStack wool2 = new ItemStack (Material.POTION, 1, (short) 16392);
@@ -335,7 +335,7 @@ public class Moles extends Scenario implements Listener {
 			event.setCancelled(true);
 		}
 
-		if (event.getCurrentItem().getItemMeta().getDisplayName() != null && event.getCurrentItem().getItemMeta().getDisplayName().equals("§aThe Pyro")) {
+		if (event.getCurrentItem().hasItemMeta() && event.getCurrentItem().getItemMeta().hasDisplayName() && event.getCurrentItem().getItemMeta().getDisplayName().equals("§aThe Pyro")) {
 			ItemStack wool1 = new ItemStack (Material.LAVA_BUCKET, 1);
 			
 			ItemStack wool2 = new ItemStack (Material.MONSTER_EGG, 5, (short) 61);
@@ -361,7 +361,7 @@ public class Moles extends Scenario implements Listener {
 			event.setCancelled(true);
 		}
 
-		if (event.getCurrentItem().getItemMeta().getDisplayName() != null && event.getCurrentItem().getItemMeta().getDisplayName().equals("§aThe Trapper")) {
+		if (event.getCurrentItem().hasItemMeta() && event.getCurrentItem().getItemMeta().hasDisplayName() && event.getCurrentItem().getItemMeta().getDisplayName().equals("§aThe Trapper")) {
 			ItemStack wool1 = new ItemStack (Material.TNT, 3);
 			
 			ItemStack wool2 = new ItemStack (Material.LAVA_BUCKET, 1);
@@ -395,7 +395,7 @@ public class Moles extends Scenario implements Listener {
 			event.setCancelled(true);
 		}
 
-		if (event.getCurrentItem().getItemMeta().getDisplayName() != null && event.getCurrentItem().getItemMeta().getDisplayName().equals("§aThe Troll")) {
+		if (event.getCurrentItem().hasItemMeta() && event.getCurrentItem().getItemMeta().hasDisplayName() && event.getCurrentItem().getItemMeta().getDisplayName().equals("§aThe Troll")) {
 			ItemStack wool1 = new ItemStack (Material.FIREWORK, 64);
 			
 			ItemStack wool2 = new ItemStack (Material.ENCHANTED_BOOK, 10);
@@ -421,7 +421,7 @@ public class Moles extends Scenario implements Listener {
 			event.setCancelled(true);
 		}
 
-		if (event.getCurrentItem().getItemMeta().getDisplayName() != null && event.getCurrentItem().getItemMeta().getDisplayName().equals("§aThe Fighter")) {
+		if (event.getCurrentItem().hasItemMeta() && event.getCurrentItem().getItemMeta().hasDisplayName() && event.getCurrentItem().getItemMeta().getDisplayName().equals("§aThe Fighter")) {
 			ItemStack wool1 = new ItemStack (Material.GOLDEN_APPLE);
 			
 			ItemStack wool2 = new ItemStack (Material.DIAMOND_SWORD);
@@ -466,17 +466,18 @@ public class Moles extends Scenario implements Listener {
 			World w = event.getBlock().getWorld();
 			event.getBlock().setType(Material.AIR);
 			event.getBlock().getState().update(true);
-			if (is.getItemMeta().getLore().contains("§5§oDrop Trap")) {
+			
+			if (is.hasItemMeta() && is.getItemMeta().hasLore() && is.getItemMeta().getLore().contains("§5§oDrop Trap")) {
 				createDropTrap(yaw, w, l);
-			} else if (is.getItemMeta().getLore().contains("§5§oLava Trap")) {
+			} else if (is.hasItemMeta() && is.getItemMeta().hasLore() && is.getItemMeta().getLore().contains("§5§oLava Trap")) {
 				createLavaTrap(yaw, w, l);
-			} else if (is.getItemMeta().getLore().contains("§5§oTNT Trap")) {
+			} else if (is.hasItemMeta() && is.getItemMeta().hasLore() && is.getItemMeta().getLore().contains("§5§oTNT Trap")) {
 				createTntTrap(yaw, w, l);
-			} else if (is.getItemMeta().getLore().contains("§5§oEscape Hatch")) {
+			} else if (is.hasItemMeta() && is.getItemMeta().hasLore() && is.getItemMeta().getLore().contains("§5§oEscape Hatch")) {
 				createEscapeHatch(yaw, w, l);
-			} else if (is.getItemMeta().getLore().contains("§5§oHole")) {
+			} else if (is.hasItemMeta() && is.getItemMeta().hasLore() && is.getItemMeta().getLore().contains("§5§oHole")) {
 				createHole(yaw, w, l);
-			} else if (is.getItemMeta().getLore().contains("§5§oStaircase")) {
+			} else if (is.hasItemMeta() && is.getItemMeta().hasLore() && is.getItemMeta().getLore().contains("§5§oStaircase")) {
 				createStaircase(yaw, w, l);
 			}
 		}

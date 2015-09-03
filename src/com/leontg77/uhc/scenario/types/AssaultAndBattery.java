@@ -5,6 +5,9 @@ import java.util.HashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
@@ -19,7 +22,7 @@ import com.leontg77.uhc.Teams;
 import com.leontg77.uhc.scenario.Scenario;
 import com.leontg77.uhc.utils.PlayerUtils;
 
-public class AssaultAndBattery extends Scenario implements Listener {
+public class AssaultAndBattery extends Scenario implements Listener, CommandExecutor {
 	private HashMap<String, Type> types = new HashMap<String, Type>();
 	private boolean enabled = false;
 
@@ -194,6 +197,76 @@ public class AssaultAndBattery extends Scenario implements Listener {
 			sender.sendMessage(Main.prefix() + "Batteries: " + battery.toString().trim());
 			sender.sendMessage(Main.prefix() + "Both: " + both.toString().trim());
 		}
+	}
+
+	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+		if (!(sender instanceof Player)) {
+			sender.sendMessage(ChatColor.RED + "Players can't use assassins commands.");
+		}
+		
+		if (cmd.getName().equalsIgnoreCase("class")) {
+			if (!isEnabled()) {
+				sender.sendMessage(ChatColor.RED + "AssaultAndBattery is not enabled.");
+				return true;
+			}
+			
+			if (!types.containsKey(sender.getName())) {
+				sender.sendMessage(ChatColor.RED + "Error while checking class.");
+				return true;
+			}
+			
+			switch (types.get(sender.getName())) {
+			case ASSAULT:
+				sender.sendMessage(Main.prefix() + "You are the assaulter, you can only do melee damage.");
+				break;
+			case BATTERY:
+				sender.sendMessage(Main.prefix() + "You are the battery, you can only do projectile damage.");
+				break;
+			case BOTH:
+				sender.sendMessage(Main.prefix() + "You are both, you can only do all types of damage.");
+				break;
+			}
+		}
+		
+		if (cmd.getName().equalsIgnoreCase("listclass")) {
+			if (!isEnabled()) {
+				sender.sendMessage(ChatColor.RED + "AssaultAndBattery is not enabled.");
+				return true;
+			}
+			
+			StringBuilder assault = new StringBuilder("");
+			StringBuilder battery = new StringBuilder("");
+			StringBuilder both = new StringBuilder("");
+			
+			for (String key : types.keySet()) {
+				if (types.get(key) == Type.ASSAULT) {
+					if (assault.length() > 0) {
+						assault.append("§7, §a");
+					}
+					
+					assault.append(ChatColor.GREEN + key);
+				} 
+				else if (types.get(key) == Type.BATTERY) {
+					if (battery.length() > 0) {
+						battery.append("§7, §a");
+					}
+					
+					battery.append(ChatColor.GREEN + key);
+				}
+				else {
+					if (both.length() > 0) {
+						both.append("§7, §a");
+					}
+					
+					both.append(ChatColor.GREEN + key);
+				}
+			}
+			
+			sender.sendMessage(Main.prefix() + "Assaulters: " + assault.toString().trim());
+			sender.sendMessage(Main.prefix() + "Batteries: " + battery.toString().trim());
+			sender.sendMessage(Main.prefix() + "Both: " + both.toString().trim());
+		}
+		return false;
 	}
 	
 	public enum Type {

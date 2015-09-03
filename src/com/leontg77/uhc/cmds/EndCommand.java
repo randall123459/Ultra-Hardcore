@@ -1,9 +1,11 @@
 package com.leontg77.uhc.cmds;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -12,10 +14,10 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.event.HandlerList;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scoreboard.Team;
 
 import com.leontg77.uhc.Data;
 import com.leontg77.uhc.Main;
@@ -37,7 +39,7 @@ public class EndCommand implements CommandExecutor {
 		if (cmd.getName().equalsIgnoreCase("end")) {
 			if (sender.hasPermission("uhc.end")) {
 				if (args.length < 2) {
-					sender.sendMessage(ChatColor.RED + "Usage: /end <kills> <winners...>");
+					sender.sendMessage(Main.prefix() + "Usage: /end <kills> <winners>");
 					return true;
 				}
 				
@@ -50,23 +52,24 @@ public class EndCommand implements CommandExecutor {
 					return true;
 				}
 				
+				HandlerList.unregisterAll(new SpecInfo());
+				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer cancel");
+				Spectator.getManager().spectators.clear();
+				SpecInfo.totalDiamonds.clear();
+				State.setState(State.LOBBY);
+				SpecInfo.totalGold.clear();
+				TeamCommand.sTeam.clear();
+				Main.teamKills.clear();
+				Main.relog.clear();
+				Main.kills.clear();
+				
 				ArrayList<String> winners = new ArrayList<String>();
+				StringBuilder win = new StringBuilder();
 				
 				for (int i = 1; i < args.length; i++) {
 					winners.add(args[i]);
 				}
-				
-				World w = Bukkit.getServer().getWorld(settings.getData().getString("spawn.world"));
-				double x = settings.getData().getDouble("spawn.x");
-				double y = settings.getData().getDouble("spawn.y");
-				double z = settings.getData().getDouble("spawn.z");
-				float yaw = (float) settings.getData().getDouble("spawn.yaw");
-				float pitch = (float) settings.getData().getDouble("spawn.pitch");
-				
-				Location loc = new Location(w, x, y, z, yaw, pitch);
-				
-				StringBuilder win = new StringBuilder();
-				
+
 				for (int i = 0; i < winners.size(); i++) {
 					if (win.length() > 0 && i == winners.size() - 1) {
 						win.append(" and ");
@@ -78,34 +81,27 @@ public class EndCommand implements CommandExecutor {
 					win.append(winners.get(i));
 				}
 				
-				Main.kills.clear();
-				Main.teamKills.clear();
-				TeamCommand.sTeam.clear();
-				
-				Team team = Scoreboards.getManager().board.getEntryTeam(args[0]);
-				
-				if (team != null) {
-					for (String entry : team.getEntries()) {
-						OfflinePlayer m8 = PlayerUtils.getOfflinePlayer(entry);
-						
-						Data data = Data.getFor(m8);
-						data.increaseStat("wins");
-					}
-				} else {
-					for (String entry : winners) {
-						OfflinePlayer m9 = PlayerUtils.getOfflinePlayer(entry);
-						
-						Data data = Data.getFor(m9);
-						data.increaseStat("wins");
-					}
-				}
-				
+				World w = Bukkit.getServer().getWorld(settings.getData().getString("spawn.world"));
+				double x = settings.getData().getDouble("spawn.x");
+				double y = settings.getData().getDouble("spawn.y");
+				double z = settings.getData().getDouble("spawn.z");
+				float yaw = (float) settings.getData().getDouble("spawn.yaw");
+				float pitch = (float) settings.getData().getDouble("spawn.pitch");
+
+				Location loc = new Location(w, x, y, z, yaw, pitch);
 				String host = GameUtils.getCurrentHost();
+				
+				for (String entry : winners) {
+					OfflinePlayer m9 = PlayerUtils.getOfflinePlayer(entry);
+					
+					Data data = Data.getFor(m9);
+					data.increaseStat("wins");
+				}
 				
 				if (settings.getHOF().getConfigurationSection(host) == null) {
 					settings.getHOF().set(host + "." + 1 + ".winners", winners);
 					settings.getHOF().set(host + "." + 1 + ".kills", kills);
-					settings.getHOF().set(host + "." + 1 + ".teamsize", GameUtils.getTeamSize());
+					settings.getHOF().set(host + "." + 1 + ".teamsize", GameUtils.getTeamSize().trim());
 					settings.getHOF().set(host + "." + 1 + ".scenarios", settings.getConfig().getString("game.scenarios"));
 					settings.saveHOF();
 				} else {
@@ -113,16 +109,27 @@ public class EndCommand implements CommandExecutor {
 				
 					settings.getHOF().set(host + "." + id + ".winners", winners);
 					settings.getHOF().set(host + "." + id + ".kills", kills);
-					settings.getHOF().set(host + "." + id + ".teamsize", GameUtils.getTeamSize());
+					settings.getHOF().set(host + "." + id + ".teamsize", GameUtils.getTeamSize().trim());
 					settings.getHOF().set(host + "." + id + ".scenarios", settings.getConfig().getString("game.scenarios"));
 					settings.saveHOF();
 				}
+
+				settings.getConfig().set("game.scenarios", "games scheduled");
+				settings.getConfig().set("game.teamsize", 0);
+				settings.getConfig().set("matchpost", "none");
+				settings.getConfig().set("game.ffa", true);
+				settings.saveConfig();
+
+				Bukkit.getServer().setIdleTimeout(60);
+				Main.teamSize = 0;
+				Main.ffa = true;
 				
 				for (Player online : PlayerUtils.getPlayers()) {
 					online.sendMessage(Main.prefix() + "The UHC has ended, the winners are " + win.toString().trim() + " with " + kills + " kills.");
 					if (Spectator.getManager().isSpectating(online)) {
 						Spectator.getManager().disableSpecmode(online, true);
 					}
+					
 					online.setMaxHealth(20.0);
 					online.setHealth(20.0);
 					online.setFireTicks(0);
@@ -134,6 +141,8 @@ public class EndCommand implements CommandExecutor {
 					online.getInventory().clear();
 					online.getInventory().setArmorContents(null);
 					online.setItemOnCursor(new ItemStack (Material.AIR));
+					online.setGameMode(GameMode.SURVIVAL);
+					
 					for (PotionEffect effect : online.getActivePotionEffects()) {
 						online.removePotionEffect(effect.getType());	
 					}
@@ -143,12 +152,12 @@ public class EndCommand implements CommandExecutor {
 					Scoreboards.getManager().resetScore(e);
 				}
 
-				for (OfflinePlayer whitelisted : Bukkit.getWhitelistedPlayers()) {
+				for (OfflinePlayer whitelisted : Bukkit.getServer().getWhitelistedPlayers()) {
        				whitelisted.setWhitelisted(false);
        			}
 
 				for (Scenario scen : ScenarioManager.getInstance().getEnabledScenarios()) {
-       				scen.setEnabled(false);
+       				scen.disableScenario();
        			}
 				
 				for (BukkitRunnable run : Main.relog.values()) {
@@ -162,15 +171,19 @@ public class EndCommand implements CommandExecutor {
 				try {
 					Bukkit.getServer().getScheduler().cancelTask(Runnables.task);;
 				} catch (Exception e) {
-					Bukkit.getLogger().warning("§cCould not cancel timer task.");
+					Bukkit.getLogger().warning("§cCould not cancel task " + Runnables.task);
 				}
-
-				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer cancel");
-				Spectator.getManager().spectators.clear();
-				SpecInfo.totalDiamonds.clear();
-				State.setState(State.LOBBY);
-				SpecInfo.totalGold.clear();
-				Main.relog.clear();
+				
+				File playerData = new File(Bukkit.getWorlds().get(0).getWorldFolder(), "playerdata");
+				File stats = new File(Bukkit.getWorlds().get(0).getWorldFolder(), "stats");
+				
+				for (File dataFiles : playerData.listFiles()) {
+					dataFiles.delete();
+				}
+				
+				for (File statsFiles : stats.listFiles()) {
+					statsFiles.delete();
+				}
 			} else {
 				sender.sendMessage(ChatColor.RED + "You do not have access to that command.");
 			}

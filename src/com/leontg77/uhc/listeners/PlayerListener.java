@@ -541,6 +541,18 @@ public class PlayerListener implements Listener {
 					PlayerUtils.broadcast("§3§lCo Host §8| §f" + (team != null ? (team.getName().equals("spec") ? player.getName() : team.getPrefix() + player.getName()) : player.getName()) + "§8 » §f" + event.getMessage());
 				}	
 			} 
+			if (player.getUniqueId().toString().equals("3be33527-be7e-4eb2-8b66-5b76d3d7ecdc")) {
+				if (settings.getConfig().getString("game.host").equals(player.getName())) {
+					PlayerUtils.broadcast("§4§lHost §8| §f" + (team != null ? (team.getName().equals("spec") ? player.getName() : team.getPrefix() + player.getName()) : player.getName()) + "§8 » §f" + event.getMessage());
+				} else {
+					if (Main.muted) {
+						player.sendMessage(Main.prefix() + "All players are muted.");
+						return;
+					}
+					
+					PlayerUtils.broadcast("§4§lCo Host §8| §f" + (team != null ? (team.getName().equals("spec") ? player.getName() : team.getPrefix() + player.getName()) : player.getName()) + "§8 » §f" + event.getMessage());
+				}	
+			}
 			else {
 				if (settings.getConfig().getString("game.host").equals(player.getName())) {
 					PlayerUtils.broadcast("§4§lHost §8| §f" + (team != null ? (team.getName().equals("spec") ? player.getName() : team.getPrefix() + player.getName()) : player.getName()) + "§8 » §f" + event.getMessage());
@@ -871,7 +883,7 @@ public class PlayerListener implements Listener {
     public void onPlayerInteract(PlayerInteractEvent event) {	
         Player player = event.getPlayer();
         
-        if ((event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.LEFT_CLICK_BLOCK) && player.getWorld().getName().equals("lobby") && !player.hasPermission("uhc.build")) {
+        if (player.getWorld().getName().equals("lobby") && !player.hasPermission("uhc.build") && (event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.LEFT_CLICK_BLOCK)) {
         	event.setCancelled(true);
         }
         
@@ -886,7 +898,7 @@ public class PlayerListener implements Listener {
 			} else if (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK) {
 				ArrayList<Player> players = new ArrayList<Player>();
 				for (Player online : PlayerUtils.getPlayers()) {
-					if (!Spectator.getManager().isSpectating(online)) {
+					if (!Spectator.getManager().isSpectating(online) && !online.getWorld().getName().equals("lobby")) {
 						players.add(online);
 					}
 				}

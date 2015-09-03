@@ -14,7 +14,7 @@ public class PermaCommand implements CommandExecutor {
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (cmd.getName().equalsIgnoreCase("perma")) {
 			if (!(sender instanceof Player)) {
-				sender.sendMessage(ChatColor.RED + "Only players can spawn texts.");
+				sender.sendMessage(ChatColor.RED + "Only players can enable permaday.");
 				return true;
 			}
 			

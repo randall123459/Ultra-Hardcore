@@ -20,6 +20,7 @@ import org.bukkit.scoreboard.Team;
 
 import com.leontg77.uhc.Main.Border;
 import com.leontg77.uhc.Main.State;
+import com.leontg77.uhc.Spectator.SpecInfo;
 import com.leontg77.uhc.cmds.TeamCommand;
 import com.leontg77.uhc.scenario.ScenarioManager;
 import com.leontg77.uhc.utils.PlayerUtils;
@@ -116,8 +117,12 @@ public class Runnables {
 					online.setFireTicks(0);
 					online.setLevel(0);
 					online.setExp(0);
-					
+
+					Bukkit.getServer().setIdleTimeout(10);
 					Main.kills.put(online.getName(), 0);
+					SpecInfo.totalDiamonds.clear();
+					SpecInfo.totalGold.clear();
+					Main.relog.clear();
 					
 					online.sendMessage(Main.prefix() + "Remember to read the match post: " + Settings.getInstance().getConfig().getString("matchpost"));
 					online.sendMessage(Main.prefix() + "If you have any questions, use /helpop.");
@@ -135,6 +140,7 @@ public class Runnables {
 				}
 				
 				timer();
+				Bukkit.getServer().getPluginManager().registerEvents(new SpecInfo(), Main.plugin);
 				State.setState(State.INGAME);
 				Scoreboards.getManager().setScore("§8» §a§lPvE", 1);
 				Scoreboards.getManager().setScore("§8» §a§lPvE", 0);

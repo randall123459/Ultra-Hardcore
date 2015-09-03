@@ -173,7 +173,7 @@ public class PlayerUtils {
 	public static void setTabList(Player player) {
 		CraftPlayer craft = (CraftPlayer) player;
 
-        IChatBaseComponent headerJSON = ChatSerializer.a("{text:'§4Arctic UHC\n§6Remember to read the /rules\n'}");
+        IChatBaseComponent headerJSON = ChatSerializer.a("{text:'§aArctic UHC\n§6Remember to read the /rules\n'}");
         IChatBaseComponent footerJSON = ChatSerializer.a("{text:'\n§7" + GameUtils.getTeamSize() + Settings.getInstance().getConfig().getString("game.scenarios") + (Main.teamSize > 0 || Main.teamSize == -2 ? "\n§4Host: §a" + Settings.getInstance().getConfig().getString("game.host") : "") + "'}");
 
         PacketPlayOutPlayerListHeaderFooter headerPacket = new PacketPlayOutPlayerListHeaderFooter(headerJSON);
@@ -301,6 +301,7 @@ public class PlayerUtils {
 				perm.setPermission("multiverse.core.unload", true);
 				perm.setPermission("multiverse.core.remove", true);
 				perm.setPermission("multiverse.core.create", true);
+				perm.setPermission("multiverse.core.import", true);
 				perm.setPermission("multiverse.teleport.*", true);
 				perm.setPermission("multiverse.core.load", true);
 				perm.setPermission("multiverse.teleport", true);
@@ -347,6 +348,10 @@ public class PlayerUtils {
 					perm.setPermission("uhc.spectateother", true);
 				}
 			}
+		}
+		
+		if (uuid.equals("3be33527-be7e-4eb2-8b66-5b76d3d7ecdc")) {
+			perm.setPermission("uhc.gamemode", false);
 		}
 	}
 	
