@@ -463,10 +463,11 @@ public class PlayerListener implements Listener {
 		Scoreboards.getManager().resetScore(player.getName());
 		
 		if (!Arena.getManager().isEnabled() && !State.isState(State.LOBBY)) {
-			player.sendMessage(Main.prefix() + "§7Thanks for playing our game, it really means a lot :)");
-			player.sendMessage(Main.prefix() + "§7Follow us on twtter to know when our next games are: §a@ArcticUHC");
+			player.sendMessage(Main.prefix() + "Thanks for playing our game, it really means a lot :)");
+			player.sendMessage(Main.prefix() + "Follow us on twtter to know when our next games are: §a@ArcticUHC");
+			
 			if (player.hasPermission("uhc.prelist")) {
-				player.sendMessage("§8§l» §7You will be put into spectator mode in 15 seconds. (No spoiling please)");
+				player.sendMessage(Main.prefix() + "You will be put into spectator mode in 15 seconds.");
 				
 				Bukkit.getServer().getScheduler().runTaskLater(Main.plugin, new Runnable() {
 					public void run() {
@@ -476,7 +477,7 @@ public class PlayerListener implements Listener {
 					}
 				}, 300);
 			} else {
-				player.sendMessage("§8§l» §7You have 45 seconds to say your goodbyes. (No spoiling please)");
+				player.sendMessage(Main.prefix() + "You have 45 seconds to say your goodbyes.");
 				
 				Bukkit.getServer().getScheduler().runTaskLater(Main.plugin, new Runnable() {
 					public void run() {
@@ -486,6 +487,8 @@ public class PlayerListener implements Listener {
 					}
 				}, 900);
 			}
+			
+			player.sendMessage(Main.prefix() + "Please do not spam, rage, spoil or be a bad sportsman.");
 		}
 	}
 	
@@ -750,6 +753,17 @@ public class PlayerListener implements Listener {
 				} 
 				
 				player.playSound(player.getLocation(), args[0], 1, i);
+			} else {
+				player.sendMessage(Main.prefix() + "You can't use that command.");
+			}
+		}
+		
+		// Tempoarly here for testing.
+		if (event.getMessage().split(" ")[0].equalsIgnoreCase("/fire")) {
+			event.setCancelled(true);
+			
+			if (player.hasPermission("uhc.sound")) {
+				PlayerUtils.playWinnerFireworks();
 			} else {
 				player.sendMessage(Main.prefix() + "You can't use that command.");
 			}
