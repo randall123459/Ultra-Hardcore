@@ -56,6 +56,7 @@ public class EndCommand implements CommandExecutor {
 				HandlerList.unregisterAll(new SpecInfo());
 				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer cancel");
 				Spectator.getManager().spectators.clear();
+				PlayerUtils.playWinnerFireworks();
 				SpecInfo.totalDiamonds.clear();
 				Parkour.getManager().setup();
 				State.setState(State.LOBBY);
@@ -66,21 +67,9 @@ public class EndCommand implements CommandExecutor {
 				Main.kills.clear();
 				
 				ArrayList<String> winners = new ArrayList<String>();
-				StringBuilder win = new StringBuilder();
 				
 				for (int i = 1; i < args.length; i++) {
 					winners.add(args[i]);
-				}
-
-				for (int i = 0; i < winners.size(); i++) {
-					if (win.length() > 0 && i == winners.size() - 1) {
-						win.append(" and ");
-					}
-					else if (win.length() > 0 && win.length() != winners.size()) {
-						win.append(", ");
-					}
-					
-					win.append(winners.get(i));
 				}
 				
 				World w = Bukkit.getServer().getWorld(settings.getData().getString("spawn.world"));
@@ -93,14 +82,23 @@ public class EndCommand implements CommandExecutor {
 				Location loc = new Location(w, x, y, z, yaw, pitch);
 				String host = GameUtils.getCurrentHost();
 				
+				PlayerUtils.broadcast(Main.prefix() + "The UHC game has ended, Thanks for playing!");
+				PlayerUtils.broadcast(" ");
+				PlayerUtils.broadcast(Main.prefix() + "The winners are:");
+				
 				for (String entry : winners) {
 					OfflinePlayer m9 = PlayerUtils.getOfflinePlayer(entry);
 					
 					Data data = Data.getFor(m9);
 					data.increaseStat("wins");
+					PlayerUtils.broadcast("§8» §7" + entry);
 				}
 				
-				if (settings.getHOF().getConfigurationSection(host) == null) {
+				PlayerUtils.broadcast(" ");
+				PlayerUtils.broadcast(Main.prefix() + "With §a" + kills + "§7 kills.");
+				PlayerUtils.broadcast(Main.prefix() + "Congratz on the win!");
+				
+				if (settings.getHOF().getConfigurationSection(host).equals(null)) {
 					settings.getHOF().set(host + "." + 1 + ".winners", winners);
 					settings.getHOF().set(host + "." + 1 + ".kills", kills);
 					settings.getHOF().set(host + "." + 1 + ".teamsize", GameUtils.getTeamSize().trim());
@@ -127,7 +125,6 @@ public class EndCommand implements CommandExecutor {
 				Main.ffa = true;
 				
 				for (Player online : PlayerUtils.getPlayers()) {
-					online.sendMessage(Main.prefix() + "The UHC has ended, the winners are " + win.toString().trim() + " with " + kills + " kills.");
 					if (Spectator.getManager().isSpectating(online)) {
 						Spectator.getManager().disableSpecmode(online, true);
 					}
