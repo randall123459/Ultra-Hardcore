@@ -784,7 +784,7 @@ public class Spectator {
 								
 								for (Player online : PlayerUtils.getPlayers()) {
 									if (Spectator.getManager().isSpectating(online.getName())) {
-										online.sendMessage(prefix() + "§5PvE§f:§c" + player.getName() + "§f<-§d" + entity.getType().name().substring(0, 1).toUpperCase() + entity.getType().name().substring(1).toLowerCase().replaceAll("_", "") + " §f[§c" + NumberUtils.convertDouble((player.getHealth() / 2)) + "§f] [§6" + NumberUtils.convertDouble((damage / 2)) + "§f]");
+										online.sendMessage(prefix() + "§5PvE§f:§c" + player.getName() + "§f<-§d" + NameUtils.getMobName(entity) + " §f[§c" + NumberUtils.convertDouble((player.getHealth() / 2)) + "§f] [§6" + NumberUtils.convertDouble((damage / 2)) + "§f]");
 									}
 								}
 								return;
@@ -804,7 +804,7 @@ public class Spectator {
 						
 						for (Player online : PlayerUtils.getPlayers()) {
 							if (Spectator.getManager().isSpectating(online.getName())) {
-								online.sendMessage(prefix() + "§5PvE§f:§c" + player.getName() + "§f<-§d" + e.getType().name().substring(0, 1).toUpperCase() + e.getType().name().substring(1).toLowerCase().replaceAll("_", "") + " §f[§c" + NumberUtils.convertDouble((player.getHealth() / 2)) + "§f] [§6" + NumberUtils.convertDouble((damage / 2)) + "§f]");
+								online.sendMessage(prefix() + "§5PvE§f:§c" + player.getName() + "§f<-§d" + NameUtils.getMobName(e) + " §f[§c" + NumberUtils.convertDouble((player.getHealth() / 2)) + "§f] [§6" + NumberUtils.convertDouble((damage / 2)) + "§f]");
 							}
 						}
 						return;
@@ -826,11 +826,6 @@ public class Spectator {
 			}
 			
 			final Block block = event.getDamager();
-			
-			if (block == null) {
-				return;
-			}
-			
 			final double olddamage = player.getHealth();
 			
 			new BukkitRunnable() {
@@ -843,7 +838,7 @@ public class Spectator {
 					
 					for (Player online : PlayerUtils.getPlayers()) {
 						if (Spectator.getManager().isSpectating(online.getName())) {
-							online.sendMessage(prefix() + "§5PvE§f:§c" + player.getName() + "§f<-§d" + block.getType().name().toUpperCase().substring(0, 1) + block.getType().name().toLowerCase().substring(1).replaceAll("_", "") + " §f[§c" + NumberUtils.convertDouble((player.getHealth() / 2)) + "§f] [§6" + NumberUtils.convertDouble((damage / 2)) + "§f]");
+							online.sendMessage(prefix() + "§5PvE§f:§c" + player.getName() + "§f<-§d" + NameUtils.fixString(block.getType().name(), true) + " §f[§c" + NumberUtils.convertDouble((player.getHealth() / 2)) + "§f] [§6" + NumberUtils.convertDouble((damage / 2)) + "§f]");
 						}
 					}
 				}
