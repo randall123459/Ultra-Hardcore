@@ -51,6 +51,7 @@ import com.leontg77.uhc.cmds.HelpopCommand;
 import com.leontg77.uhc.cmds.InvseeCommand;
 import com.leontg77.uhc.cmds.KickCommand;
 import com.leontg77.uhc.cmds.ListCommand;
+import com.leontg77.uhc.cmds.MatchpostCommand;
 import com.leontg77.uhc.cmds.MsCommand;
 import com.leontg77.uhc.cmds.MsgCommand;
 import com.leontg77.uhc.cmds.MuteCommand;
@@ -184,6 +185,7 @@ public class Main extends JavaPlugin {
 
 		ScenarioManager.getInstance().setup();
 		AntiStripmine.getManager().setup();
+		Fireworks.getRandomizer().setup();
 		Scoreboards.getManager().setup();
 		BiomeSwap.getManager().setup();
 		Parkour.getManager().setup();
@@ -192,7 +194,6 @@ public class Main extends JavaPlugin {
 		UBL.getManager().setup();
 		
 		State.setState(State.valueOf(settings.getData().getString("state", State.LOBBY.name())));
-		Bukkit.getServer().setSpawnRadius(0);
 		addRecipes();
 		
 		ffa = settings.getConfig().getBoolean("game.ffa", true);
@@ -245,6 +246,7 @@ public class Main extends JavaPlugin {
 		getCommand("invsee").setExecutor(new InvseeCommand());
 		getCommand("kick").setExecutor(new KickCommand());
 		getCommand("list").setExecutor(new ListCommand());
+		getCommand("matchpost").setExecutor(new MatchpostCommand());
 		getCommand("ms").setExecutor(new MsCommand());
 		getCommand("msg").setExecutor(new MsgCommand());
 		getCommand("mute").setExecutor(new MuteCommand());
@@ -363,6 +365,10 @@ public class Main extends JavaPlugin {
 					if (world.getName().equals("lobby") || world.getName().equals("arena")) {
 						if (world.getDifficulty() != Difficulty.PEACEFUL) {
 							world.setDifficulty(Difficulty.PEACEFUL);
+						}
+						
+						if (world.getName().equals("lobby") && world.getTime() != 18000) {
+							world.setTime(18000);
 						}
 					} else {
 						if (world.getDifficulty() != Difficulty.HARD) {
