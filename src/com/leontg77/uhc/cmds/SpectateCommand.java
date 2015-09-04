@@ -1,6 +1,7 @@
 package com.leontg77.uhc.cmds;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.bukkit.Bukkit;
@@ -11,6 +12,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
+import com.leontg77.uhc.Main;
 import com.leontg77.uhc.Spectator;
 import com.leontg77.uhc.utils.PlayerUtils;
 
@@ -20,7 +22,7 @@ public class SpectateCommand implements CommandExecutor, TabCompleter {
 		if (cmd.getName().equalsIgnoreCase("spectate")) {
 			if (sender.hasPermission("uhc.spectate")) {
 				if (args.length == 0) {
-					sender.sendMessage(ChatColor.RED + "Usage: /spec <on|off|toggle> [player]");
+					sender.sendMessage(ChatColor.RED + "Usage: /spec <on|off|toggle|list> [player]");
 		    		return true;
 				}
 				
@@ -41,8 +43,71 @@ public class SpectateCommand implements CommandExecutor, TabCompleter {
 							Spectator.getManager().disableSpecmode(player, false);
 							return true;
 						}
+						
+						if (args[0].equalsIgnoreCase("list")) {
+							if (Spectator.getManager().spectators.size() < 1) {
+						    	sender.sendMessage(Main.prefix() + "There are no spectators.");
+								return true;
+							}
+							
+							ArrayList<String> players = new ArrayList<String>(Spectator.getManager().spectators);
+							Collections.shuffle(players);
+							
+					    	StringBuilder list = new StringBuilder();
+					    	int p = 1;
+					    		
+					    	for (int i = 0; i < players.size(); i++) {
+					    		if (list.length() > 0) {
+									if (p == players.size()) {
+										list.append(" §8and §a");
+									} else {
+										list.append("§8, §a");
+									}
+								}
+								
+					    		String s = players.get(i);
+								list.append(Bukkit.getPlayer(s) == null ? "§c" + s : "§a" + s);
+								p++;
+							}
+					    			
+					    	sender.sendMessage(Main.prefix() + "There are §6" + (p - 1) + " §7spectators.");
+					    	sender.sendMessage("§8» §7Spectators§8: §a" + list.toString() + "§8.");
+							return true;
+						}
+						
 						player.sendMessage(ChatColor.RED + "Usage: /spec <on|off|toggle> [player]");
 					} else {
+						if (args[0].equalsIgnoreCase("list")) {
+							if (Spectator.getManager().spectators.size() < 1) {
+						    	sender.sendMessage(Main.prefix() + "There are no spectators.");
+								return true;
+							}
+							
+							ArrayList<String> players = new ArrayList<String>(Spectator.getManager().spectators);
+							Collections.shuffle(players);
+							
+					    	StringBuilder list = new StringBuilder();
+					    	int p = 1;
+					    		
+					    	for (int i = 0; i < players.size(); i++) {
+					    		if (list.length() > 0) {
+									if (p == players.size()) {
+										list.append(" §8and §a");
+									} else {
+										list.append("§8, §a");
+									}
+								}
+								
+					    		String s = players.get(i);
+								list.append(Bukkit.getPlayer(s) == null ? "§c" + s : "§a" + s);
+								p++;
+							}
+					    			
+					    	sender.sendMessage(Main.prefix() + "There are §6" + (p - 1) + " §7spectators.");
+					    	sender.sendMessage("§8» §7Spectators§8: §a" + list.toString() + "§8.");
+							return true;
+						}
+						
 						sender.sendMessage(ChatColor.RED + "Only players can spectate.");
 					}
 		    		return true;
@@ -70,6 +135,38 @@ public class SpectateCommand implements CommandExecutor, TabCompleter {
 						Spectator.getManager().disableSpecmode(target, false);
 			    		return true;
 					}
+					
+					if (args[0].equalsIgnoreCase("list")) {
+						if (Spectator.getManager().spectators.size() < 1) {
+					    	sender.sendMessage(Main.prefix() + "There are no spectators.");
+							return true;
+						}
+						
+						ArrayList<String> players = new ArrayList<String>(Spectator.getManager().spectators);
+						Collections.shuffle(players);
+						
+				    	StringBuilder list = new StringBuilder();
+				    	int p = 1;
+				    		
+				    	for (int i = 0; i < players.size(); i++) {
+				    		if (list.length() > 0) {
+								if (p == players.size()) {
+									list.append(" §8and §a");
+								} else {
+									list.append("§8, §a");
+								}
+							}
+							
+				    		String s = players.get(i);
+							list.append(Bukkit.getPlayer(s) == null ? "§c" + s : "§a" + s);
+							p++;
+						}
+				    			
+				    	sender.sendMessage(Main.prefix() + "There are §6" + (p - 1) + " §7spectators.");
+				    	sender.sendMessage("§8» §7Spectators§8: §a" + list.toString() + "§8.");
+						return true;
+					}
+					
 					sender.sendMessage(ChatColor.RED + "Usage: /spec <on|off|toggle> [player]");
 				} else {
 					if (sender instanceof Player) {
@@ -88,8 +185,70 @@ public class SpectateCommand implements CommandExecutor, TabCompleter {
 							Spectator.getManager().disableSpecmode(player, false);
 							return true;
 						}
+						
+						if (args[0].equalsIgnoreCase("list")) {
+							if (Spectator.getManager().spectators.size() < 1) {
+						    	sender.sendMessage(Main.prefix() + "There are no spectators.");
+								return true;
+							}
+							
+							ArrayList<String> players = new ArrayList<String>(Spectator.getManager().spectators);
+							Collections.shuffle(players);
+							
+					    	StringBuilder list = new StringBuilder();
+					    	int p = 1;
+					    		
+					    	for (int i = 0; i < players.size(); i++) {
+					    		if (list.length() > 0) {
+									if (p == players.size()) {
+										list.append(" §8and §a");
+									} else {
+										list.append("§8, §a");
+									}
+								}
+								
+					    		String s = players.get(i);
+								list.append(Bukkit.getPlayer(s) == null ? "§c" + s : "§a" + s);
+								p++;
+							}
+					    			
+					    	sender.sendMessage(Main.prefix() + "There are §6" + (p - 1) + " §7spectators.");
+					    	sender.sendMessage("§8» §7Spectators§8: §a" + list.toString() + "§8.");
+							return true;
+						}
 						player.sendMessage(ChatColor.RED + "Usage: /spec <on|off|toggle> [player]");
 					} else {
+						if (args[0].equalsIgnoreCase("list")) {
+							if (Spectator.getManager().spectators.size() < 1) {
+						    	sender.sendMessage(Main.prefix() + "There are no spectators.");
+								return true;
+							}
+							
+							ArrayList<String> players = new ArrayList<String>(Spectator.getManager().spectators);
+							Collections.shuffle(players);
+							
+					    	StringBuilder list = new StringBuilder();
+					    	int p = 1;
+					    		
+					    	for (int i = 0; i < players.size(); i++) {
+					    		if (list.length() > 0) {
+									if (p == players.size()) {
+										list.append(" §8and §a");
+									} else {
+										list.append("§8, §a");
+									}
+								}
+								
+					    		String s = players.get(i);
+								list.append(Bukkit.getPlayer(s) == null ? "§c" + s : "§a" + s);
+								p++;
+							}
+					    			
+					    	sender.sendMessage(Main.prefix() + "There are §6" + (p - 1) + " §7spectators.");
+					    	sender.sendMessage("§8» §7Spectators§8: §a" + list.toString() + "§8.");
+							return true;
+						}
+						
 						sender.sendMessage(ChatColor.RED + "Only players can spectate.");
 					}
 				}
