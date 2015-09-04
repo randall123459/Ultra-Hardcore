@@ -70,6 +70,7 @@ import com.leontg77.uhc.Data.Rank;
 import com.leontg77.uhc.InvGUI;
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.Main.State;
+import com.leontg77.uhc.Parkour;
 import com.leontg77.uhc.Scoreboards;
 import com.leontg77.uhc.Settings;
 import com.leontg77.uhc.Spectator;
@@ -541,7 +542,7 @@ public class PlayerListener implements Listener {
 					PlayerUtils.broadcast("§3§lCo Host §8| §f" + (team != null ? (team.getName().equals("spec") ? player.getName() : team.getPrefix() + player.getName()) : player.getName()) + "§8 » §f" + event.getMessage());
 				}	
 			} 
-			if (player.getUniqueId().toString().equals("3be33527-be7e-4eb2-8b66-5b76d3d7ecdc")) {
+			else if (player.getUniqueId().toString().equals("3be33527-be7e-4eb2-8b66-5b76d3d7ecdc")) {
 				if (settings.getConfig().getString("game.host").equals(player.getName())) {
 					PlayerUtils.broadcast("§4§lHost §8| §f" + (team != null ? (team.getName().equals("spec") ? player.getName() : team.getPrefix() + player.getName()) : player.getName()) + "§8 » §f" + event.getMessage());
 				} else {
@@ -856,15 +857,34 @@ public class PlayerListener implements Listener {
 	public void onPlayerMove(PlayerMoveEvent event) {
 		Player player = event.getPlayer();
 		
+		World w = Bukkit.getServer().getWorld(settings.getData().getString("spawn.world"));
+		double x = settings.getData().getDouble("spawn.x");
+		double y = settings.getData().getDouble("spawn.y");
+		double z = settings.getData().getDouble("spawn.z");
+		float yaw = (float) settings.getData().getDouble("spawn.yaw");
+		float pitch = (float) settings.getData().getDouble("spawn.pitch");
+		
+		Location loc = new Location(w, x, y, z, yaw, pitch);
+		
 		if (event.getTo().getWorld().getName().equals("lobby") && event.getTo().getY() <= 20) {
-			World w = Bukkit.getServer().getWorld(settings.getData().getString("spawn.world"));
-			double x = settings.getData().getDouble("spawn.x");
-			double y = settings.getData().getDouble("spawn.y");
-			double z = settings.getData().getDouble("spawn.z");
-			float yaw = (float) settings.getData().getDouble("spawn.yaw");
-			float pitch = (float) settings.getData().getDouble("spawn.pitch");
+			if (Parkour.getManager().parkourPlayers.contains(player)) {
+				if (Parkour.getManager().checkpoint.containsKey(player) && Parkour.getManager().checkpoint.get(player) == 1) {
+					player.teleport(Parkour.getManager().point1);
+					return;
+				}
+				else if (Parkour.getManager().checkpoint.containsKey(player) && Parkour.getManager().checkpoint.get(player) == 2) {
+					player.teleport(Parkour.getManager().point2);
+					return;
+				}
+				else if (Parkour.getManager().checkpoint.containsKey(player) && Parkour.getManager().checkpoint.get(player) == 3) {
+					player.teleport(Parkour.getManager().point3);
+					return;
+				}
+				
+				player.teleport(loc);
+				return;
+			}
 			
-			Location loc = new Location(w, x, y, z, yaw, pitch);
 			player.teleport(loc);
 		}
 	}

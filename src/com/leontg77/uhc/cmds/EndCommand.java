@@ -22,6 +22,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import com.leontg77.uhc.Data;
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.Main.State;
+import com.leontg77.uhc.Parkour;
 import com.leontg77.uhc.Runnables;
 import com.leontg77.uhc.Scoreboards;
 import com.leontg77.uhc.Settings;
@@ -56,6 +57,7 @@ public class EndCommand implements CommandExecutor {
 				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer cancel");
 				Spectator.getManager().spectators.clear();
 				SpecInfo.totalDiamonds.clear();
+				Parkour.getManager().setup();
 				State.setState(State.LOBBY);
 				SpecInfo.totalGold.clear();
 				TeamCommand.sTeam.clear();

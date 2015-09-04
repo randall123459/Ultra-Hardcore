@@ -19,6 +19,7 @@ import org.bukkit.scoreboard.Team;
 
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.Main.State;
+import com.leontg77.uhc.Parkour;
 import com.leontg77.uhc.Scoreboards;
 import com.leontg77.uhc.Settings;
 import com.leontg77.uhc.Teams;
@@ -86,6 +87,8 @@ public class SpreadCommand implements CommandExecutor {
 					for (String e : Scoreboards.getManager().kills.getScoreboard().getEntries()) {
 						Scoreboards.getManager().resetScore(e);
 					}
+					
+					Parkour.getManager().shutdown();
 					Main.board = false;
 					Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer cancel");
 					
