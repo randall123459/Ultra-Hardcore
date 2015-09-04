@@ -4,13 +4,15 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.inventory.ItemStack;
 
+import com.leontg77.uhc.Main;
 import com.leontg77.uhc.scenario.Scenario;
 
 public class Backpacks extends Scenario implements Listener {
@@ -29,21 +31,6 @@ public class Backpacks extends Scenario implements Listener {
 	}
 	
 	@EventHandler
-	public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
-		Player player = event.getPlayer();
-		
-		if (event.getMessage().split(" ")[0].equalsIgnoreCase("/bp")) {
-			event.setCancelled(true);
-			if (!isEnabled()) {
-				player.sendMessage(ChatColor.RED + "\"Backbacks\" is not enabled.");
-				return;
-			}
-			
-			player.openInventory(player.getEnderChest());
-		}
-	}
-	
-	@EventHandler
 	public void onPlayerDeath(PlayerDeathEvent event) {
 		if (!isEnabled()) {
 			return;
@@ -56,6 +43,7 @@ public class Backpacks extends Scenario implements Listener {
 		block.getState().update();
 		
 		Chest chest = (Chest) block.getState();
+		
 		for (ItemStack item : player.getEnderChest().getContents()) {
 			if (item == null) {
 				continue;
@@ -63,6 +51,26 @@ public class Backpacks extends Scenario implements Listener {
 			
 			chest.getInventory().addItem(item);
 		}
+		
 		player.getEnderChest().clear();
+	}
+	
+	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+		if (!(sender instanceof Player)) {
+			sender.sendMessage(ChatColor.RED + "Only players can use Backpack commands.");
+			return true;
+		}
+		
+		Player player = (Player) sender;
+		
+		if (cmd.getName().equalsIgnoreCase("bp")) {
+			if (!isEnabled()) {
+				player.sendMessage(Main.prefix() + "\"Backbacks\" is not enabled.");
+				return true;
+			}
+
+			player.openInventory(player.getEnderChest());
+		}
+		return true;
 	}
 }
