@@ -596,10 +596,10 @@ public class Spectator {
 				return;
 			}
 			
-			if (event instanceof EntityDamageByBlockEvent) {
+			/*if (event instanceof EntityDamageByBlockEvent) {
 				onDamageByBlock(player, (EntityDamageByBlockEvent) event);
 				return;
-			}
+			}*/
 			
 			final DamageCause cause = event.getCause();
 			final double olddamage = player.getHealth();
@@ -820,6 +820,7 @@ public class Spectator {
 			}.runTaskLater(Main.plugin, 1);
 		}
 
+		@SuppressWarnings("unused")
 		private void onDamageByBlock(final Player player, final EntityDamageByBlockEvent event) {
 			if (Spectator.getManager().isSpectating(player.getName())) {
 				return;
