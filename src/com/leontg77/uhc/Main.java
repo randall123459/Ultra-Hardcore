@@ -91,6 +91,7 @@ import com.leontg77.uhc.listeners.PlayerListener;
 import com.leontg77.uhc.listeners.WorldListener;
 import com.leontg77.uhc.scenario.Scenario;
 import com.leontg77.uhc.scenario.ScenarioManager;
+import com.leontg77.uhc.scenario.types.AssaultAndBattery;
 import com.leontg77.uhc.utils.NumberUtils;
 import com.leontg77.uhc.utils.PlayerUtils;
 
@@ -185,6 +186,7 @@ public class Main extends JavaPlugin {
 		AntiStripmine.getManager().setup();
 		Scoreboards.getManager().setup();
 		BiomeSwap.getManager().setup();
+		Parkour.getManager().setup();
 		Arena.getManager().setup();
 		Teams.getManager().setup();
 		UBL.getManager().setup();
@@ -276,6 +278,9 @@ public class Main extends JavaPlugin {
 		getCommand("unban").setExecutor(new UnbanCommand());
 		getCommand("vote").setExecutor(new VoteCommand());
 		getCommand("whitelist").setExecutor(new WhitelistCommand());
+		
+		getCommand("class").setExecutor(new AssaultAndBattery());
+		getCommand("listclass").setExecutor(new AssaultAndBattery());
 		
 		if (State.isState(State.LOBBY)) {
 			File playerData = new File(Bukkit.getWorlds().get(0).getWorldFolder(), "playerdata");
