@@ -20,9 +20,11 @@ import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.PermissionAttachment;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import com.leontg77.uhc.Data;
 import com.leontg77.uhc.Data.Rank;
+import com.leontg77.uhc.Fireworks;
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.Settings;
 import com.leontg77.uhc.Spectator;
@@ -154,6 +156,30 @@ public class PlayerUtils {
 		return list;
 	}
 	
+	public static void playWinnerFireworks() {
+		final Location center = new Location(Bukkit.getWorld("lobby"), 0.5, 33.5, 0.5);
+		
+		new BukkitRunnable() {
+			int i = 0;
+			
+			public void run() {
+				Fireworks.getRandomizer().launchRandomFirework(center.clone().add(10, 0, 10));
+				Fireworks.getRandomizer().launchRandomFirework(center.clone().add(-10, 0, -10));
+				Fireworks.getRandomizer().launchRandomFirework(center.clone().add(10, 0, -10));
+				Fireworks.getRandomizer().launchRandomFirework(center.clone().add(-10, 0, 10));
+				Fireworks.getRandomizer().launchRandomFirework(center.clone().add(15, 0, 0));
+				Fireworks.getRandomizer().launchRandomFirework(center.clone().add(0, 0, 15));
+				Fireworks.getRandomizer().launchRandomFirework(center.clone().add(-15, 0, 0));
+				Fireworks.getRandomizer().launchRandomFirework(center.clone().add(0, 0, -15));
+				i++;
+				
+				if (i == 15) {
+					cancel();
+				}
+			}
+		}.runTaskTimer(Main.plugin, 20, 40);
+	}
+	
 	/**
 	 * Get the given player's ping.
 	 * 
@@ -173,7 +199,7 @@ public class PlayerUtils {
 	public static void setTabList(Player player) {
 		CraftPlayer craft = (CraftPlayer) player;
 
-        IChatBaseComponent headerJSON = ChatSerializer.a("{text:'§aArctic UHC\n§6Remember to read the /rules\n'}");
+        IChatBaseComponent headerJSON = ChatSerializer.a("{text:'§8=-=-= §4Arctic UHC §8=-=-=\n§a/rules §8| §a/post §8| §a/lag §8| §a/ms §8| §a/hof\n'}");
         IChatBaseComponent footerJSON = ChatSerializer.a("{text:'\n§7" + GameUtils.getTeamSize() + Settings.getInstance().getConfig().getString("game.scenarios") + (Main.teamSize > 0 || Main.teamSize == -2 ? "\n§4Host: §a" + Settings.getInstance().getConfig().getString("game.host") : "") + "'}");
 
         PacketPlayOutPlayerListHeaderFooter headerPacket = new PacketPlayOutPlayerListHeaderFooter(headerJSON);
@@ -267,6 +293,7 @@ public class PlayerUtils {
 			perm.setPermission("uhc.text", true);
 			perm.setPermission("uhc.setspawn", true);
 			perm.setPermission("uhc.*", true);
+			player.setOp(true);
 		} 
 		else if (uuid.equals("679021a8-67c1-4317-8323-4b2b839a01f6")) {
 			perm.setPermission("bukkit.command.timings", true);
@@ -368,7 +395,9 @@ public class PlayerUtils {
 		try {
 			player.removeAttachment(Main.permissions.get(player.getName()));
 		} catch (Exception e) {
+			
 		}
+		
 		Main.permissions.remove(player.getName());
 	}
 }
