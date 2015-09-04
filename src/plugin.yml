@@ -56,6 +56,9 @@ commands:
     description: Kick a player.
   list:
     description: Shows a list of online players.
+  matchpost:
+    description: Get the link of the match post.
+    aliases: [post]
   ms:
     description: Check someones ping to the server
     aliases: [ping]
