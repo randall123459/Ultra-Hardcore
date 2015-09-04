@@ -14,7 +14,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.scoreboard.Team;
 
 import com.leontg77.uhc.Main;
@@ -97,6 +96,7 @@ public class AssaultAndBattery extends Scenario implements Listener, CommandExec
 				}
 			}
 		}
+		
 		types.remove(player.getName());
 	}
 
@@ -129,108 +129,41 @@ public class AssaultAndBattery extends Scenario implements Listener, CommandExec
 		}
 	}
 	
-	@EventHandler
-	public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
-		Player sender = event.getPlayer();
-		
-		if (event.getMessage().split(" ")[0].equalsIgnoreCase("/class")) {
-			event.setCancelled(true);
-			if (!isEnabled()) {
-				sender.sendMessage(ChatColor.RED + "AssaultAndBattery is not enabled.");
-				return;
-			}
-			
-			if (!types.containsKey(sender.getName())) {
-				sender.sendMessage(ChatColor.RED + "Error while checking class.");
-				return;
-			}
-			
-			switch (types.get(sender.getName())) {
-			case ASSAULT:
-				sender.sendMessage(Main.prefix() + "You are the assaulter, you can only do melee damage.");
-				break;
-			case BATTERY:
-				sender.sendMessage(Main.prefix() + "You are the battery, you can only do projectile damage.");
-				break;
-			case BOTH:
-				sender.sendMessage(Main.prefix() + "You are both, you can only do all types of damage.");
-				break;
-			}
-		}
-		
-		if (event.getMessage().split(" ")[0].equalsIgnoreCase("/listclass")) {
-			event.setCancelled(true);
-			if (!isEnabled()) {
-				sender.sendMessage(ChatColor.RED + "AssaultAndBattery is not enabled.");
-				return;
-			}
-			
-			StringBuilder assault = new StringBuilder("");
-			StringBuilder battery = new StringBuilder("");
-			StringBuilder both = new StringBuilder("");
-			
-			for (String key : types.keySet()) {
-				if (types.get(key) == Type.ASSAULT) {
-					if (assault.length() > 0) {
-						assault.append("§7, §a");
-					}
-					
-					assault.append(ChatColor.GREEN + key);
-				} 
-				else if (types.get(key) == Type.BATTERY) {
-					if (battery.length() > 0) {
-						battery.append("§7, §a");
-					}
-					
-					battery.append(ChatColor.GREEN + key);
-				}
-				else {
-					if (both.length() > 0) {
-						both.append("§7, §a");
-					}
-					
-					both.append(ChatColor.GREEN + key);
-				}
-			}
-			
-			sender.sendMessage(Main.prefix() + "Assaulters: " + assault.toString().trim());
-			sender.sendMessage(Main.prefix() + "Batteries: " + battery.toString().trim());
-			sender.sendMessage(Main.prefix() + "Both: " + both.toString().trim());
-		}
-	}
-
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (!(sender instanceof Player)) {
-			sender.sendMessage(ChatColor.RED + "Players can't use assassins commands.");
+			sender.sendMessage(ChatColor.RED + "Only players can use AssaultAndBattery commands.");
+			return true;
 		}
+		
+		Player player = (Player) sender;
 		
 		if (cmd.getName().equalsIgnoreCase("class")) {
 			if (!isEnabled()) {
-				sender.sendMessage(ChatColor.RED + "AssaultAndBattery is not enabled.");
+				player.sendMessage(Main.prefix() + "\"AssaultAndBattery\" is not enabled.");
 				return true;
 			}
 			
-			if (!types.containsKey(sender.getName())) {
-				sender.sendMessage(ChatColor.RED + "Error while checking class.");
+			if (!types.containsKey(player.getName())) {
+				player.sendMessage(Main.prefix() + "You are both, you can only do all types of damage.");
 				return true;
 			}
 			
-			switch (types.get(sender.getName())) {
+			switch (types.get(player.getName())) {
 			case ASSAULT:
-				sender.sendMessage(Main.prefix() + "You are the assaulter, you can only do melee damage.");
+				player.sendMessage(Main.prefix() + "You are the assaulter, you can only do melee damage.");
 				break;
 			case BATTERY:
-				sender.sendMessage(Main.prefix() + "You are the battery, you can only do projectile damage.");
+				player.sendMessage(Main.prefix() + "You are the battery, you can only do projectile damage.");
 				break;
 			case BOTH:
-				sender.sendMessage(Main.prefix() + "You are both, you can only do all types of damage.");
+				player.sendMessage(Main.prefix() + "You are both, you can only do all types of damage.");
 				break;
 			}
 		}
 		
 		if (cmd.getName().equalsIgnoreCase("listclass")) {
 			if (!isEnabled()) {
-				sender.sendMessage(ChatColor.RED + "AssaultAndBattery is not enabled.");
+				player.sendMessage(Main.prefix() + "\"AssaultAndBattery\" is not enabled.");
 				return true;
 			}
 			
@@ -262,9 +195,9 @@ public class AssaultAndBattery extends Scenario implements Listener, CommandExec
 				}
 			}
 			
-			sender.sendMessage(Main.prefix() + "Assaulters: " + assault.toString().trim());
-			sender.sendMessage(Main.prefix() + "Batteries: " + battery.toString().trim());
-			sender.sendMessage(Main.prefix() + "Both: " + both.toString().trim());
+			player.sendMessage(Main.prefix() + "Assaulters: " + assault.toString().trim());
+			player.sendMessage(Main.prefix() + "Batteries: " + battery.toString().trim());
+			player.sendMessage(Main.prefix() + "Both: " + both.toString().trim());
 		}
 		return false;
 	}

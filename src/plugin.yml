@@ -115,7 +115,7 @@ commands:
   text:
     description: Spawn a floating text.
   timeleft:
-    description: Chec the time left.
+    description: Check the time left.
   timer:
     description: Hotbar timer command.
   teamloc:
@@ -133,3 +133,7 @@ commands:
   whitelist:
     description: Whitelisting command.
     aliases: [wl]
+  class:
+    description: View your AssaultAndBarrery type.
+  listclass:
+    description: View who has what AssaultAndBarrery type.
