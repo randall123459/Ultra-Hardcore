@@ -60,6 +60,7 @@ public class AntiStripmine {
 
 	public void queue(ChunkOreRemover remover) {
 		this.queue.add(remover);
+		
 		if (this.tick == null) {
 			this.tick = Bukkit.getScheduler().runTask(Main.plugin, new Runnable() {
 				public void run() {
@@ -77,6 +78,7 @@ public class AntiStripmine {
 				}
 			});
 		}
+		
 		this.checked.add(remover);
 	}
 
@@ -479,7 +481,7 @@ public class AntiStripmine {
 				HashSet<Block> linked = toRemove.get(block);
 				
 				for (Block link : linked) {
-					if (link.getTypeId() == block.getTypeId()) {
+					if (link.getType().equals(block.getType())) {
 						addLinked(link, toRemove, vein);
 					}
 				}
@@ -555,7 +557,7 @@ public class AntiStripmine {
 				HashSet<Block> vein = new HashSet<Block>();
 				Block next = (Block) toRemove.keySet().iterator().next();
 				addLinked(next, toRemove, vein);
-				Material type = ((Block) vein.iterator().next()).getType();
+				Material type = vein.iterator().next().getType();
 				if ((excludedOres.contains(type)) || ((removalFactor < 100) && (random.nextInt(100) >= removalFactor))) {
 					addRemainingOres(remaining, type, vein.size());
 				} else {
