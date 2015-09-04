@@ -3,7 +3,6 @@ package com.leontg77.uhc.cmds;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -18,6 +17,11 @@ public class ListCommand implements CommandExecutor {
 
 	public boolean onCommand(CommandSender sender, Command cmd, String label, final String[] args) {
 		if (cmd.getName().equalsIgnoreCase("list")) {
+			if (PlayerUtils.getPlayers().size() < 1) {
+		    	sender.sendMessage(Main.prefix() + "There are no players online.");
+				return true;
+			}
+			
 			ArrayList<Player> players = new ArrayList<Player>(PlayerUtils.getPlayers());
 			Collections.shuffle(players);
 			
@@ -31,9 +35,9 @@ public class ListCommand implements CommandExecutor {
 	    		
 				if (list.length() > 0) {
 					if (p == players.size()) {
-						list.append(" §7and §f");
+						list.append(" §8and §a");
 					} else {
-						list.append("§7, §f");
+						list.append("§8, §a");
 					}
 				}
 				
@@ -41,8 +45,8 @@ public class ListCommand implements CommandExecutor {
 				p++;
 			}
 	    			
-	    	sender.sendMessage(Main.prefix() + "There are currently " + ChatColor.GOLD + (p - 1) + ChatColor.GRAY + " out of " + ChatColor.GOLD + settings.getConfig().getInt("maxplayers") + ChatColor.GRAY + " players online.");
-	    	sender.sendMessage("§7Players: §f" + list.toString());
+	    	sender.sendMessage(Main.prefix() + "There are §6" + (p - 1) + " §7out of§6 " + settings.getConfig().getInt("maxplayers") + " §7players online.");
+	    	sender.sendMessage("§8» §7Players§8: §a" + list.toString() + "§8.");
         }
 		return true;
 	}
