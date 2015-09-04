@@ -5,8 +5,8 @@ import net.minecraft.server.v1_8_R3.MinecraftServer;
 import org.bukkit.Bukkit;
 
 import com.leontg77.uhc.Main;
-import com.leontg77.uhc.Settings;
 import com.leontg77.uhc.Main.State;
+import com.leontg77.uhc.Settings;
 
 /**
  * Game utilities class.
