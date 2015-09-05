@@ -84,12 +84,7 @@ public class SpreadCommand implements CommandExecutor {
 						PlayerUtils.broadcast(Main.prefix() + "Scattering §a" + Bukkit.getServer().getWhitelistedPlayers().size() + " §7players...");
 					}
 					
-					for (String e : Scoreboards.getManager().kills.getScoreboard().getEntries()) {
-						Scoreboards.getManager().resetScore(e);
-					}
-					
 					Parkour.getManager().shutdown();
-					Main.board = false;
 					Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer cancel");
 					
 					Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Main.plugin, new Runnable() {
