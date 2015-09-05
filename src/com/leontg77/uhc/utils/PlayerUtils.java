@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 
 import net.minecraft.server.v1_8_R3.IChatBaseComponent;
@@ -157,27 +158,31 @@ public class PlayerUtils {
 	}
 	
 	public static void playWinnerFireworks() {
-		final Location center = new Location(Bukkit.getWorld("lobby"), 0.5, 33.5, 0.5);
-		
 		new BukkitRunnable() {
+			Location center = new Location(Bukkit.getWorld("lobby"), 0.5, 34, 0.5);
+			
 			int i = 0;
 			
 			public void run() {
-				Fireworks.getRandomizer().launchRandomFirework(center.clone().add(10, 0, 10));
-				Fireworks.getRandomizer().launchRandomFirework(center.clone().add(-10, 0, -10));
-				Fireworks.getRandomizer().launchRandomFirework(center.clone().add(10, 0, -10));
-				Fireworks.getRandomizer().launchRandomFirework(center.clone().add(-10, 0, 10));
-				Fireworks.getRandomizer().launchRandomFirework(center.clone().add(15, 0, 0));
-				Fireworks.getRandomizer().launchRandomFirework(center.clone().add(0, 0, 15));
-				Fireworks.getRandomizer().launchRandomFirework(center.clone().add(-15, 0, 0));
-				Fireworks.getRandomizer().launchRandomFirework(center.clone().add(0, 0, -15));
+				Random rand = new Random();
+				int x = rand.nextInt(50 * 2) - 50;
+				int z = rand.nextInt(50 * 2) - 50;
+
+				Location loc = new Location(Bukkit.getWorld("lobby"), x + 0.5, 34, z + 0.5);
+				loc.setY(BlockUtils.highestBlock(loc).getY());
+				Fireworks.getRandomizer().launchRandomFirework(loc.clone().add(0, 1, 0));
+				
+				if (new Random().nextDouble() < 0.1) {
+					Fireworks.getRandomizer().launchRandomFirework(center);
+				}
+				
 				i++;
 				
-				if (i == 15) {
+				if (i == 200) {
 					cancel();
 				}
 			}
-		}.runTaskTimer(Main.plugin, 20, 40);
+		}.runTaskTimer(Main.plugin, 20, 5);
 	}
 	
 	/**
