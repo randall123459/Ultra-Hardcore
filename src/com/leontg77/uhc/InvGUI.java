@@ -50,7 +50,7 @@ public class InvGUI {
 		Inventory inv = Bukkit.createInventory(null, PlayerUtils.playerInvSize(), "Player Selector");
 	
 		for (Player online : PlayerUtils.getPlayers()) {
-			if (!Spectator.getManager().isSpectating(online)) {
+			if (!Spectator.getManager().isSpectating(online) && !online.getWorld().getName().equals("lobby")) {
 				ItemStack item = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
 				SkullMeta meta = (SkullMeta) item.getItemMeta();
 				meta.setDisplayName(ChatColor.GOLD + online.getName());
