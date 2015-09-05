@@ -139,6 +139,12 @@ public class Runnables {
 					TeamCommand.sTeam.put(team.getName(), players);
 				}
 				
+				for (String e : Scoreboards.getManager().kills.getScoreboard().getEntries()) {
+					Scoreboards.getManager().resetScore(e);
+				}
+				
+				Main.board = false;
+				
 				timer();
 				Bukkit.getServer().getPluginManager().registerEvents(new SpecInfo(), Main.plugin);
 				State.setState(State.INGAME);
@@ -248,7 +254,7 @@ public class Runnables {
 					
 					for (Player online : PlayerUtils.getPlayers()) {
 						PlayerUtils.sendTitle(online, "", "§4PvP has been enabled!", 5, 10, 5);
-						online.playSound(online.getLocation(), Sound.WITHER_SHOOT, 1, 0);
+						online.playSound(online.getLocation(), Sound.ENDERDRAGON_GROWL, 1, 0);
 					}
 					
 					for (World world : Bukkit.getWorlds()) {
