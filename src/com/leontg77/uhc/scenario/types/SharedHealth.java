@@ -193,7 +193,7 @@ public class SharedHealth extends Scenario implements Listener {
         }
         
         if (getSharedDamage().get(playerName) != null && getSharedDamage().get(playerName) == true) {
-            event.setDeathMessage(playerDisplayName + ChatColor.WHITE + " died from sharing health");
+            event.setDeathMessage("§8» §f" + playerDisplayName + ChatColor.WHITE + " died from sharing health");
         }
     }
 	
@@ -206,7 +206,6 @@ public class SharedHealth extends Scenario implements Listener {
     }
 
     public void setPlayersDamageBalance(String player, Double balance) {
-
         if (!damageBalance.containsKey(player)) {
             damageBalance.put(player, balance);
         } else {
