@@ -281,8 +281,6 @@ public class PlayerListener implements Listener {
 				}
 			}, 20);
 			
-			Arena.getManager().killstreak.put(player, 0);
-			
 			if (player.getKiller() == null) {
 				Arena.getManager().setScore("§8» §a§lPvE", Arena.getManager().getScore("§8» §a§lPvE") + 1);
 				Arena.getManager().resetScore(player.getName());
@@ -291,14 +289,22 @@ public class PlayerListener implements Listener {
 				Team team = Teams.getManager().getTeam(player);
 				
 				for (Player p : Arena.getManager().getPlayers()) {
-					p.sendMessage("§8» " + (team == null ? "§f" : team.getPrefix()) + player.getName() + " §fwas killed by pve");
-				}   
+					p.sendMessage("§8» " + (team == null ? "§f" : team.getPrefix()) + player.getName() + " §fwas killed by PvE");
+				}
+
+				if (Arena.getManager().killstreak.containsKey(player) && Arena.getManager().killstreak.get(player) > 4) {
+					PlayerUtils.broadcast(Main.prefix() + ChatColor.GREEN + player.getName() + "'s §7killstreak of " + Arena.getManager().killstreak.get(player) + " was shut down by PvE");
+				}
+				
+				Arena.getManager().killstreak.put(player, 0);   
 				return;
 			}
 			
 			if (Arena.getManager().killstreak.containsKey(player) && Arena.getManager().killstreak.get(player) > 4) {
 				PlayerUtils.broadcast(Main.prefix() + ChatColor.GREEN + player.getName() + "'s §7killstreak of " + Arena.getManager().killstreak.get(player) + " was shut down by §a" + player.getKiller().getName());
 			}
+			
+			Arena.getManager().killstreak.put(player, 0);
 			
 			player.getKiller().setLevel(player.getKiller().getLevel() + 1);
 			Data killerData = Data.getFor(player.getKiller());
