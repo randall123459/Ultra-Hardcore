@@ -154,6 +154,7 @@ public class AntiStripmine {
 			} else {
 				this.enabled = true;
 			}
+			
 			this.ores.addAll(getDefaultOres());
 			this.maxHeight = getDefaultMaxHeight();
 			this.removalFactor = getDefaultRemovalFactor();
@@ -316,10 +317,9 @@ public class AntiStripmine {
 				public void run() {
 					synchronized (WorldData.this.queuedFile) {
 						try {
-							BufferedWriter out = new BufferedWriter(
-									new FileWriter(WorldData.this.queuedFile,
-											true));
+							BufferedWriter out = new BufferedWriter(new FileWriter(WorldData.this.queuedFile, true));
 							Throwable localThrowable2 = null;
+							
 							try {
 								out.write(record);
 							} catch (Throwable localThrowable1) {
