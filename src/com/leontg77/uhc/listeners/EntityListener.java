@@ -77,6 +77,11 @@ public class EntityListener implements Listener {
 			if (event.getEntityType() != EntityType.ARMOR_STAND) {
 				event.setCancelled(true);
 			}
+			return;
+		}
+		
+		if (loc.getWorld().getGameRuleValue("doMobSpawning") != null && loc.getWorld().getGameRuleValue("doMobSpawning").equals("false")) {
+			event.setCancelled(true);
 		}
 	}
 	
