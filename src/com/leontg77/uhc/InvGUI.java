@@ -229,8 +229,8 @@ public class InvGUI {
 		netherMeta.setDisplayName("§6Nether Rules");
 		ArrayList<String> lore4 = new ArrayList<String>();
 		lore4.add(" ");
-		lore4.add("§aTrapping: §7Not Allowed.");
-		lore4.add("§aCamping: §7Not Allowed.");
+		lore4.add("§aTrapping: §7Allowed.");
+		lore4.add("§aCamping: §7Allowed.");
 		lore4.add("§aStrength: §7" + (Main.nerfedStrength ? "Both tiers nerfed." : "Vanilla."));
 		lore4.add("§aTier 2: §7On for all potions.");
 		lore4.add("§aSplash: §7On for all potions.");
