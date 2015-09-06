@@ -40,14 +40,14 @@ public class Runnables {
 	 */
 	public static void start() {
 		for (Player online : PlayerUtils.getPlayers()) {
-			PlayerUtils.sendTitle(online, "§c3", "", 1, 20, 1);
+			PlayerUtils.sendTitle(online, "Â§c3", "", 1, 20, 1);
 			online.playSound(online.getLocation(), Sound.SUCCESSFUL_HIT, 1, 0);
 		}
 		
 		Bukkit.getServer().getScheduler().runTaskLater(Main.plugin, new Runnable() {
 			public void run() {
 				for (Player online : PlayerUtils.getPlayers()) {
-					PlayerUtils.sendTitle(online, "§e2", "", 1, 20, 1);
+					PlayerUtils.sendTitle(online, "Â§e2", "", 1, 20, 1);
 					online.playSound(online.getLocation(), Sound.SUCCESSFUL_HIT, 1, 0);
 				}
 			}
@@ -56,7 +56,7 @@ public class Runnables {
 		Bukkit.getServer().getScheduler().runTaskLater(Main.plugin, new Runnable() {
 			public void run() {
 				for (Player online : PlayerUtils.getPlayers()) {
-					PlayerUtils.sendTitle(online, "§a1", "", 1, 20, 1);
+					PlayerUtils.sendTitle(online, "Â§a1", "", 1, 20, 1);
 					online.playSound(online.getLocation(), Sound.SUCCESSFUL_HIT, 1, 0);
 				}
 			}
@@ -85,7 +85,7 @@ public class Runnables {
 						online.setFireTicks(0);
 						online.setLevel(0);
 						online.setExp(0);
-						PlayerUtils.sendTitle(online, "§aGo!", "§7Good luck have fun!", 1, 20, 1);
+						PlayerUtils.sendTitle(online, "Â§aGo!", "Â§7Have fun spectating!", 1, 20, 1);
 						continue;
 					}
 					
@@ -126,7 +126,7 @@ public class Runnables {
 					
 					online.sendMessage(Main.prefix() + "Remember to read the match post: " + Settings.getInstance().getConfig().getString("matchpost"));
 					online.sendMessage(Main.prefix() + "If you have any questions, use /helpop.");
-					PlayerUtils.sendTitle(online, "§aGo!", "§7Good luck have fun!", 1, 20, 1);
+					PlayerUtils.sendTitle(online, "Â§aGo!", "Â§7Good luck, have fun!", 1, 20, 1);
 					
 					Data data = Data.getFor(online);
 					data.increaseStat("gamesplayed");
@@ -148,13 +148,13 @@ public class Runnables {
 				timer();
 				Bukkit.getServer().getPluginManager().registerEvents(new SpecInfo(), Main.plugin);
 				State.setState(State.INGAME);
-				Scoreboards.getManager().setScore("§8» §a§lPvE", 1);
-				Scoreboards.getManager().setScore("§8» §a§lPvE", 0);
+				Scoreboards.getManager().setScore("Â§8Â» Â§aÂ§lPvE", 1);
+				Scoreboards.getManager().setScore("Â§8Â» Â§aÂ§lPvE", 0);
 				heal = 1;
 				pvp = Settings.getInstance().getConfig().getInt("time.pvp");
 				meetup = Settings.getInstance().getConfig().getInt("time.meetup");
 				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer cancel");
-				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer 60 &aFinal heal in:&7");
+				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer 60 &cFinal heal in&8:&7");
 				
 				for (World world : Bukkit.getWorlds()) {
 					if (world.getName().equals("lobby") || world.getName().equals("arena")) {
@@ -217,11 +217,11 @@ public class Runnables {
 				meetup--;
 				
 				if (heal == 0) {
-					PlayerUtils.broadcast(Main.prefix() + "§6§lFinal heal has been given, do not ask for another one.");
+					PlayerUtils.broadcast(Main.prefix() + "Final heal has been given, do not ask for another one.");
 					
 					for (Player online : PlayerUtils.getPlayers()) {
-						PlayerUtils.sendTitle(online, "§6Final heal!", "§aDo not ask for another one.", 5, 10, 5);
-						online.playSound(online.getLocation(), Sound.NOTE_PIANO, 1, 0);
+						PlayerUtils.sendTitle(online, "Â§6Final heal!", "Â§aDo not ask for another one.", 5, 10, 5);
+						online.playSound(online.getLocation(), Sound.NOTE_BASS, 1, 1);
 						online.setHealth(online.getMaxHealth());
 						online.setSaturation(20);
 						online.setFoodLevel(20);
@@ -229,7 +229,7 @@ public class Runnables {
 					}
 
 					Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer cancel");
-					Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer " + (pvp * 60) + " &aPvP in:&7");
+					Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer " + (pvp * 60) + " &cPvP in&8:&7");
 				}
 				
 				if (heal == -1) {
@@ -250,11 +250,11 @@ public class Runnables {
 				}
 
 				if (pvp == 0) {
-					PlayerUtils.broadcast(Main.prefix() + "§6§lPvP has been enabled.");
+					PlayerUtils.broadcast(Main.prefix() + "PvP/iPvP is now been enabled.");
 					
 					for (Player online : PlayerUtils.getPlayers()) {
-						PlayerUtils.sendTitle(online, "", "§4PvP has been enabled!", 5, 10, 5);
-						online.playSound(online.getLocation(), Sound.ENDERDRAGON_GROWL, 1, 0);
+						PlayerUtils.sendTitle(online, "", "Â§4PvP has been enabled!", 5, 10, 5);
+						online.playSound(online.getLocation(), Sound.ENDERDRAGON_GROWL, 1, 1);
 					}
 					
 					for (World world : Bukkit.getWorlds()) {
@@ -270,22 +270,25 @@ public class Runnables {
 					}
 					
 					Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer cancel");
-					Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer " + (meetup * 60) + " &aMeetup in:&7");
+					Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer " + (meetup * 60) + " &cMeetup in&8:&7");
 				}
 				
 				if (meetup == 0) {
 					Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer cancel");
-					Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer -1 &6Meetup is now!");
+					
+					PlayerUtils.broadcast(ChatColor.DARK_GRAY + "Â»Â»Â»Â»Â»Â»Â»Â»Â»Â»Â»Â»Â»Â»Â»Â«Â«Â«Â«Â«Â«Â«Â«Â«Â«Â«Â«Â«Â«Â«");
+					PlayerUtils.broadcast(ChatColor.RED + " ");
+					PlayerUtils.broadcast(ChatColor.RED + " Meetup has started!");	
+					if (Main.border == Border.MEETUP) {
+						Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer 120 &6Meetup is now! &8â˜ &cBorder will start shrinking in&8:&7");
+						PlayerUtils.broadcast(ChatColor.RED + " The border will start shrinking in Â§a2 Â§cminutes.");	
+					} else {
+						Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer -1 &6Meetup is now!");
+					}
+					PlayerUtils.broadcast(ChatColor.RED + " ");
+					PlayerUtils.broadcast(ChatColor.DARK_GRAY + "Â»Â»Â»Â»Â»Â»Â»Â»Â»Â»Â»Â»Â»Â»Â»Â«Â«Â«Â«Â«Â«Â«Â«Â«Â«Â«Â«Â«Â«Â«");
 					
 					for (Player online : PlayerUtils.getPlayers()) {
-						online.sendMessage(ChatColor.DARK_GRAY + "»»»»»»»»»»»»»»»«««««««««««««««");											  
-						online.sendMessage(ChatColor.RED + " ");													  
-						online.sendMessage(ChatColor.RED + " Meetup has started!");			
-						if (Main.border == Border.MEETUP) {
-							online.sendMessage(ChatColor.RED + " Border will start shrinking in 2 minutes.");	
-						}								  
-						online.sendMessage(ChatColor.RED + " ");
-						online.sendMessage(ChatColor.DARK_GRAY + "»»»»»»»»»»»»»»»«««««««««««««««");	
 						online.playSound(online.getLocation(), Sound.WITHER_DEATH, 1, 1);
 					}
 
@@ -307,7 +310,9 @@ public class Runnables {
 				}
 				
 				if (meetup == -2 && Main.border == Border.MEETUP) {
-					PlayerUtils.broadcast(Main.prefix() + "§6§lBorder will now shrink to 300x300 over 10 minutes.");
+					PlayerUtils.broadcast(Main.prefix() + "Border will now shrink to Â§6300x300 Â§7over Â§a10 Â§7minutes.");
+					Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer cancel");
+					Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer 600 &6Meetup is now! &8â˜ &cBorder stops shrinking in&8:&7");
 					
 					for (Player online : PlayerUtils.getPlayers()) {
 						online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
@@ -323,7 +328,9 @@ public class Runnables {
 				}
 				
 				if (meetup == -12 && Main.border == Border.MEETUP) {
-					PlayerUtils.broadcast(Main.prefix() + "§6§lBorder has stopped shrinking.");
+					PlayerUtils.broadcast(Main.prefix() + "Border has stopped shrinking.");
+					Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer cancel");
+					Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer -1 &6Meetup is now! &8â˜ &cBorder has stopped shrinking.");
 					
 					for (Player online : PlayerUtils.getPlayers()) {
 						online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
@@ -339,27 +346,27 @@ public class Runnables {
 				}
 				
 				if (pvp == 45) {
-					PlayerUtils.broadcast(Main.prefix() + "§6§l45 minutes to pvp.");
+					PlayerUtils.broadcast(Main.prefix() + "PvP will be enabled in Â§a45 Â§7minutes.");
 					return;
 				}
 				
 				if (pvp == 30) {
-					PlayerUtils.broadcast(Main.prefix() + "§6§l30 minutes to pvp.");
+					PlayerUtils.broadcast(Main.prefix() + "PvP will be enabled in Â§a30 Â§7minutes.");
 					return;
 				}
 				
 				if (pvp == 15) {
-					PlayerUtils.broadcast(Main.prefix() + "§6§l15 minutes to pvp.");
+					PlayerUtils.broadcast(Main.prefix() + "PvP will be enabled in Â§a15 Â§7minutes.");
 					return;
 				}
 				
 				if (pvp == 10) {
-					PlayerUtils.broadcast(Main.prefix() + "§6§l10 minutes to pvp.");
+					PlayerUtils.broadcast(Main.prefix() + "PvP will be enabled in Â§a10 Â§7minutes.");
 					return;
 				}
 				
 				if (pvp == 5) {
-					PlayerUtils.broadcast(Main.prefix() + "§6§l5 minutes to pvp.");
+					PlayerUtils.broadcast(Main.prefix() + "PvP will be enabled in Â§a5 Â§7minutes.");
 					for (Player online : PlayerUtils.getPlayers()) {
 						online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
 					}
@@ -367,7 +374,7 @@ public class Runnables {
 				}
 				
 				if (pvp == 1) {
-					PlayerUtils.broadcast(Main.prefix() + "§6§l1 minute to pvp.");
+					PlayerUtils.broadcast(Main.prefix() + "PvP will be enabled in Â§a1 Â§7minute.");
 					for (Player online : PlayerUtils.getPlayers()) {
 						online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
 					}
@@ -375,52 +382,58 @@ public class Runnables {
 				}
 				
 				if (meetup == 120) {
-					PlayerUtils.broadcast(Main.prefix() + "§6§l2 hours to meetup.");
+					PlayerUtils.broadcast(Main.prefix() + "Meetup is in Â§a2 Â§hours.");
+					for (Player online : PlayerUtils.getPlayers()) {
+						online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
+					}
 					return;
 				}
 				
 				if (meetup == 105) {
-					PlayerUtils.broadcast(Main.prefix() + "§6§l1 hour and 45 minutes to meetup.");
+					PlayerUtils.broadcast(Main.prefix() + "Meetup is in Â§a1 Â§7hour and Â§a45 Â§7minutes.");
 					return;
 				}
 				
 				if (meetup == 90) {
-					PlayerUtils.broadcast(Main.prefix() + "§6§l1 hour and 30 minutes to meetup.");
+					PlayerUtils.broadcast(Main.prefix() + "Meetup is in Â§a1 Â§7hour and Â§a30 Â§7minutes.");
 					return;
 				}
 				
 				if (meetup == 75) {
-					PlayerUtils.broadcast(Main.prefix() + "§6§l1 hour and 15 minutes to meetup.");
+					PlayerUtils.broadcast(Main.prefix() + "Meetup is in Â§a1 Â§7hour and Â§a15 Â§7minutes.");
 					return;
 				}
 				
 				if (meetup == 60) {
-					PlayerUtils.broadcast(Main.prefix() + "§6§l1 hour to meetup.");
+					PlayerUtils.broadcast(Main.prefix() + "Meetup is in Â§a1 Â§7hour.");
+					for (Player online : PlayerUtils.getPlayers()) {
+						online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
+					}
 					return;
 				}
 				
 				if (meetup == 45) {
-					PlayerUtils.broadcast(Main.prefix() + "§6§l45 minutes to meetup.");
+					PlayerUtils.broadcast(Main.prefix() + "Meetup is in Â§a45 Â§7minutes.");
 					return;
 				}
 				
 				if (meetup == 30) {
-					PlayerUtils.broadcast(Main.prefix() + "§6§l30 minutes to meetup.");
+					PlayerUtils.broadcast(Main.prefix() + "Meetup is in Â§a30 Â§7minutes.");
 					return;
 				}
 				
 				if (meetup == 15) {
-					PlayerUtils.broadcast(Main.prefix() + "§6§l15 minutes to meetup.");
+					PlayerUtils.broadcast(Main.prefix() + "Meetup is in Â§a15 Â§7minutes.");
 					return;
 				}
 				
 				if (meetup == 10) {
-					PlayerUtils.broadcast(Main.prefix() + "§6§l10 minutes to meetup.");
+					PlayerUtils.broadcast(Main.prefix() + "Meetup is in Â§a10 Â§7minutes.");
 					return;
 				}
 				
 				if (meetup == 5) {
-					PlayerUtils.broadcast(Main.prefix() + "§6§l5 minutes to meetup.");
+					PlayerUtils.broadcast(Main.prefix() + "Meetup is in Â§a5 Â§7minutes.");
 					for (Player online : PlayerUtils.getPlayers()) {
 						online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
 					}
@@ -428,7 +441,7 @@ public class Runnables {
 				}
 				
 				if (meetup == 1) {
-					PlayerUtils.broadcast(Main.prefix() + "§6§l1 minute to meetup, get ready to head to 0,0.");
+					PlayerUtils.broadcast(Main.prefix() + "Meetup is in Â§a1 Â§7minute.");
 					for (Player online : PlayerUtils.getPlayers()) {
 						online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
 					}
@@ -445,14 +458,14 @@ public class Runnables {
 	@Deprecated
 	public static void startRR() {
 		for (Player online : PlayerUtils.getPlayers()) {
-			PlayerUtils.sendTitle(online, "§c3", "", 1, 20, 1);
+			PlayerUtils.sendTitle(online, "Â§c3", "", 1, 20, 1);
 			online.playSound(online.getLocation(), Sound.SUCCESSFUL_HIT, 1, 0);
 		}
 		
 		Bukkit.getServer().getScheduler().runTaskLater(Main.plugin, new Runnable() {
 			public void run() {
 				for (Player online : PlayerUtils.getPlayers()) {
-					PlayerUtils.sendTitle(online, "§e2", "", 1, 20, 1);
+					PlayerUtils.sendTitle(online, "Â§e2", "", 1, 20, 1);
 					online.playSound(online.getLocation(), Sound.SUCCESSFUL_HIT, 1, 0);
 				}
 			}
@@ -461,7 +474,7 @@ public class Runnables {
 		Bukkit.getServer().getScheduler().runTaskLater(Main.plugin, new Runnable() {
 			public void run() {
 				for (Player online : PlayerUtils.getPlayers()) {
-					PlayerUtils.sendTitle(online, "§a1", "", 1, 20, 1);
+					PlayerUtils.sendTitle(online, "Â§a1", "", 1, 20, 1);
 					online.playSound(online.getLocation(), Sound.SUCCESSFUL_HIT, 1, 0);
 				}
 			}
@@ -491,7 +504,7 @@ public class Runnables {
 						online.setLevel(0);
 						online.setExp(0);
 						
-						PlayerUtils.sendTitle(online, "§aGo!", "§7Good luck have fun!", 1, 20, 1);
+						PlayerUtils.sendTitle(online, "Â§aGo!", "Â§7Good luck have fun!", 1, 20, 1);
 						continue;
 					}
 					
@@ -510,7 +523,6 @@ public class Runnables {
 					}
 
 					online.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 250, 100));
-					online.addPotionEffect(new PotionEffect(PotionEffectType.SATURATION, 6000, 100));
 					online.setItemOnCursor(new ItemStack (Material.AIR));
 					online.awardAchievement(Achievement.OPEN_INVENTORY);
 					online.getInventory().setArmorContents(null);
@@ -525,7 +537,7 @@ public class Runnables {
 					online.setExp(0);
 					
 					Main.kills.put(online.getName(), 0);
-					PlayerUtils.sendTitle(online, "§aGo!", "§7Good luck have fun!", 1, 20, 1);
+					PlayerUtils.sendTitle(online, "Â§aGo!", "Â§7Good luck have fun!", 1, 20, 1);
 				}
 				
 				for (Team team : Teams.getManager().getTeamsWithPlayers()) {
@@ -599,7 +611,7 @@ public class Runnables {
 				meetup++;
 
 				if (pvp == 0) {
-					PlayerUtils.broadcast(Main.prefix() + "§6§lPvP has been enabled.");
+					PlayerUtils.broadcast(Main.prefix() + "Â§6Â§lPvP has been enabled.");
 					
 					for (Player online : PlayerUtils.getPlayers()) {
 						online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
@@ -607,7 +619,7 @@ public class Runnables {
 				}
 				
 				if (meetup == 20) {
-					PlayerUtils.broadcast(Main.prefix() + "§6§lEnd of episode 1.");
+					PlayerUtils.broadcast(Main.prefix() + "Â§6Â§lEnd of episode 1.");
 					
 					for (Player online : PlayerUtils.getPlayers()) {
 						online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
@@ -615,7 +627,7 @@ public class Runnables {
 				}
 				
 				if (meetup == 40) {
-					PlayerUtils.broadcast(Main.prefix() + "§6§lEnd of episode 2.");
+					PlayerUtils.broadcast(Main.prefix() + "Â§6Â§lEnd of episode 2.");
 					
 					for (Player online : PlayerUtils.getPlayers()) {
 						online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
@@ -623,7 +635,7 @@ public class Runnables {
 				}
 				
 				if (meetup == 60) {
-					PlayerUtils.broadcast(Main.prefix() + "§6§lEnd of episode 3.");
+					PlayerUtils.broadcast(Main.prefix() + "Â§6Â§lEnd of episode 3.");
 					
 					for (Player online : PlayerUtils.getPlayers()) {
 						online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
@@ -631,7 +643,7 @@ public class Runnables {
 				}
 				
 				if (meetup == 80) {
-					PlayerUtils.broadcast(Main.prefix() + "§6§lEnd of episode 4.");
+					PlayerUtils.broadcast(Main.prefix() + "Â§6Â§lEnd of episode 4.");
 					
 					for (Player online : PlayerUtils.getPlayers()) {
 						online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
@@ -639,7 +651,7 @@ public class Runnables {
 				}
 				
 				if (meetup == 100) {
-					PlayerUtils.broadcast(Main.prefix() + "§6§lEnd of episode 5.");
+					PlayerUtils.broadcast(Main.prefix() + "Â§6Â§lEnd of episode 5.");
 					
 					for (Player online : PlayerUtils.getPlayers()) {
 						online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
@@ -647,7 +659,7 @@ public class Runnables {
 				}
 				
 				if (meetup == 120) {
-					PlayerUtils.broadcast(Main.prefix() + "§6§lEnd of episode 6.");
+					PlayerUtils.broadcast(Main.prefix() + "Â§6Â§lEnd of episode 6.");
 					
 					for (Player online : PlayerUtils.getPlayers()) {
 						online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
@@ -655,7 +667,7 @@ public class Runnables {
 				}
 				
 				if (meetup == 140) {
-					PlayerUtils.broadcast(Main.prefix() + "§6§lEnd of episode 7.");
+					PlayerUtils.broadcast(Main.prefix() + "Â§6Â§lEnd of episode 7.");
 					
 					for (Player online : PlayerUtils.getPlayers()) {
 						online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
@@ -663,7 +675,7 @@ public class Runnables {
 				}
 				
 				if (meetup == 160) {
-					PlayerUtils.broadcast(Main.prefix() + "§6§lEnd of episode 8.");
+					PlayerUtils.broadcast(Main.prefix() + "Â§6Â§lEnd of episode 8.");
 					
 					for (Player online : PlayerUtils.getPlayers()) {
 						online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
@@ -671,7 +683,7 @@ public class Runnables {
 				}
 				
 				if (meetup == 180) {
-					PlayerUtils.broadcast(Main.prefix() + "§6§lEnd of episode 9.");
+					PlayerUtils.broadcast(Main.prefix() + "Â§6Â§lEnd of episode 9.");
 					
 					for (Player online : PlayerUtils.getPlayers()) {
 						online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
@@ -679,7 +691,7 @@ public class Runnables {
 				}
 				
 				if (meetup == 200) {
-					PlayerUtils.broadcast(Main.prefix() + "§6§lEnd of episode 10.");
+					PlayerUtils.broadcast(Main.prefix() + "Â§6Â§lEnd of episode 10.");
 					
 					for (Player online : PlayerUtils.getPlayers()) {
 						online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);

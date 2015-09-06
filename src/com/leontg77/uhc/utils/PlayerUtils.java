@@ -80,7 +80,7 @@ public class PlayerUtils {
 			}
 		}
 		
-		Bukkit.getLogger().info(message.replaceAll("§l", ""));
+		Bukkit.getLogger().info(message.replaceAll("Â§l", ""));
 	}
 	
 	/**
@@ -93,7 +93,7 @@ public class PlayerUtils {
 			online.sendMessage(message);
 		}
 		
-		Bukkit.getLogger().info(message.replaceAll("§l", ""));
+		Bukkit.getLogger().info(message.replaceAll("Â§l", ""));
 	}
 
 	/**
@@ -159,8 +159,6 @@ public class PlayerUtils {
 	
 	public static void playWinnerFireworks() {
 		new BukkitRunnable() {
-			Location center = new Location(Bukkit.getWorld("lobby"), 0.5, 34, 0.5);
-			
 			int i = 0;
 			
 			public void run() {
@@ -171,10 +169,6 @@ public class PlayerUtils {
 				Location loc = new Location(Bukkit.getWorld("lobby"), x + 0.5, 34, z + 0.5);
 				loc.setY(BlockUtils.highestBlock(loc).getY());
 				Fireworks.getRandomizer().launchRandomFirework(loc.clone().add(0, 1, 0));
-				
-				if (new Random().nextDouble() < 0.1) {
-					Fireworks.getRandomizer().launchRandomFirework(center);
-				}
 				
 				i++;
 				
@@ -204,8 +198,8 @@ public class PlayerUtils {
 	public static void setTabList(Player player) {
 		CraftPlayer craft = (CraftPlayer) player;
 
-        IChatBaseComponent headerJSON = ChatSerializer.a("{text:'§8=-=-= §4Arctic UHC §8=-=-=\n§a/rules §8| §a/post §8| §a/lag §8| §a/ms §8| §a/hof\n'}");
-        IChatBaseComponent footerJSON = ChatSerializer.a("{text:'\n§7" + GameUtils.getTeamSize() + Settings.getInstance().getConfig().getString("game.scenarios") + (Main.teamSize > 0 || Main.teamSize == -2 ? "\n§4Host: §a" + Settings.getInstance().getConfig().getString("game.host") : "") + "'}");
+        IChatBaseComponent headerJSON = ChatSerializer.a("{text:'Â§8=-=-= Â§4Arctic UHC Â§8=-=-=\nÂ§a/rules Â§8â˜ Â§a/post Â§8â˜ Â§a/lag Â§8â˜ Â§a/ms Â§8â˜ Â§a/hof\n'}");
+        IChatBaseComponent footerJSON = ChatSerializer.a("{text:'\nÂ§7" + GameUtils.getTeamSize() + Settings.getInstance().getConfig().getString("game.scenarios") + (Main.teamSize > 0 || Main.teamSize == -2 ? "\nÂ§4Host: Â§a" + Settings.getInstance().getConfig().getString("game.host") : "") + "'}");
 
         PacketPlayOutPlayerListHeaderFooter headerPacket = new PacketPlayOutPlayerListHeaderFooter(headerJSON);
  
@@ -215,7 +209,7 @@ public class PlayerUtils {
             field.set(headerPacket, footerJSON);
         }
         catch (Exception e) {
-            Bukkit.getServer().getLogger().severe("§cCould not send tab list packets to " + player.getName());
+            Bukkit.getServer().getLogger().severe("Â§cCould not send tab list packets to " + player.getName());
         }
         finally {
             craft.getHandle().playerConnection.sendPacket(headerPacket);
