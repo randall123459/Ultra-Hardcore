@@ -177,7 +177,7 @@ public class InventoryListener implements Listener {
 		}
 		
 		if (item.getType() == Material.FEATHER) {
-			player.teleport(new Location(player.getWorld(), 0, 100, 0));
+			player.teleport(new Location(player.getWorld(), 0.5, 100, 0.5));
 			event.setCancelled(true);
 		}
 	}
