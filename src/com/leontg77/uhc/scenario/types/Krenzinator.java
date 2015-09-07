@@ -25,11 +25,14 @@ public class Krenzinator extends Scenario implements Listener {
 
 	public Krenzinator() {
 		super("Krenzinator", "Play UHC like Krenzinator does");
-		Bukkit.addRecipe(diamond);
 	}
 
 	public void setEnabled(boolean enable) {
 		enabled = enable;
+		
+		if (enable) {
+			Bukkit.addRecipe(diamond);
+		}
 	}
 
 	public boolean isEnabled() {
