@@ -65,13 +65,25 @@ public class Arena {
 	 * @param enable <code>true</code> to enable, <code>false</code> to disable.
 	 */
 	public void setEnabled(boolean enable) {
-		if (!enable) {
+		this.enabled = enable;
+		
+		if (enable) {
+			if (Main.board) {
+				Scoreboards.getManager().setScore("§a ", 10);
+				Scoreboards.getManager().setScore("§8» §cArena:", 9);
+				Scoreboards.getManager().setScore("§8» §7/a ", 8);
+			}
+		} else {
 			for (Player p : Bukkit.getWorld("arena").getPlayers()) {
 				this.removePlayer(p, false);
 			}
+			
+			if (Main.board) {
+				Scoreboards.getManager().resetScore("§a ");
+				Scoreboards.getManager().resetScore("§8» §cArena:");
+				Scoreboards.getManager().resetScore("§8» §7/a ");
+			}
 		}
-		
-		this.enabled = enable;
 	}
 
 	/**

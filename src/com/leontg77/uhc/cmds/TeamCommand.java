@@ -31,7 +31,7 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
 	public static HashMap<String, ArrayList<String>> sTeam = new HashMap<String, ArrayList<String>>();
 	
 	private Teams teams = Teams.getManager();
-	private boolean enabled = false;
+	public boolean enabled = false;
 
 	public boolean onCommand(CommandSender sender, Command cmd, String label, final String[] args) {
 		if (!(sender instanceof Player)) {
@@ -183,6 +183,12 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
 						}
 						
 						PlayerUtils.broadcast(Main.prefix() + "Team management has been enabled.");
+
+						if (Main.board) {
+							Scoreboards.getManager().setScore("§e ", 13);
+							Scoreboards.getManager().setScore("§8» §cTeam:", 12);
+							Scoreboards.getManager().setScore("§8» §7/team", 11);
+						}
 						enabled = true;
 					} else {
 						sendHelp(player);
@@ -194,7 +200,12 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
 							player.sendMessage(Main.prefix() + "Team management is not enabled.");
 							return true;
 						}
-						
+
+						if (Main.board) {
+							Scoreboards.getManager().resetScore("§e ");
+							Scoreboards.getManager().resetScore("§8» §cTeam:");
+							Scoreboards.getManager().resetScore("§8» §7/team");
+						}
 						PlayerUtils.broadcast(Main.prefix() + "Team management has been disabled.");
 						enabled = false;
 					} else {
@@ -330,6 +341,12 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
 					}
 					
 					PlayerUtils.broadcast(Main.prefix() + "Team management has been enabled.");
+
+					if (Main.board) {
+						Scoreboards.getManager().setScore("§e ", 13);
+						Scoreboards.getManager().setScore("§8» §cTeam:", 12);
+						Scoreboards.getManager().setScore("§8» §7/team", 11);
+					}
 					enabled = true;
 				} else {
 					sendHelp(player);
@@ -341,7 +358,12 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
 						player.sendMessage(Main.prefix() + "Team management is not enabled.");
 						return true;
 					}
-					
+
+					if (Main.board) {
+						Scoreboards.getManager().resetScore("§e ");
+						Scoreboards.getManager().resetScore("§8» §cTeam:");
+						Scoreboards.getManager().resetScore("§8» §7/team");
+					}
 					PlayerUtils.broadcast(Main.prefix() + "Team management has been disabled.");
 					enabled = false;
 				} else {
@@ -438,7 +460,7 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
 					return true;
 				}
 				
-				teams.sendMessage(team, Main.prefix() + ChatColor.GREEN + target.getName() + " §7was invited to your team.");
+				teams.sendMessage(team, Main.prefix() + ChatColor.GREEN + target.getName() + " §7has been invited to your team.");
 
 				if (!invites.containsKey(player)) {
 					invites.put(player, new ArrayList<Player>());

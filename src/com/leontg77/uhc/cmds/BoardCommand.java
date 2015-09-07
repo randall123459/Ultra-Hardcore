@@ -5,6 +5,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
+import com.leontg77.uhc.Arena;
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.Scoreboards;
 import com.leontg77.uhc.Settings;
@@ -31,33 +32,24 @@ public class BoardCommand implements CommandExecutor {
 					
 					PlayerUtils.broadcast(Main.prefix() + "Pregame board enabled.");
 					Main.board = true;
-					
-					if (Main.ffa) {
-						Scoreboards.getManager().setScore("§a ", 10);
-						Scoreboards.getManager().setScore("§8» §cArena:", 9);
-						Scoreboards.getManager().setScore("§8» §7/a ", 8);
-						Scoreboards.getManager().setScore("§b ", 7);
-						Scoreboards.getManager().setScore("§8» §cTeamsize:", 6);
-						Scoreboards.getManager().setScore("§8» §7" + GameUtils.getTeamSize(), 5);
-						Scoreboards.getManager().setScore("§c ", 4);
-						Scoreboards.getManager().setScore("§8» §cScenarios:", 3);
-						Scoreboards.getManager().setScore("§8» §7" + settings.getConfig().getString("game.scenarios"), 2);
-						Scoreboards.getManager().setScore("§d ", 1);
-					} else {
+
+					if (new TeamCommand().enabled) {
 						Scoreboards.getManager().setScore("§e ", 13);
 						Scoreboards.getManager().setScore("§8» §cTeam:", 12);
 						Scoreboards.getManager().setScore("§8» §7/team", 11);
+					}
+					if (Arena.getManager().isEnabled()) {
 						Scoreboards.getManager().setScore("§a ", 10);
 						Scoreboards.getManager().setScore("§8» §cArena:", 9);
 						Scoreboards.getManager().setScore("§8» §7/a ", 8);
-						Scoreboards.getManager().setScore("§b ", 7);
-						Scoreboards.getManager().setScore("§8» §cTeamsize:", 6);
-						Scoreboards.getManager().setScore("§8» §7" + GameUtils.getTeamSize(), 5);
-						Scoreboards.getManager().setScore("§c ", 4);
-						Scoreboards.getManager().setScore("§8» §cScenarios:", 3);
-						Scoreboards.getManager().setScore("§8» §7" + settings.getConfig().getString("game.scenarios"), 2);
-						Scoreboards.getManager().setScore("§d ", 1);
 					}
+					Scoreboards.getManager().setScore("§b ", 7);
+					Scoreboards.getManager().setScore("§8» §cTeamsize:", 6);
+					Scoreboards.getManager().setScore("§8» §7" + GameUtils.getTeamSize(), 5);
+					Scoreboards.getManager().setScore("§c ", 4);
+					Scoreboards.getManager().setScore("§8» §cScenarios:", 3);
+					Scoreboards.getManager().setScore("§8» §7" + settings.getConfig().getString("game.scenarios"), 2);
+					Scoreboards.getManager().setScore("§d ", 1);
 				}
 			} else {
 				sender.sendMessage(Main.prefix() + ChatColor.RED + "You can't use that command.");
