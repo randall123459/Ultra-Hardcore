@@ -624,7 +624,7 @@ public class PlayerListener implements Listener {
 		Player player = event.getPlayer();
 		
 		for (Player online : PlayerUtils.getPlayers()) {
-			if (online.hasPermission("uhc.commandspy") && (online.getGameMode() == GameMode.CREATIVE || Spectator.getManager().isSpectating(online)) && online != player) {
+			if (online.hasPermission("uhc.commandspy") && (online.getGameMode() == GameMode.CREATIVE || Spectator.getManager().isSpectating(online)) && Spectator.getManager().hasCommandSpy(online) && online != player) {
 				online.sendMessage(ChatColor.YELLOW + player.getName() + ": §7" + event.getMessage());
 			}
 		}

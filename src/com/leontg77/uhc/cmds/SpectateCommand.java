@@ -22,7 +22,7 @@ public class SpectateCommand implements CommandExecutor, TabCompleter {
 		if (cmd.getName().equalsIgnoreCase("spectate")) {
 			if (sender.hasPermission("uhc.spectate")) {
 				if (args.length == 0) {
-					sender.sendMessage(ChatColor.RED + "Usage: /spec <on|off|toggle|list> [player]");
+					sender.sendMessage(Main.prefix() + "Usage: /spec <on|off|toggle|list|cmdspy|info> [player]");
 		    		return true;
 				}
 				
@@ -74,8 +74,30 @@ public class SpectateCommand implements CommandExecutor, TabCompleter {
 					    	sender.sendMessage("§8» §7Spectators§8: §a" + list.toString() + "§8.");
 							return true;
 						}
+
+						if (args[0].equalsIgnoreCase("info")) {
+							if (Spectator.getManager().specinfo.contains(player.getName())) {
+								Spectator.getManager().specinfo.remove(player.getName());
+								player.sendMessage(Main.prefix() + "SpecInfo enabled.");
+							} else {
+								Spectator.getManager().specinfo.add(player.getName());
+								player.sendMessage(Main.prefix() + "SpecInfo disabled.");
+							}
+							return true;
+						}
+
+						if (args[0].equalsIgnoreCase("cmdspy")) {
+							if (Spectator.getManager().cmdspy.contains(player.getName())) {
+								Spectator.getManager().cmdspy.remove(player.getName());
+								player.sendMessage(Main.prefix() + "Command spy enabled.");
+							} else {
+								Spectator.getManager().cmdspy.add(player.getName());
+								player.sendMessage(Main.prefix() + "Command spy disabled.");
+							}
+							return true;
+						}
 						
-						player.sendMessage(ChatColor.RED + "Usage: /spec <on|off|toggle> [player]");
+						player.sendMessage(Main.prefix() + "Usage: /spec <on|off|toggle|list|cmdspy|info> [player]");
 					} else {
 						if (args[0].equalsIgnoreCase("list")) {
 							if (Spectator.getManager().spectators.size() < 1) {
@@ -166,8 +188,29 @@ public class SpectateCommand implements CommandExecutor, TabCompleter {
 				    	sender.sendMessage("§8» §7Spectators§8: §a" + list.toString() + "§8.");
 						return true;
 					}
+
+					if (args[0].equalsIgnoreCase("cmdspy")) {
+						if (Spectator.getManager().cmdspy.contains(target.getName())) {
+							Spectator.getManager().cmdspy.remove(target.getName());
+						} else {
+							Spectator.getManager().cmdspy.add(target.getName());
+							sender.sendMessage(Main.prefix() + "Command spy disabled for " + target.getName() + ".");
+						}
+						return true;
+					}
+
+					if (args[0].equalsIgnoreCase("info")) {
+						if (Spectator.getManager().specinfo.contains(target.getName())) {
+							Spectator.getManager().specinfo.remove(target.getName());
+							sender.sendMessage(Main.prefix() + "SpecInfo enabled for " + target.getName() + ".");
+						} else {
+							Spectator.getManager().specinfo.add(target.getName());
+							sender.sendMessage(Main.prefix() + "SpecInfo disabled for " + target.getName() + ".");
+						}
+						return true;
+					}
 					
-					sender.sendMessage(ChatColor.RED + "Usage: /spec <on|off|toggle> [player]");
+					sender.sendMessage(Main.prefix() + "Usage: /spec <on|off|toggle|list|cmdspy|info> [player]");
 				} else {
 					if (sender instanceof Player) {
 						Player player = (Player) sender;
@@ -216,7 +259,30 @@ public class SpectateCommand implements CommandExecutor, TabCompleter {
 					    	sender.sendMessage("§8» §7Spectators§8: §a" + list.toString() + "§8.");
 							return true;
 						}
-						player.sendMessage(ChatColor.RED + "Usage: /spec <on|off|toggle> [player]");
+
+						if (args[0].equalsIgnoreCase("cmdspy")) {
+							if (Spectator.getManager().cmdspy.contains(player.getName())) {
+								Spectator.getManager().cmdspy.remove(player.getName());
+								player.sendMessage(Main.prefix() + "Command spy enabled.");
+							} else {
+								Spectator.getManager().cmdspy.add(player.getName());
+								player.sendMessage(Main.prefix() + "Command spy disabled.");
+							}
+							return true;
+						}
+
+						if (args[0].equalsIgnoreCase("info")) {
+							if (Spectator.getManager().specinfo.contains(player.getName())) {
+								Spectator.getManager().specinfo.remove(player.getName());
+								player.sendMessage(Main.prefix() + "SpecInfo enabled.");
+							} else {
+								Spectator.getManager().specinfo.add(player.getName());
+								player.sendMessage(Main.prefix() + "SpecInfo disabled.");
+							}
+							return true;
+						}
+						
+						player.sendMessage(Main.prefix() + "Usage: /spec <on|off|toggle|list|cmdspy|info> [player]");
 					} else {
 						if (args[0].equalsIgnoreCase("list")) {
 							if (Spectator.getManager().spectators.size() < 1) {
@@ -253,7 +319,7 @@ public class SpectateCommand implements CommandExecutor, TabCompleter {
 					}
 				}
 			} else {
-				sender.sendMessage(ChatColor.RED + "You do not have access to that command.");
+				sender.sendMessage(Main.prefix() + "You can't use that command.");
 			}
 		}
 		return true;
@@ -268,6 +334,9 @@ public class SpectateCommand implements CommandExecutor, TabCompleter {
 		        	types.add("on");
 		        	types.add("off");
 		        	types.add("toggle");
+		        	types.add("list");
+		        	types.add("cmdspy");
+		        	types.add("info");
 		        	
 		        	if (!args[0].equals("")) {
 		        		for (String type : types) {
@@ -336,6 +405,34 @@ public class SpectateCommand implements CommandExecutor, TabCompleter {
 				        		for (Player online : PlayerUtils.getPlayers()) {
 			        				arg.add(online.getName());
 				        		}
+				        	}
+			        	}
+			        	else if (args[0].equalsIgnoreCase("cmdspy")) {
+				        	if (!args[1].equals("")) {
+				        		for (Player online : PlayerUtils.getPlayers()) {
+				        			if (online.getName().toLowerCase().startsWith(args[1].toLowerCase())) {
+				        				arg.add(online.getName());
+				        			}
+				        		}
+				        	}
+				        	else {
+				        		for (Player online : PlayerUtils.getPlayers()) {
+			        				arg.add(online.getName());
+			        			}
+				        	}
+			        	}
+			        	else if (args[0].equalsIgnoreCase("info")) {
+				        	if (!args[1].equals("")) {
+				        		for (Player online : PlayerUtils.getPlayers()) {
+				        			if (online.getName().toLowerCase().startsWith(args[1].toLowerCase())) {
+				        				arg.add(online.getName());
+				        			}
+				        		}
+				        	}
+				        	else {
+				        		for (Player online : PlayerUtils.getPlayers()) {
+			        				arg.add(online.getName());
+			        			}
 				        	}
 			        	}
 			        	return arg;
