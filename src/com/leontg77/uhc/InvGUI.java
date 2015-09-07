@@ -154,6 +154,10 @@ public class InvGUI {
 		player.openInventory(inv);
 		return inv;
 	}
+	
+	public void openGameInfo(Player player) {
+		
+	}
 
 	/**
 	 * Open the rules inventory for the given player
