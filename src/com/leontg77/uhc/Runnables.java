@@ -250,7 +250,7 @@ public class Runnables {
 				}
 
 				if (pvp == 0) {
-					PlayerUtils.broadcast(Main.prefix() + "PvP/iPvP is now been enabled.");
+					PlayerUtils.broadcast(Main.prefix() + "PvP/iPvP has been enabled.");
 					
 					for (Player online : PlayerUtils.getPlayers()) {
 						PlayerUtils.sendTitle(online, "", "§4PvP has been enabled!", 5, 10, 5);
