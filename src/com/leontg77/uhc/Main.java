@@ -29,6 +29,7 @@ import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Score;
 import org.bukkit.scoreboard.Scoreboard;
 
+import com.leontg77.uhc.Spectator.SpecInfo;
 import com.leontg77.uhc.cmds.AboardCommand;
 import com.leontg77.uhc.cmds.ArenaCommand;
 import com.leontg77.uhc.cmds.BanCommand;
@@ -305,6 +306,10 @@ public class Main extends JavaPlugin {
 
 			plugin.getLogger().info("Deleted " + totalDatafiles + " player data files.");
 			plugin.getLogger().info("Deleted " + totalStatsfiles + " player stats files.");
+		}
+		
+		if (State.isState(State.INGAME)) {
+			Bukkit.getServer().getPluginManager().registerEvents(new SpecInfo(), this);
 		}
 		
 		for (Player online : PlayerUtils.getPlayers()) {	
