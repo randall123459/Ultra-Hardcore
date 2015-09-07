@@ -98,19 +98,20 @@ public class EndCommand implements CommandExecutor {
 				PlayerUtils.broadcast(Main.prefix() + "With §a" + kills + "§7 kills.");
 				PlayerUtils.broadcast(Main.prefix() + "Congratz on the win!");
 				
-				if (settings.getHOF().getConfigurationSection(host).equals(null)) {
-					settings.getHOF().set(host + "." + 1 + ".winners", winners);
-					settings.getHOF().set(host + "." + 1 + ".kills", kills);
-					settings.getHOF().set(host + "." + 1 + ".teamsize", GameUtils.getTeamSize().trim());
-					settings.getHOF().set(host + "." + 1 + ".scenarios", settings.getConfig().getString("game.scenarios"));
-					settings.saveHOF();
-				} else {
+				if (settings.getHOF().contains(host)) {
 					int id = settings.getHOF().getConfigurationSection(host).getKeys(false).size() + 1;
 				
 					settings.getHOF().set(host + "." + id + ".winners", winners);
 					settings.getHOF().set(host + "." + id + ".kills", kills);
 					settings.getHOF().set(host + "." + id + ".teamsize", GameUtils.getTeamSize().trim());
 					settings.getHOF().set(host + "." + id + ".scenarios", settings.getConfig().getString("game.scenarios"));
+					settings.saveHOF();
+				
+				} else {
+					settings.getHOF().set(host + "." + 1 + ".winners", winners);
+					settings.getHOF().set(host + "." + 1 + ".kills", kills);
+					settings.getHOF().set(host + "." + 1 + ".teamsize", GameUtils.getTeamSize().trim());
+					settings.getHOF().set(host + "." + 1 + ".scenarios", settings.getConfig().getString("game.scenarios"));
 					settings.saveHOF();
 				}
 
