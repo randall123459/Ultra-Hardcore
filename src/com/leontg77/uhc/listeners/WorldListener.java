@@ -65,11 +65,11 @@ public class WorldListener implements Listener {
 		
 		ChunkOreRemover remover = new ChunkOreRemover(worldData, event.getChunk());
 		
-		if (!AntiStripmine.getManager().wasChecked(remover)) {
-			worldData.logQueued(remover);
+		if (AntiStripmine.getManager().wasChecked(remover)) {
+			Main.plugin.getLogger().warning("Populated " + worldData.getWorld().getName() + " " + remover.getChunkX() + "," + remover.getChunkZ() + " again");
 			AntiStripmine.getManager().queue(remover);
 		} else {
-			Main.plugin.getLogger().warning("Populated " + worldData.getWorld().getName() + " " + remover.getChunkX() + "," + remover.getChunkZ() + " again");
+			worldData.logQueued(remover);
 			AntiStripmine.getManager().queue(remover);
 		}
 	}
