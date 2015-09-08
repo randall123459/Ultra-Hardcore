@@ -30,6 +30,9 @@ public class Settings {
 	
 	private FileConfiguration swap;
 	private File sfile;
+	
+	private FileConfiguration worlds;
+	private File wfile;
 
 	/**
 	 * Gets the instance of the class.
@@ -95,6 +98,19 @@ public class Settings {
 		}
                
 		swap = YamlConfiguration.loadConfiguration(sfile);
+        
+		wfile = new File(plugin.getDataFolder(), "worlds.yml");
+        
+		if (!wfile.exists()) {
+			try {
+				wfile.createNewFile();
+			} catch (Exception e) {
+				Bukkit.getServer().getLogger().severe(ChatColor.RED + "Could not create worlds.yml!");
+			}
+		}
+        
+		worlds = YamlConfiguration.loadConfiguration(wfile);
+	
 		Bukkit.getLogger().info("[UHC] Configs has been setup.");
 	}
     
@@ -204,5 +220,32 @@ public class Settings {
 	 */
 	public void reloadSwap() {
 		swap = YamlConfiguration.loadConfiguration(sfile);
+	}
+    
+	/**
+	 * Gets the worlds file.
+	 * 
+	 * @return The file.
+	 */
+	public FileConfiguration getWorlds() {
+		return worlds;
+	}
+    
+	/**
+	 * Saves the worlds config.
+	 */
+	public void saveWorlds() {
+		try {
+			worlds.save(wfile);
+		} catch (Exception e) {
+			Bukkit.getServer().getLogger().severe(ChatColor.RED + "Could not save worlds.yml!");
+		}
+	}
+    
+	/**
+	 * Reloads the worlds file.
+	 */
+	public void reloadWorlds() {
+		worlds = YamlConfiguration.loadConfiguration(wfile);
 	}
 }
