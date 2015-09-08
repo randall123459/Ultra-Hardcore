@@ -8,6 +8,7 @@ import org.bukkit.Material;
 import org.bukkit.TravelAgent;
 import org.bukkit.World;
 import org.bukkit.World.Environment;
+import org.bukkit.block.Biome;
 import org.bukkit.entity.Creeper;
 import org.bukkit.entity.Damageable;
 import org.bukkit.entity.EnderPearl;
@@ -16,7 +17,10 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Ghast;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
+import org.bukkit.entity.Rabbit;
+import org.bukkit.entity.Sheep;
 import org.bukkit.entity.Witch;
+import org.bukkit.entity.Wolf;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
@@ -82,6 +86,29 @@ public class EntityListener implements Listener {
 		
 		if (loc.getWorld().getGameRuleValue("doMobSpawning") != null && loc.getWorld().getGameRuleValue("doMobSpawning").equals("false")) {
 			event.setCancelled(true);
+			return;
+		}
+		
+		if (event.getEntity() instanceof Wolf) {
+			event.getEntity().setCustomName("Wolf");
+		}
+		
+		if (event.getEntity() instanceof Sheep) {
+			if (loc.getBlock().getBiome().equals(Biome.FOREST) || loc.getBlock().getBiome().equals(Biome.FOREST_HILLS)) {
+				event.setCancelled(true);
+				
+				Wolf wolf = loc.getWorld().spawn(loc, Wolf.class);
+				wolf.setCustomName("Wolf");
+			}
+		}
+		
+		if (event.getEntity() instanceof Rabbit) {
+			if (loc.getBlock().getBiome().equals(Biome.FOREST) || loc.getBlock().getBiome().equals(Biome.FOREST_HILLS)) {
+				event.setCancelled(true);
+				
+				Wolf wolf = loc.getWorld().spawn(loc, Wolf.class);
+				wolf.setCustomName("Wolf");
+			}
 		}
 	}
 	
