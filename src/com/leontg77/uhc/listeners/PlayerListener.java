@@ -700,12 +700,12 @@ public class PlayerListener implements Listener {
 			ar.remove(0);
 			String[] args = ar.toArray(new String[ar.size()]);
 			
+			if (args.length == 0) {
+				player.sendMessage(Main.prefix() + "The border is currently: §a" + (((int) player.getWorld().getWorldBorder().getSize()) + 1) + "x" + (((int) player.getWorld().getWorldBorder().getSize()) + 1));
+				return;
+			}
+			
 			if (player.hasPermission("uhc.border")) {
-				if (args.length == 0) {
-					player.sendMessage(Main.prefix() + "Usage: /border <radius>");
-					return;
-				}
-				
 				int radius;
 				
 				try {
