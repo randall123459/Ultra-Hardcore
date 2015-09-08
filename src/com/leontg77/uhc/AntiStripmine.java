@@ -140,7 +140,7 @@ public class AntiStripmine {
 
 		public WorldData(World world) {
 			this.worldId = world.getUID();
-			File worldFolder = new File(Main.plugin.getDataFolder(), "AntiStripmine" + File.separator + world.getName() + File.separator);
+			File worldFolder = new File(Main.plugin.getDataFolder(), "antistripmine" + File.separator + world.getName() + File.separator);
 
 			if (!worldFolder.exists()) {
 				worldFolder.mkdirs();
