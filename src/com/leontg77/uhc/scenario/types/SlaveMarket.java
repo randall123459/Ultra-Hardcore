@@ -6,10 +6,11 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Team;
@@ -19,7 +20,7 @@ import com.leontg77.uhc.Teams;
 import com.leontg77.uhc.scenario.Scenario;
 import com.leontg77.uhc.utils.PlayerUtils;
 
-public class SlaveMarket extends Scenario implements Listener {
+public class SlaveMarket extends Scenario implements Listener, CommandExecutor {
 	private boolean enabled = false;
 	
 	private boolean bidProgressing = false;
@@ -28,11 +29,14 @@ public class SlaveMarket extends Scenario implements Listener {
 	private ArrayList<String> traders = new ArrayList<String>(); 
 	
 	public SlaveMarket() {
-		super("SlaveMarket", "");
+		super("SlaveMarket", "8 slave owners are chosen and they get 30 diamonds to bid on players as they choose. Any spare diamonds will be cleared.");
 	}
 
 	public void setEnabled(boolean enable) {
 		enabled = enable;
+		
+		PlayerUtils.broadcast(String.valueOf(enable));
+		PlayerUtils.broadcast(String.valueOf(enabled));
 	}
 
 	public boolean isEnabled() {
@@ -40,54 +44,45 @@ public class SlaveMarket extends Scenario implements Listener {
 	}
 	
 	public String prefix() {
-		return Main.prefix().replaceAll("UHC", "SlaveMarket");
+		return Main.prefix().replaceAll("UHC", "Slave");
 	}
 	
-	@EventHandler
-	public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
-		if (event.getMessage().startsWith("/slavereset")) {
-			ArrayList<String> ar = new ArrayList<String>();
-			for (String arg : event.getMessage().split(" ")) {
-				ar.add(arg);
-			}
-			ar.remove(0);
-			final Player player = event.getPlayer();
-			event.setCancelled(true);
-			if (!isEnabled()) {
-				player.sendMessage(ChatColor.RED + "SlaveMarket is not enabled.");
-				return;
-			}
-			bidProgressing = false;
-			traders.clear();
-			biggestBid = -1;
-			bidWinner = null;
-			bidTime = 0;
-			for (Team team : Teams.getManager().getTeams()) {
-				for (String p : team.getEntries()) {
-					team.removeEntry(p);
-				}
-			}
-			player.sendMessage(prefix() + "SlaveMarket reset.");
-		}
-		
-		if (event.getMessage().startsWith("/slaveowner")) {
-			ArrayList<String> ar = new ArrayList<String>();
-			for (String arg : event.getMessage().split(" ")) {
-				ar.add(arg);
-			}
-			ar.remove(0);
-			final Player player = event.getPlayer();
-			final String[] args = ar.toArray(new String[ar.size()]);
-			event.setCancelled(true);
-			if (!isEnabled()) {
-				player.sendMessage(ChatColor.RED + "SlaveMarket is not enabled.");
-				return;
+	public boolean onCommand(final CommandSender sender, Command cmd, String label, final String[] args) {
+		if (cmd.getName().equalsIgnoreCase("slavereset")) {
+			if (!enabled) {
+				sender.sendMessage(Main.prefix() + "\"SlaveMarket\" is not enabled.");
+				return true;
 			}
 			
-			if (player.hasPermission("slave.admin")) {
+			if (sender.hasPermission("uhc.slavemarket")) {
+				bidProgressing = false;
+				bidWinner = null;
+				traders.clear();
+				biggestBid = -1;
+				bidTime = 0;
+				
+				for (Team teams : Teams.getManager().getTeamsWithPlayers()) {
+					for (String entry : teams.getEntries()) {
+						teams.removeEntry(entry);
+					}
+				}
+				
+				PlayerUtils.broadcast(prefix() + "SlaveMarket has been reset.");
+			} else {
+				sender.sendMessage(Main.prefix() + "You can't use that command.");
+			}
+		}
+		
+		if (cmd.getName().equalsIgnoreCase("slaveowner")) {
+			if (!isEnabled()) {
+				sender.sendMessage(Main.prefix() + "\"SlaveMarket\" is not enabled.");
+				return true;
+			}
+			
+			if (sender.hasPermission("uhc.slavemarket")) {
 				if (args.length == 0) {
-					player.sendMessage(ChatColor.RED + "Usage: /slaveowner <add|remove|list> [player] [amountofdias]");
-					return;
+					sender.sendMessage(Main.prefix() + "Usage: /slaveowner <add|remove|list> [player] [amountofdias]");
+					return true;
 				}
 				
 				if (args[0].equalsIgnoreCase("add")) {
@@ -95,27 +90,20 @@ public class SlaveMarket extends Scenario implements Listener {
 						Player target = Bukkit.getPlayer(args[1]);
 						
 						if (target == null) {
-							player.sendMessage(ChatColor.RED + "That player is not online.");
-							return;
+							sender.sendMessage(ChatColor.RED + "That player is not online.");
+							return true;
 						}
 						
 						traders.add(target.getName());
-						Team t = null;
-						
-						for (Team team : Teams.getManager().getTeams()) {
-							if (team.getSize() == 0) {
-								t = team;
-								break;
-							}
-						}
+						Team t = Teams.getManager().findAvailableTeam();
 						
 						if (t == null) {
-							player.sendMessage(ChatColor.RED + "No more available teams.");
-							return;
+							sender.sendMessage(ChatColor.RED + "Could not find any open teams.");
+							return true;
 						}
 						
 						t.addEntry(target.getName());
-						PlayerUtils.broadcast(prefix() + ChatColor.GREEN + target.getName() + " §7is now a slave owner!");
+						PlayerUtils.broadcast(prefix() + ChatColor.GREEN + target.getName() + " §7is now a slave owner.");
 						
 						if (args.length >= 3) {
 							int i;
@@ -123,8 +111,8 @@ public class SlaveMarket extends Scenario implements Listener {
 							try {
 								i = Integer.parseInt(args[2]);
 							} catch (Exception e) {
-								player.sendMessage(ChatColor.RED + "Invaild number.");
-								return;
+								sender.sendMessage(ChatColor.RED + "Invaild number.");
+								return true;
 							}
 							
 							target.getInventory().addItem(new ItemStack (Material.DIAMOND, i));
@@ -132,7 +120,7 @@ public class SlaveMarket extends Scenario implements Listener {
 							target.getInventory().addItem(new ItemStack (Material.DIAMOND, 30));
 						}
 					} else {
-						player.sendMessage(ChatColor.RED + "Usage: /slaveowner <add|remove|list> [player] [amountofdias]");
+						sender.sendMessage(Main.prefix() + "Usage: /slaveowner <add|remove|list> [player] [amountofdias]");
 					}
 				}
 				else if (args[0].equalsIgnoreCase("remove")) {
@@ -140,8 +128,8 @@ public class SlaveMarket extends Scenario implements Listener {
 						Player target = Bukkit.getPlayer(args[1]);
 						
 						if (target == null) {
-							player.sendMessage(ChatColor.RED + "That player is not online.");
-							return;
+							sender.sendMessage(ChatColor.RED + "That player is not online.");
+							return true;
 						}
 						
 						traders.remove(args[1]);
@@ -154,7 +142,7 @@ public class SlaveMarket extends Scenario implements Listener {
 						PlayerUtils.broadcast(prefix() + ChatColor.GREEN + args[1] + " §7is no longer a slave owner!");
 						target.getInventory().clear();
 					} else {
-						player.sendMessage(ChatColor.RED + "Usage: /slaveowner <add|remove|list> [player] [amountofdias]");
+						sender.sendMessage(Main.prefix() + "Usage: /slaveowner <add|remove|list> [player] [amountofdias]");
 					}
 				}
 				else if (args[0].equalsIgnoreCase("list")) {
@@ -162,40 +150,32 @@ public class SlaveMarket extends Scenario implements Listener {
 					
 					for (String l : traders) {
 						if (s.length() > 0) {
-							s.append("§7, §a");
+							s.append("§8, §a");
 						}
 						
 						s.append(ChatColor.GREEN + l);
 					}
 					
-					player.sendMessage(prefix() + "Current slaves: " + s.toString().trim());
+					sender.sendMessage(prefix() + "Current slaves: " + s.toString().trim());
 				}
 				else {
-					player.sendMessage(ChatColor.RED + "Usage: /slaveowner <add|remove|list> [player] [amountofdias]");
+					sender.sendMessage(Main.prefix() + "Usage: /slaveowner <add|remove|list> [player] [amountofdias]");
 				}
 			} else {
-				player.sendMessage(ChatColor.RED + "You do not have access to that command.");
+				sender.sendMessage(Main.prefix() + "You can't use that command.");
 			}
 		}
 		
-		if (event.getMessage().startsWith("/startbid")) {
-			ArrayList<String> ar = new ArrayList<String>();
-			for (String arg : event.getMessage().split(" ")) {
-				ar.add(arg);
-			}
-			ar.remove(0);
-			final Player player = event.getPlayer();
-			final String[] args = ar.toArray(new String[ar.size()]);
-			event.setCancelled(true);
+		if (cmd.getName().equalsIgnoreCase("startbid")) {
 			if (!isEnabled()) {
-				player.sendMessage(ChatColor.RED + "SlaveMarket is not enabled.");
-				return;
+				sender.sendMessage(Main.prefix() + "\"SlaveMarket\" is not enabled.");
+				return true;
 			}
 			
-			if (player.hasPermission("slave.admin")) {
+			if (sender.hasPermission("uhc.slavemarket")) {
 	    		if (args.length < 2) {
-					player.sendMessage(ChatColor.RED + "Usage: /startbid <player> <time>");
-					return;
+	    			sender.sendMessage(ChatColor.RED + "Usage: /startbid <player> <time>");
+					return true;
 				}
 				
 				for (Player online : PlayerUtils.getPlayers()) {
@@ -206,7 +186,7 @@ public class SlaveMarket extends Scenario implements Listener {
 				Bukkit.getServer().getScheduler().runTaskLater(Main.plugin, new Runnable() {
 					public void run() {
 				    	for (Player online : PlayerUtils.getPlayers()) {
-				    		online.sendMessage(prefix() + "Bidding starts in 3");
+				    		online.sendMessage(prefix() + "Bidding starts in §a3§7.");
 				    		online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 1);
 				    	}
 					}
@@ -215,7 +195,7 @@ public class SlaveMarket extends Scenario implements Listener {
 				Bukkit.getServer().getScheduler().runTaskLater(Main.plugin, new Runnable() {
 					public void run() {
 				    	for (Player online : PlayerUtils.getPlayers()) {
-				    		online.sendMessage(prefix() + "Bidding starts in 2");
+				    		online.sendMessage(prefix() + "Bidding starts in §a2§7.");
 				    		online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 1);
 				    	}
 					}
@@ -224,7 +204,7 @@ public class SlaveMarket extends Scenario implements Listener {
 				Bukkit.getServer().getScheduler().runTaskLater(Main.plugin, new Runnable() {
 					public void run() {
 						for (Player online : PlayerUtils.getPlayers()) {
-				    		online.sendMessage(prefix() + "Bidding starts in 1");
+				    		online.sendMessage(prefix() + "Bidding starts in §a1§7.");
 				    		online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 1);
 				    	}
 					}
@@ -237,14 +217,20 @@ public class SlaveMarket extends Scenario implements Listener {
 						try {
 							i = Integer.parseInt(args[1]);
 						} catch (Exception e) {
-							player.sendMessage(ChatColor.RED + "Invaild number.");
+							sender.sendMessage(ChatColor.RED + "Invaild number.");
 							return;
 						}
+
+						for (Player online : PlayerUtils.getPlayers()) {
+				    		online.sendMessage(prefix() + "The bidding of player §a" + args[0] + "§7 has started.");
+				    		online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 1);
+				    	}
 						
 				    	bidProgressing = true;
 				    	bidTime = i;
 				    	biggestBid = -1;
 				    	bidWinner = null;
+				    	
 				    	new BukkitRunnable() {
 				    		public void run() {
 								bidTime--;
@@ -258,48 +244,52 @@ public class SlaveMarket extends Scenario implements Listener {
 								    		return;
 							    		}
 							    		target.getInventory().remove(new ItemStack (Material.DIAMOND, biggestBid));
-							    		PlayerUtils.broadcast(prefix() + ChatColor.GREEN + bidWinner + "§7 has won the midding on §a" + args[0] + "§7 for §a" + biggestBid);
+							    		PlayerUtils.broadcast(prefix() + ChatColor.GREEN + bidWinner + "§7 has won the bidding on §a" + args[0] + "§7 for §a" + biggestBid);
 							    		Team t = target.getScoreboard().getEntryTeam(target.getName());
 							    		
 							    		if (t == null) {
-							    			player.sendMessage(ChatColor.RED + "Could not join team.");
+							    			sender.sendMessage(ChatColor.RED + "Could not join team.");
 							    		} else {
 							    			t.addEntry(args[0]);
 							    		}
 							    	} else {
 							    		PlayerUtils.broadcast(prefix() + "None of the slave traders bid on §a" + args[0] + "§7.");
 							    	}
+							    	return;
 								}
 								if (bidTime < 6) {
-									PlayerUtils.broadcast(prefix() + "Bidding ends in " + bidTime);
+									PlayerUtils.broadcast(prefix() + "Bidding ends in §a" + bidTime + "§7.");
+
+									for (Player online : PlayerUtils.getPlayers()) {
+							    		online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 1);
+							    	}
 								}
 				    		}
 				    	}.runTaskTimer(Main.plugin, 0, 20);
 					}
 				}, 80);
 			} else {
-				player.sendMessage(ChatColor.RED + "You do not have access to that command.");
+				sender.sendMessage(Main.prefix() + "You can't use that command.");
 			}
 		}
 		
-		if (event.getMessage().startsWith("/bid")) {
-			ArrayList<String> ar = new ArrayList<String>();
-			for (String arg : event.getMessage().split(" ")) {
-				ar.add(arg);
+		if (cmd.getName().equalsIgnoreCase("bid")) {
+			if (!(sender instanceof Player)) {
+				sender.sendMessage(ChatColor.RED + "Only players can bid on players.");
+				return true;
 			}
-			ar.remove(0);
-			final Player player = event.getPlayer();
-			final String[] args = ar.toArray(new String[ar.size()]);
-			event.setCancelled(true);
+			
+			Player player = (Player) sender;
+			
 			if (!isEnabled()) {
-				player.sendMessage(ChatColor.RED + "SlaveMarket is not enabled.");
-				return;
+				sender.sendMessage(Main.prefix() + "\"SlaveMarket\" is not enabled.");
+				return true;
 			}
 			
 			if (traders.contains(player.getName())) {
 				if (args.length == 0) {
-					player.sendMessage(ChatColor.RED + "Usage: /bid <amount>");
-					return;
+					player.sendMessage(Main.prefix() + "Usage: /bid <amount>");
+					return true;
 				}
 				
 				int i;
@@ -308,14 +298,14 @@ public class SlaveMarket extends Scenario implements Listener {
 					i = Integer.parseInt(args[0]);
 				} catch (Exception e) {
 					player.sendMessage(ChatColor.RED + "Invaild number.");
-					return;
+					return true;
 				}
 				
 				if (i >= 0) {
 					if (bidProgressing) {
-						if (!hasenough(player, Material.DIAMOND, i)) {
-							player.sendMessage(prefix() + "You have to bid more diamonds than you have.");
-							return;
+						if (!PlayerUtils.hasEnough(player, Material.DIAMOND, i)) {
+							player.sendMessage(prefix() + "You can't bid more diamonds than you have.");
+							return true;
 						}
 						
 						if (i > biggestBid) {
@@ -324,7 +314,7 @@ public class SlaveMarket extends Scenario implements Listener {
 							if (bidTime < 5) {
 								bidTime = bidTime + 5;
 							}
-							PlayerUtils.broadcast(prefix() + "§a" + player.getName() + "§7 bid §a" + i);
+							PlayerUtils.broadcast(prefix() + "§a" + player.getName() + "§7 bid §a" + i + "§7.");
 						} else {
 							player.sendMessage(prefix() + "Bids must be greater than the previous bid.");
 						}
@@ -335,18 +325,9 @@ public class SlaveMarket extends Scenario implements Listener {
 					player.sendMessage(ChatColor.RED + "Bids cannot be negative.");
 				}
 			} else {
-				player.sendMessage(ChatColor.RED + "You are not a slave trader.");
+				player.sendMessage(prefix() + "You are not a slave owner.");
 			}
 		}
-	}
-
-	private boolean hasenough(Player player, Material diamond, int i) {
-		int a = 0;
-		for (ItemStack item : player.getInventory().getContents()) {
-			if (item.getType() == diamond) {
-				a = a + item.getAmount();
-			}
-		}
-		return i >= a;
+		return true;
 	}
 }

@@ -5,10 +5,11 @@ import java.util.Random;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.scoreboard.Team;
 
 import com.leontg77.uhc.Main;
@@ -16,7 +17,7 @@ import com.leontg77.uhc.Teams;
 import com.leontg77.uhc.scenario.Scenario;
 import com.leontg77.uhc.utils.PlayerUtils;
 
-public class Captains extends Scenario implements Listener {
+public class Captains extends Scenario implements Listener, CommandExecutor {
 	private ArrayList<String> captains = new ArrayList<String>();
 	private boolean enabled = false;
 	private String chooser = "none";
@@ -34,39 +35,27 @@ public class Captains extends Scenario implements Listener {
 	public boolean isEnabled() {
 		return enabled;
 	}
-	
-	@EventHandler
-	public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
-		ArrayList<String> ar = new ArrayList<String>();
-		for (String arg : event.getMessage().split(" ")) {
-			ar.add(arg);
-		}
-		ar.remove(0);
-		
-		Player player = event.getPlayer();
-		String cmd = event.getMessage().split(" ")[0];
-		String[] args = ar.toArray(new String[ar.size()]);
-		
-		if (cmd.equalsIgnoreCase("/addcaptain")) {
-			event.setCancelled(true);
+
+	public boolean onCommand(CommandSender player, Command cmd, String label, String[] args) {
+		if (cmd.getName().equalsIgnoreCase("addcaptain")) {
 			if (!isEnabled()) {
 				player.sendMessage(ChatColor.RED + "Captains is not enabled.");
-				return;
+				return true;
 			}
 			
 			if (!player.hasPermission("uhc.captains")) {
 				player.sendMessage(ChatColor.RED + "You do not have access to that command.");
-				return;
+				return true;
 			}
 			
 			if (args.length == 0) {
 				player.sendMessage(ChatColor.RED + "Usage: /addcaptain <player>");
-				return;
+				return true;
 			}
 			
 			if (captains.contains(args[0])) {
 				player.sendMessage(ChatColor.RED + args[0] + " is already an captain.");
-				return;
+				return true;
 			}
 
 			Team t = null;
@@ -80,7 +69,7 @@ public class Captains extends Scenario implements Listener {
 			
 			if (t == null) {
 				player.sendMessage(ChatColor.RED + "No more available teams.");
-				return;
+				return true;
 			}
 			
 			t.addEntry(args[0]);
@@ -89,29 +78,28 @@ public class Captains extends Scenario implements Listener {
 			PlayerUtils.broadcast(Main.prefix() + ChatColor.GREEN + args[0] + " §7is now an captain.");
 		}
 		
-		if (cmd.equalsIgnoreCase("/removecaptain")) {
-			event.setCancelled(true);
+		if (cmd.getName().equalsIgnoreCase("removecaptain")) {
 			if (!isEnabled()) {
 				player.sendMessage(ChatColor.RED + "Captains is not enabled.");
-				return;
+				return true;
 			}
 			
 			if (!player.hasPermission("uhc.captains")) {
 				player.sendMessage(ChatColor.RED + "You do not have access to that command.");
-				return;
+				return true;
 			}
 			
 			if (args.length == 0) {
 				player.sendMessage(ChatColor.RED + "Usage: /removecaptain <player>");
-				return;
+				return true;
 			}
 			
 			if (!captains.contains(args[0])) {
 				player.sendMessage(ChatColor.RED + args[0] + " is not an captain.");
-				return;
+				return true;
 			}
 			
-			Team t = player.getScoreboard().getEntryTeam(args[0]);
+			Team t = Teams.getManager().getTeam(args[0]);
 			
 			if (t != null) {
 				t.removeEntry(args[0]);
@@ -121,21 +109,20 @@ public class Captains extends Scenario implements Listener {
 			PlayerUtils.broadcast(Main.prefix() + args[0] + ChatColor.GREEN + " §7is no longer an captain.");
 		}
 		
-		if (cmd.equalsIgnoreCase("/randomcaptains")) {
-			event.setCancelled(true);
+		if (cmd.getName().equalsIgnoreCase("randomcaptains")) {
 			if (!isEnabled()) {
 				player.sendMessage(ChatColor.RED + "Captains is not enabled.");
-				return;
+				return true;
 			}
 			
 			if (!player.hasPermission("uhc.captains")) {
 				player.sendMessage(ChatColor.RED + "You do not have access to that command.");
-				return;
+				return true;
 			}
 			
 			if (args.length == 0) {
 				player.sendMessage(ChatColor.RED + "Usage: /randomcaptains <amount>");
-				return;
+				return true;
 			}
 			
 			int amount;
@@ -144,7 +131,7 @@ public class Captains extends Scenario implements Listener {
 				amount = Integer.parseInt(args[0]);
 			} catch (Exception e) {
 				player.sendMessage(ChatColor.RED + "Invaild number.");
-				return;
+				return true;
 			}
 			
 			for (int i = 1; i <= amount; i++) {
@@ -170,7 +157,7 @@ public class Captains extends Scenario implements Listener {
 				}
 				
 				if (t == null) {
-					return;
+					return true;
 				}
 				
 				t.addEntry(s);
@@ -178,16 +165,15 @@ public class Captains extends Scenario implements Listener {
 			}
 		}
 		
-		if (cmd.equalsIgnoreCase("/cycle")) {
-			event.setCancelled(true);
+		if (cmd.getName().equalsIgnoreCase("cycle")) {
 			if (!isEnabled()) {
 				player.sendMessage(ChatColor.RED + "Captains is not enabled.");
-				return;
+				return true;
 			}
 			
 			if (!player.hasPermission("uhc.captains")) {
 				player.sendMessage(ChatColor.RED + "You do not have access to that command.");
-				return;
+				return true;
 			}
 			
 			if (cycle) {
@@ -205,46 +191,45 @@ public class Captains extends Scenario implements Listener {
 			}
 		}
 		
-		if (cmd.equalsIgnoreCase("/choose")) {
-			event.setCancelled(true);
+		if (cmd.getName().equalsIgnoreCase("choose")) {
 			if (!isEnabled()) {
 				player.sendMessage(ChatColor.RED + "Captains is not enabled.");
-				return;
+				return true;
 			}
 			
 			if (!captains.contains(player.getName())) {
 				player.sendMessage(ChatColor.RED + "You are not an captain");
-				return;
+				return true;
 			}
 			
-			if (player.getName() != chooser) {
+			if (!player.getName().equalsIgnoreCase(chooser)) {
 				player.sendMessage(ChatColor.RED + "You are not the one choosing.");
-				return;
+				return true;
 			}
 			
 			if (args.length == 0) {
 				player.sendMessage(ChatColor.RED + "Usage: /choose <player>");
-				return;
+				return true;
 			}
 			
 			Player target = Bukkit.getServer().getPlayer(args[0]);
 			
 			if (target == null) {
 				player.sendMessage(ChatColor.RED + "That player is not online.");
-				return;
+				return true;
 			}
 			
 			if (target == player) {
 				player.sendMessage(ChatColor.RED + "You cannot choose yourselves.");
-				return;
+				return true;
 			}
 			
 			if (target.getScoreboard().getEntryTeam(target.getName()) != null) {
 				player.sendMessage(ChatColor.RED + "That player is already taken.");
-				return;
+				return true;
 			}
 			
-			Team team = player.getScoreboard().getEntryTeam(player.getName());
+			Team team = Teams.getManager().getTeam(player.getName());
 			
 			if (team != null) {
 				team.addEntry(target.getName());
@@ -258,5 +243,6 @@ public class Captains extends Scenario implements Listener {
 			PlayerUtils.broadcast(Main.prefix() + player.getName() + ChatColor.GREEN + " §7has picked §a" + target.getName() + "§7, next captain to choose is §a" + captains.get(current));
 			chooser = captains.get(current);
 		}
+		return true;
 	}
 }
