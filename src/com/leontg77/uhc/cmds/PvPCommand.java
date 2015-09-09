@@ -44,6 +44,11 @@ public class PvPCommand implements CommandExecutor, TabCompleter {
 				
 				World world = Bukkit.getServer().getWorld(args[0]);
 				
+				if (world == null) {
+					sender.sendMessage(ChatColor.RED + "That world does not exist.");
+					return true;
+				}
+				
 				if (args[1].equalsIgnoreCase("on")) {
 					sender.sendMessage(Main.prefix() + "PvP in §a" + world.getName() + " §7has been enabled.");
 					world.setPVP(true);
