@@ -28,6 +28,7 @@ public class Parkour implements Listener {
 	private static Parkour manager = new Parkour();
 	public BukkitRunnable task;
 
+	public Location spawn = new Location(Bukkit.getWorld("lobby"), 29.5, 34, 0.5, -90, 0);
 	public Location point1 = new Location(Bukkit.getWorld("lobby"), 90.5, 36, 2.5, -90, 0);
 	public Location point2 = new Location(Bukkit.getWorld("lobby"), 134.5, 41, 12.5, 0, 0);
 	public Location point3 = new Location(Bukkit.getWorld("lobby"), 102.5, 54, 17.5, -180, 0);
@@ -89,6 +90,9 @@ public class Parkour implements Listener {
 			
 			if (((ArmorStand) point).getCustomName().contains("Start")) {
 				if (parkourPlayers.contains(player)) {
+					player.sendMessage(Main.prefix() + "The timer has been reset to §a0s§7.");
+					player.playSound(player.getLocation(), "random.pop", 1, 1);
+					time.put(player, 0);
 					return;
 				}
 				
