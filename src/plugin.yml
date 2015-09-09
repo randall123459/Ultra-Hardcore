@@ -140,3 +140,11 @@ commands:
     description: View your AssaultAndBarrery type.
   listclass:
     description: View who has what AssaultAndBarrery type.
+  slavereset:
+    description: Reset slavemarket.
+  slaveowner:
+    description: Manage slave owners.
+  startbid:
+    description: Start a bid on a player.
+  bid:
+    description: Bid on a player.

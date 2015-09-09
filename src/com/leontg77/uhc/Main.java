@@ -94,6 +94,7 @@ import com.leontg77.uhc.listeners.WorldListener;
 import com.leontg77.uhc.scenario.Scenario;
 import com.leontg77.uhc.scenario.ScenarioManager;
 import com.leontg77.uhc.scenario.types.AssaultAndBattery;
+import com.leontg77.uhc.scenario.types.SlaveMarket;
 import com.leontg77.uhc.utils.NumberUtils;
 import com.leontg77.uhc.utils.PlayerUtils;
 
@@ -284,6 +285,11 @@ public class Main extends JavaPlugin {
 		
 		getCommand("class").setExecutor(new AssaultAndBattery());
 		getCommand("listclass").setExecutor(new AssaultAndBattery());
+		
+		getCommand("slavereset").setExecutor(new SlaveMarket());
+		getCommand("slaveowner").setExecutor(new SlaveMarket());
+		getCommand("startbid").setExecutor(new SlaveMarket());
+		getCommand("bid").setExecutor(new SlaveMarket());
 		
 		if (State.isState(State.LOBBY)) {
 			File playerData = new File(Bukkit.getWorlds().get(0).getWorldFolder(), "playerdata");
