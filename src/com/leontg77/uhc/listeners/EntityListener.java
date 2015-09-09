@@ -36,6 +36,7 @@ import org.bukkit.potion.PotionEffectType;
 
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.Main.State;
+import com.leontg77.uhc.Settings;
 import com.leontg77.uhc.Spectator;
 import com.leontg77.uhc.scenario.ScenarioManager;
 import com.leontg77.uhc.utils.BlockUtils;
@@ -49,6 +50,7 @@ import com.leontg77.uhc.utils.NumberUtils;
  * @author LeonTG77
  */
 public class EntityListener implements Listener {
+	private Settings settings = Settings.getInstance();
 	
 	@EventHandler
 	public void onEntityDamage(EntityDamageEvent event) {		
@@ -274,15 +276,15 @@ public class EntityListener implements Listener {
 		
 		if (Main.nether) {
 			String fromName = event.getFrom().getWorld().getName();
-
 	        String targetName;
-	        if (from.getWorld().getEnvironment() == Environment.NETHER) {
+	        
+	        if (event.getFrom().getWorld().getEnvironment().equals(Environment.NETHER)) {
 	            if (!fromName.endsWith("_nether")) {
 	                return;
 	            }
 
 	            targetName = fromName.substring(0, fromName.length() - 7);
-	        } else if (from.getWorld().getEnvironment() == Environment.NORMAL) {
+	        } else if (event.getFrom().getWorld().getEnvironment().equals(Environment.NORMAL)) {
 	            if (!BlockUtils.hasBlockNearby(Material.PORTAL, from)) {
 	                return;
 	            }
@@ -298,7 +300,7 @@ public class EntityListener implements Listener {
 	            return;
 	        }
 
-	        Location to = new Location(world, from.getX(), from.getY(), from.getZ(), from.getYaw(), from.getPitch());
+	        Location to = (world.getName().endsWith("_nether") ? new Location(world, (from.getX() / 8), (from.getY() / 8), (from.getZ() / 8), from.getYaw(), from.getPitch()) : new Location(world, (from.getX() * 8), (from.getY() * 8), (from.getZ() * 8), from.getYaw(), from.getPitch()));
 	        to = travel.findOrCreate(to);
 
 	        if (to != null) {
@@ -308,15 +310,19 @@ public class EntityListener implements Listener {
 		
 		if (Main.theend) {
 			String fromName = event.getFrom().getWorld().getName();
-
 	        String targetName;
-	        if (event.getFrom().getWorld().getEnvironment() == Environment.THE_END) {
-	            if (!fromName.endsWith("_end")) {
-	                return;
-	            }
-
-	            targetName = fromName.substring(0, fromName.length() - 4);
-	        } else if (event.getFrom().getWorld().getEnvironment() == Environment.NORMAL) {
+	        
+	        if (event.getFrom().getWorld().getEnvironment().equals(Environment.THE_END)) {
+	        	World world = Bukkit.getServer().getWorld(settings.getData().getString("spawn.world"));
+	    		double x = settings.getData().getDouble("spawn.x");
+	    		double y = settings.getData().getDouble("spawn.y");
+	    		double z = settings.getData().getDouble("spawn.z");
+	    		float yaw = (float) settings.getData().getDouble("spawn.yaw");
+	    		float pitch = (float) settings.getData().getDouble("spawn.pitch");
+	    		
+	            event.setTo(new Location(world, x, y, z, yaw, pitch));
+	            return;
+	        } else if (event.getFrom().getWorld().getEnvironment().equals(Environment.NORMAL)) {
 	            if (!BlockUtils.hasBlockNearby(Material.ENDER_PORTAL, event.getFrom())) {
 	                return;
 	            }
