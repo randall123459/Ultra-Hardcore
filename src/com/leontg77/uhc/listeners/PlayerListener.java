@@ -79,6 +79,7 @@ import com.leontg77.uhc.UBL;
 import com.leontg77.uhc.cmds.SpreadCommand;
 import com.leontg77.uhc.cmds.TeamCommand;
 import com.leontg77.uhc.cmds.VoteCommand;
+import com.leontg77.uhc.scenario.Scenario;
 import com.leontg77.uhc.scenario.ScenarioManager;
 import com.leontg77.uhc.utils.BlockUtils;
 import com.leontg77.uhc.utils.GameUtils;
@@ -160,7 +161,7 @@ public class PlayerListener implements Listener {
 		}
 		player.sendMessage("§8---------------------------");
 		
-		if (SpreadCommand.scatterLocs.containsKey(player.getName())) {
+		if (SpreadCommand.scatterLocs.containsKey(player.getName()) && SpreadCommand.isReady) {
 			if (State.isState(State.SCATTER)) {
 				player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 1000000, 128));
 				player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 1000000, 6));
@@ -467,6 +468,7 @@ public class PlayerListener implements Listener {
 		event.setRespawnLocation(loc);
 		
 		Scoreboards.getManager().resetScore(player.getName());
+		player.setMaxHealth(20);
 		
 		if (!Arena.getManager().isEnabled() && !State.isState(State.LOBBY)) {
 			player.sendMessage(Main.prefix() + "Thanks for playing our game, it really means a lot :)");
@@ -774,6 +776,15 @@ public class PlayerListener implements Listener {
 				player.sendMessage(Main.prefix() + "You can't use that command.");
 			}
 		}
+		
+		// Tempoarly here for testing.
+		if (event.getMessage().split(" ")[0].equalsIgnoreCase("/s")) {
+			event.setCancelled(true);
+			
+			for (Scenario scen : ScenarioManager.getInstance().getScenarios()) {
+				PlayerUtils.broadcast(scen.getName() + ": " + scen.isEnabled());
+			}
+		}
 	}
 	
 	@EventHandler
@@ -877,14 +888,14 @@ public class PlayerListener implements Listener {
 	public void onPlayerMove(PlayerMoveEvent event) {
 		Player player = event.getPlayer();
 		
-		World w = Bukkit.getServer().getWorld(settings.getData().getString("spawn.world"));
+		World world = Bukkit.getServer().getWorld(settings.getData().getString("spawn.world"));
 		double x = settings.getData().getDouble("spawn.x");
 		double y = settings.getData().getDouble("spawn.y");
 		double z = settings.getData().getDouble("spawn.z");
 		float yaw = (float) settings.getData().getDouble("spawn.yaw");
 		float pitch = (float) settings.getData().getDouble("spawn.pitch");
 		
-		Location loc = new Location(w, x, y, z, yaw, pitch);
+		Location loc = new Location(world, x, y, z, yaw, pitch);
 		
 		if (event.getTo().getWorld().getName().equals("lobby") && event.getTo().getY() <= 20) {
 			if (Parkour.getManager().parkourPlayers.contains(player)) {
@@ -901,7 +912,7 @@ public class PlayerListener implements Listener {
 					return;
 				}
 				
-				player.teleport(loc);
+				player.teleport(Parkour.getManager().spawn);
 				return;
 			}
 			
@@ -911,11 +922,8 @@ public class PlayerListener implements Listener {
 	
 	@EventHandler
 	public void onPlayerKick(PlayerKickEvent event) {
-		Player player = event.getPlayer();
-		
 		if (event.getReason().equals("disconnect.spam")) {
-			player.sendMessage(Main.prefix() + "Please stop spamming.");
-			event.setCancelled(true);
+			event.setReason("§cStop spamming, please.");
 		}
 	}
 	
@@ -983,16 +991,16 @@ public class PlayerListener implements Listener {
 		
 		if (Main.nether) {
 			String fromName = event.getFrom().getWorld().getName();
-
 	        String targetName;
-	        if (from.getWorld().getEnvironment() == Environment.NETHER) {
+	        
+	        if (event.getFrom().getWorld().getEnvironment().equals(Environment.NETHER)) {
 	            if (!fromName.endsWith("_nether")) {
 	            	player.sendMessage(Main.prefix() + "Could not teleport you to the overworld, contact the staff now.");
 	                return;
 	            }
 
 	            targetName = fromName.substring(0, fromName.length() - 7);
-	        } else if (from.getWorld().getEnvironment() == Environment.NORMAL) {
+	        } else if (event.getFrom().getWorld().getEnvironment().equals(Environment.NORMAL)) {
 	            if (!BlockUtils.hasBlockNearby(Material.PORTAL, from)) {
 	            	player.sendMessage(Main.prefix() + "Could not teleport you to the nether, contact the staff now.");
 	                return;
@@ -1010,26 +1018,35 @@ public class PlayerListener implements Listener {
 	            return;
 	        }
 
-	        Location to = new Location(world, from.getX(), from.getY(), from.getZ(), from.getYaw(), from.getPitch());
+	        Location to = (world.getName().endsWith("_nether") ? new Location(world, (from.getX() / 8), (from.getY() / 8), (from.getZ() / 8), from.getYaw(), from.getPitch()) : new Location(world, (from.getX() * 8), (from.getY() * 8), (from.getZ() * 8), from.getYaw(), from.getPitch()));
 	        to = travel.findOrCreate(to);
 
 	        if (to != null) {
 	            event.setTo(to);
+	        } else {
+            	player.sendMessage(Main.prefix() + "Could not teleport you, contact the staff now.");
 	        }
+		} else {
+            if (!BlockUtils.hasBlockNearby(Material.PORTAL, event.getFrom())) {
+            	player.sendMessage(Main.prefix() + "The nether is disabled.");
+            }
 		}
 		
 		if (Main.theend) {
 			String fromName = event.getFrom().getWorld().getName();
-
 	        String targetName;
-	        if (event.getFrom().getWorld().getEnvironment() == Environment.THE_END) {
-	            if (!fromName.endsWith("_end")) {
-	            	player.sendMessage(Main.prefix() + "Could not teleport you to the overworld, contact the staff now.");
-	                return;
-	            }
-
-	            targetName = fromName.substring(0, fromName.length() - 4);
-	        } else if (event.getFrom().getWorld().getEnvironment() == Environment.NORMAL) {
+	        
+	        if (event.getFrom().getWorld().getEnvironment().equals(Environment.THE_END)) {
+	        	World world = Bukkit.getServer().getWorld(settings.getData().getString("spawn.world"));
+	    		double x = settings.getData().getDouble("spawn.x");
+	    		double y = settings.getData().getDouble("spawn.y");
+	    		double z = settings.getData().getDouble("spawn.z");
+	    		float yaw = (float) settings.getData().getDouble("spawn.yaw");
+	    		float pitch = (float) settings.getData().getDouble("spawn.pitch");
+	    		
+	            event.setTo(new Location(world, x, y, z, yaw, pitch));
+	            return;
+	        } else if (event.getFrom().getWorld().getEnvironment().equals(Environment.NORMAL)) {
 	            if (!BlockUtils.hasBlockNearby(Material.ENDER_PORTAL, event.getFrom())) {
 	            	player.sendMessage(Main.prefix() + "Could not teleport you to the end, contact the staff now.");
 	                return;
@@ -1064,6 +1081,10 @@ public class PlayerListener implements Listener {
 			}
 			
 			event.setTo(to);
+		} else {
+            if (!BlockUtils.hasBlockNearby(Material.ENDER_PORTAL, event.getFrom())) {
+            	player.sendMessage(Main.prefix() + "The end is disabled.");
+            }
 		}
     }
 	
@@ -1164,7 +1185,7 @@ public class PlayerListener implements Listener {
 		}
 		
 		if (event.getItem().getType() == Material.GOLDEN_APPLE && event.getItem().getItemMeta().getDisplayName() != null && event.getItem().getItemMeta().getDisplayName().equals("§6Golden Head")) {
-			player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 25 * (Settings.getInstance().getConfig().getInt("feature.goldenheads.heal")), 1));
+			player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 25 * (Settings.getInstance().getConfig().getInt("feature.goldenheads.heal") * 2), 1));
 		}
 	}
 	
