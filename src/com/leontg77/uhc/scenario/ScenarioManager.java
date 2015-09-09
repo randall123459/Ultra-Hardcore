@@ -134,7 +134,7 @@ public class ScenarioManager {
 		scenarios.add(new SlimyCrack());
 		scenarios.add(new Superheroes());
 		scenarios.add(new Timebomb());
-		/* TODO: Test */ scenarios.add(new TrainingRabbits());
+		scenarios.add(new TrainingRabbits());
 		scenarios.add(new TripleOres());
 		scenarios.add(new VengefulSpirits());
 		
