@@ -170,9 +170,31 @@ public class UBL implements Runnable {
         } catch (MalformedURLException ex) {
             plugin.getLogger().severe("banlist-url in the config.yml is invalid or corrupt. This must be corrected and the config reloaded before the UBL can be updated");
             data = loadFromBackup();
+            
+            for (Player online : PlayerUtils.getPlayers()) {
+            	if (isBanned(online.getName(), online.getUniqueId())) {
+            		online.kickPlayer(getBanMessage(online.getUniqueId()));
+            		continue;
+            	}
+            	
+            	if (isBanned(online.getName())) {
+            		online.kickPlayer(getBanMessage(online.getName()));
+            	}
+            }
         } catch (IOException ex) {
             plugin.getLogger().log(Level.WARNING, "Banlist server " + banlistURL + " is currently unreachable", ex);
             data = loadFromBackup();
+            
+            for (Player online : PlayerUtils.getPlayers()) {
+            	if (isBanned(online.getName(), online.getUniqueId())) {
+            		online.kickPlayer(getBanMessage(online.getUniqueId()));
+            		continue;
+            	}
+            	
+            	if (isBanned(online.getName())) {
+            		online.kickPlayer(getBanMessage(online.getName()));
+            	}
+            }
         }
 
         parseData(data);
