@@ -16,10 +16,12 @@ import net.minecraft.server.v1_8_R3.PacketPlayOutTitle.EnumTitleAction;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -155,6 +157,31 @@ public class PlayerUtils {
 		}
 		
 		return list;
+	}
+
+	/**
+	 * Check if the given player has enough of the given number of the given material.
+	 * 
+	 * @param player the player.
+	 * @param material the material.
+	 * @param entered the number.
+	 * 
+	 * @return <code>True</code> if the player has the given number of the material, <code>false</code> otherwise
+	 */
+	public static boolean hasEnough(Player player, Material material, int entered) {
+		int total = 0;
+		
+		for (ItemStack item : player.getInventory().getContents()) {
+			if (item == null) {
+				continue;
+			}
+			
+			if (item.getType() == material) {
+				total = total + item.getAmount();
+			}
+		}
+		
+		return total <= entered;
 	}
 	
 	public static void playWinnerFireworks() {
