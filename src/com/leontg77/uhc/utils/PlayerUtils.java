@@ -20,14 +20,17 @@ import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.Vector;
 
-import com.leontg77.uhc.Data;
-import com.leontg77.uhc.Data.Rank;
+import com.leontg77.uhc.User;
+import com.leontg77.uhc.User.Rank;
 import com.leontg77.uhc.Fireworks;
+import com.leontg77.uhc.Game;
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.Settings;
 import com.leontg77.uhc.Spectator;
@@ -104,8 +107,19 @@ public class PlayerUtils {
 	 * @return the inv size.
 	 */
 	public static int playerInvSize() {
-		int length = getPlayers().size();
-		length = (length - Spectator.getManager().spectators.size());
+		int length = 0;
+		
+		for (Player online : PlayerUtils.getPlayers()) {
+			if (online.getWorld().getName().equals("lobby")) {
+				continue;
+			}
+			
+			if (Spectator.getManager().isSpectating(online)) {
+				continue;
+			}
+			
+			length++;
+		}
 		
 		if (length <= 9) {
 			return 9;
@@ -157,6 +171,20 @@ public class PlayerUtils {
 		}
 		
 		return list;
+	}
+	
+	public static void giveItem(Player player, ItemStack item) {
+		if (player != null) {
+			if (player.getInventory().firstEmpty() > -1) {
+				player.getInventory().addItem(item);
+			} else {
+				player.sendMessage(Main.prefix() + "A item was dropped on the ground since your inventory is full!");
+				player.playSound(player.getLocation(), "random.pop", 1, 1);
+				
+				Item i = player.getWorld().dropItem(player.getLocation().add(0.5, 0.7, 0.5), item);
+				i.setVelocity(new Vector(0, 0.2, 0));
+			}
+		}
 	}
 
 	/**
@@ -224,9 +252,10 @@ public class PlayerUtils {
 	 */
 	public static void setTabList(Player player) {
 		CraftPlayer craft = (CraftPlayer) player;
+		Game game = Game.getInstance();
 
         IChatBaseComponent headerJSON = ChatSerializer.a("{text:'§8=-=-= §4Arctic UHC §8=-=-=\n§a/rules §8❘ §a/post §8❘ §a/lag §8❘ §a/ms §8❘ §a/hof\n'}");
-        IChatBaseComponent footerJSON = ChatSerializer.a("{text:'\n§7" + GameUtils.getTeamSize() + Settings.getInstance().getConfig().getString("game.scenarios") + (Main.teamSize > 0 || Main.teamSize == -2 ? "\n§4Host: §a" + Settings.getInstance().getConfig().getString("game.host") : "") + "'}");
+        IChatBaseComponent footerJSON = ChatSerializer.a("{text:'\n§7" + GameUtils.getTeamSize() + game.getScenarios() + (game.getTeamSize() > 0 || game.getTeamSize() == -2 ? "\n§4Host: §a" + Settings.getInstance().getConfig().getString("game.host") : "") + "'}");
 
         PacketPlayOutPlayerListHeaderFooter headerPacket = new PacketPlayOutPlayerListHeaderFooter(headerJSON);
  
@@ -291,7 +320,7 @@ public class PlayerUtils {
 		}
 
 		PermissionAttachment perm = Main.permissions.get(player.getName());
-		Data data = Data.getFor(player);
+		User data = User.get(player);
 	
 		String uuid = player.getUniqueId().toString();
 		
@@ -405,6 +434,11 @@ public class PlayerUtils {
 		
 		if (uuid.equals("3be33527-be7e-4eb2-8b66-5b76d3d7ecdc")) {
 			perm.setPermission("uhc.gamemode", false);
+			perm.setPermission("uhc.tempban", false);
+			perm.setPermission("uhc.speed", false);
+			perm.setPermission("uhc.mute", false);
+			perm.setPermission("uhc.kick", false);
+			perm.setPermission("uhc.ban", false);
 		}
 	}
 	
