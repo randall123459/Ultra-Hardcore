@@ -288,7 +288,12 @@ public class UBL implements Runnable {
             return "Not on the UBL";
         }
         
-        return "§cYou have been banned from Arctic UHC \n\n§aReason: §7UBL - " + banEntry.getData("Reason");
+        return 
+        "§8» §7You have been §4UBL'ed §7from §6/r/ultrahardcore §8«" +
+		"\n" + 
+		"\n§cReason §8» §7" + banEntry.getData("Reason") +
+		"\n§cBan length §8» §7" + banEntry.getData("Length of Ban") +
+		"\n§cCase post §8» §7" + banEntry.getData("Case");
     }
 
     /**
@@ -302,7 +307,12 @@ public class UBL implements Runnable {
             return "Not on the UBL";
         }
         
-        return "§cYou have been banned from Arctic UHC \n\n§aReason: §7UBL - " + banEntry.getData("Reason");
+        return 
+        "§8» §7You have been §4UBL'ed §7from §6/r/ultrahardcore §8«" +
+        "\n" + 
+        "\n§cReason §8» §7" + banEntry.getData("Reason") +
+        "\n§cBan length §8» §7" + banEntry.getData("Length of Ban") +
+        "\n§cCase post §8» §7" + banEntry.getData("Case");
     }
 
     /**
