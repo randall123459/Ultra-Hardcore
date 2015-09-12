@@ -44,7 +44,7 @@ public class DateUtils {
         if (hours > 0) {
             output.append(hours).append('h');
             if (minutes == 0) {
-            	output.append(0).append('m');
+            	output.append(minutes).append('m');
             }
         }
         if (minutes > 0) {
