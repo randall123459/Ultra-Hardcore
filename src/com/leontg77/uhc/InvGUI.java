@@ -167,6 +167,7 @@ public class InvGUI {
 	 */
 	public Inventory openRules(Player player) {
 		Inventory inv = Bukkit.getServer().createInventory(null, 9, "Arctic UHC Rules");
+		Game game = Game.getInstance();
 		
 		ItemStack general = new ItemStack (Material.SIGN);
 		ItemMeta generalMeta = general.getItemMeta();
@@ -183,12 +184,12 @@ public class InvGUI {
 		lore.add("§aHorse Healing: §7Enabled.");
 		lore.add("§aHorse Armor: §7Enabled.");
 		lore.add(" ");
-		lore.add("§aAbsorption: §7" + (Main.absorption ? "Enabled." : "Disabled."));
-		lore.add("§aGolden Heads: §7" + (Main.goldenheads ? "Enabled, they heal " + (Settings.getInstance().getConfig().getInt("feature.goldenheads.heal") / 2) + " hearts." : "Disabled."));
-		lore.add("§aPearl Damage: §7" + (Main.pearldamage ? "Enabled." : "Disabled."));
-		lore.add("§aNotch Apples: §7" + (Main.notchapples ? "Enabled." : "Disabled."));
-		lore.add("§aDeath Lightning: §7" + (Main.deathlightning ? "Enabled." : "Disabled."));
-		lore.add("§aBorder shrinks: §7" + ((Main.border == Border.NEVER ? "Never" : (Main.border == Border.START ? "From " : "At ") + Main.border.name().toLowerCase())) + ".");
+		lore.add("§aAbsorption: §7" + (game.absorption() ? "Enabled." : "Disabled."));
+		lore.add("§aGolden Heads: §7" + (game.goldenHeads() ? "Enabled, they heal " + game.goldenHeadsHeal() + " hearts." : "Disabled."));
+		lore.add("§aPearl Damage: §7" + (game.pearlDamage() ? "Enabled." : "Disabled."));
+		lore.add("§aNotch Apples: §7" + (game.notchApples() ? "Enabled." : "Disabled."));
+		lore.add("§aDeath Lightning: §7" + (game.deathLightning() ? "Enabled." : "Disabled."));
+		lore.add("§aBorder shrinks: §7" + ((game.getBorderShrinkTime() == Border.NEVER ? "Never" : (game.getBorderShrinkTime() == Border.START ? "From " : "At ") + game.getBorderShrinkTime().name().toLowerCase())) + ".");
 		lore.add(" ");
 		generalMeta.setLore(lore);
 		general.setItemMeta(generalMeta);
@@ -235,13 +236,13 @@ public class InvGUI {
 		lore4.add(" ");
 		lore4.add("§aTrapping: §7Allowed.");
 		lore4.add("§aCamping: §7Allowed.");
-		lore4.add("§aStrength: §7" + (Main.nerfedStrength ? "Both tiers nerfed." : "Vanilla."));
+		lore4.add("§aStrength: §7" + (game.nerfedStrength() ? "Both tiers nerfed." : "Vanilla."));
 		lore4.add("§aTier 2: §7On for all potions.");
 		lore4.add("§aSplash: §7On for all potions.");
-		lore4.add("§aGhast Drop: §7" + (Main.ghastdrops ? "Gold ingot." : "Ghast tear."));
+		lore4.add("§aGhast Drop: §7" + (game.ghastDropGold() ? "Gold ingot." : "Ghast tear."));
 		lore4.add(" ");
-		lore4.add("§aNether: §7" + (Main.nether ? "Enabled." : "Disabled."));
-		lore4.add("§aThe End: §7" + (Main.theend ? "Enabled." : "Disabled."));
+		lore4.add("§aNether: §7" + (game.nether() ? "Enabled." : "Disabled."));
+		lore4.add("§aThe End: §7" + (game.theEnd() ? "Enabled." : "Disabled."));
 		lore4.add(" ");
 		netherMeta.setLore(lore4);
 		nether.setItemMeta(netherMeta);
@@ -252,8 +253,8 @@ public class InvGUI {
 		ratesMeta.setDisplayName("§6Rates");
 		ArrayList<String> lore5 = new ArrayList<String>();
 		lore5.add(" ");
-		lore5.add("§aApple rates: §70.5%, " + (Main.shears ? "Shears work" : "Shears does not work") + ".");
-		lore5.add("§aFlintrates: §7" + Main.flintrate + "%.");
+		lore5.add("§aApple rates: §70.55%, " + (game.shears() ? "Shears work" : "Shears does not work") + ".");
+		lore5.add("§aFlintrates: §7" + game.getFlintRates() + "%.");
 		lore5.add("§aMob rates: §7Vanilla.");
 		lore5.add("§aOre rates: §7Vanilla.");
 		lore5.add("§aCave rates: §7Vanilla.");
