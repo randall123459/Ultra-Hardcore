@@ -273,7 +273,11 @@ public class Moles extends Scenario implements Listener {
 			return;
 		}
 		
-		if (event.getCurrentItem() != null && event.getCurrentItem().getType() != Material.WOOL) {
+		if (event.getCurrentItem() == null) {
+			return;
+		}
+		
+		if (event.getCurrentItem().getType() != Material.WOOL) {
 			return;
 		}
 		
