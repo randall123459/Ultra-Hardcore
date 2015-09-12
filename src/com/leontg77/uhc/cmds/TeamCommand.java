@@ -20,6 +20,7 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Team;
 
+import com.leontg77.uhc.Game;
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.Scoreboards;
 import com.leontg77.uhc.Spectator;
@@ -29,9 +30,6 @@ import com.leontg77.uhc.utils.PlayerUtils;
 public class TeamCommand implements CommandExecutor, TabCompleter {
 	public static HashMap<Player, ArrayList<Player>> invites = new HashMap<Player, ArrayList<Player>>();
 	public static HashMap<String, ArrayList<String>> sTeam = new HashMap<String, ArrayList<String>>();
-	
-	private Teams teams = Teams.getManager();
-	public boolean enabled = false;
 
 	public boolean onCommand(CommandSender sender, Command cmd, String label, final String[] args) {
 		if (!(sender instanceof Player)) {
@@ -40,6 +38,8 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
 		}
 		
 		Player player = (Player) sender;
+		Teams teams = Teams.getManager();
+		Game game = Game.getInstance();
 		
 		if (cmd.getName().equalsIgnoreCase("team")) {
 			if (args.length == 0) {
@@ -49,7 +49,7 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
 			
 			if (args.length == 1) {
 				if (args[0].equalsIgnoreCase("create")) {
-					if (!enabled) {
+					if (!game.teamManagement()) {
 						player.sendMessage(Main.prefix() + "Team management is currently disabled.");
 						return true;
 					}
@@ -74,7 +74,7 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
 					player.sendMessage(Main.prefix() + "Team created! Use §a/team invite <player>§7 to invite a player.");
 				}
 				else if (args[0].equalsIgnoreCase("leave")) {
-					if (!enabled) {
+					if (!game.teamManagement()) {
 						player.sendMessage(Main.prefix() + "Team management is currently disabled.");
 						return true;
 					}
@@ -177,37 +177,37 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
 				}
 				else if (args[0].equalsIgnoreCase("enable")) {
 					if (player.hasPermission("uhc.teamadmin")) {
-						if (enabled) {
+						if (game.teamManagement()) {
 							player.sendMessage(Main.prefix() + "Team management is already enabled.");
 							return true;
 						}
 						
 						PlayerUtils.broadcast(Main.prefix() + "Team management has been enabled.");
 
-						if (Main.board) {
+						if (game.pregameBoard()) {
 							Scoreboards.getManager().setScore("§e ", 13);
 							Scoreboards.getManager().setScore("§8» §cTeam:", 12);
 							Scoreboards.getManager().setScore("§8» §7/team", 11);
 						}
-						enabled = true;
+						game.setTeamManagement(true);
 					} else {
 						sendHelp(player);
 					}
 				}
 				else if (args[0].equalsIgnoreCase("disable")) {
 					if (player.hasPermission("uhc.teamadmin")) {
-						if (!enabled) {
+						if (!game.teamManagement()) {
 							player.sendMessage(Main.prefix() + "Team management is not enabled.");
 							return true;
 						}
 
-						if (Main.board) {
+						if (game.pregameBoard()) {
 							Scoreboards.getManager().resetScore("§e ");
 							Scoreboards.getManager().resetScore("§8» §cTeam:");
 							Scoreboards.getManager().resetScore("§8» §7/team");
 						}
 						PlayerUtils.broadcast(Main.prefix() + "Team management has been disabled.");
-						enabled = false;
+						game.setTeamManagement(false);
 					} else {
 						sendHelp(player);
 					}
@@ -248,7 +248,7 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
 			Player target = Bukkit.getServer().getPlayer(args[1]);
 			
 			if (args[0].equalsIgnoreCase("create")) {
-				if (!enabled) {
+				if (!game.teamManagement()) {
 					player.sendMessage(Main.prefix() + "Team management is currently disabled.");
 					return true;
 				}
@@ -272,7 +272,7 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
 				player.sendMessage(Main.prefix() + "Team created! Use §a/team invite <player>§7 to invite a player.");
 			}
 			else if (args[0].equalsIgnoreCase("leave")) {
-				if (!enabled) {
+				if (!game.teamManagement()) {
 					player.sendMessage(Main.prefix() + "Team management is currently disabled.");
 					return true;
 				}
@@ -335,37 +335,37 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
 			}
 			else if (args[0].equalsIgnoreCase("enable")) {
 				if (player.hasPermission("uhc.teamadmin")) {
-					if (enabled) {
+					if (game.teamManagement()) {
 						player.sendMessage(Main.prefix() + "Team management is already enabled.");
 						return true;
 					}
 					
 					PlayerUtils.broadcast(Main.prefix() + "Team management has been enabled.");
 
-					if (Main.board) {
+					if (game.pregameBoard()) {
 						Scoreboards.getManager().setScore("§e ", 13);
 						Scoreboards.getManager().setScore("§8» §cTeam:", 12);
 						Scoreboards.getManager().setScore("§8» §7/team", 11);
 					}
-					enabled = true;
+					game.setTeamManagement(true);
 				} else {
 					sendHelp(player);
 				}
 			}
 			else if (args[0].equalsIgnoreCase("disable")) {
 				if (player.hasPermission("uhc.teamadmin")) {
-					if (!enabled) {
+					if (!game.teamManagement()) {
 						player.sendMessage(Main.prefix() + "Team management is not enabled.");
 						return true;
 					}
 
-					if (Main.board) {
+					if (game.pregameBoard()) {
 						Scoreboards.getManager().resetScore("§e ");
 						Scoreboards.getManager().resetScore("§8» §cTeam:");
 						Scoreboards.getManager().resetScore("§8» §7/team");
 					}
 					PlayerUtils.broadcast(Main.prefix() + "Team management has been disabled.");
-					enabled = false;
+					game.setTeamManagement(false);
 				} else {
 					sendHelp(player);
 				}
@@ -431,7 +431,7 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
 				}
 			}
 			else if (args[0].equalsIgnoreCase("invite")) {
-				if (!enabled) {
+				if (!game.teamManagement()) {
 					player.sendMessage(Main.prefix() + "Team management is currently disabled.");
 					return true;
 				}
@@ -448,7 +448,7 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
 					return true;
 				}
 				
-				if (team.getSize() >= Main.teamSize) {
+				if (team.getSize() >= Game.getInstance().getTeamSize()) {
 					player.sendMessage(Main.prefix() + "Your team is currently full.");
 					return true;
 				}
@@ -475,7 +475,7 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
 				target.spigot().sendMessage(builder.create());
 			}
 			else if (args[0].equalsIgnoreCase("kick")) {
-				if (!enabled) {
+				if (!game.teamManagement()) {
 					player.sendMessage(Main.prefix() + "Team management is currently disabled.");
 					return true;
 				}
@@ -506,7 +506,7 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
 			
 			}
 			else if (args[0].equalsIgnoreCase("accept")) {
-				if (!enabled) {
+				if (!game.teamManagement()) {
 					player.sendMessage(Main.prefix() + "Team management is currently disabled.");
 					return true;
 				}
@@ -529,7 +529,7 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
 						return true;
 					}
 					
-					if (team.getSize() >= Main.teamSize) {
+					if (team.getSize() >= Game.getInstance().getTeamSize()) {
 						player.sendMessage(Main.prefix() + "That team is currently full.");
 						return true;
 					}
@@ -548,7 +548,7 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
 				}
 			}
 			else if (args[0].equalsIgnoreCase("deny")) {
-				if (!enabled) {
+				if (!game.teamManagement()) {
 					player.sendMessage(Main.prefix() + "Team management is currently disabled.");
 					return true;
 				}
