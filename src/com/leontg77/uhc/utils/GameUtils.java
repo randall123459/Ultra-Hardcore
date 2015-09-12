@@ -4,7 +4,7 @@ import net.minecraft.server.v1_8_R3.MinecraftServer;
 
 import org.bukkit.Bukkit;
 
-import com.leontg77.uhc.Main;
+import com.leontg77.uhc.Game;
 import com.leontg77.uhc.Main.State;
 import com.leontg77.uhc.Settings;
 
@@ -68,20 +68,22 @@ public class GameUtils {
 	 * @return The string format.
 	 */
 	public static String getTeamSize() {
-		if (Main.ffa) {
-			if (Main.teamSize == 1) {
+		Game game = Game.getInstance();
+		
+		if (game.isFFA()) {
+			if (game.getTeamSize() == 1) {
 				return "FFA ";
-			} else if (Main.teamSize == 0) {
+			} else if (game.getTeamSize() == 0) {
 				return "No ";
-			} else if (Main.teamSize == -1) {
+			} else if (game.getTeamSize() == -1) {
 				return "Open ";
-			} else if (Main.teamSize < -1) {
+			} else if (game.getTeamSize() < -1) {
 				return "";
 			} else {
-				return "rTo" + Main.teamSize + " ";
+				return "rTo" + game.getTeamSize() + " ";
 			}
 		} else {
-			return "To" + Main.teamSize + " ";
+			return "To" + game.getTeamSize() + " ";
 		}
 	}
 	
