@@ -11,8 +11,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
-import com.leontg77.uhc.Data;
-import com.leontg77.uhc.Data.Rank;
+import com.leontg77.uhc.User;
+import com.leontg77.uhc.User.Rank;
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.utils.NameUtils;
 import com.leontg77.uhc.utils.PlayerUtils;
@@ -40,13 +40,13 @@ public class RankCommand implements CommandExecutor, TabCompleter {
 				OfflinePlayer offline = PlayerUtils.getOfflinePlayer(args[0]);
 				
 				if (target == null) {
-					Data.getFor(offline).setRank(rank);
-					PlayerUtils.broadcast(Main.prefix() + "§6" + offline.getName() + " §7is now a §a" + NameUtils.fixString(rank.name(), false));
+					User.get(offline).setRank(rank);
+					PlayerUtils.broadcast(Main.prefix() + "§6" + offline.getName() + " §7has been given §a" + (rank == Rank.VIP ? "VIP" : NameUtils.fixString(rank.name(), false)) + " §7rank.");
 					return true;
 				}
 				
-				Data.getFor(target).setRank(rank);
-				PlayerUtils.broadcast(Main.prefix() + "§6" + target.getName() + " §7is now a §a" + NameUtils.fixString(rank.name(), false));
+				User.get(target).setRank(rank);
+				PlayerUtils.broadcast(Main.prefix() + "§6" + target.getName() + " §7has been given §a" + (rank == Rank.VIP ? "VIP" : NameUtils.fixString(rank.name(), false)) + " §7rank.");
 			} else {
 				sender.sendMessage(Main.prefix() + "You can't use that command.");
 			}
