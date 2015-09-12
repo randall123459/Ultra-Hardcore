@@ -23,7 +23,7 @@ import org.bukkit.material.Tree;
 import org.bukkit.util.Vector;
 
 import com.leontg77.uhc.Arena;
-import com.leontg77.uhc.Main;
+import com.leontg77.uhc.Game;
 import com.leontg77.uhc.Main.State;
 import com.leontg77.uhc.utils.BlockUtils;
 
@@ -35,6 +35,7 @@ import com.leontg77.uhc.utils.BlockUtils;
  * @author LeonTG77
  */
 public class BlockListener implements Listener {
+	private Game game = Game.getInstance();
 	
 	@EventHandler(priority = EventPriority.HIGHEST)
     public void onBlockBreak(BlockBreakEvent event) {
@@ -52,7 +53,7 @@ public class BlockListener implements Listener {
     	}
 		
 		if (block.getType() == Material.GRAVEL) {
-			if ((new Random().nextInt(99) + 1) <= Main.flintrate) {
+			if ((new Random().nextInt(99) + 1) <= game.getFlintRates()) {
 				event.setCancelled(true);
 				BlockUtils.blockCrack(player, block.getLocation(), 13);
 				block.setType(Material.AIR);
@@ -69,7 +70,7 @@ public class BlockListener implements Listener {
 			}
 		}
 		
-		if (Main.shears) {
+		if (game.shears()) {
 			if (block.getType() == Material.LEAVES) {
 				try {
 					Tree tree = (Tree) event.getBlock().getState().getData();
@@ -77,7 +78,7 @@ public class BlockListener implements Listener {
 						Random r = new Random();
 						
 						if (player.getItemInHand() != null && player.getItemInHand().getType() == Material.SHEARS) {
-							if ((r.nextInt(99) + 1) <= Main.shearrate) {
+							if ((r.nextInt(99) + 1) <= game.getShearRates()) {
 								event.getBlock().getWorld().dropItem(event.getBlock().getLocation(), new ItemStack(Material.APPLE, 1));
 							}
 						}
