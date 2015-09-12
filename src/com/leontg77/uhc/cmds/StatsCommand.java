@@ -10,7 +10,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import com.leontg77.uhc.Data;
+import com.leontg77.uhc.User;
 import com.leontg77.uhc.utils.NumberUtils;
 
 public class StatsCommand implements CommandExecutor {
@@ -22,7 +22,7 @@ public class StatsCommand implements CommandExecutor {
 			if (args.length == 0) {
 				if (sender instanceof Player) {
 					Player player = (Player) sender;
-					Data data = Data.getFor(player);
+					User data = User.get(player);
 					
 					player.sendMessage("§8---------------------------");
 					player.sendMessage(" §8» §6Your stats");
@@ -58,7 +58,7 @@ public class StatsCommand implements CommandExecutor {
 				return true;
 			}
 			
-			Data data = Data.getFor(target);
+			User data = User.get(target);
 			
 			sender.sendMessage("§8---------------------------");
 			sender.sendMessage(" §8» §6" + target.getName() + "'s stats");
