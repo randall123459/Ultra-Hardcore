@@ -15,6 +15,8 @@ commands:
     aliases: [dq]
   board:
     description: Toggle the pregame board.
+  border:
+    description: View the border size.
   broadcast:
     description: Broadcast a message to all players online.
     aliases: [bc, bcast]
@@ -148,3 +150,5 @@ commands:
     description: Start a bid on a player.
   bid:
     description: Bid on a player.
+  mt:
+    description: Mystery teams command.
