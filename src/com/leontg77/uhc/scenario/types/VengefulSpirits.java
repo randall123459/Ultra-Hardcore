@@ -12,8 +12,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.util.Vector;
 
-import com.leontg77.uhc.Main;
-import com.leontg77.uhc.Settings;
+import com.leontg77.uhc.Game;
 import com.leontg77.uhc.scenario.Scenario;
 
 public class VengefulSpirits extends Scenario implements Listener {
@@ -27,9 +26,7 @@ public class VengefulSpirits extends Scenario implements Listener {
 		enabled = enable;
 		
 		if (enable) {
-			Settings.getInstance().getConfig().set("feature.goldenheads.enabled", false);
-			Settings.getInstance().saveConfig();
-			Main.goldenheads = false;
+			Game.getInstance().setGoldenHeads(false);
 		}
 	}
 
