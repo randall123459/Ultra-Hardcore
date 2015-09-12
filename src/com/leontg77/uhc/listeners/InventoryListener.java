@@ -11,13 +11,18 @@ import org.bukkit.World.Environment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.enchantment.EnchantItemEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryOpenEvent;
+import org.bukkit.inventory.EnchantingInventory;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import com.leontg77.uhc.Arena;
+import com.leontg77.uhc.Game;
 import com.leontg77.uhc.InvGUI;
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.Spectator;
@@ -41,6 +46,12 @@ public class InventoryListener implements Listener {
         
 		Player player = (Player) event.getWhoClicked();
 		ItemStack item = event.getCurrentItem();
+		
+		if (Arena.getManager().isEnabled() && event.getClickedInventory() instanceof EnchantingInventory) {
+			if (event.getSlot() == 1) {
+				event.setCancelled(true);
+			}
+		}
 		
 		if (event.getInventory().getTitle().equals("Player Inventory")) {
 			event.setCancelled(true);
@@ -125,7 +136,7 @@ public class InventoryListener implements Listener {
 		}
 		
 		if (item.getType() == Material.LAVA_BUCKET) {
-			if (!Main.nether) {
+			if (!Game.getInstance().nether()) {
 				player.sendMessage(Main.prefix() + "Nether is disabled.");
 				event.setCancelled(true);
 				return;
@@ -189,6 +200,24 @@ public class InventoryListener implements Listener {
 		if (Main.invsee.containsKey(inv)) {
 			Main.invsee.get(inv).cancel();
 			Main.invsee.remove(inv);
+		}
+
+		if (Arena.getManager().isEnabled() && event.getInventory() instanceof EnchantingInventory) {
+			event.getInventory().setItem(1, null);
+		}
+	}
+	
+	@EventHandler
+	public void onInventoryOpen(InventoryOpenEvent event) {
+		if (Arena.getManager().isEnabled() && event.getInventory() instanceof EnchantingInventory) {
+			event.getInventory().setItem(1, new ItemStack (Material.INK_SACK, 3, (short) 4));
+		}
+	}
+
+	@EventHandler
+	public void onEnchantItem(EnchantItemEvent event) {
+		if (Arena.getManager().isEnabled()) {
+			event.getInventory().setItem(1, new ItemStack (Material.INK_SACK, 3, (short) 4));
 		}
 	}
 }
