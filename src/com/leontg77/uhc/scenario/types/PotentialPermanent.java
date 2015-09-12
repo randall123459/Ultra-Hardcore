@@ -10,8 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import com.leontg77.uhc.Main;
-import com.leontg77.uhc.Settings;
+import com.leontg77.uhc.Game;
 import com.leontg77.uhc.scenario.Scenario;
 import com.leontg77.uhc.utils.PlayerUtils;
 
@@ -30,9 +29,8 @@ public class PotentialPermanent extends Scenario implements Listener {
 				online.addPotionEffect(new PotionEffect(PotionEffectType.ABSORPTION, 1726272000, 4));
 				online.setMaxHealth(20.0);
 			}
-			Settings.getInstance().getConfig().set("feature.absorption.enabled", true);
-			Settings.getInstance().saveConfig();
-			Main.absorption = true;
+	
+			Game.getInstance().setAbsorption(true);
 		} else {
 			for (Player online : PlayerUtils.getPlayers()) {
 				online.removePotionEffect(PotionEffectType.ABSORPTION);
