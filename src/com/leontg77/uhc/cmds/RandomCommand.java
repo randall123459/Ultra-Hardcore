@@ -45,14 +45,7 @@ public class RandomCommand implements CommandExecutor {
 					
 					Collections.shuffle(a);
 
-					Team t = null;
-					
-					for (Team team : Teams.getManager().getTeams()) {
-						if (team.getSize() == 0) {
-							t = team;
-							break;
-						}
-					}
+					Team t = Teams.getManager().findAvailableTeam();
 					
 					if (t == null) {
 						sender.sendMessage(ChatColor.RED + "No more available teams.");
@@ -100,14 +93,7 @@ public class RandomCommand implements CommandExecutor {
 					}
 				}
 
-				Team t = null;
-				
-				for (Team team : Teams.getManager().getTeams()) {
-					if (team.getSize() == 0) {
-						t = team;
-						break;
-					}
-				}
+				Team t = Teams.getManager().findAvailableTeam();
 				
 				if (t == null) {
 					sender.sendMessage(ChatColor.RED + "No more available teams.");
