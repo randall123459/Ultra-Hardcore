@@ -426,10 +426,12 @@ public class Spectator {
 				return;
 			}
 
-			if ((!event.getFrom().getName().equals("lobby") && !player.getWorld().getName().equals("lobby")) || (!event.getFrom().getName().equals("arena") && !player.getWorld().getName().equals("arena"))) {
-				for (Player online : PlayerUtils.getPlayers()) {
-					if (Spectator.getManager().hasSpecInfo(online)) {
-						online.sendMessage(prefix() + "§dPortal:§6" + player.getName() + "§f from §a" + NameUtils.fixString(event.getFrom().getEnvironment().name(), true).replaceAll("Normal", "overworld").toLowerCase() + "§f to §c" + NameUtils.fixString(player.getWorld().getEnvironment().name(), true).replaceAll("Normal", "overworld").toLowerCase());
+			if (!event.getFrom().getName().equals("lobby") && !player.getWorld().getName().equals("lobby")) {
+				if (!event.getFrom().getName().equals("arena") && !player.getWorld().getName().equals("arena")) {
+					for (Player online : PlayerUtils.getPlayers()) {
+						if (Spectator.getManager().hasSpecInfo(online)) {
+							online.sendMessage(prefix() + "§dPortal:§6" + player.getName() + "§f from §a" + NameUtils.fixString(event.getFrom().getEnvironment().name(), true).replaceAll("Normal", "overworld").toLowerCase() + "§f to §c" + NameUtils.fixString(player.getWorld().getEnvironment().name(), true).replaceAll("Normal", "overworld").toLowerCase());
+						}
 					}
 				}
 			}
