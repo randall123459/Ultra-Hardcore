@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
-import java.util.TimeZone;
 
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -87,6 +86,7 @@ import com.leontg77.uhc.cmds.TeamCommand;
 import com.leontg77.uhc.cmds.VoteCommand;
 import com.leontg77.uhc.scenario.ScenarioManager;
 import com.leontg77.uhc.utils.BlockUtils;
+import com.leontg77.uhc.utils.DateUtils;
 import com.leontg77.uhc.utils.GameUtils;
 import com.leontg77.uhc.utils.NameUtils;
 import com.leontg77.uhc.utils.PlayerUtils;
@@ -741,16 +741,49 @@ public class PlayerListener implements Listener {
 		PlayerUtils.handlePermissions(player);
 		
 		if (event.getResult() == Result.KICK_BANNED) {
-			if (player.hasPermission("uhc.staff")) {
-				event.allow();
-				return;
+			if (Bukkit.getBanList(Type.NAME).getBanEntry(player.getName()) != null) {
+				if (player.hasPermission("uhc.staff")) {
+					Bukkit.getBanList(Type.NAME).pardon(player.getName());
+					event.allow();
+					return;
+				}
+
+				BanEntry ban = Bukkit.getBanList(Type.NAME).getBanEntry(player.getName());
+				PlayerUtils.broadcast(Main.prefix() + ChatColor.RED + player.getName() + " §7tried to join while being " + (ban.getExpiration() == null ? "banned" : "temp-banned") + " for:§c " + ban.getReason(), "uhc.staff");
+				
+				event.setKickMessage(
+				"§8» §7You have been §4" + (ban.getExpiration() == null ? "banned" : "temp-banned") + " §7from §6Arctic UHC §8«" +
+				"\n" + 
+				"\n§cReason §8» §7" + ban.getReason() +
+				"\n§cBanned by §8» §7" + ban.getSource() + (ban.getExpiration() == null ? "" : "" +
+				"\n§cExpires in §8» §7" + DateUtils.formatDateDiff(ban.getExpiration().getTime())) +
+				"\n" +
+				"\n§8» §7If you would like to appeal, DM our twitter §a@ArcticUHC §8«"
+				);
 			}
+			else if (Bukkit.getBanList(Type.IP).getBanEntry(player.getAddress().getAddress().getHostAddress()) != null) {
+				if (player.hasPermission("uhc.staff")) {
+					Bukkit.getBanList(Type.IP).pardon(player.getAddress().getAddress().getHostAddress());
+					event.allow();
+					return;
+				}
 
-			BanEntry ban = Bukkit.getBanList(Type.NAME).getBanEntry(player.getName());
-			TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
-
-			PlayerUtils.broadcast(Main.prefix() + ChatColor.RED + player.getName() + " §7tried to join while being banned for:§c " + ban.getReason(), "uhc.staff");
-			event.setKickMessage("§8» §7You have been " + (ban.getExpiration() == null ? "banned" : "temp-banned") + " from Arctic UHC\n\n§8» §cReason: §7" + ban.getReason() + (ban.getExpiration() == null ? "" : "\n§8» §cExpires: §7" + ban.getExpiration()) + "\n§8» §cBanned by: §7" + ban.getSource() + "\n\n§8» §7If you would like to appeal, DM our twitter §a@ArcticUHC");
+				BanEntry ban = Bukkit.getBanList(Type.IP).getBanEntry(player.getAddress().getAddress().getHostAddress());
+				PlayerUtils.broadcast(Main.prefix() + ChatColor.RED + player.getName() + " §7tried to join while being IP-banned for:§c " + ban.getReason(), "uhc.staff");
+				
+				event.setKickMessage(
+				"§8» §7You have been §4IP " + (ban.getExpiration() == null ? "banned" : "temp-banned") + " §7from §6Arctic UHC §8«" +
+				"\n" + 
+				"\n§cReason §8» §7" + ban.getReason() +
+				"\n§cBanned by §8» §7" + ban.getSource() + (ban.getExpiration() == null ? "" : "" +
+				"\n§cExpires in §8» §7" + DateUtils.formatDateDiff(ban.getExpiration().getTime())) +
+				"\n" +
+				"\n§8» §7If you would like to appeal, DM our twitter §a@ArcticUHC §8«"
+				);
+			}
+			else {
+				event.allow();
+			}
 			return;
 		}
 		
@@ -760,10 +793,8 @@ public class PlayerListener implements Listener {
 				return;
 			}
 			
-			String game;
-			
 			if (GameUtils.getTeamSize().startsWith("No")) {
-				game = "There are no games running.";
+				event.setKickMessage("§8» §7You are not whitelisted §8«\n\n§cThere are no games running");
 			}
 			else if (GameUtils.getTeamSize().startsWith("Open")) {
 				Bukkit.setWhitelist(false);
@@ -772,14 +803,12 @@ public class PlayerListener implements Listener {
 			} 
 			else {
 				if (State.isState(State.LOBBY)) {
-					game = "The game has not opened yet, check the post for open time!";
+					event.setKickMessage("§8» §7You are not whitelisted §8«\n\n§cThe game has not opened yet,\n§ccheck the post for open time.\n\n§7Match post: §a" + settings.getConfig().getString("matchpost", "redd.it"));
 				}
 				else {
-					game = "The game has already started, you were too late!";
+					event.setKickMessage("§8» §7You are not whitelisted §8«\n\n§cThe game has already started");
 				}
 			}
-			
-			event.setKickMessage("§8» §7You are not whitelisted.\n\n§c" + game);
 			return;
 		}
 		
@@ -793,12 +822,12 @@ public class PlayerListener implements Listener {
 				if (State.isState(State.INGAME)) {
 					event.allow();
 				} else {
-					event.disallow(Result.KICK_FULL, Main.prefix() + "The server is currently full, try again later.");
+					event.disallow(Result.KICK_FULL, "§8» §7The server is currently full, try again later §8«");
 				}
 				return;
 			} 
 
-			event.disallow(Result.KICK_FULL, Main.prefix() + "The server is currently full, try again later.");
+			event.disallow(Result.KICK_FULL, "§8» §7The server is currently full, try again later §8«");
 		} else {
 			event.allow();
 		}
@@ -889,10 +918,19 @@ public class PlayerListener implements Listener {
         
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK && State.isState(State.INGAME) && Runnables.pvp > 0) {
         	if (event.getItem() != null && (event.getItem().getType() == Material.LAVA_BUCKET || event.getItem().getType() == Material.FLINT_AND_STEEL || event.getItem().getType() == Material.CACTUS)) {
-        		for (Entity nearby : PlayerUtils.getNearby(event.getClickedBlock().getLocation(), 20)) {
+        		for (Entity nearby : PlayerUtils.getNearby(event.getClickedBlock().getLocation(), 5)) {
         			if (nearby instanceof Player) {
+        				if (nearby == player) {
+        					continue;
+        				}
+        				
+        				if (Spectator.getManager().isSpectating((Player) nearby)) {
+        					continue;
+        				}
+        				
         				PlayerUtils.broadcast(Main.prefix() + "§c" + player.getName() + " §7attempted to iPvP §c" + nearby.getName(), "uhc.staff");
-        				player.sendMessage(Main.prefix() + "iPvP is not allowed, stop doing this or staff will take action.");
+        				player.sendMessage(Main.prefix() + "iPvP is not allowed before PvP.");
+        				player.sendMessage(Main.prefix() + "Stop iPvPing now or staff will take action.");
         				event.setCancelled(true);
         			}
         		}
