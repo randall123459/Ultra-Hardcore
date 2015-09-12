@@ -27,6 +27,10 @@ public class AssaultAndBattery extends Scenario implements Listener, CommandExec
 
 	public AssaultAndBattery() {
 		super("AssaultAndBattery", "To2 Where one person can only do meelee damage to players, while the other one can only do ranged attacks. If a teammate dies, you can do both meelee and ranged attacks.");
+		Main main = Main.plugin;
+		
+		main.getCommand("class").setExecutor(this);
+		main.getCommand("listclass").setExecutor(this);
 	}
 
 	public void setEnabled(boolean enable) {
