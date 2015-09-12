@@ -14,14 +14,14 @@ import org.bukkit.entity.Player;
 import com.leontg77.uhc.utils.PlayerUtils;
 
 /**
- * Player data class.
+ * User class.
  * <p>
- * This class contains methods for setting and getting stats, ranks, mute status and getting/saving/reloading the data file.
+ * This class contains methods for setting and getting stats, ranks, mute status and getting/saving/reloading the data file etc.
  * 
  * @author LeonTG77
  */
-public class Data {
-	private Player user;
+public class User {
+	private Player player;
 	private boolean creating = false;
 	
 	private FileConfiguration config;
@@ -35,8 +35,8 @@ public class Data {
 	 * @param player the player.
 	 * @return the data instance for the player.
 	 */
-	public static Data getFor(Player player) {
-		return new Data(player, player.getUniqueId().toString());
+	public static User get(Player player) {
+		return new User(player, player.getUniqueId().toString());
 	}
 
 	/**
@@ -47,8 +47,8 @@ public class Data {
 	 * @param offline the offline player.
 	 * @return the data instance for the player.
 	 */
-	public static Data getFor(OfflinePlayer offline) {
-		return new Data(offline.getPlayer(), offline.getUniqueId().toString());
+	public static User get(OfflinePlayer offline) {
+		return new User(offline.getPlayer(), offline.getUniqueId().toString());
 	}
 	
 	/**
@@ -59,7 +59,7 @@ public class Data {
 	 * @param uuid the player.
 	 * @param uuid the uuid of the player.
 	 */
-	private Data(Player player, String uuid) {
+	private User(Player player, String uuid) {
         if (!plugin.getDataFolder().exists()) {
         	plugin.getDataFolder().mkdir();
         }
@@ -82,11 +82,11 @@ public class Data {
         }
                
         config = YamlConfiguration.loadConfiguration(file);
-        this.user = player;
+        this.player = player;
         
         if (creating) {
-        	if (user != null) {
-            	config.set("username", user.getName());
+        	if (player != null) {
+            	config.set("username", player.getName());
         	}
         	
         	config.set("firstjoined", System.currentTimeMillis());
@@ -117,7 +117,7 @@ public class Data {
 	 * @return The player class.
 	 */
 	public Player getPlayer() {
-		return user;
+		return player;
 	}
 	
 	/**
@@ -151,8 +151,8 @@ public class Data {
 		config.set("rank", rank.name());
 		saveFile();
 		
-		if (user != null) {
-			PlayerUtils.handlePermissions(user);
+		if (player != null) {
+			PlayerUtils.handlePermissions(player);
 		}
 	}
 
@@ -162,7 +162,7 @@ public class Data {
 	 * @return the rank.
 	 */
 	public Rank getRank() {
-		return Rank.valueOf(config.getString("rank"));
+		return Rank.valueOf(config.getString("rank", "USER"));
 	}
 	
 	/**
@@ -181,7 +181,7 @@ public class Data {
 	 * @return <code>true</code> if the player is muted, <code>false</code> otherwise.
 	 */
 	public boolean isMuted() {
-		return config.getBoolean("muted");
+		return config.getBoolean("muted", false);
 	}
 	
 	/**
@@ -190,7 +190,7 @@ public class Data {
 	 * @param stat the stat name.
 	 */
 	public void increaseStat(String stat) {
-		config.set("stats." + stat, config.getInt("stats." + stat) + 1);
+		config.set("stats." + stat, config.getInt("stats." + stat, 0) + 1);
 		saveFile();
 	}
 	
@@ -200,7 +200,7 @@ public class Data {
 	 * @param stat the stat name.
 	 */
 	public void decreaseStat(String stat) {
-		config.set("stats." + stat, config.getInt("stats." + stat) - 1);
+		config.set("stats." + stat, config.getInt("stats." + stat, 1) - 1);
 		saveFile();
 	}
 	
@@ -211,7 +211,7 @@ public class Data {
 	 * @return The amount in an integer.
 	 */
 	public int getStat(String stat) {
-		return config.getInt("stats." + stat);
+		return config.getInt("stats." + stat, 0);
 	}
 	
 	/**
