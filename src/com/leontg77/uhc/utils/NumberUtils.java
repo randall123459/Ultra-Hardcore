@@ -2,6 +2,8 @@ package com.leontg77.uhc.utils;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -48,5 +50,25 @@ public class NumberUtils {
 	    int randomNum = rand.nextInt((max - min) + 1) + min;
 
 	    return randomNum;
+	}
+	
+	/**
+	 * This does something with splitting things.
+	 * @author EXSolo
+	 */
+	public static <T> List<List<T>> split(List<T> toSplit, int howOften) {
+		List<List<T>> list = new ArrayList<List<T>>(howOften);
+		
+		for (int i = 0; i < howOften; i++) {
+			list.add(new ArrayList<T>());
+		}
+		
+		int i = 0;
+		
+	    for (T t : toSplit) {
+	 	    list.get(i).add(t);
+	 	    i = (i + 1) % howOften;
+	    }
+	    return list;
 	}
 }
