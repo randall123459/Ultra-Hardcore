@@ -2,10 +2,8 @@ package com.leontg77.uhc.utils;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
-import java.util.Set;
 
 import net.minecraft.server.v1_8_R3.IChatBaseComponent;
 import net.minecraft.server.v1_8_R3.IChatBaseComponent.ChatSerializer;
@@ -27,13 +25,13 @@ import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
-import com.leontg77.uhc.User;
-import com.leontg77.uhc.User.Rank;
 import com.leontg77.uhc.Fireworks;
 import com.leontg77.uhc.Game;
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.Settings;
 import com.leontg77.uhc.Spectator;
+import com.leontg77.uhc.User;
+import com.leontg77.uhc.User.Rank;
 
 /**
  * Player utilities class.
@@ -50,8 +48,8 @@ public class PlayerUtils {
 	 * 
 	 * @return A list of online players.
 	 */
-	public static Set<Player> getPlayers() {
-		HashSet<Player> list = new HashSet<Player>();
+	public static List<Player> getPlayers() {
+		List<Player> list = new ArrayList<Player>();
 		
 		for (Player online : Bukkit.getServer().getOnlinePlayers()) {
 			list.add(online);
