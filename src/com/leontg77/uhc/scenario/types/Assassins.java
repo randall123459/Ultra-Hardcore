@@ -8,6 +8,9 @@ import java.util.Map.Entry;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -22,7 +25,7 @@ import com.leontg77.uhc.utils.PlayerUtils;
  * Assassins scenario class
  * @author Audicy
  */
-public class Assassins extends Scenario implements Listener {
+public class Assassins extends Scenario implements Listener, CommandExecutor {
 	private HashMap<String, String> assassins = new HashMap<String, String>();
 	private boolean enabled = false;
 
@@ -90,6 +93,25 @@ public class Assassins extends Scenario implements Listener {
 				targetP.setCompassTarget(player.getLocation());
 			}
 		}
+	}
+	
+	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+		if (!(sender instanceof Player)) {
+			sender.sendMessage(ChatColor.RED + "Only players can use Assassins commands.");
+			return true;
+		}
+		
+		Player player = (Player) sender;
+		
+		if (cmd.getName().equalsIgnoreCase("target")) {
+			if (!isEnabled()) {
+				player.sendMessage(Main.prefix() + "\"Assassins\" is not enabled.");
+				return true;
+			}
+			
+			player.sendMessage(Main.prefix() + "Your target is: §a" + getTarget(player.getName()));
+		}
+		return false;
 	}
 
 	/**
