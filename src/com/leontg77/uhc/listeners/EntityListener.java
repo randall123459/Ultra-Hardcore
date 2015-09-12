@@ -36,6 +36,7 @@ import org.bukkit.potion.PotionEffectType;
 
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.Main.State;
+import com.leontg77.uhc.Game;
 import com.leontg77.uhc.Settings;
 import com.leontg77.uhc.Spectator;
 import com.leontg77.uhc.scenario.ScenarioManager;
@@ -51,6 +52,7 @@ import com.leontg77.uhc.utils.NumberUtils;
  */
 public class EntityListener implements Listener {
 	private Settings settings = Settings.getInstance();
+	private Game game = Game.getInstance();
 	
 	@EventHandler
 	public void onEntityDamage(EntityDamageEvent event) {		
@@ -70,7 +72,7 @@ public class EntityListener implements Listener {
 	
 	@EventHandler
 	public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
-		if (!Main.pearldamage && event.getDamager() instanceof EnderPearl) {
+		if (!game.pearlDamage() && event.getDamager() instanceof EnderPearl) {
 			event.setCancelled(true);
 		}
 	}
@@ -118,7 +120,7 @@ public class EntityListener implements Listener {
     public void onEntityDeath(EntityDeathEvent event) {
     	Entity entity = event.getEntity();
     	
-    	if (Main.ghastdrops) {
+    	if (game.ghastDropGold()) {
         	if (entity instanceof Ghast) {
         		event.getDrops().remove(new ItemStack (Material.GHAST_TEAR));
         		event.getDrops().add(new ItemStack (Material.GOLD_INGOT));
@@ -170,7 +172,7 @@ public class EntityListener implements Listener {
 	 */
 	@EventHandler
     public void onStrengthDamage(EntityDamageByEntityEvent event) {
-		if (Main.nerfedStrength) {
+		if (game.nerfedStrength()) {
 	        if (!(event.getDamager() instanceof Player)) {
 	            return;
 	        }
@@ -230,7 +232,7 @@ public class EntityListener implements Listener {
 				double precent = hearts * 10;
 				
 				if (health > 0.0000) {
-					killer.sendMessage(Main.prefix() + "§6" + player.getName() + " §7is now at §6" + ((int) precent) + "%");
+					killer.sendMessage(Main.prefix() + "§6" + player.getName() + " §7is now at §a" + ((int) precent) + "%");
 				}
 			}
 		}, 1);
@@ -265,7 +267,7 @@ public class EntityListener implements Listener {
 		}
 		
 		for (Player online : Bukkit.getServer().getOnlinePlayers()) {
-			online.sendMessage(Main.prefix() + killer.getName() + " got a longshot of §6" + NumberUtils.convertDouble(distance) + " §7blocks.");
+			online.sendMessage(Main.prefix() + "§6" + killer.getName() + " §7got a longshot of §a" + NumberUtils.convertDouble(distance) + " §7blocks.");
 		}
 	}
 
@@ -274,7 +276,7 @@ public class EntityListener implements Listener {
 		TravelAgent travel = event.getPortalTravelAgent();
 		Location from = event.getFrom();
 		
-		if (Main.nether) {
+		if (game.nether()) {
 			String fromName = event.getFrom().getWorld().getName();
 	        String targetName;
 	        
@@ -308,7 +310,7 @@ public class EntityListener implements Listener {
 	        }
 		}
 		
-		if (Main.theend) {
+		if (game.theEnd()) {
 			String fromName = event.getFrom().getWorld().getName();
 	        String targetName;
 	        
