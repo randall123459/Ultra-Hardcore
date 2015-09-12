@@ -19,14 +19,16 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import com.leontg77.uhc.Data;
+import com.leontg77.uhc.User;
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.Main.State;
+import com.leontg77.uhc.Game;
 import com.leontg77.uhc.Parkour;
 import com.leontg77.uhc.Runnables;
 import com.leontg77.uhc.Scoreboards;
 import com.leontg77.uhc.Settings;
 import com.leontg77.uhc.Spectator;
+import com.leontg77.uhc.Teams;
 import com.leontg77.uhc.Spectator.SpecInfo;
 import com.leontg77.uhc.scenario.Scenario;
 import com.leontg77.uhc.scenario.ScenarioManager;
@@ -37,6 +39,8 @@ public class EndCommand implements CommandExecutor {
 	private Settings settings = Settings.getInstance();
 
 	public boolean onCommand(CommandSender sender, Command cmd,	String label, String[] args) {
+		Game game = Game.getInstance();
+		
 		if (cmd.getName().equalsIgnoreCase("end")) {
 			if (sender.hasPermission("uhc.end")) {
 				if (args.length < 2) {
@@ -89,7 +93,7 @@ public class EndCommand implements CommandExecutor {
 				for (String entry : winners) {
 					OfflinePlayer m9 = PlayerUtils.getOfflinePlayer(entry);
 					
-					Data data = Data.getFor(m9);
+					User data = User.get(m9);
 					data.increaseStat("wins");
 					PlayerUtils.broadcast("§8» §7" + entry);
 				}
@@ -97,6 +101,7 @@ public class EndCommand implements CommandExecutor {
 				PlayerUtils.broadcast(" ");
 				PlayerUtils.broadcast(Main.prefix() + "With §a" + kills + "§7 kills.");
 				PlayerUtils.broadcast(Main.prefix() + "Congratz on the win!");
+				PlayerUtils.broadcast(Main.prefix() + "View the hall of fame with §a/hof");
 				
 				if (settings.getHOF().contains(host)) {
 					int id = settings.getHOF().getConfigurationSection(host).getKeys(false).size() + 1;
@@ -122,8 +127,8 @@ public class EndCommand implements CommandExecutor {
 				settings.saveConfig();
 
 				Bukkit.getServer().setIdleTimeout(60);
-				Main.teamSize = 0;
-				Main.ffa = true;
+				game.setTeamSize(0);
+				game.setFFA(true);
 				
 				for (Player online : PlayerUtils.getPlayers()) {
 					if (Spectator.getManager().isSpectating(online)) {
@@ -150,6 +155,10 @@ public class EndCommand implements CommandExecutor {
 				
 				for (String e : Scoreboards.getManager().kills.getScoreboard().getEntries()) {
 					Scoreboards.getManager().resetScore(e);
+				}
+				
+				for (String team : Teams.getManager().getTeam("spec").getEntries()) {
+					Teams.getManager().getTeam("spec").removeEntry(team);
 				}
 
 				for (OfflinePlayer whitelisted : Bukkit.getServer().getWhitelistedPlayers()) {
