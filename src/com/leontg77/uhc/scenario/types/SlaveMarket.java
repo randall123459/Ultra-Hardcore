@@ -30,13 +30,16 @@ public class SlaveMarket extends Scenario implements Listener, CommandExecutor {
 	
 	public SlaveMarket() {
 		super("SlaveMarket", "8 slave owners are chosen and they get 30 diamonds to bid on players as they choose. Any spare diamonds will be cleared.");
+		Main main = Main.plugin;
+		
+		main.getCommand("slavereset").setExecutor(this);
+		main.getCommand("slaveowner").setExecutor(this);
+		main.getCommand("startbid").setExecutor(this);
+		main.getCommand("bid").setExecutor(this);
 	}
 
 	public void setEnabled(boolean enable) {
 		enabled = enable;
-		
-		PlayerUtils.broadcast(String.valueOf(enable));
-		PlayerUtils.broadcast(String.valueOf(enabled));
 	}
 
 	public boolean isEnabled() {
@@ -49,7 +52,7 @@ public class SlaveMarket extends Scenario implements Listener, CommandExecutor {
 	
 	public boolean onCommand(final CommandSender sender, Command cmd, String label, final String[] args) {
 		if (cmd.getName().equalsIgnoreCase("slavereset")) {
-			if (!enabled) {
+			if (!isEnabled()) {
 				sender.sendMessage(Main.prefix() + "\"SlaveMarket\" is not enabled.");
 				return true;
 			}
