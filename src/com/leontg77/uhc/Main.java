@@ -34,6 +34,7 @@ import com.leontg77.uhc.cmds.AboardCommand;
 import com.leontg77.uhc.cmds.ArenaCommand;
 import com.leontg77.uhc.cmds.BanCommand;
 import com.leontg77.uhc.cmds.BoardCommand;
+import com.leontg77.uhc.cmds.BorderCommand;
 import com.leontg77.uhc.cmds.BroadcastCommand;
 import com.leontg77.uhc.cmds.ButcherCommand;
 import com.leontg77.uhc.cmds.ClearChatCommand;
@@ -93,8 +94,6 @@ import com.leontg77.uhc.listeners.PlayerListener;
 import com.leontg77.uhc.listeners.WorldListener;
 import com.leontg77.uhc.scenario.Scenario;
 import com.leontg77.uhc.scenario.ScenarioManager;
-import com.leontg77.uhc.scenario.types.AssaultAndBattery;
-import com.leontg77.uhc.scenario.types.SlaveMarket;
 import com.leontg77.uhc.utils.NumberUtils;
 import com.leontg77.uhc.utils.PlayerUtils;
 
@@ -113,31 +112,7 @@ public class Main extends JavaPlugin {
 	public static BukkitRunnable countdown;
 	public static Recipe headRecipe;
 	public static Recipe melonRecipe;
-
-	public static boolean aboard = false;
-	public static boolean board = false;
-	public static boolean muted = false;
 	
-	public static boolean ffa;
-	public static int teamSize;
-
-	public static boolean shears;
-	public static int shearrate;
-	public static int flintrate;
-
-	public static Border border;
-	public static boolean absorption;
-	public static boolean goldenheads;
-	public static boolean pearldamage;
-	public static boolean notchapples;
-	public static boolean deathlightning;
-	public static boolean nether;
-	public static boolean theend;
-	public static boolean ghastdrops;
-	public static boolean nerfedStrength;
-	public static boolean tabcolors;
-	public static boolean harderCrafting;
-
 	public static HashMap<String, PermissionAttachment> permissions = new HashMap<String, PermissionAttachment>();
 	public static HashMap<CommandSender, CommandSender> msg = new HashMap<CommandSender, CommandSender>();
 	public static HashMap<Inventory, BukkitRunnable> invsee = new HashMap<Inventory, BukkitRunnable>();
@@ -167,8 +142,8 @@ public class Main extends JavaPlugin {
 		}
 		settings.saveData();
 		
-		for (Entry<String, Integer> tkEntry : kills.entrySet()) {
-			settings.getData().set("kills." + tkEntry.getKey(), tkEntry.getValue());
+		for (Entry<String, Integer> kEntry : kills.entrySet()) {
+			settings.getData().set("kills." + kEntry.getKey(), kEntry.getValue());
 		}
 		settings.saveData();
 		
@@ -198,28 +173,6 @@ public class Main extends JavaPlugin {
 		State.setState(State.valueOf(settings.getData().getString("state", State.LOBBY.name())));
 		addRecipes();
 		
-		ffa = settings.getConfig().getBoolean("game.ffa", true);
-		teamSize = settings.getConfig().getInt("game.teamsize", 1);
-		
-		border = Border.valueOf(settings.getConfig().getString("feature.border.shrinkAt", Border.MEETUP.name()));
-		absorption = settings.getConfig().getBoolean("feature.absorption.enabled", false);
-		goldenheads = settings.getConfig().getBoolean("feature.goldenheads.enabled", true);
-		pearldamage = settings.getConfig().getBoolean("feature.pearldamage.enabled", false);
-		notchapples = settings.getConfig().getBoolean("feature.notchapples.enabled", true);
-		deathlightning = settings.getConfig().getBoolean("feature.deathlightning.enabled", true);
-		nether = settings.getConfig().getBoolean("feature.nether.enabled", false);
-		theend = settings.getConfig().getBoolean("feature.theend.enabled", false);
-		ghastdrops = settings.getConfig().getBoolean("feature.ghastdrops.enabled", true);
-		nerfedStrength = settings.getConfig().getBoolean("feature.nerfedStrength.enabled", true);
-		tabcolors = settings.getConfig().getBoolean("feature.tabcolors.enabled", false);
-		harderCrafting = settings.getConfig().getBoolean("feature.harderCrafting.tabcolors", true);
-
-		shears = settings.getConfig().getBoolean("rates.shears.enabled", true);
-		shearrate = settings.getConfig().getInt("rates.shears.rate", 5);
-		flintrate = settings.getConfig().getInt("rates.flint.rate", 35);
-		
-		plugin.getLogger().info("Config values has been setup.");
-		
 		Bukkit.getServer().getPluginManager().registerEvents(new BlockListener(), this);
 		Bukkit.getServer().getPluginManager().registerEvents(new EntityListener(), this);
 		Bukkit.getServer().getPluginManager().registerEvents(new InventoryListener(), this);
@@ -230,6 +183,7 @@ public class Main extends JavaPlugin {
 		getCommand("arena").setExecutor(new ArenaCommand());
 		getCommand("ban").setExecutor(new BanCommand());
 		getCommand("board").setExecutor(new BoardCommand());
+		getCommand("border").setExecutor(new BorderCommand());
 		getCommand("broadcast").setExecutor(new BroadcastCommand());
 		getCommand("butcher").setExecutor(new ButcherCommand());
 		getCommand("clearchat").setExecutor(new ClearChatCommand());
@@ -283,14 +237,6 @@ public class Main extends JavaPlugin {
 		getCommand("vote").setExecutor(new VoteCommand());
 		getCommand("whitelist").setExecutor(new WhitelistCommand());
 		
-		getCommand("class").setExecutor(new AssaultAndBattery());
-		getCommand("listclass").setExecutor(new AssaultAndBattery());
-		
-		getCommand("slavereset").setExecutor(new SlaveMarket());
-		getCommand("slaveowner").setExecutor(new SlaveMarket());
-		getCommand("startbid").setExecutor(new SlaveMarket());
-		getCommand("bid").setExecutor(new SlaveMarket());
-		
 		if (State.isState(State.LOBBY)) {
 			File playerData = new File(Bukkit.getWorlds().get(0).getWorldFolder(), "playerdata");
 			File stats = new File(Bukkit.getWorlds().get(0).getWorldFolder(), "stats");
@@ -333,7 +279,7 @@ public class Main extends JavaPlugin {
 						online.setGameMode(GameMode.SPECTATOR);
 					}
 					
-					if (Main.tabcolors) {
+					if (Game.getInstance().tabShowsHealthColor()) {
 						ChatColor color;
 
 						if (online.getHealth() < 6.66D) {
