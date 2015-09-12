@@ -28,6 +28,7 @@ import com.leontg77.uhc.utils.ScatterUtils;
 public class Arena {
 	public HashMap<Player, Integer> killstreak = new HashMap<Player, Integer>();
 	private Settings settings = Settings.getInstance();
+	private Game game = Game.getInstance();
 	private static Arena instance = new Arena();
 	private ArrayList<Player> players;
 	private boolean enabled = false;	
@@ -54,7 +55,7 @@ public class Arena {
 		if (board.getObjective("arenaKills") == null) {
 			arenaKills = board.registerNewObjective("arenaKills", "dummy");
 		}
-		arenaKills.setDisplayName("§4Open PvP §8- §7Join with /a");
+		arenaKills.setDisplayName("§4Arena §8- §7Use /a to join");
 		
 		Bukkit.getLogger().info("[UHC] The arena has been setup.");
 	}
@@ -68,7 +69,7 @@ public class Arena {
 		this.enabled = enable;
 		
 		if (enable) {
-			if (Main.board) {
+			if (game.pregameBoard()) {
 				Scoreboards.getManager().setScore("§a ", 10);
 				Scoreboards.getManager().setScore("§8» §cArena:", 9);
 				Scoreboards.getManager().setScore("§8» §7/a ", 8);
@@ -78,7 +79,7 @@ public class Arena {
 				this.removePlayer(p, false);
 			}
 			
-			if (Main.board) {
+			if (game.pregameBoard()) {
 				Scoreboards.getManager().resetScore("§a ");
 				Scoreboards.getManager().resetScore("§8» §cArena:");
 				Scoreboards.getManager().resetScore("§8» §7/a ");
@@ -197,43 +198,44 @@ public class Arena {
 	 * @param player the player.
 	 */
 	private void giveKit(Player player) {
-		ItemStack Sword = new ItemStack(Material.IRON_SWORD);
-		ItemStack Bow = new ItemStack(Material.BOW);
-		ItemStack Cobble = new ItemStack(Material.COBBLESTONE, 64);
-		ItemStack Bucket = new ItemStack(Material.WATER_BUCKET);
-		ItemStack Pick = new ItemStack(Material.IRON_PICKAXE);
-		Pick.addEnchantment(Enchantment.DIG_SPEED, 2);
-		ItemStack Axe = new ItemStack(Material.IRON_AXE);
-		Axe.addEnchantment(Enchantment.DIG_SPEED, 2);
-		ItemStack Shovel = new ItemStack(Material.IRON_SPADE);
-		Shovel.addEnchantment(Enchantment.DIG_SPEED, 2);
-		ItemStack Steel = new ItemStack(Material.GOLDEN_APPLE);
-		ItemStack Food = new ItemStack(Material.COOKED_BEEF, 32);
+		ItemStack sword = new ItemStack(Material.IRON_SWORD);
+		ItemStack bow = new ItemStack(Material.BOW);
 		
-		ItemStack Helmet = new ItemStack(Material.IRON_HELMET);
+		ItemStack cobble = new ItemStack(Material.COBBLESTONE, 64);
+		ItemStack bucket = new ItemStack(Material.WATER_BUCKET);
 		
-		ItemStack Chestplate = new ItemStack(Material.IRON_CHESTPLATE);
+		ItemStack pickaxe = new ItemStack(Material.IRON_PICKAXE);
+		pickaxe.addEnchantment(Enchantment.DIG_SPEED, 2);
+		ItemStack axe = new ItemStack(Material.IRON_AXE);
+		axe.addEnchantment(Enchantment.DIG_SPEED, 2);
+		ItemStack shovel = new ItemStack(Material.IRON_SPADE);
+		shovel.addEnchantment(Enchantment.DIG_SPEED, 2);
 		
-		ItemStack Leggings = new ItemStack(Material.IRON_LEGGINGS);
+		ItemStack gapple = new ItemStack(Material.GOLDEN_APPLE);
+		ItemStack food = new ItemStack(Material.COOKED_BEEF, 32);
 		
-		ItemStack Boots = new ItemStack(Material.IRON_BOOTS);
+		ItemStack helmet = new ItemStack(Material.IRON_HELMET);
+		ItemStack chestplate = new ItemStack(Material.IRON_CHESTPLATE);
+		ItemStack leggings = new ItemStack(Material.IRON_LEGGINGS);
+		ItemStack boots = new ItemStack(Material.IRON_BOOTS);
 		
-		player.getInventory().setItem(0, Sword);
-		player.getInventory().setItem(1, Bow);
-		player.getInventory().setItem(2, Cobble);
-		player.getInventory().setItem(3, Bucket);
-		player.getInventory().setItem(4, Pick);
-		player.getInventory().setItem(5, Axe);
-		player.getInventory().setItem(6, Shovel);
-		player.getInventory().setItem(7, Steel);
-		player.getInventory().setItem(8, Food);
+		player.getInventory().setItem(0, sword);
+		player.getInventory().setItem(1, bow);
+		player.getInventory().setItem(2, cobble);
+		player.getInventory().setItem(3, bucket);
+		player.getInventory().setItem(4, pickaxe);
+		player.getInventory().setItem(5, axe);
+		player.getInventory().setItem(6, shovel);
+		player.getInventory().setItem(7, gapple);
+		player.getInventory().setItem(8, food);
+		
 		player.getInventory().setItem(27, new ItemStack (Material.ARROW, 64));
 		player.getInventory().addItem(new ItemStack (Material.WORKBENCH, 16));
 		player.getInventory().addItem(new ItemStack (Material.ENCHANTMENT_TABLE, 4));
-		player.getInventory().addItem(new ItemStack (Material.INK_SACK, 64, (short) 4));
-		player.getInventory().setHelmet(Helmet);
-		player.getInventory().setChestplate(Chestplate);
-		player.getInventory().setLeggings(Leggings);
-		player.getInventory().setBoots(Boots);
+		
+		player.getInventory().setHelmet(helmet);
+		player.getInventory().setChestplate(chestplate);
+		player.getInventory().setLeggings(leggings);
+		player.getInventory().setBoots(boots);
 	}
 }
