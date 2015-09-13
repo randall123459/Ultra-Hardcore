@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 import java.util.Map.Entry;
-import java.util.Random;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -69,67 +69,73 @@ public class MysteryTeams extends Scenario implements Listener, CommandExecutor 
 				
 				if (args[0].equalsIgnoreCase("randomize")) {
 					if (args.length > 1) {
-						int teamCount = 1;
+						int teamSize = 1;
 						
 						try {
-							teamCount = Integer.parseInt(args[1]);
+							teamSize = Integer.parseInt(args[1]);
 						} catch (Exception e) {
 							sender.sendMessage(ChatColor.RED + "Invaild team count.");
 							return true;
 						}
 						
-						if (teamCount > MysteryTeam.values().length) {
-							sender.sendMessage(ChatColor.RED + "The team count is larger than the maximum available teams.");
-							return true;
-						}
+						List<Player> players = PlayerUtils.getPlayers();
 						
-						List<Player> players = new ArrayList<Player>(PlayerUtils.getPlayers());
-						
-						for (int i = 2; i < args.length; i++) {
-							Player target = Bukkit.getServer().getPlayer(args[i]);
-							
-							if (target != null) {
-								if (players.contains(target)) {
-									players.remove(target);
+
+						if (args.length > 2) {
+							for (int i = 2; i < args.length; i++) {
+								Player target = Bukkit.getServer().getPlayer(args[i]);
+								
+								if (target != null) {
+									if (players.contains(target)) {
+										players.remove(target);
+									}
 								}
 							}
 						}
 
 						Collections.shuffle(players);
-					    
-					    for (int i = 0; i < teamCount; i++) {
-					    	int teamsize = (players.size() / teamCount);
-				    		MysteryTeam t = null;
-				    		
-				    		for (MysteryTeam mt : MysteryTeam.values()) {
-				    			if (!this.teams.containsKey(mt)) {
-				    				this.teams.put(mt, new ArrayList<String>());
-				    				this.orgTeams.put(mt, new ArrayList<String>());
-				    				t = mt;
-				    				break;
-				    			}
-				    			if (this.teams.get(mt).size() < 1)  {
-				    				t = mt;
-				    				break;
-				    			}
-							}
-					    	
-					    	for (int j = 0; j < teamsize; j++) {
-					    		Player r = players.get(new Random().nextInt(players.size()));
-					    		players.remove(r);
-					    		
-					    		orgTeams.get(t).add(r.getUniqueId().toString());
-					    		this.teams.get(t).add(r.getUniqueId().toString());
+			    		MysteryTeam t = null;
+						
+						for (MysteryTeam mt : MysteryTeam.values()) {
+			    			if (!this.teams.containsKey(mt)) {
+			    				this.teams.put(mt, new ArrayList<String>());
+			    				this.orgTeams.put(mt, new ArrayList<String>());
+			    				t = mt;
+			    				break;
+			    			}
+			    			if (this.teams.get(mt).size() < 1)  {
+			    				t = mt;
+			    				break;
+			    			}
+						}
+						
+						try {
+							for (int i = 0; i < teamSize; i++) {
+								if (players.size() < i) {
+									sender.sendMessage(ChatColor.RED + "Could not add a player to team " + t.getName() + ".");
+									continue;
+								}
+								
+								Player p = players.get(i);
+								
+					    		orgTeams.get(t).add(p.getUniqueId().toString());
+					    		this.teams.get(t).add(p.getUniqueId().toString());
 					    		
 					    		ItemStack item = new ItemStack(Material.BANNER);
 					    		BannerMeta meta = (BannerMeta) item.getItemMeta();
 					    		meta.setBaseColor(t.getDyeColor());
 					    		item.setItemMeta(meta);
-					    		PlayerUtils.giveItem(r, item);
-					    	}
-					    }
-						
-						sender.sendMessage(prefix() + "Teams randomized.");
+					    		
+								p.sendMessage(Main.prefix() + "You were added to " + t.getChatColor() + t.getName() + " §7team.");
+					    		PlayerUtils.giveItem(p, item);
+							}
+						} catch (Exception e) {
+							sender.sendMessage(ChatColor.RED + "Not enough players for this team.");
+						}
+
+						if (this.teams.get(t).size() > 0) {
+							sender.sendMessage(Main.prefix() + "Created a rTo" + teamSize + " using team " + t.getName() + ".");
+						}
 					} else {
 						sender.sendMessage(prefix() + "§7Usage: /mt randomize <teamcount> [playersnotplaying]");
 					}
@@ -159,7 +165,8 @@ public class MysteryTeams extends Scenario implements Listener, CommandExecutor 
 								}
 							}
 							
-							members.append(member);
+							members.append(Bukkit.getOfflinePlayer(UUID.fromString(member)).getName());
+							i++;
 						}
 						
 						sender.sendMessage(team.getKey().getChatColor() + team.getKey().getName() + ": §f" + members.toString().trim());
