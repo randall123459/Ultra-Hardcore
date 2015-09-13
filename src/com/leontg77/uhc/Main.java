@@ -162,7 +162,6 @@ public class Main extends JavaPlugin {
 
 		ScenarioManager.getInstance().setup();
 		AntiStripmine.getManager().setup();
-		Fireworks.getRandomizer().setup();
 		Scoreboards.getManager().setup();
 		BiomeSwap.getManager().setup();
 		Parkour.getManager().setup();
