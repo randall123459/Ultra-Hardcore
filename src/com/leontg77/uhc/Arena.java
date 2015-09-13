@@ -27,10 +27,10 @@ import com.leontg77.uhc.utils.ScatterUtils;
  */
 public class Arena {
 	public HashMap<Player, Integer> killstreak = new HashMap<Player, Integer>();
+	private ArrayList<Player> players = new ArrayList<Player>();
 	private Settings settings = Settings.getInstance();
-	private Game game = Game.getInstance();
 	private static Arena instance = new Arena();
-	private ArrayList<Player> players;
+	private Game game = Game.getInstance();
 	private boolean enabled = false;	
 	
 	public Scoreboard board = Bukkit.getScoreboardManager().getMainScoreboard();
@@ -49,15 +49,12 @@ public class Arena {
 	 * Setup the arena class.
 	 */
 	public void setup() {
-		players = new ArrayList<Player>();
-		enabled = false;
-
 		if (board.getObjective("arenaKills") == null) {
 			arenaKills = board.registerNewObjective("arenaKills", "dummy");
 		}
-		arenaKills.setDisplayName("§4Arena §8- §7Use /a to join");
-		
+
 		Bukkit.getLogger().info("[UHC] The arena has been setup.");
+		arenaKills.setDisplayName("§4Arena §8- §7Use /a to join");
 	}
 	
 	/**
