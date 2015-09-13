@@ -3,7 +3,6 @@ package com.leontg77.uhc.utils;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import net.minecraft.server.v1_8_R3.IChatBaseComponent;
 import net.minecraft.server.v1_8_R3.IChatBaseComponent.ChatSerializer;
@@ -22,10 +21,8 @@ import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.permissions.PermissionAttachment;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
-import com.leontg77.uhc.Fireworks;
 import com.leontg77.uhc.Game;
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.Settings;
@@ -208,28 +205,6 @@ public class PlayerUtils {
 		}
 		
 		return total <= entered;
-	}
-	
-	public static void playWinnerFireworks() {
-		new BukkitRunnable() {
-			int i = 0;
-			
-			public void run() {
-				Random rand = new Random();
-				int x = rand.nextInt(50 * 2) - 50;
-				int z = rand.nextInt(50 * 2) - 50;
-
-				Location loc = new Location(Bukkit.getWorld("lobby"), x + 0.5, 34, z + 0.5);
-				loc.setY(BlockUtils.highestBlock(loc).getY());
-				Fireworks.getRandomizer().launchRandomFirework(loc.clone().add(0, 1, 0));
-				
-				i++;
-				
-				if (i == 200) {
-					cancel();
-				}
-			}
-		}.runTaskTimer(Main.plugin, 20, 5);
 	}
 	
 	/**
