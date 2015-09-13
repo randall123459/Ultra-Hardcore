@@ -22,6 +22,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import com.leontg77.uhc.User;
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.Main.State;
+import com.leontg77.uhc.Fireworks;
 import com.leontg77.uhc.Game;
 import com.leontg77.uhc.Parkour;
 import com.leontg77.uhc.Runnables;
@@ -60,7 +61,7 @@ public class EndCommand implements CommandExecutor {
 				HandlerList.unregisterAll(new SpecInfo());
 				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer cancel");
 				Spectator.getManager().spectators.clear();
-				PlayerUtils.playWinnerFireworks();
+				Fireworks.getInstance().startFireworkShow();
 				SpecInfo.totalDiamonds.clear();
 				Parkour.getManager().setup();
 				State.setState(State.LOBBY);

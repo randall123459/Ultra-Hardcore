@@ -72,6 +72,7 @@ import com.leontg77.uhc.Game;
 import com.leontg77.uhc.InvGUI;
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.Main.State;
+import com.leontg77.uhc.Fireworks;
 import com.leontg77.uhc.Parkour;
 import com.leontg77.uhc.Runnables;
 import com.leontg77.uhc.Scoreboards;
@@ -668,7 +669,7 @@ public class PlayerListener implements Listener {
 		
 		if (event.getMessage().split(" ")[0].equalsIgnoreCase("/fire")) {
 			if (player.hasPermission("uhc.staff")) {
-				PlayerUtils.playWinnerFireworks();
+				Fireworks.getInstance().startFireworkShow();
 			}
 			event.setCancelled(true);
 			return;
@@ -855,7 +856,7 @@ public class PlayerListener implements Listener {
 	public void onServerListPing(ServerListPingEvent event) {
 		String state = GameUtils.getState();
 		String teamSize = GameUtils.getTeamSize();
-		String scenarios = ChatColor.translateAlternateColorCodes('&', settings.getConfig().getString("game.scenarios", "games scheduled."));
+		String scenarios = ChatColor.translateAlternateColorCodes('&', settings.getConfig().getString("game.scenarios", "games scheduled"));
 		String host = Settings.getInstance().getConfig().getString("game.host", "None");
 		
 		event.setMotd("§4§lArctic UHC §8- §71.8 §8- §a" + state + "§r \n" + 
