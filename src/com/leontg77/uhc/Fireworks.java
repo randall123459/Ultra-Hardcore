@@ -66,7 +66,7 @@ public class Fireworks {
 				Location loc = new Location(Bukkit.getWorld("lobby"), x + 0.5, 34, z + 0.5);
 				loc.setY(BlockUtils.highestBlock(loc).getY());
 				
-				Fireworks.getInstance().launchRandomFirework(loc.add(0, 1, 0));
+				launchRandomFirework(loc.add(0, 1, 0));
 				
 				i++;
 				
