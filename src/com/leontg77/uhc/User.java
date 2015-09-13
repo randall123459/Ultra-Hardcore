@@ -87,6 +87,7 @@ public class User {
         if (creating) {
         	if (player != null) {
             	config.set("username", player.getName());
+            	config.set("uuid", player.getUniqueId().toString());
         	}
         	
         	config.set("firstjoined", System.currentTimeMillis());
@@ -191,16 +192,6 @@ public class User {
 	 */
 	public void increaseStat(String stat) {
 		config.set("stats." + stat, config.getInt("stats." + stat, 0) + 1);
-		saveFile();
-	}
-	
-	/**
-	 * Removes an amount from the stats.
-	 * 
-	 * @param stat the stat name.
-	 */
-	public void decreaseStat(String stat) {
-		config.set("stats." + stat, config.getInt("stats." + stat, 1) - 1);
 		saveFile();
 	}
 	
