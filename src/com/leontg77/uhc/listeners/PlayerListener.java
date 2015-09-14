@@ -248,11 +248,16 @@ public class PlayerListener implements Listener {
 								player.getInventory().clear();
 								player.setExp(0);
 								
-								Team team = Teams.getManager().getTeam(player);
+								final Team team = Teams.getManager().getTeam(player);
 								
-								PlayerUtils.broadcast("§8» " + (team == null ? "§f" : team.getPrefix()) + player.getName() + " §ftook too long to come back");
 								PlayerDeathEvent event = new PlayerDeathEvent(player, new ArrayList<ItemStack>(), 0, null);
 								Bukkit.getServer().getPluginManager().callEvent(event);
+								
+								new BukkitRunnable() {
+									public void run() {
+										PlayerUtils.broadcast("§8» " + (team == null ? "§f" : team.getPrefix()) + player.getName() + " §ftook too long to come back");
+									}
+								}.runTaskLater(Main.plugin, 1);
 							}
 						}
 					}
@@ -264,7 +269,7 @@ public class PlayerListener implements Listener {
 	}
 	
 	@EventHandler
-	public void onPlayerDeath(PlayerDeathEvent event) {
+	public void onPlayerDeath(final PlayerDeathEvent event) {
 		final Player player = event.getEntity().getPlayer();
 		
 		if (Arena.getManager().isEnabled()) {
@@ -432,29 +437,33 @@ public class PlayerListener implements Listener {
 				return;
 			}
 			
-			Player killer = player.getKiller();
+			final Player killer = player.getKiller();
 			
 			if (event.getDeathMessage().contains(killer.getName()) && killer.getItemInHand() != null && killer.getItemInHand().hasItemMeta() && killer.getItemInHand().getItemMeta().hasDisplayName() && (event.getDeathMessage().contains("slain") || event.getDeathMessage().contains("shot"))) {
-				ComponentBuilder builder = new ComponentBuilder("§8» §r" + event.getDeathMessage().replace("[" + killer.getItemInHand().getItemMeta().getDisplayName() + "]", ""));
-				
-				if (killer.getItemInHand().getEnchantments().isEmpty()) {
-					builder.append("[" + killer.getItemInHand().getItemMeta().getDisplayName() + "]");
-				} else {
-					StringBuilder colored = new StringBuilder();
-					
-					for (String s : killer.getItemInHand().getItemMeta().getDisplayName().split(" ")) {
-						colored.append(ChatColor.AQUA + s).append(" ");
+				new BukkitRunnable() {
+					public void run() {
+						ComponentBuilder builder = new ComponentBuilder("§8» §r" + event.getDeathMessage().replace("[" + killer.getItemInHand().getItemMeta().getDisplayName() + "]", ""));
+						
+						if (killer.getItemInHand().getEnchantments().isEmpty()) {
+							builder.append("[" + killer.getItemInHand().getItemMeta().getDisplayName() + "]");
+						} else {
+							StringBuilder colored = new StringBuilder();
+							
+							for (String s : killer.getItemInHand().getItemMeta().getDisplayName().split(" ")) {
+								colored.append(ChatColor.AQUA + s).append(" ");
+							}
+							
+							builder.append("§b[" + colored.toString().trim() + "§b]");
+						}
+						builder.event(new HoverEvent(HoverEvent.Action.SHOW_ITEM, new BaseComponent[] { new TextComponent(NameUtils.convertItemStackToJson(killer.getItemInHand())) }));
+						
+						BaseComponent[] result = builder.create();
+						
+						for (Player online : PlayerUtils.getPlayers()) {
+							online.spigot().sendMessage(result);
+						}
 					}
-					
-					builder.append("§b[" + colored.toString().trim() + "§b]");
-				}
-				builder.event(new HoverEvent(HoverEvent.Action.SHOW_ITEM, new BaseComponent[] { new TextComponent(NameUtils.convertItemStackToJson(killer.getItemInHand())) }));
-				
-				BaseComponent[] result = builder.create();
-				
-				for (Player online : PlayerUtils.getPlayers()) {
-					online.spigot().sendMessage(result);
-				}
+				}.runTaskLater(Main.plugin, 1);
 				
 				Bukkit.getLogger().info("§8» §f" + event.getDeathMessage());
 				
@@ -1031,7 +1040,7 @@ public class PlayerListener implements Listener {
             	player.sendMessage(Main.prefix() + "Could not teleport you, contact the staff now.");
 	        }
 		} else {
-            if (!BlockUtils.hasBlockNearby(Material.PORTAL, event.getFrom())) {
+            if (BlockUtils.hasBlockNearby(Material.PORTAL, event.getFrom())) {
             	player.sendMessage(Main.prefix() + "The nether is disabled.");
             }
 		}
@@ -1086,7 +1095,7 @@ public class PlayerListener implements Listener {
 			
 			event.setTo(to);
 		} else {
-            if (!BlockUtils.hasBlockNearby(Material.ENDER_PORTAL, event.getFrom())) {
+            if (BlockUtils.hasBlockNearby(Material.ENDER_PORTAL, event.getFrom())) {
             	player.sendMessage(Main.prefix() + "The end is disabled.");
             }
 		}
