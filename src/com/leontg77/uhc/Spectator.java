@@ -28,8 +28,8 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
-import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
+import org.bukkit.event.player.PlayerPortalEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.inventory.ItemStack;
@@ -247,6 +247,10 @@ public class Spectator {
 	 * @return <code>true</code> if the string is in the spectator list, <code>false</code> otherwise.
 	 */
 	public boolean isSpectating(String entry) {
+		if (entry.equals("CONSOLE")) {
+			return true;
+		}
+		
 		return spectators.contains(entry);
 	}
 
@@ -419,20 +423,16 @@ public class Spectator {
 		}
 
 		@EventHandler
-		public void onPlayerChangedWorld(PlayerChangedWorldEvent event) {
+		public void onPlayerPortal(PlayerPortalEvent event) {
 			Player player = event.getPlayer();
 
 			if (Spectator.getManager().isSpectating(player)) {
 				return;
 			}
 
-			if (!event.getFrom().getName().equals("lobby") && !player.getWorld().getName().equals("lobby")) {
-				if (!event.getFrom().getName().equals("arena") && !player.getWorld().getName().equals("arena")) {
-					for (Player online : PlayerUtils.getPlayers()) {
-						if (Spectator.getManager().hasSpecInfo(online)) {
-							online.sendMessage(prefix() + "§dPortal:§6" + player.getName() + "§f from §a" + NameUtils.fixString(event.getFrom().getEnvironment().name(), true).replaceAll("Normal", "overworld").toLowerCase() + "§f to §c" + NameUtils.fixString(player.getWorld().getEnvironment().name(), true).replaceAll("Normal", "overworld").toLowerCase());
-						}
-					}
+			for (Player online : PlayerUtils.getPlayers()) {
+				if (Spectator.getManager().hasSpecInfo(online)) {
+					online.sendMessage(prefix() + "§dPortal:§6" + player.getName() + "§f from §a" + NameUtils.fixString(event.getFrom().getWorld().getEnvironment().name(), true).replaceAll("Normal", "overworld").toLowerCase() + "§f to §c" + NameUtils.fixString(event.getTo().getWorld().getEnvironment().name(), true).replaceAll("Normal", "overworld").toLowerCase());
 				}
 			}
 		}
