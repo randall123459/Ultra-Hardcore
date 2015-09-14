@@ -138,10 +138,57 @@ commands:
   whitelist:
     description: Whitelisting command.
     aliases: [wl]
+# Scenario Commands.
+  target:
+    description: View your assassins target.
   class:
     description: View your AssaultAndBarrery type.
   listclass:
     description: View who has what AssaultAndBarrery type.
+  bp:
+    description: Open your backpack.
+  btc:
+    description: Add or remove someone from the BestBTC list.
+  btclist:
+    description: View the BestBTC list.
+  pve:
+    description: Add or remove someone from the BestPvE list.
+  pvelist:
+    description: View the BestPvE list.
+  bigcrack:
+    description: Generate the big crack.
+  bl:
+    description: View the biomeparanoia colors.
+  addcaptain:
+    description: Add a captain.
+  removecaptain:
+    description: Remove a captain.
+  randomcaptain:
+    description: Add a random captain.
+  cycle:
+    description: Start or stop the choosing.
+  choose:
+    description: Choose a player.
+  genie:
+    description: Genie command, check usage.
+  addking:
+    description: Add a king.
+  remking:
+    description: Remove a king.
+  moles:
+    description: View the moles.
+  molehelp:
+    description: View mole commands.
+  mcl:
+    description: Send your loc to your mole team.
+  mcc:
+    description: Chat with your mole team.
+  mcp:
+    description: View your mole team.
+  mt:
+    description: Mystery teams command.
+  genpyro:
+    description: Generate Pyrophobia.
   slavereset:
     description: Reset slavemarket.
   slaveowner:
@@ -150,5 +197,9 @@ commands:
     description: Start a bid on a player.
   bid:
     description: Bid on a player.
-  mt:
-    description: Mystery teams command.
+  slimecrack:
+    description: Generate the SlimyCrack.
+  slist:
+    description: View what effects people have.
+  super:
+    description: Add or remove effects.
