@@ -59,11 +59,11 @@ public class StartCommand implements CommandExecutor {
 					Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer cancel");
 					
 					if (Runnables.heal > 0) {
-						Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer 60 &aFinal heal in:&7");
+						Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer 60 &cFinal heal in&8:&7");
 					} else if (Runnables.pvp > 0) {
-						Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer " + (Runnables.pvp * 60) + " &aPvP in:&7");
+						Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer " + (Runnables.pvp * 60) + " &cPvP in&8:&7");
 					} else if (Runnables.meetup > 0) {
-						Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer " + (Runnables.meetup * 60) + " &aMeetup in:&7");
+						Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer " + (Runnables.meetup * 60) + " &cMeetup in&8:&7");
 					} else {
 						Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer -1 &6Meetup is now!");
 					}
