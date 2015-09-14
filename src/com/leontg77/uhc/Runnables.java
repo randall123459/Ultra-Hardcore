@@ -81,6 +81,10 @@ public class Runnables {
 						}
 						
 						for (PotionEffect effect : online.getActivePotionEffects()) {
+							if (effect.getType().equals(PotionEffectType.NIGHT_VISION)) {
+								continue;
+							}
+							
 							online.removePotionEffect(effect.getType());	
 						}
 						
@@ -105,8 +109,26 @@ public class Runnables {
 						online.setGameMode(GameMode.SURVIVAL);
 					}
 					
-					for (PotionEffect effect : online.getActivePotionEffects()) {
-						online.removePotionEffect(effect.getType());	
+					if (ScenarioManager.getInstance().getScenario("Kings").isEnabled()) {
+						for (PotionEffect effect : online.getActivePotionEffects()) {
+							if (effect.getType().equals(PotionEffectType.DAMAGE_RESISTANCE)) {
+								continue;
+							}
+							
+							if (effect.getType().equals(PotionEffectType.INCREASE_DAMAGE)) {
+								continue;
+							}
+							
+							if (effect.getType().equals(PotionEffectType.SPEED)) {
+								continue;
+							}
+							
+							online.removePotionEffect(effect.getType());	
+						}
+					} else {
+						for (PotionEffect effect : online.getActivePotionEffects()) {
+							online.removePotionEffect(effect.getType());	
+						}
 					}
 
 					online.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 250, 100));
