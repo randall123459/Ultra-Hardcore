@@ -43,6 +43,8 @@ import com.leontg77.uhc.Settings;
 import com.leontg77.uhc.scenario.Scenario;
 
 /**
+ * Cryophobia scenario class
+ * 
  * @author Bergasms
  */
 public class Cryophobia extends Scenario implements Listener {

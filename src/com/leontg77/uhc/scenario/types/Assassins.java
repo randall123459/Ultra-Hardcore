@@ -23,7 +23,8 @@ import com.leontg77.uhc.utils.PlayerUtils;
 
 /**
  * Assassins scenario class
- * @author Audicy
+ * 
+ * @author audicymc
  */
 public class Assassins extends Scenario implements Listener, CommandExecutor {
 	private HashMap<String, String> assassins = new HashMap<String, String>();
@@ -31,6 +32,9 @@ public class Assassins extends Scenario implements Listener, CommandExecutor {
 
 	public Assassins() {
 		super("Assassins", "Each player has a target that they must kill. Killing anyone that is not your target or assassin will result in no items dropping. When your target dies, you get their target.");
+		Main main = Main.plugin;
+		
+		main.getCommand("target").setExecutor(this);
 	}
 
 	public void setEnabled(boolean enable) {
@@ -56,10 +60,6 @@ public class Assassins extends Scenario implements Listener, CommandExecutor {
 
 	@EventHandler
 	public void onPlayerDeath(PlayerDeathEvent event) {
-		if (!isEnabled()) {
-			return;
-		}
-			
 		Player player = event.getEntity();
 		Player killer = player.getKiller();
 		
@@ -79,10 +79,6 @@ public class Assassins extends Scenario implements Listener, CommandExecutor {
 
 	@EventHandler
 	public void onPlayerMove(PlayerMoveEvent event) {
-		if (!isEnabled()) {
-			return;
-		}
-			
 		Player player = event.getPlayer();
 		String target = getAssassin(player.getName());
 			
@@ -97,7 +93,7 @@ public class Assassins extends Scenario implements Listener, CommandExecutor {
 	
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (!(sender instanceof Player)) {
-			sender.sendMessage(ChatColor.RED + "Only players can use Assassins commands.");
+			sender.sendMessage(ChatColor.RED + "Only players can have targets.");
 			return true;
 		}
 		
@@ -111,7 +107,7 @@ public class Assassins extends Scenario implements Listener, CommandExecutor {
 			
 			player.sendMessage(Main.prefix() + "Your target is: §a" + getTarget(player.getName()));
 		}
-		return false;
+		return true;
 	}
 
 	/**

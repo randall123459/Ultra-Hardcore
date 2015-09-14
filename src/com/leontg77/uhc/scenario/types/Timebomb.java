@@ -16,6 +16,11 @@ import com.leontg77.uhc.Main;
 import com.leontg77.uhc.scenario.Scenario;
 import com.leontg77.uhc.utils.PlayerUtils;
 
+/**
+ * TimeBomb scenario class
+ * 
+ * @author LeonTG77
+ */
 public class Timebomb extends Scenario implements Listener {
 	private boolean enabled = false;
 
@@ -33,10 +38,6 @@ public class Timebomb extends Scenario implements Listener {
 	
 	@EventHandler
 	public void onPlayerDeath(PlayerDeathEvent event) {
-		if (!isEnabled()) {
-			return;
-		}
-		
 		final Player player = event.getEntity().getPlayer();
 		
 		event.setKeepInventory(true);

@@ -5,6 +5,7 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
 import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -15,11 +16,19 @@ import org.bukkit.inventory.ItemStack;
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.scenario.Scenario;
 
-public class Backpacks extends Scenario implements Listener {
+/**
+ * Backpacks scenario class
+ * 
+ * @author LeonTG77
+ */
+public class Backpacks extends Scenario implements Listener, CommandExecutor {
 	private boolean enabled = false;
 
 	public Backpacks() {
 		super("Backpacks", "Players can type /bp to open up a backpack inventory.");
+		Main main = Main.plugin;
+		
+		main.getCommand("bp").setExecutor(this);
 	}
 
 	public void setEnabled(boolean enable) {
@@ -32,10 +41,6 @@ public class Backpacks extends Scenario implements Listener {
 	
 	@EventHandler
 	public void onPlayerDeath(PlayerDeathEvent event) {
-		if (!isEnabled()) {
-			return;
-		}
-		
 		Player player = event.getEntity();
 		Block block = player.getLocation().add(0, -1, 0).getBlock();
 		
@@ -57,7 +62,7 @@ public class Backpacks extends Scenario implements Listener {
 	
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (!(sender instanceof Player)) {
-			sender.sendMessage(ChatColor.RED + "Only players can use Backpack commands.");
+			sender.sendMessage(ChatColor.RED + "Only players can use backpacks.");
 			return true;
 		}
 		

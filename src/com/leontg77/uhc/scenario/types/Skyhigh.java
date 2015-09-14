@@ -7,6 +7,11 @@ import com.leontg77.uhc.Main;
 import com.leontg77.uhc.scenario.Scenario;
 import com.leontg77.uhc.utils.PlayerUtils;
 
+/**
+ * Skyhigh scenario class
+ * 
+ * @author LeonTG77
+ */
 public class Skyhigh extends Scenario {
 	private boolean enabled = false;
 	private BukkitRunnable task;

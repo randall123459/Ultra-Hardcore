@@ -18,12 +18,17 @@ import com.leontg77.uhc.Main;
 import com.leontg77.uhc.scenario.Scenario;
 import com.leontg77.uhc.utils.PlayerUtils;
 
+/**
+ * Lootcrates scenario class
+ * 
+ * @author LeonTG77
+ */
 public class Lootcrates extends Scenario implements Listener {
 	private boolean enabled = false;
 	private BukkitRunnable task;
 
 	public Lootcrates() {
-		super("Lootcrates", "Every 10 minutes, players will be given a \"loot crate\" filled with goodies. There are two tiers, an Ender Chest being tier 2 and a normal chest tier 1.");
+		super("Lootcrates", "Every 10 minutes, players will be given a loot crate filled with goodies. There are two tiers, an Ender Chest being tier 2 and a normal chest tier 1.");
 	}
 
 	public void setEnabled(boolean enable) {
@@ -36,9 +41,9 @@ public class Lootcrates extends Scenario implements Listener {
 						int i = new Random().nextInt(2);
 						
 						if (i == 1) {
-							online.getInventory().addItem(new ItemStack (Material.ENDER_CHEST));
+							PlayerUtils.giveItem(online, new ItemStack (Material.ENDER_CHEST));
 						} else {
-							online.getInventory().addItem(new ItemStack (Material.CHEST));
+							PlayerUtils.giveItem(online, new ItemStack (Material.CHEST));
 						}
 					}
 					PlayerUtils.broadcast(Main.prefix() + "Lootcrates has been given out.");
@@ -57,16 +62,13 @@ public class Lootcrates extends Scenario implements Listener {
 	
 	@EventHandler
 	public void onBlockPlace(BlockPlaceEvent event) {
-		if (!isEnabled()) {
-			return;
-		}
-
 		Player player = event.getPlayer();
 		Block block = event.getBlock();
 
 		if (block.getType() == Material.CHEST) {
 			player.sendMessage(ChatColor.RED + "You cannot place lootcrates.");
 			event.setCancelled(true);
+			return;
 		}
 
 		if (block.getType() == Material.ENDER_CHEST) {
@@ -77,10 +79,6 @@ public class Lootcrates extends Scenario implements Listener {
 	
 	@EventHandler
 	public void onPlayerInteract(PlayerInteractEvent event) {
-		if (!isEnabled()) {
-			return;
-		}
-		
 		if (event.getItem() == null) {
 			return;
 		}
@@ -91,6 +89,7 @@ public class Lootcrates extends Scenario implements Listener {
 		if (item.getType() == Material.CHEST) {
 			int i = new Random().nextInt(5);
 			player.sendMessage(Main.prefix() + "You rolled an §a" + i + "§7.");
+			event.setCancelled(true);
 			
 			switch (i) {
 			case 0:
@@ -112,11 +111,13 @@ public class Lootcrates extends Scenario implements Listener {
 				player.setItemInHand(new ItemStack (Material.BOW));
 				break;
 			}
+			return;
 		}
 
 		if (item.getType() == Material.ENDER_CHEST) {
 			int i = new Random().nextInt(10);
 			player.sendMessage(Main.prefix() + "You rolled an §a" + i + "§7.");
+			event.setCancelled(true);
 			
 			switch (i) {
 			case 0:
@@ -158,14 +159,11 @@ public class Lootcrates extends Scenario implements Listener {
 	
 	@EventHandler
 	public void onPrepareItemCraft(PrepareItemCraftEvent event) {
-		if (!isEnabled()) {
-			return;
-		}
-		
 		ItemStack item = event.getRecipe().getResult();
 		
 		if (item.getType() == Material.CHEST) {
 			event.getInventory().setResult(new ItemStack(Material.AIR));
+			return;
 		}
 		
 		if (item.getType() == Material.ENDER_CHEST) {

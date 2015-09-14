@@ -4,6 +4,11 @@ import org.bukkit.event.Listener;
 
 import com.leontg77.uhc.scenario.Scenario;
 
+/**
+ * PeriodOfResistance scenario class
+ * 
+ * @author LeonTG77
+ */
 public class PeriodOfResistance extends Scenario implements Listener {
 	private boolean enabled = false;
 

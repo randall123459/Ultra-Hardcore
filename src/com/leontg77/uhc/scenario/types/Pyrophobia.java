@@ -10,6 +10,9 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -19,7 +22,6 @@ import org.bukkit.event.block.BlockIgniteEvent.IgniteCause;
 import org.bukkit.event.block.LeavesDecayEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.player.PlayerBucketFillEvent;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -30,9 +32,11 @@ import com.leontg77.uhc.scenario.Scenario;
 import com.leontg77.uhc.utils.PlayerUtils;
 
 /**
+ * Pyrophobia scenario class
+ * 
  * @author Bergasms
  */
-public class Pyrophobia extends Scenario implements Listener {
+public class Pyrophobia extends Scenario implements Listener, CommandExecutor {
 	private ArrayList<Location> locations;
 	private boolean enabled = false;
 	private int generateTaskID;
@@ -40,9 +44,12 @@ public class Pyrophobia extends Scenario implements Listener {
 
 	public Pyrophobia() {
 		super("Pyrophobia", "All water and ice is replaced with lava, redstone and lapis is replaced by obsidian and leaves drop sugar canes.");
+	    this.locations = new ArrayList<Location>();
 	    this.generateTaskID = -1;
 	    this.totalChunks = 0;
-	    this.locations = new ArrayList<Location>();
+	    
+	    Main main = Main.plugin;
+	    main.getCommand("genpyro").setExecutor(this);
 	}
 
 	public void setEnabled(boolean enable) {
@@ -55,10 +62,6 @@ public class Pyrophobia extends Scenario implements Listener {
 
 	@EventHandler
 	public void onPlayerBucketFill(PlayerBucketFillEvent event) {
-		if (!isEnabled()) {
-			return;
-		}
-		
 		Player player = event.getPlayer();
 		
 		if (event.getItemStack().getType() == Material.WATER_BUCKET) {
@@ -70,10 +73,6 @@ public class Pyrophobia extends Scenario implements Listener {
 
 	@EventHandler
 	public void onBlockIgnite(BlockIgniteEvent event) {
-		if (!isEnabled()) {
-			return;
-		}
-		
 		IgniteCause cause = event.getCause();
 
 		if (cause == IgniteCause.LAVA) {
@@ -86,45 +85,34 @@ public class Pyrophobia extends Scenario implements Listener {
 		}
 	}
 
-	@EventHandler(ignoreCancelled = true)
+	@EventHandler
 	public void CreatureSpawnEvent(CreatureSpawnEvent event) {
-		if (!isEnabled()) {
-			return;
-		}
-		
 		event.getEntity().addPotionEffect(new PotionEffect(PotionEffectType.FIRE_RESISTANCE, Integer.MAX_VALUE, 2));
 	}
 
-	@EventHandler(ignoreCancelled = true)
+	@EventHandler
 	public void LeavesDecayEvent(LeavesDecayEvent event) {
-		if (!isEnabled()) {
-			return;
-		}
-		
 		Random r = new Random();
+		
 		if (r.nextInt(100) < 2) {
 			Item item = event.getBlock().getWorld().dropItem(event.getBlock().getLocation().add(0.5, 0.7, 0.5), new ItemStack(Material.SUGAR_CANE, 1 + r.nextInt(1)));
 			item.setVelocity(new Vector(0, 0.2, 0));
 		}
 	}
 
-	@EventHandler
-	public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
-		Player player = event.getPlayer();
+	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+		if (!(sender instanceof Player)) {
+			sender.sendMessage(ChatColor.RED + "Only players can generate pyrophobia.");
+			return true;
+		}
 		
-		if (event.getMessage().split(" ")[0].equalsIgnoreCase("/genpyro")) {
-			event.setCancelled(true);
-			
-			ArrayList<String> ar = new ArrayList<String>();
-			for (String arg : event.getMessage().split(" ")) {
-				ar.add(arg);
-			}
-			ar.remove(0);
-			String[] args = ar.toArray(new String[ar.size()]);
-			
+		Player player = (Player) sender;
+		
+		if (cmd.getName().equalsIgnoreCase("genpyro")) {
 			if (args.length == 0) {
-				player.sendMessage(Main.prefix().replaceAll("UHC", "Pyrophobia") + "Starting pyrophobia convertion.");
+				player.sendMessage(Main.prefix().replaceAll("UHC", "Pyrophobia") + "Starting PyroPhobia convertion.");
 				convertToPyro(player.getWorld(), 1100);
+				return true;
 			}
 			
 			int radius;
@@ -133,12 +121,13 @@ public class Pyrophobia extends Scenario implements Listener {
 				radius = Integer.parseInt(args[0]);
 			} catch (Exception e) {
 				player.sendMessage(ChatColor.RED + "Invaild radius.");
-				return;
+				return true;
 			}
 
-			player.sendMessage(Main.prefix().replaceAll("UHC", "Pyrophobia") + "Starting pyrophobia convertion.");
+			player.sendMessage(Main.prefix().replaceAll("UHC", "Pyrophobia") + "Starting PyroPhobia convertion.");
 			convertToPyro(player.getWorld(), radius);
 		}
+		return true;
 	}
 
 	private void completedPyro(final World w, int radius) {

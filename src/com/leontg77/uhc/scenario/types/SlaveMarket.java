@@ -10,7 +10,10 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Team;
@@ -20,6 +23,11 @@ import com.leontg77.uhc.Teams;
 import com.leontg77.uhc.scenario.Scenario;
 import com.leontg77.uhc.utils.PlayerUtils;
 
+/**
+ * SlaveMarket scenario class
+ * 
+ * @author LeonTG77
+ */
 public class SlaveMarket extends Scenario implements Listener, CommandExecutor {
 	private boolean enabled = false;
 	
@@ -48,6 +56,16 @@ public class SlaveMarket extends Scenario implements Listener, CommandExecutor {
 	
 	public String prefix() {
 		return Main.prefix().replaceAll("UHC", "Slave");
+	}
+	
+	@EventHandler
+    public void onPlayerDropItem(PlayerDropItemEvent event) {	
+        event.setCancelled(true);
+	}
+	
+	@EventHandler
+    public void onInventoryClick(InventoryClickEvent event) {	
+        event.setCancelled(true);
 	}
 	
 	public boolean onCommand(final CommandSender sender, Command cmd, String label, final String[] args) {
@@ -246,8 +264,19 @@ public class SlaveMarket extends Scenario implements Listener, CommandExecutor {
 								    		PlayerUtils.broadcast(prefix() + "Bid winner is offline...");
 								    		return;
 							    		}
-							    		target.getInventory().remove(new ItemStack (Material.DIAMOND, biggestBid));
-							    		PlayerUtils.broadcast(prefix() + ChatColor.GREEN + bidWinner + "§7 has won the bidding on §a" + args[0] + "§7 for §a" + biggestBid);
+							    		PlayerUtils.broadcast(prefix() + ChatColor.GREEN + bidWinner + "§7 has won the bidding on §a" + args[0] + "§7 for §a" + biggestBid + "§7 diamonds.");
+							    		
+							    		for (ItemStack item : target.getInventory().getContents()) {
+							    			if (item != null && item.getType() == Material.DIAMOND) {
+							    				if (item.getAmount() > biggestBid) {
+							    					item.setAmount(item.getAmount() - biggestBid);
+							    				} else {
+							    					target.getInventory().remove(item);
+							    				}
+							    				break;
+							    			}
+							    		}
+							    		
 							    		Team t = target.getScoreboard().getEntryTeam(target.getName());
 							    		
 							    		if (t == null) {

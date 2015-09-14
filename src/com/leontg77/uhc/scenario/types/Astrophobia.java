@@ -18,7 +18,6 @@ import org.bukkit.entity.Item;
 import org.bukkit.entity.Skeleton;
 import org.bukkit.entity.TNTPrimed;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
@@ -38,6 +37,8 @@ import com.leontg77.uhc.Settings;
 import com.leontg77.uhc.scenario.Scenario;
 
 /**
+ * Astrophobia scenario class
+ * 
  * @author Bergasms
  */
 public class Astrophobia extends Scenario implements Listener {
@@ -79,6 +80,130 @@ public class Astrophobia extends Scenario implements Listener {
 
 	public boolean isEnabled() {
 		return enabled;
+	}
+
+	@EventHandler
+	public void onEntityShootBowEvent(EntityShootBowEvent event) {
+		if (event.isCancelled()) {
+			return;
+		}
+		
+		if (runOnWorld == null) {
+			return;
+		}
+		
+		if (event.getEntity().getType() != EntityType.SKELETON) {
+			return;
+		}
+		
+		if ((event.getProjectile().getType() == EntityType.ARROW) && (event.getEntity().getEquipment().getHelmet().getType() == Material.GLASS)) {
+			Firework f = (Firework) runOnWorld.spawnEntity(event.getEntity().getEyeLocation(), EntityType.FIREWORK);
+			FireworkMeta fwm = f.getFireworkMeta();
+			FireworkEffect effect = FireworkEffect.builder().withTrail().with(FireworkEffect.Type.STAR).withColor(new Color[] { Color.GREEN, Color.GREEN }).with(FireworkEffect.Type.BURST).build();
+			fwm.addEffect(effect);
+			f.setFireworkMeta(fwm);
+			event.getProjectile().setPassenger(f);
+		}
+	}
+
+	@EventHandler
+	public void onEntityDamageByEntityEvent(EntityDamageByEntityEvent event) {
+		Entity damageEntity = event.getDamager();
+		
+		if (damageEntity.getType() != EntityType.ARROW) {
+			return;
+		}
+		
+		if (damageEntity.getPassenger() == null) {
+			return;
+		}
+		
+		Firework f = (Firework) damageEntity.getPassenger();
+		FireworkMeta fwm = f.getFireworkMeta();
+		FireworkEffect effect = FireworkEffect.builder().withTrail().with(FireworkEffect.Type.BALL_LARGE).withColor(new Color[] { Color.RED, Color.RED }).with(FireworkEffect.Type.BURST).build();
+		fwm.addEffect(effect);
+		f.setFireworkMeta(fwm);
+		f.detonate();
+		event.setDamage(6.0D);
+	}
+
+	@EventHandler
+	public void onEntityExplode(EntityExplodeEvent e) {
+		if (e.getEntity().hasMetadata("meteor")) {
+			final Location loc = e.getLocation();
+
+			Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Main.plugin, new Runnable() {
+				public void run() {
+					Entity[] entities = getNearbyEntities(loc, 10);
+					Entity[] arrayOfEntity1;
+					
+					int j = (arrayOfEntity1 = entities).length;
+					for (int i = 0; i < j; i++) {
+						Entity entity = arrayOfEntity1[i];
+						if (entity.getType() == EntityType.DROPPED_ITEM) {
+							Item item = (Item) entity;
+							
+							if (item.getItemStack().getType() == Material.COBBLESTONE || item.getItemStack().getType() == Material.SAND || item.getItemStack().getType() == Material.SANDSTONE || item.getItemStack().getType() == Material.DIRT || item.getItemStack().getType() == Material.GRAVEL || item.getItemStack().getType() == Material.SAPLING || item.getItemStack().getType() == Material.LOG || item.getItemStack().getType() == Material.LOG_2 || item.getItemStack().getType() == Material.SEEDS) {
+								entity.remove();
+							}
+						}
+					}
+					
+					Random r = new Random();
+					
+					if (r.nextBoolean()) {
+						float fr = r.nextFloat() * 100.0F;
+						if (fr < chancePerDiamond) {
+							loc.getWorld().dropItem(loc, new ItemStack(Material.DIAMOND, 1));
+						} 
+						else if (fr < chancePerDiamond + chancePerGold) {
+							loc.getWorld().dropItem(loc, new ItemStack(Material.GOLD_ORE, 2));
+						} 
+						else if (fr < chancePerDiamond + chancePerGold	+ chancePerIron) {
+							loc.getWorld().dropItem(loc, new ItemStack(Material.IRON_ORE, 2));
+						}
+					}
+				}
+			}, 2L);
+		}
+	}
+
+	@EventHandler
+	public void onCreatureSpawn(CreatureSpawnEvent event) {
+		if ((event.getEntity().getType() == EntityType.CREEPER) && (event.getSpawnReason() == SpawnReason.SPAWNER_EGG)) {
+			Creeper creep = (Creeper) event.getEntity();
+			creep.setPowered(true);
+			creep.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 10, 10), true);
+
+			creep.getEquipment().setItemInHand(new ItemStack(Material.MONSTER_EGG, 1, (short) 50));
+			creep.setCanPickupItems(false);
+			creep.getEquipment().setItemInHandDropChance(100.0F);
+		}
+	}
+
+	public static Entity[] getNearbyEntities(Location l, int radius) {
+		int chunkRadius = radius < 16 ? 1 : (radius - radius % 16) / 16;
+		HashSet<Entity> radiusEntities = new HashSet<Entity>();
+		
+		for (int chX = 0 - chunkRadius; chX <= chunkRadius; chX++) {
+			for (int chZ = 0 - chunkRadius; chZ <= chunkRadius; chZ++) {
+				int x = (int) l.getX();
+				int y = (int) l.getY();
+				int z = (int) l.getZ();
+				
+				Entity[] arrayOfEntity;
+				int j = (arrayOfEntity = new Location(l.getWorld(), x + chX * 16, y, z + chZ * 16).getChunk().getEntities()).length;
+				
+				for (int i = 0; i < j; i++) {
+					Entity e = arrayOfEntity[i];
+					
+					if ((e.getLocation().distance(l) <= radius) && (e.getLocation().getBlock() != l.getBlock())) {
+						radiusEntities.add(e);
+					}
+				}
+			}
+		}
+		return radiusEntities.toArray(new Entity[radiusEntities.size()]);
 	}
 
 	private void startForPlayer() {
@@ -124,7 +249,8 @@ public class Astrophobia extends Scenario implements Listener {
 				tnt.setMetadata("meteor", new FixedMetadataValue(Main.plugin, "isMeteor"));
 				tnt.setIsIncendiary(r.nextBoolean());
 				tnt.setYield(Math.max((float) ((1000.0D - dropFrom.distance(new Location(this.runOnWorld, 0.0D, 63.0D, 0.0D))) / 100.0D), 7.0F));
-			} else if (chance < 85) {
+			} 
+			else if (chance < 85) {
 				Creeper creep = (Creeper) this.runOnWorld.spawnEntity(dropFrom.subtract(0.0D, 155.0D, 0.0D), EntityType.CREEPER);
 				creep.setPowered(true);
 				creep.setFallDistance(-500.0F);
@@ -134,7 +260,8 @@ public class Astrophobia extends Scenario implements Listener {
 				creep.getEquipment().setItemInHand(new ItemStack(Material.MONSTER_EGG, 1, (short) 50));
 				creep.setCanPickupItems(false);
 				creep.getEquipment().setItemInHandDropChance(100.0F);
-			} else if (chance < 100) {
+			} 
+			else if (chance < 100) {
 				Vector cel = new Vector(r.nextFloat() * 10.0F - 5.0F, -1.0F * r.nextFloat(), r.nextFloat() * 10.0F - 5.0F);
 				for (int i = 2; i < 8; i++) {
 					Skeleton creep = (Skeleton) this.runOnWorld.spawnEntity(dropFrom.subtract(0.0D, 155.0D, 0.0D), EntityType.SKELETON);
@@ -171,149 +298,6 @@ public class Astrophobia extends Scenario implements Listener {
 					creep.getEquipment().setItemInHand(new ItemStack(Material.BOW));
 				}
 			}
-		}
-	}
-
-	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
-	public void onEntityShootBowEvent(EntityShootBowEvent event) {
-		if (!isEnabled()) {
-			return;
-		}
-		
-		if (event.isCancelled()) {
-			return;
-		}
-		
-		if (this.runOnWorld == null) {
-			return;
-		}
-		
-		if (event.getEntity().getType() != EntityType.SKELETON) {
-			return;
-		}
-		
-		if ((event.getProjectile().getType() == EntityType.ARROW) && (event.getEntity().getEquipment().getHelmet().getType() == Material.GLASS)) {
-			Firework f = (Firework) this.runOnWorld.spawnEntity(event.getEntity().getEyeLocation(), EntityType.FIREWORK);
-			FireworkMeta fwm = f.getFireworkMeta();
-			FireworkEffect effect = FireworkEffect.builder().withTrail().with(FireworkEffect.Type.STAR).withColor(new Color[] { Color.GREEN, Color.GREEN }).with(FireworkEffect.Type.BURST).build();
-			fwm.addEffect(effect);
-			f.setFireworkMeta(fwm);
-			event.getProjectile().setPassenger(f);
-		}
-	}
-
-	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
-	public void onEntityDamageByEntityEvent(EntityDamageByEntityEvent event) {
-		if (!isEnabled()) {
-			return;
-		}
-		
-		Entity damageEntity = event.getDamager();
-		
-		if (damageEntity.getType() != EntityType.ARROW) {
-			return;
-		}
-		
-		if (damageEntity.getPassenger() == null) {
-			return;
-		}
-		
-		Firework f = (Firework) damageEntity.getPassenger();
-		FireworkMeta fwm = f.getFireworkMeta();
-		FireworkEffect effect = FireworkEffect.builder().withTrail().with(FireworkEffect.Type.BALL_LARGE).withColor(new Color[] { Color.RED, Color.RED }).with(FireworkEffect.Type.BURST).build();
-		fwm.addEffect(effect);
-		f.setFireworkMeta(fwm);
-		f.detonate();
-		event.setDamage(6.0D);
-	}
-
-	public static Entity[] getNearbyEntities(Location l, int radius) {
-		int chunkRadius = radius < 16 ? 1 : (radius - radius % 16) / 16;
-		HashSet<Entity> radiusEntities = new HashSet<Entity>();
-		for (int chX = 0 - chunkRadius; chX <= chunkRadius; chX++) {
-			for (int chZ = 0 - chunkRadius; chZ <= chunkRadius; chZ++) {
-				int x = (int) l.getX();
-				int y = (int) l.getY();
-				int z = (int) l.getZ();
-				Entity[] arrayOfEntity;
-				int j = (arrayOfEntity = new Location(l.getWorld(), x + chX
-						* 16, y, z + chZ * 16).getChunk().getEntities()).length;
-				for (int i = 0; i < j; i++) {
-					Entity e = arrayOfEntity[i];
-					if ((e.getLocation().distance(l) <= radius)
-							&& (e.getLocation().getBlock() != l.getBlock())) {
-						radiusEntities.add(e);
-					}
-				}
-			}
-		}
-		return (Entity[]) radiusEntities.toArray(new Entity[radiusEntities
-				.size()]);
-	}
-
-	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
-	public void onEntityExplode(EntityExplodeEvent e) {
-		if (!isEnabled()) {
-			return;
-		}
-		
-		if (e.getEntity().hasMetadata("meteor")) {
-			final Location loc = e.getLocation();
-
-			Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Main.plugin, new Runnable() {
-				public void run() {
-					Entity[] entities = getNearbyEntities(loc, 10);
-					Entity[] arrayOfEntity1;
-					int j = (arrayOfEntity1 = entities).length;
-					for (int i = 0; i < j; i++) {
-						Entity e = arrayOfEntity1[i];
-						if (e.getType() == EntityType.DROPPED_ITEM) {
-							Item i1 = (Item) e;
-							if ((i1.getItemStack().getType() == Material.COBBLESTONE)
-									|| (i1.getItemStack().getType() == Material.SAND)
-									|| (i1.getItemStack().getType() == Material.SANDSTONE)
-									|| (i1.getItemStack().getType() == Material.DIRT)
-									|| (i1.getItemStack().getType() == Material.GRAVEL)
-									|| (i1.getItemStack().getType() == Material.SAPLING)
-									|| (i1.getItemStack().getType() == Material.LOG)
-									|| (i1.getItemStack().getType() == Material.LOG_2)
-									|| (i1.getItemStack().getType() == Material.SEEDS)) {
-								e.remove();
-							}
-						}
-					}
-					Random r = new Random();
-					if (r.nextBoolean()) {
-						float fr = r.nextFloat() * 100.0F;
-						if (fr < chancePerDiamond) {
-							loc.getWorld().dropItem(loc, new ItemStack(Material.DIAMOND, 1));
-						} 
-						else if (fr < chancePerDiamond + chancePerGold) {
-							loc.getWorld().dropItem(loc, new ItemStack(Material.GOLD_ORE, 2));
-						} 
-						else if (fr < chancePerDiamond + chancePerGold	+ chancePerIron) {
-							loc.getWorld().dropItem(loc, new ItemStack(Material.IRON_ORE, 2));
-						}
-					}
-				}
-			}, 2L);
-		}
-	}
-
-	@EventHandler
-	public void onCreatureSpawn(CreatureSpawnEvent event) {
-		if (!isEnabled()) {
-			return;
-		}
-		
-		if ((event.getEntity().getType() == EntityType.CREEPER) && (event.getSpawnReason() == SpawnReason.SPAWNER_EGG)) {
-			Creeper creep = (Creeper) event.getEntity();
-			creep.setPowered(true);
-			creep.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 10, 10), true);
-
-			creep.getEquipment().setItemInHand(new ItemStack(Material.MONSTER_EGG, 1, (short) 50));
-			creep.setCanPickupItems(false);
-			creep.getEquipment().setItemInHandDropChance(100.0F);
 		}
 	}
 }

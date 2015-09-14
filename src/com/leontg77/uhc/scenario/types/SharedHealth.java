@@ -19,6 +19,11 @@ import org.bukkit.scoreboard.Team;
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.scenario.Scenario;
 
+/**
+ * SharedHealth scenario class
+ * 
+ * @author dans1988
+ */
 public class SharedHealth extends Scenario implements Listener {
 	private Map<String, Double> damageBalance;
     private Map<String, Boolean> sharedDamage;

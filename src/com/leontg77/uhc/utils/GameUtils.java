@@ -38,6 +38,8 @@ public class GameUtils {
 		case INGAME:
 			if (getTeamSize().startsWith("No")) {
 				return "No games running.";
+			} else if (getTeamSize().startsWith("Open")) {
+				return "Open for visitors.";
 			} else {
 				return "Started.";
 			}
@@ -45,6 +47,8 @@ public class GameUtils {
 			if (Bukkit.getServer().hasWhitelist()) {
 				if (getTeamSize().startsWith("No")) {
 					return "No games running.";
+				} else if (getTeamSize().startsWith("Open")) {
+					return "Open for visitors.";
 				} else {
 					return "Not open yet.";
 				}
@@ -54,6 +58,8 @@ public class GameUtils {
 		case SCATTER:
 			if (getTeamSize().startsWith("No")) {
 				return "No games running.";
+			} else if (getTeamSize().startsWith("Open")) {
+				return "Open for visitors.";
 			} else {
 				return "Scattering...";
 			}
@@ -77,13 +83,13 @@ public class GameUtils {
 				return "No ";
 			} else if (game.getTeamSize() == -1) {
 				return "Open ";
-			} else if (game.getTeamSize() < -1) {
+			} else if (game.getTeamSize() == -2) {
 				return "";
 			} else {
-				return "rTo" + game.getTeamSize() + " ";
+				return "rTo" + (game.getTeamSize() > 0 ? game.getTeamSize() : "X") + " ";
 			}
 		} else {
-			return "To" + game.getTeamSize() + " ";
+			return "To" + (game.getTeamSize() > 0 ? game.getTeamSize() : "X") + " ";
 		}
 	}
 	
@@ -95,14 +101,10 @@ public class GameUtils {
 	public static String getCurrentHost() {
 		String host = Settings.getInstance().getConfig().getString("game.host");
 		
-		if (host.equalsIgnoreCase("AxlurUHC")) {
-			return "Axlur";
-		} else if (host.equalsIgnoreCase("LeonTG77")) {
+		if (host.equalsIgnoreCase("LeonTG77")) {
 			return "Leon";
 		} else if (host.equalsIgnoreCase("PolarBlunk")) {
 			return "Polar";
-		} else if (host.equalsIgnoreCase("Popcane")) {
-			return "Popcane";
 		} else if (host.equalsIgnoreCase("Itz_Isaac")) {
 			return "Isaac";
 		}
@@ -117,14 +119,10 @@ public class GameUtils {
 	 * @return The hof name.
 	 */
 	public static String getHost(String host) {
-		if (host.equalsIgnoreCase("AxlurUHC") || host.equalsIgnoreCase("axlur")) {
-			return "Axlur";
-		} else if (host.equalsIgnoreCase("LeonTG77") || host.equalsIgnoreCase("leon")) {
+		if (host.equalsIgnoreCase("LeonTG77") || host.equalsIgnoreCase("leon")) {
 			return "Leon";
 		} else if (host.equalsIgnoreCase("polar") || host.equalsIgnoreCase("polarblunk")) {
 			return "Polar";
-		} else if (host.equalsIgnoreCase("Popcane") || host.equalsIgnoreCase("pop")) {
-			return "Popcane";
 		} else if (host.equalsIgnoreCase("Itz_Isaac") || host.equalsIgnoreCase("isaac")) {
 			return "Isaac";
 		}

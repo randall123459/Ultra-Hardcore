@@ -6,6 +6,11 @@ import org.bukkit.scheduler.BukkitRunnable;
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.scenario.Scenario;
 
+/**
+ * DamageCycle scenario class
+ * 
+ * @author LeonTG77
+ */
 public class DamageCycle extends Scenario implements Listener {
 	private boolean enabled = false;
 	private BukkitRunnable task;

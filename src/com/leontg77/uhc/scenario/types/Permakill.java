@@ -8,6 +8,11 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import com.leontg77.uhc.Settings;
 import com.leontg77.uhc.scenario.Scenario;
 
+/**
+ * Permakill scenario class
+ * 
+ * @author LeonTG77
+ */
 public class Permakill extends Scenario implements Listener {
 	private boolean enabled = false;
 
@@ -32,10 +37,6 @@ public class Permakill extends Scenario implements Listener {
 	
 	@EventHandler
 	public void onPlayerDeath(PlayerDeathEvent e) {
-		if (!isEnabled()) {
-			return;
-		}
-		
 		if (Bukkit.getWorld(Settings.getInstance().getConfig().getString("game.world")).getTime() == 6000) {
 			Bukkit.getWorld(Settings.getInstance().getConfig().getString("game.world")).setTime(18000);
 		} else {

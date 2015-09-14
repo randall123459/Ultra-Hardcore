@@ -8,6 +8,11 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import com.leontg77.uhc.scenario.Scenario;
 
+/**
+ * No fall scenario class
+ * 
+ * @author LeonTG77
+ */
 public class NoFall extends Scenario implements Listener {
 	private boolean enabled = false;
 	
@@ -25,10 +30,6 @@ public class NoFall extends Scenario implements Listener {
 
 	@EventHandler
     public void onEntityDamage(EntityDamageEvent event) {
-		if (!isEnabled()) {
-			return;
-		}
-		
 		if (!(event.getEntity() instanceof Player)) {
 			return;
 		}

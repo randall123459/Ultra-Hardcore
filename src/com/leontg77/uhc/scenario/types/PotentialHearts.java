@@ -5,6 +5,11 @@ import org.bukkit.entity.Player;
 import com.leontg77.uhc.scenario.Scenario;
 import com.leontg77.uhc.utils.PlayerUtils;
 
+/**
+ * PotentialHearts scenario class
+ * 
+ * @author LeonTG77
+ */
 public class PotentialHearts extends Scenario {
 	private boolean enabled = false;
 

@@ -2,20 +2,31 @@ package com.leontg77.uhc.scenario.types;
 
 import org.bukkit.ChatColor;
 import org.bukkit.block.Biome;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.scenario.Scenario;
+import com.leontg77.uhc.utils.NameUtils;
 
-public class BiomeParanoia extends Scenario implements Listener {
+/**
+ * BiomeParanoia scenario class
+ * 
+ * @author LeonTG77
+ */
+public class BiomeParanoia extends Scenario implements Listener, CommandExecutor {
 	private boolean enabled = false;
 
 	public BiomeParanoia() {
 		super("BiomeParanoia", "Your tab name color is the color of the biome you are in, /bl for biome colors.");
+		Main main = Main.plugin;
+		
+		main.getCommand("bl").setExecutor(this);
 	}
 	
 	public void setEnabled(boolean enable) {
@@ -28,28 +39,21 @@ public class BiomeParanoia extends Scenario implements Listener {
 	
 	@EventHandler(ignoreCancelled = true)
 	public void onPlayerMove(PlayerMoveEvent event) {
-		if (!isEnabled()) {
-			return;
-		}
-		
 		Player player = event.getPlayer();
 		Biome biome = player.getLocation().getBlock().getBiome();
 		
 		player.setPlayerListName(biomeColor(biome) + player.getName());
 	}
 
-	@EventHandler
-	public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
-		Player player = event.getPlayer();
-		
-		if (event.getMessage().split(" ")[0].equalsIgnoreCase("/bl")) {
-			event.setCancelled(true);
+	@Override
+	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+		if (cmd.getName().equalsIgnoreCase("bl")) {
 			if (!isEnabled()) {
-				player.sendMessage(ChatColor.RED + "BiomeParanoia is not enabled.");
-				return;
+				sender.sendMessage(Main.prefix() + "\"BiomeParanoia\" is not enabled.");
+				return true;
 			}
 			
-			player.sendMessage(Main.prefix() + "All biome colors:");
+			sender.sendMessage(Main.prefix() + "All biome colors:");
 			
 			StringBuilder biomes = new StringBuilder();
 			
@@ -62,13 +66,20 @@ public class BiomeParanoia extends Scenario implements Listener {
 					biomes.append("§f, ");
 				}
 				
-				biomes.append(biomeColor(b) + b.name().substring(0, 1).toUpperCase() + b.name().substring(1).toLowerCase().replaceAll("_", " "));
+				biomes.append(biomeColor(b) + NameUtils.fixString(b.name(), true));
 			}
 			
-			player.sendMessage(biomes.toString().trim());
+			sender.sendMessage(biomes.toString().trim());
 		}
+		return true;
 	}
 
+	/**
+	 * Get the color of the given biome.
+	 * 
+	 * @param biome the given biome.
+	 * @return The biome color in string format.
+	 */
 	private String biomeColor(Biome biome) {
 		switch (biome) {
 		case BEACH:
@@ -198,6 +209,12 @@ public class BiomeParanoia extends Scenario implements Listener {
 		}
 	}
 
+	/**
+	 * Check if the given biome can be sent in a message.
+	 * 
+	 * @param biome the biome checking.
+	 * @return <code>True</code> if the biome is sendable, <code>false</code> otherwise.
+	 */
 	private boolean isSendable(Biome biome) {
 		switch (biome) {
 		case BEACH:

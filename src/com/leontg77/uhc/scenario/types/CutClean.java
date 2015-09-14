@@ -29,6 +29,11 @@ import com.leontg77.uhc.scenario.ScenarioManager;
 import com.leontg77.uhc.utils.BlockUtils;
 import com.leontg77.uhc.utils.PlayerUtils;
 
+/**
+ * CutClean scenario class
+ * 
+ * @author LeonTG77
+ */
 public class CutClean extends Scenario implements Listener {
 	private boolean enabled = false;
 	

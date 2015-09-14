@@ -9,6 +9,11 @@ import org.bukkit.event.player.PlayerToggleSprintEvent;
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.scenario.Scenario;
 
+/**
+ * No sprint scenario class
+ * 
+ * @author LeonTG77
+ */
 public class NoSprint extends Scenario implements Listener {
 	private boolean enabled = false;
 
@@ -26,10 +31,6 @@ public class NoSprint extends Scenario implements Listener {
 	
 	@EventHandler
 	public void onPlayerToggleSprint(PlayerToggleSprintEvent event) {
-		if (!isEnabled()) {
-			return;
-		}
-		
 		final Player player = event.getPlayer();
 		
 		if (event.isSprinting()) {

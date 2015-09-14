@@ -12,6 +12,11 @@ import org.bukkit.util.Vector;
 import com.leontg77.uhc.scenario.Scenario;
 import com.leontg77.uhc.utils.BlockUtils;
 
+/**
+ * SkyClean scenario class
+ * 
+ * @author LeonTG77
+ */
 public class SkyClean extends Scenario implements Listener {
 	private boolean enabled = false;
 	
@@ -29,10 +34,6 @@ public class SkyClean extends Scenario implements Listener {
 	
 	@EventHandler
 	public void onBlockBreak(BlockBreakEvent event) {
-		if (!isEnabled()) {
-			return;
-		}
-		
 		Block block = event.getBlock();
 		
 		if (block.getType() == Material.SAND) {

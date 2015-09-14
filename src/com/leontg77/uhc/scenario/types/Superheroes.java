@@ -7,12 +7,14 @@ import java.util.Random;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
@@ -22,12 +24,21 @@ import com.leontg77.uhc.Main;
 import com.leontg77.uhc.scenario.Scenario;
 import com.leontg77.uhc.utils.PlayerUtils;
 
-public class Superheroes extends Scenario implements Listener {
+/**
+ * Superheroes scenario class
+ * 
+ * @author LeonTG77
+ */
+public class Superheroes extends Scenario implements Listener, CommandExecutor {
 	private HashMap<String, HeroType> type = new HashMap<String, HeroType>();
 	private boolean enabled = false;
 	
 	public Superheroes() {
 		super("Superheroes", "Each player on the team receives a special \"super\" power such as jump boost, health boost, strength, speed, invis, or resistance.");
+		Main main = Main.plugin;
+		
+		main.getCommand("slist").setExecutor(this);
+		main.getCommand("super").setExecutor(this);
 	}
 
 	public void setEnabled(boolean enable) {
@@ -121,10 +132,6 @@ public class Superheroes extends Scenario implements Listener {
 	
 	@EventHandler
 	public void onPlayerItemConsume(PlayerItemConsumeEvent event) {
-		if (!isEnabled()) {
-			return;
-		}
-		
 		if (event.getItem().getType() == Material.MILK_BUCKET) {
 			event.getPlayer().sendMessage(Main.prefix() + "You cannot drink milk in superheros.");
 			event.setCancelled(true);
@@ -134,10 +141,6 @@ public class Superheroes extends Scenario implements Listener {
 
 	@EventHandler(ignoreCancelled = true)
 	public void onEntityDamage(EntityDamageEvent event) {
-		if (!isEnabled()) {
-			return;
-		}
-		
 		if (event.getCause() != DamageCause.FALL) {
 			return;
 		}
@@ -145,49 +148,98 @@ public class Superheroes extends Scenario implements Listener {
 		event.setCancelled(true);
 	}
 	
-	@EventHandler
-	public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
-		Player sender = event.getPlayer();
-		
-		if (event.getMessage().split(" ")[0].equalsIgnoreCase("/slist")) {
-			event.setCancelled(true);
-			if (!isEnabled()) {
-				sender.sendMessage(ChatColor.RED + "Superheroes is not enabled.");
-				return;
-			}
-			
-			if (sender.hasPermission("uhc.superheroes.admin")) {
-				
-			} else {
-				sender.sendMessage(ChatColor.RED + "You do not have access to that command.");
-			}
+	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+		if (!(sender instanceof Player)) {
+			sender.sendMessage(ChatColor.RED + "Only players have superheroes effects.");
+			return true;
 		}
 		
-		if (event.getMessage().split(" ")[0].equalsIgnoreCase("/super")) {
-			event.setCancelled(true);
+		Player player = (Player) sender;
+		
+		if (cmd.getName().equalsIgnoreCase("slist")) {
 			if (!isEnabled()) {
-				sender.sendMessage(ChatColor.RED + "Superheroes is not enabled.");
-				return;
+				player.sendMessage(Main.prefix() + "\"Superheroes\" is not enabled.");
+				return true;
 			}
 			
-			ArrayList<String> ar = new ArrayList<String>();
-			for (String arg : event.getMessage().split(" ")) {
-				ar.add(arg);
-			}
-			ar.remove(0);
-			String[] args = ar.toArray(new String[ar.size()]);
+			StringBuilder health = new StringBuilder("");
+			StringBuilder invis = new StringBuilder("");
+			StringBuilder jump = new StringBuilder("");
+			StringBuilder resistance = new StringBuilder("");
+			StringBuilder speed = new StringBuilder("");
+			StringBuilder strength = new StringBuilder("");
 			
-			if (sender.hasPermission("uhc.superheroes.admin")) {
+			for (String key : type.keySet()) {
+				if (type.get(key) == HeroType.HEALTH) {
+					if (health.length() > 0) {
+						health.append("§7, §a");
+					}
+					
+					health.append(ChatColor.GREEN + key);
+				} 
+				else if (type.get(key) == HeroType.INVIS) {
+					if (invis.length() > 0) {
+						invis.append("§7, §a");
+					}
+					
+					invis.append(ChatColor.GREEN + key);
+				}
+				else if (type.get(key) == HeroType.JUMP) {
+					if (jump.length() > 0) {
+						jump.append("§7, §a");
+					}
+					
+					jump.append(ChatColor.GREEN + key);
+				}
+				else if (type.get(key) == HeroType.RESISTANCE) {
+					if (resistance.length() > 0) {
+						resistance.append("§7, §a");
+					}
+					
+					resistance.append(ChatColor.GREEN + key);
+				}
+				else if (type.get(key) == HeroType.SPEED) {
+					if (speed.length() > 0) {
+						speed.append("§7, §a");
+					}
+					
+					speed.append(ChatColor.GREEN + key);
+				}
+				else if (type.get(key) == HeroType.STRENGTH) {
+					if (strength.length() > 0) {
+						strength.append("§7, §a");
+					}
+					
+					strength.append(ChatColor.GREEN + key);
+				}
+			}
+			
+			player.sendMessage(Main.prefix() + "List of types:");
+			player.sendMessage("§8» §7Health: " + health.toString().trim());
+			player.sendMessage("§8» §7Invis: " + invis.toString().trim());
+			player.sendMessage("§8» §7Jump: " + jump.toString().trim());
+			player.sendMessage("§8» §7Resistance: " + resistance.toString().trim());
+			player.sendMessage("§8» §7Speed: " + speed.toString().trim());
+			player.sendMessage("§8» §7Strength: " + strength.toString().trim());
+		}
+		
+		if (cmd.getName().equalsIgnoreCase("super")) {
+			if (!isEnabled()) {
+				player.sendMessage(Main.prefix() + "\"Superheroes\" is not enabled.");
+				return true;
+			}
+			
+			if (player.hasPermission("uhc.superheroes.admin")) {
 				if (args.length == 0) {
-					sender.sendMessage(Main.prefix() + "Help for superheroes:");
-					sender.sendMessage(ChatColor.GRAY + "- §f/super set <player> - Add a random effect to a player.");
-					sender.sendMessage(ChatColor.GRAY + "- §f/super clear <player> - Clears the players effects.");
-					sender.sendMessage(ChatColor.GRAY + "- §f/super apply - Reapply the effects.");
-					return;
+					player.sendMessage(Main.prefix() + "Help for superheroes:");
+					player.sendMessage(ChatColor.GRAY + "- §f/super set <player> - Add a random effect to a player.");
+					player.sendMessage(ChatColor.GRAY + "- §f/super clear <player> - Clears the players effects.");
+					player.sendMessage(ChatColor.GRAY + "- §f/super apply - Reapply the effects.");
+					return true;
 				}
 				
 				if (args[0].equalsIgnoreCase("apply")) {
-					sender.sendMessage(Main.prefix() + "Effects reapplied.");
+					player.sendMessage(Main.prefix() + "Effects reapplied.");
 					for (Player online : PlayerUtils.getPlayers()) {
 						for (PotionEffect effect : online.getActivePotionEffects()) {
 							online.removePotionEffect(effect.getType());
@@ -261,15 +313,15 @@ public class Superheroes extends Scenario implements Listener {
 					}
 				} else if (args[0].equalsIgnoreCase("set")) {
 					if (args.length == 1) {
-						sender.sendMessage(ChatColor.RED + "Usage: /super set <player>");
-						return;
+						player.sendMessage(ChatColor.RED + "Usage: /super set <player>");
+						return true;
 					}
 					
 					Player target = Bukkit.getServer().getPlayer(args[1]);
 					
 					if (target == null) {
-						sender.sendMessage(ChatColor.RED + "That player is not online.");
-						return;
+						player.sendMessage(ChatColor.RED + "That player is not online.");
+						return true;
 					}
 					
 					HeroType type = getRandom(target);
@@ -338,37 +390,38 @@ public class Superheroes extends Scenario implements Listener {
 					default:
 						break;
 					}
-					sender.sendMessage(Main.prefix() + "Given §a" + target.getName() + " §7an random effect.");
+					player.sendMessage(Main.prefix() + "Given §a" + target.getName() + " §7an random effect.");
 					target.sendMessage(Main.prefix() + "You are the §a" + type.name().toLowerCase() + " §7type.");
 				} else if (args[0].equalsIgnoreCase("clear")) {
 					if (args.length == 1) {
-						sender.sendMessage(ChatColor.RED + "Usage: /super clear <player>");
-						return;
+						player.sendMessage(ChatColor.RED + "Usage: /super clear <player>");
+						return true;
 					}
 					
 					Player target = Bukkit.getServer().getPlayer(args[1]);
 					
 					if (target == null) {
-						sender.sendMessage(ChatColor.RED + "That player is not online.");
-						return;
+						player.sendMessage(ChatColor.RED + "That player is not online.");
+						return true;
 					}
 					
 					target.setMaxHealth(20.0);
 					for (PotionEffect effect : target.getActivePotionEffects()) {
 						target.removePotionEffect(effect.getType());
 					}
-					sender.sendMessage(Main.prefix() + "Effects of §a" + target.getName() + " §7has been cleared.");
+					player.sendMessage(Main.prefix() + "Effects of §a" + target.getName() + " §7has been cleared.");
 					target.sendMessage(Main.prefix() + "Your effects has been cleared.");
 				} else {
-					sender.sendMessage(Main.prefix() + "Help for superheroes:");
-					sender.sendMessage(ChatColor.GRAY + "- §f/super set <player> - Add a random effect to a player.");
-					sender.sendMessage(ChatColor.GRAY + "- §f/super clear <player> - Clears the players effects.");
-					sender.sendMessage(ChatColor.GRAY + "- §f/super apply - Reapply the effects.");
+					player.sendMessage(Main.prefix() + "Help for superheroes:");
+					player.sendMessage(ChatColor.GRAY + "- §f/super set <player> - Add a random effect to a player.");
+					player.sendMessage(ChatColor.GRAY + "- §f/super clear <player> - Clears the players effects.");
+					player.sendMessage(ChatColor.GRAY + "- §f/super apply - Reapply the effects.");
 				}
 			} else {
-				sender.sendMessage(ChatColor.RED + "You do not have access to that command.");
+				player.sendMessage(ChatColor.RED + "You do not have access to that command.");
 			}
 		}
+		return true;
 	}
 	
 	private HeroType getRandom(Player player) {

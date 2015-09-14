@@ -12,6 +12,11 @@ import com.leontg77.uhc.Teams;
 import com.leontg77.uhc.scenario.Scenario;
 import com.leontg77.uhc.utils.PlayerUtils;
 
+/**
+ * LAFS scenario class
+ * 
+ * @author LeonTG77
+ */
 public class LAFS extends Scenario implements Listener {
 	private boolean enabled = false;
 
@@ -29,10 +34,6 @@ public class LAFS extends Scenario implements Listener {
 	
 	@EventHandler
 	public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
-		if (!isEnabled()) {
-			return;
-		}
-		
 		if (event.getRightClicked() instanceof Player) {
 			Player player = event.getPlayer();
 			Player clicked = (Player) event.getRightClicked();
@@ -55,14 +56,7 @@ public class LAFS extends Scenario implements Listener {
 				return;
 			}
 			
-			Team t = null;
-			
-			for (Team team : Teams.getManager().getTeams()) {
-				if (team.getSize() == 0) {
-					t = team;
-					break;
-				}
-			}
+			Team t = Teams.getManager().findAvailableTeam();
 			
 			if (t == null) {
 				player.sendMessage(ChatColor.RED + "No more available teams.");
@@ -71,7 +65,7 @@ public class LAFS extends Scenario implements Listener {
 			
 			t.addEntry(player.getName());
 			t.addEntry(clicked.getName());
-			PlayerUtils.broadcast(Main.prefix().replaceAll("UHC", "§dLAFS") + ChatColor.GREEN + clicked.getName() + " §7and§a " + player.getName() + " §7has found each other and are now on a team.");
+			PlayerUtils.broadcast(Main.prefix().replaceAll("UHC", "§d§lLAFS") + ChatColor.GREEN + player.getName() + " §7and§a " + clicked.getName() + " §7has found each other.");
 		}
 	}
 }

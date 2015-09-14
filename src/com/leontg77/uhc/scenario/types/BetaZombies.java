@@ -9,6 +9,11 @@ import org.bukkit.inventory.ItemStack;
 
 import com.leontg77.uhc.scenario.Scenario;
 
+/**
+ * BetaZombies scenario class
+ * 
+ * @author LeonTG77
+ */
 public class BetaZombies extends Scenario implements Listener {
 	private boolean enabled = false;
 	
@@ -26,10 +31,6 @@ public class BetaZombies extends Scenario implements Listener {
 	
 	@EventHandler
 	public void onEntityDeath(EntityDeathEvent event) {
-		if (!isEnabled()) {
-			return;
-		}
-		
 		if (event.getEntity() instanceof Zombie) {
 			for (ItemStack drops : event.getDrops()) {
 				if (drops.getType() == Material.ROTTEN_FLESH) {

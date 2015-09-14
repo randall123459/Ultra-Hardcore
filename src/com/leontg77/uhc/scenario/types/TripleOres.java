@@ -23,6 +23,11 @@ import com.leontg77.uhc.scenario.ScenarioManager;
 import com.leontg77.uhc.utils.BlockUtils;
 import com.leontg77.uhc.utils.PlayerUtils;
 
+/**
+ * TripleOres scenario class
+ * 
+ * @author LeonTG77
+ */
 public class TripleOres extends Scenario implements Listener {
 	private HashSet<Location> locs = new HashSet<Location>();
 	private boolean enabled = false;
@@ -41,10 +46,6 @@ public class TripleOres extends Scenario implements Listener {
 	
 	@EventHandler(priority = EventPriority.LOW)
 	public void onBlockBreak(BlockBreakEvent event) {
-		if (!isEnabled()) {
-			return;
-		}
-		
 		Block block = event.getBlock();
 		
 		if (block.getType() == Material.IRON_ORE) {
@@ -211,10 +212,6 @@ public class TripleOres extends Scenario implements Listener {
 	
 	@EventHandler
 	public void onBlockPlace(BlockPlaceEvent event) {
-		if (!isEnabled()) {
-			return;
-		}
-
 		if (ScenarioManager.getInstance().getScenario("CutClean").isEnabled()) {
 			return;
 		}

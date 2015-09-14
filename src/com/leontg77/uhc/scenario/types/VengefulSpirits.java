@@ -15,6 +15,11 @@ import org.bukkit.util.Vector;
 import com.leontg77.uhc.Game;
 import com.leontg77.uhc.scenario.Scenario;
 
+/**
+ * VengefulSpirits scenario class
+ * 
+ * @author LeonTG77
+ */
 public class VengefulSpirits extends Scenario implements Listener {
 	private boolean enabled = false;
 	
@@ -36,10 +41,6 @@ public class VengefulSpirits extends Scenario implements Listener {
 	
 	@EventHandler
 	public void onEntityDeath(EntityDeathEvent event) {
-		if (!isEnabled()) {
-			return;
-		}
-		
 		if (event.getEntity() instanceof Blaze || event.getEntity() instanceof Ghast) {
 			if (event.getEntity().getCustomName() == null) {
 				return;
@@ -56,14 +57,11 @@ public class VengefulSpirits extends Scenario implements Listener {
 	
 	@EventHandler
 	public void onPlayerDeath(PlayerDeathEvent event) {
-		if (!isEnabled()) {
-			return;
-		}
-		
 		if (event.getEntity().getLocation().getBlockY() <= 60) {
 			Blaze blaze = event.getEntity().getWorld().spawn(event.getEntity().getLocation(), Blaze.class);
 			blaze.setCustomName(event.getEntity().getName());
-		} else {
+		} 
+		else {
 			Ghast ghast = event.getEntity().getWorld().spawn(event.getEntity().getLocation(), Ghast.class);
 			ghast.setCustomName(event.getEntity().getName());
 		}

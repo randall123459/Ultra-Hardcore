@@ -16,6 +16,11 @@ import org.bukkit.event.player.PlayerItemConsumeEvent;
 import com.leontg77.uhc.scenario.Scenario;
 import com.leontg77.uhc.utils.PlayerUtils;
 
+/**
+ * Paranoia scenario class
+ * 
+ * @author LeonTG77
+ */
 public class Paranoia extends Scenario implements Listener {
 	private boolean enabled = false;
 	
@@ -32,15 +37,11 @@ public class Paranoia extends Scenario implements Listener {
 	}
 	
 	public String prefix() {
-		return "§c§lParanoia §8§l>> §f";
+		return "§8[§cParanoia§8] §f";
 	}
 	
 	@EventHandler
 	public void onBlockBreak(BlockBreakEvent event) {
-		if (!isEnabled()) {
-			return;
-		}
-		
 		Player player = event.getPlayer();
 		Location loc = player.getLocation();
 		Block block = event.getBlock();
@@ -56,10 +57,6 @@ public class Paranoia extends Scenario implements Listener {
 	
 	@EventHandler
 	public void onPlayerItemConsume(PlayerItemConsumeEvent event) {
-		if (!isEnabled()) {
-			return;
-		}
-		
 		Player player = event.getPlayer();
 		Location loc = player.getLocation();
 		
@@ -70,10 +67,6 @@ public class Paranoia extends Scenario implements Listener {
 	
 	@EventHandler
 	public void onPrepareItemCraftEvent(CraftItemEvent event) {
-		if (!isEnabled()) {
-			return;
-		}
-		
 		HumanEntity player = event.getWhoClicked();
 		Location loc = player.getLocation();
 		
@@ -92,16 +85,18 @@ public class Paranoia extends Scenario implements Listener {
 	
 	@EventHandler
 	public void onPlayerDeath(PlayerDeathEvent event) {
-		if (!isEnabled()) {
-			return;
-		}
-		
 		Player player = event.getEntity();
 		Location loc = player.getLocation();
 
 		PlayerUtils.broadcast(prefix() + ChatColor.GREEN + player.getName() + "§7 died at " + location(loc));
 	}
 
+	/**
+	 * Get the given location in string form.
+	 * 
+	 * @param loc the given location.
+	 * @return Location in String form.
+	 */
 	private String location(Location loc) {
 		return "x:" + loc.getBlockX() + " y:" + loc.getBlockY() + " z:" + loc.getBlockZ();
 	}

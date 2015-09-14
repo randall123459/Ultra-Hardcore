@@ -7,6 +7,11 @@ import com.leontg77.uhc.Main;
 import com.leontg77.uhc.scenario.Scenario;
 import com.leontg77.uhc.utils.PlayerUtils;
 
+/**
+ * Fallout scenario class
+ * 
+ * @author LeonTG77
+ */
 public class Fallout extends Scenario {
 	private boolean enabled = false;
 	private BukkitRunnable task;

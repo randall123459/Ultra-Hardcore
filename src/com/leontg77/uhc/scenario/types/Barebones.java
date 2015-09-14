@@ -2,11 +2,9 @@ package com.leontg77.uhc.scenario.types;
 
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.entity.ExperienceOrb;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
@@ -18,6 +16,11 @@ import com.leontg77.uhc.scenario.Scenario;
 import com.leontg77.uhc.scenario.ScenarioManager;
 import com.leontg77.uhc.utils.BlockUtils;
 
+/**
+ * Barebones scenario class
+ * 
+ * @author LeonTG77
+ */
 public class Barebones extends Scenario implements Listener {
 	private boolean enabled = false;
 	
@@ -33,124 +36,57 @@ public class Barebones extends Scenario implements Listener {
 		return enabled;
 	}
 
-	@EventHandler(priority = EventPriority.HIGHEST)
+	@EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
-		if (!isEnabled()) {
-			return;
-		}
-		
-    	Player player = event.getPlayer();
+		Player player = event.getPlayer();
 		Block block = event.getBlock();
+		
+		boolean cutclean = ScenarioManager.getInstance().getScenario("CutClean").isEnabled();
     	
-		if (ScenarioManager.getInstance().getScenario("CutClean") != null && ScenarioManager.getInstance().getScenario("CutClean").isEnabled()) {
-	    	if (block.getType() == Material.EMERALD_ORE) {
-	    		event.setCancelled(true);
-				BlockUtils.blockCrack(player, block.getLocation(), block.getType());
-				block.setType(Material.AIR);
-				block.getState().update();
-				ExperienceOrb exp = (ExperienceOrb) event.getBlock().getWorld().spawn(event.getBlock().getLocation().add(0.5, 0.3, 0.5), ExperienceOrb.class);
-				exp.setExperience(3);
-				Item item = block.getWorld().dropItem(block.getLocation().add(0.5, 0.7, 0.5), new ItemStack (Material.IRON_INGOT));
-				item.setVelocity(new Vector(0, 0.2, 0));
-	    	}
-	    	
-	    	if (block.getType() == Material.REDSTONE_ORE) {
-	    		event.setCancelled(true);
-				BlockUtils.blockCrack(player, block.getLocation(), block.getType());
-				block.setType(Material.AIR);
-				block.getState().update();
-				ExperienceOrb exp = (ExperienceOrb) event.getBlock().getWorld().spawn(event.getBlock().getLocation().add(0.5, 0.3, 0.5), ExperienceOrb.class);
-				exp.setExperience(3);
-				Item item = block.getWorld().dropItem(block.getLocation().add(0.5, 0.7, 0.5), new ItemStack (Material.IRON_INGOT));
-				item.setVelocity(new Vector(0, 0.2, 0));
-	    	}
-	    	
-	    	if (block.getType() == Material.LAPIS_ORE) {
-	    		event.setCancelled(true);
-				BlockUtils.blockCrack(player, block.getLocation(), block.getType());
-				block.setType(Material.AIR);
-				block.getState().update();
-				ExperienceOrb exp = (ExperienceOrb) event.getBlock().getWorld().spawn(event.getBlock().getLocation().add(0.5, 0.3, 0.5), ExperienceOrb.class);
-				exp.setExperience(3);
-				Item item = block.getWorld().dropItem(block.getLocation().add(0.5, 0.7, 0.5), new ItemStack (Material.IRON_INGOT));
-				item.setVelocity(new Vector(0, 0.2, 0));
-	    	}
-	    	
-	    	if (block.getType() == Material.GOLD_ORE) {
-	    		event.setCancelled(true);
-				BlockUtils.blockCrack(player, block.getLocation(), block.getType());
-				block.setType(Material.AIR);
-				block.getState().update();
-				ExperienceOrb exp = (ExperienceOrb) event.getBlock().getWorld().spawn(event.getBlock().getLocation().add(0.5, 0.3, 0.5), ExperienceOrb.class);
-				exp.setExperience(3);
-				Item item = block.getWorld().dropItem(block.getLocation().add(0.5, 0.7, 0.5), new ItemStack (Material.IRON_INGOT));
-				item.setVelocity(new Vector(0, 0.2, 0));
-	    	}
-	    	
-	    	if (block.getType() == Material.DIAMOND_ORE) {
-	    		event.setCancelled(true);
-				BlockUtils.blockCrack(player, block.getLocation(), block.getType());
-				block.setType(Material.AIR);
-				block.getState().update();
-				ExperienceOrb exp = (ExperienceOrb) event.getBlock().getWorld().spawn(event.getBlock().getLocation().add(0.5, 0.3, 0.5), ExperienceOrb.class);
-				exp.setExperience(3);
-				Item item = block.getWorld().dropItem(block.getLocation().add(0.5, 0.7, 0.5), new ItemStack (Material.IRON_INGOT));
-				item.setVelocity(new Vector(0, 0.2, 0));
-	    	}
-		} else {
-	    	if (block.getType() == Material.EMERALD_ORE) {
-	    		event.setCancelled(true);
-				BlockUtils.blockCrack(player, block.getLocation(), block.getType());
-				block.setType(Material.AIR);
-				block.getState().update();
-				Item item = block.getWorld().dropItem(block.getLocation().add(0.5, 0.7, 0.5), new ItemStack (Material.IRON_ORE));
-				item.setVelocity(new Vector(0, 0.2, 0));
-	    	}
-	    	
-	    	if (block.getType() == Material.REDSTONE_ORE) {
-	    		event.setCancelled(true);
-				BlockUtils.blockCrack(player, block.getLocation(), block.getType());
-				block.setType(Material.AIR);
-				block.getState().update();
-				Item item = block.getWorld().dropItem(block.getLocation().add(0.5, 0.7, 0.5), new ItemStack (Material.IRON_ORE));
-				item.setVelocity(new Vector(0, 0.2, 0));
-	    	}
-	    	
-	    	if (block.getType() == Material.LAPIS_ORE) {
-	    		event.setCancelled(true);
-				BlockUtils.blockCrack(player, block.getLocation(), block.getType());
-				block.setType(Material.AIR);
-				block.getState().update();
-				Item item = block.getWorld().dropItem(block.getLocation().add(0.5, 0.7, 0.5), new ItemStack (Material.IRON_ORE));
-				item.setVelocity(new Vector(0, 0.2, 0));
-	    	}
-	    	
-	    	if (block.getType() == Material.GOLD_ORE) {
-	    		event.setCancelled(true);
-				BlockUtils.blockCrack(player, block.getLocation(), block.getType());
-				block.setType(Material.AIR);
-				block.getState().update();
-				Item item = block.getWorld().dropItem(block.getLocation().add(0.5, 0.7, 0.5), new ItemStack (Material.IRON_ORE));
-				item.setVelocity(new Vector(0, 0.2, 0));
-	    	}
-	    	
-	    	if (block.getType() == Material.DIAMOND_ORE) {
-	    		event.setCancelled(true);
-				BlockUtils.blockCrack(player, block.getLocation(), block.getType());
-				block.setType(Material.AIR);
-				block.getState().update();
-				Item item = block.getWorld().dropItem(block.getLocation().add(0.5, 0.7, 0.5), new ItemStack (Material.IRON_ORE));
-				item.setVelocity(new Vector(0, 0.2, 0));
-	    	}
-		}
+		if (block.getType() == Material.EMERALD_ORE) {
+    		event.setCancelled(true);
+			BlockUtils.blockCrack(player, block.getLocation(), block.getType());
+			block.setType(Material.AIR);
+			block.getState().update();
+			Item item = block.getWorld().dropItem(block.getLocation().add(0.5, 0.7, 0.5), new ItemStack (cutclean ? Material.IRON_INGOT : Material.IRON_ORE));
+			item.setVelocity(new Vector(0, 0.2, 0));
+    	}
+		else if (block.getType() == Material.REDSTONE_ORE) {
+    		event.setCancelled(true);
+			BlockUtils.blockCrack(player, block.getLocation(), block.getType());
+			block.setType(Material.AIR);
+			block.getState().update();
+			Item item = block.getWorld().dropItem(block.getLocation().add(0.5, 0.7, 0.5), new ItemStack (cutclean ? Material.IRON_INGOT : Material.IRON_ORE));
+			item.setVelocity(new Vector(0, 0.2, 0));
+    	}
+    	else if (block.getType() == Material.LAPIS_ORE) {
+    		event.setCancelled(true);
+			BlockUtils.blockCrack(player, block.getLocation(), block.getType());
+			block.setType(Material.AIR);
+			block.getState().update();
+			Item item = block.getWorld().dropItem(block.getLocation().add(0.5, 0.7, 0.5), new ItemStack (cutclean ? Material.IRON_INGOT : Material.IRON_ORE));
+			item.setVelocity(new Vector(0, 0.2, 0));
+    	}
+    	else if (block.getType() == Material.GOLD_ORE) {
+    		event.setCancelled(true);
+			BlockUtils.blockCrack(player, block.getLocation(), block.getType());
+			block.setType(Material.AIR);
+			block.getState().update();
+			Item item = block.getWorld().dropItem(block.getLocation().add(0.5, 0.7, 0.5), new ItemStack (cutclean ? Material.IRON_INGOT : Material.IRON_ORE));
+			item.setVelocity(new Vector(0, 0.2, 0));
+    	}
+    	else if (block.getType() == Material.DIAMOND_ORE) {
+    		event.setCancelled(true);
+			BlockUtils.blockCrack(player, block.getLocation(), block.getType());
+			block.setType(Material.AIR);
+			block.getState().update();
+			Item item = block.getWorld().dropItem(block.getLocation().add(0.5, 0.7, 0.5), new ItemStack (cutclean ? Material.IRON_INGOT : Material.IRON_ORE));
+			item.setVelocity(new Vector(0, 0.2, 0));
+    	}
     }
 	
 	@EventHandler
 	public void onPlayerDeath(PlayerDeathEvent event) {
-		if (!isEnabled()) {
-			return;
-		}
-		
 		event.getDrops().add(new ItemStack (Material.STRING, 2));
 		event.getDrops().add(new ItemStack (Material.DIAMOND, 1));
 		event.getDrops().add(new ItemStack (Material.GOLDEN_APPLE, 1));
@@ -159,10 +95,6 @@ public class Barebones extends Scenario implements Listener {
 	
 	@EventHandler
 	public void onPrepareItemCraft(PrepareItemCraftEvent event) {
-		if (!isEnabled()) {
-			return;
-		}
-		
 		ItemStack item = event.getRecipe().getResult();
 		
 		if (item.getType() == Material.ANVIL) {

@@ -5,11 +5,16 @@ import org.bukkit.entity.Player;
 import com.leontg77.uhc.scenario.Scenario;
 import com.leontg77.uhc.utils.PlayerUtils;
 
+/**
+ * HundredHearts scenario class
+ * 
+ * @author LeonTG77
+ */
 public class HundredHearts extends Scenario {
 	private boolean enabled = false;
 
 	public HundredHearts() {
-		super("HundredHearts", "Everyone has 100 hearts.");
+		super("100Hearts", "Everyone has 100 hearts.");
 	}
 
 	public void setEnabled(boolean enable) {

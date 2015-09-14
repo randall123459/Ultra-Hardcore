@@ -14,7 +14,11 @@ import java.util.regex.Pattern;
  */
 public class DateUtils {
 	private static Pattern timePattern = Pattern.compile("(?:([0-9]+)\\s*y[a-z]*[,\\s]*)?" + "(?:([0-9]+)\\s*mo[a-z]*[,\\s]*)?" + "(?:([0-9]+)\\s*w[a-z]*[,\\s]*)?" + "(?:([0-9]+)\\s*d[a-z]*[,\\s]*)?" + "(?:([0-9]+)\\s*h[a-z]*[,\\s]*)?" + "(?:([0-9]+)\\s*m[a-z]*[,\\s]*)?" + "(?:([0-9]+)\\s*(?:s[a-z]*)?)?", Pattern.CASE_INSENSITIVE);
-	
+
+	private static final long SECONDS_PER_YEAR = 31556926;
+	private static final long SECONDS_PER_MONTH = 2629744;
+	private static final long SECONDS_PER_WEEK = 604800;
+	private static final long SECONDS_PER_DAY = 86400;
 	private static final long SECONDS_PER_HOUR = 3600;
 	private static final long SECONDS_PER_MINUTE = 60;
 
@@ -34,6 +38,14 @@ public class DateUtils {
      * @return The converted version.
      */
     public static String ticksToString(long ticks) {
+        int year = (int) Math.floor(ticks / (double) SECONDS_PER_YEAR);
+        ticks -= year * SECONDS_PER_HOUR;
+        int month = (int) Math.floor(ticks / (double) SECONDS_PER_MONTH);
+        ticks -= month * SECONDS_PER_HOUR;
+        int week = (int) Math.floor(ticks / (double) SECONDS_PER_WEEK);
+        ticks -= week * SECONDS_PER_HOUR;
+        int day = (int) Math.floor(ticks / (double) SECONDS_PER_DAY);
+        ticks -= day * SECONDS_PER_HOUR;
         int hours = (int) Math.floor(ticks / (double) SECONDS_PER_HOUR);
         ticks -= hours * SECONDS_PER_HOUR;
         int minutes = (int) Math.floor(ticks / (double)SECONDS_PER_MINUTE);
@@ -41,6 +53,60 @@ public class DateUtils {
         int seconds = (int) ticks;
 
         StringBuilder output = new StringBuilder();
+        if (year > 0) {
+            output.append(year).append('y');
+            if (month == 0) {
+            	output.append(month).append('m');
+            }
+            if (week == 0) {
+            	output.append(week).append('w');
+            }
+            if (day == 0) {
+            	output.append(day).append('d');
+            }
+            if (hours == 0) {
+            	output.append(hours).append('h');
+            }
+            if (minutes == 0) {
+            	output.append(minutes).append('m');
+            }
+        }
+        if (month > 0) {
+            output.append(month).append('m');
+            if (week == 0) {
+            	output.append(week).append('w');
+            }
+            if (day == 0) {
+            	output.append(day).append('d');
+            }
+            if (hours == 0) {
+            	output.append(hours).append('h');
+            }
+            if (minutes == 0) {
+            	output.append(minutes).append('m');
+            }
+        }
+        if (week > 0) {
+            output.append(week).append('h');
+            if (day == 0) {
+            	output.append(day).append('d');
+            }
+            if (hours == 0) {
+            	output.append(hours).append('h');
+            }
+            if (minutes == 0) {
+            	output.append(minutes).append('m');
+            }
+        }
+        if (day > 0) {
+            output.append(day).append('d');
+            if (hours == 0) {
+            	output.append(hours).append('h');
+            }
+            if (minutes == 0) {
+            	output.append(minutes).append('m');
+            }
+        }
         if (hours > 0) {
             output.append(hours).append('h');
             if (minutes == 0) {

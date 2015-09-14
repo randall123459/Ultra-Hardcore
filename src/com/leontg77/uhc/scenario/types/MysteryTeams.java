@@ -3,9 +3,8 @@ package com.leontg77.uhc.scenario.types;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
 import java.util.Map.Entry;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -26,6 +25,11 @@ import com.leontg77.uhc.Main;
 import com.leontg77.uhc.scenario.Scenario;
 import com.leontg77.uhc.utils.PlayerUtils;
 
+/**
+ * MysteryTeams scenario class
+ * 
+ * @author EXSolo, modified by LeonTG77
+ */
 public class MysteryTeams extends Scenario implements Listener, CommandExecutor {
 	private boolean enabled = false;
 
@@ -74,13 +78,18 @@ public class MysteryTeams extends Scenario implements Listener, CommandExecutor 
 						try {
 							teamSize = Integer.parseInt(args[1]);
 						} catch (Exception e) {
-							sender.sendMessage(ChatColor.RED + "Invaild team count.");
+							sender.sendMessage(ChatColor.RED + "Invaild team size.");
 							return true;
 						}
 						
-						List<Player> players = PlayerUtils.getPlayers();
+						ArrayList<Player> players = new ArrayList<Player>();
 						
-
+						for (Player online : PlayerUtils.getPlayers()) {
+							if (!isOnTeam(online)) {
+								players.add(online);
+							}
+						}
+						
 						if (args.length > 2) {
 							for (int i = 2; i < args.length; i++) {
 								Player target = Bukkit.getServer().getPlayer(args[i]);
@@ -137,7 +146,7 @@ public class MysteryTeams extends Scenario implements Listener, CommandExecutor 
 							sender.sendMessage(Main.prefix() + "Created a rTo" + teamSize + " using team " + t.getName() + ".");
 						}
 					} else {
-						sender.sendMessage(prefix() + "§7Usage: /mt randomize <teamcount> [playersnotplaying]");
+						sender.sendMessage(prefix() + "§7Usage: /mt randomize <teamsize> [playersnotplaying]");
 					}
 				} 
 				else if (args[0].equalsIgnoreCase("clear")) {
@@ -152,6 +161,13 @@ public class MysteryTeams extends Scenario implements Listener, CommandExecutor 
 					}
 				} 
 				else if (args[0].equalsIgnoreCase("list")) {
+					if (orgTeams.size() <= 0) {
+						sender.sendMessage(prefix() + "There are no teams set.");
+						return true;
+					}
+
+					sender.sendMessage(prefix() + "All teams: §o(Names in red means they are dead)");
+					
 					for (Entry<MysteryTeam, ArrayList<String>> team : orgTeams.entrySet()) { 
 						StringBuilder members = new StringBuilder();
 						int i = 1;
@@ -159,13 +175,13 @@ public class MysteryTeams extends Scenario implements Listener, CommandExecutor 
 						for (String member : team.getValue()) {
 							if (members.length() > 0) {
 								if (i == team.getValue().size()) {
-									members.append(" and ");
+									members.append(" §8and §f");
 								} else {
-									members.append(", ");
+									members.append("§8, §f");
 								}
 							}
 							
-							members.append(Bukkit.getOfflinePlayer(UUID.fromString(member)).getName());
+							members.append(teams.get(team.getKey()).contains(member) ? ChatColor.GREEN + Bukkit.getOfflinePlayer(UUID.fromString(member)).getName() : ChatColor.RED + Bukkit.getOfflinePlayer(UUID.fromString(member)).getName());
 							i++;
 						}
 						
@@ -175,16 +191,57 @@ public class MysteryTeams extends Scenario implements Listener, CommandExecutor 
 				else {
 					if (args[0].equalsIgnoreCase("give")) {
 						if (args.length > 1) {
-							Player player = Bukkit.getServer().getPlayer(args[1]);
+							Player target = Bukkit.getServer().getPlayer(args[1]);
 							
-							if (player == null) {
+							if (target == null) {
 								sender.sendMessage(ChatColor.RED + "That player is not online.");
 								return true;
 							}
 							
+							MysteryTeam team = null;
+							
+							for (MysteryTeam t : teams.keySet()) {
+								if (teams.get(t).contains(target.getUniqueId().toString())) {
+									team = t;
+									break;
+								}
+							}
+							
+							if (team == null) {
+								sender.sendMessage(prefix() + "That player is not on a team.");
+								return true;
+							}
+							
 							sender.sendMessage(prefix() + "Gave item to player.");
+							
+							ItemStack item = new ItemStack(Material.BANNER);
+				    		BannerMeta meta = (BannerMeta) item.getItemMeta();
+				    		meta.setBaseColor(team.getDyeColor());
+				    		item.setItemMeta(meta);
+				    		PlayerUtils.giveItem(target, item);
 						} else {
-							sender.sendMessage(prefix() + "Usage: /mt give <player>");
+							for (Player online : PlayerUtils.getPlayers()) {
+								MysteryTeam team = null;
+								
+								for (MysteryTeam t : teams.keySet()) {
+									if (teams.get(t).contains(online.getUniqueId().toString())) {
+										team = t;
+										break;
+									}
+								}
+								
+								if (team == null) {
+									continue;
+								}
+								
+								sender.sendMessage(prefix() + "Gave item to player.");
+								
+								ItemStack item = new ItemStack(Material.BANNER);
+					    		BannerMeta meta = (BannerMeta) item.getItemMeta();
+					    		meta.setBaseColor(team.getDyeColor());
+					    		item.setItemMeta(meta);
+					    		PlayerUtils.giveItem(online, item);
+							}
 						}
 					} else {
 						printHelp(sender);
@@ -197,15 +254,21 @@ public class MysteryTeams extends Scenario implements Listener, CommandExecutor 
 		return false;
 	}
 	
+	private boolean isOnTeam(Player player) {
+		for (MysteryTeam t : teams.keySet()) {
+			if (teams.get(t).contains(player.getUniqueId().toString())) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public void printHelp(CommandSender sender) {
 		sender.sendMessage(prefix() + "MysteryTeams Command");
-		sender.sendMessage(" - " + ChatColor.BLUE + "/mt randomize <number-of-teams> [use-ops]");
-	    sender.sendMessage(" - " + ChatColor.BLUE + "/mt mode <list;mode-name>");
+		sender.sendMessage(" - " + ChatColor.BLUE + "/mt randomize <teamsize> [playersnotplaying]");
+	    sender.sendMessage(" - " + ChatColor.BLUE + "/mt give [player]");
 	    sender.sendMessage(" - " + ChatColor.BLUE + "/mt clear");
 	    sender.sendMessage(" - " + ChatColor.BLUE + "/mt list");
-	    sender.sendMessage(" - " + ChatColor.BLUE + "/mt give [player]");
-	    sender.sendMessage(" - " + ChatColor.BLUE + "/mt version");
-	    sender.sendMessage(" - " + ChatColor.BLUE + "/mt teamsize");
 	}
 	
 	@EventHandler
@@ -234,7 +297,7 @@ public class MysteryTeams extends Scenario implements Listener, CommandExecutor 
 			PlayerUtils.broadcast(prefix() + team.getChatColor() + "Player from team " + team.getName() + " died.");
 			
 			if (teams.get(team).size() > 0) {
-				Bukkit.broadcastMessage(prefix() + team.getChatColor() + "Team " + team.getName() + " has " + ChatColor.RESET + teams.get(team).size() + team.getChatColor() + (teams.get(team).size() > 1 ? " players" : " player") + " left");
+				PlayerUtils.broadcast(prefix() + team.getChatColor() + "Team " + team.getName() + " has " + ChatColor.RESET + teams.get(team).size() + team.getChatColor() + (teams.get(team).size() > 1 ? " players" : " player") + " left");
 			} else {
 				teams.remove(team);
 				

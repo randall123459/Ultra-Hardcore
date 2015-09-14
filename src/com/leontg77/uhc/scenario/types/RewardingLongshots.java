@@ -12,6 +12,11 @@ import com.leontg77.uhc.scenario.Scenario;
 import com.leontg77.uhc.utils.NumberUtils;
 import com.leontg77.uhc.utils.PlayerUtils;
 
+/**
+ * RewardingLongshots scenario class
+ * 
+ * @author LeonTG77
+ */
 public class RewardingLongshots extends Scenario implements Listener {
 	private boolean enabled = false;
 	

@@ -17,6 +17,11 @@ import com.leontg77.uhc.Teams;
 import com.leontg77.uhc.scenario.Scenario;
 import com.leontg77.uhc.utils.PlayerUtils;
 
+/**
+ * Captains scenario class
+ * 
+ * @author LeonTG77
+ */
 public class Captains extends Scenario implements Listener, CommandExecutor {
 	private ArrayList<String> captains = new ArrayList<String>();
 	private boolean enabled = false;
@@ -26,6 +31,13 @@ public class Captains extends Scenario implements Listener, CommandExecutor {
 
 	public Captains() {
 		super("Captains", "Theres X amount of captains, there will be rounds where one captain will choose a player until it reaches the teamsize.");
+		Main main = Main.plugin;
+		
+		main.getCommand("addcaptain").setExecutor(this);
+		main.getCommand("removecaptain").setExecutor(this);
+		main.getCommand("randomcaptain").setExecutor(this);
+		main.getCommand("cycle").setExecutor(this);
+		main.getCommand("choose").setExecutor(this);
 	}
 
 	public void setEnabled(boolean enable) {
@@ -39,7 +51,7 @@ public class Captains extends Scenario implements Listener, CommandExecutor {
 	public boolean onCommand(CommandSender player, Command cmd, String label, String[] args) {
 		if (cmd.getName().equalsIgnoreCase("addcaptain")) {
 			if (!isEnabled()) {
-				player.sendMessage(ChatColor.RED + "Captains is not enabled.");
+				player.sendMessage(Main.prefix() + "\"Captains\" is not enabled.");
 				return true;
 			}
 			
@@ -58,21 +70,14 @@ public class Captains extends Scenario implements Listener, CommandExecutor {
 				return true;
 			}
 
-			Team t = null;
+			Team team = Teams.getManager().findAvailableTeam();
 			
-			for (Team team : Teams.getManager().getTeams()) {
-				if (team.getSize() == 0) {
-					t = team;
-					break;
-				}
-			}
-			
-			if (t == null) {
+			if (team == null) {
 				player.sendMessage(ChatColor.RED + "No more available teams.");
 				return true;
 			}
 			
-			t.addEntry(args[0]);
+			team.addEntry(args[0]);
 			
 			captains.add(args[0]);
 			PlayerUtils.broadcast(Main.prefix() + ChatColor.GREEN + args[0] + " §7is now an captain.");
@@ -80,7 +85,7 @@ public class Captains extends Scenario implements Listener, CommandExecutor {
 		
 		if (cmd.getName().equalsIgnoreCase("removecaptain")) {
 			if (!isEnabled()) {
-				player.sendMessage(ChatColor.RED + "Captains is not enabled.");
+				player.sendMessage(Main.prefix() + "\"Captains\" is not enabled.");
 				return true;
 			}
 			
@@ -109,9 +114,9 @@ public class Captains extends Scenario implements Listener, CommandExecutor {
 			PlayerUtils.broadcast(Main.prefix() + args[0] + ChatColor.GREEN + " §7is no longer an captain.");
 		}
 		
-		if (cmd.getName().equalsIgnoreCase("randomcaptains")) {
+		if (cmd.getName().equalsIgnoreCase("randomcaptain")) {
 			if (!isEnabled()) {
-				player.sendMessage(ChatColor.RED + "Captains is not enabled.");
+				player.sendMessage(Main.prefix() + "\"Captains\" is not enabled.");
 				return true;
 			}
 			
@@ -147,14 +152,7 @@ public class Captains extends Scenario implements Listener, CommandExecutor {
 				String s = list.get(new Random().nextInt(list.size()));
 				captains.add(s);
 				
-				Team t = null;
-				
-				for (Team team : Teams.getManager().getTeams()) {
-					if (team.getSize() == 0) {
-						t = team;
-						break;
-					}
-				}
+				Team t = Teams.getManager().findAvailableTeam();
 				
 				if (t == null) {
 					return true;
@@ -167,7 +165,7 @@ public class Captains extends Scenario implements Listener, CommandExecutor {
 		
 		if (cmd.getName().equalsIgnoreCase("cycle")) {
 			if (!isEnabled()) {
-				player.sendMessage(ChatColor.RED + "Captains is not enabled.");
+				player.sendMessage(Main.prefix() + "\"Captains\" is not enabled.");
 				return true;
 			}
 			
@@ -193,7 +191,7 @@ public class Captains extends Scenario implements Listener, CommandExecutor {
 		
 		if (cmd.getName().equalsIgnoreCase("choose")) {
 			if (!isEnabled()) {
-				player.sendMessage(ChatColor.RED + "Captains is not enabled.");
+				player.sendMessage(Main.prefix() + "\"Captains\" is not enabled.");
 				return true;
 			}
 			

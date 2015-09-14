@@ -30,6 +30,11 @@ import org.bukkit.potion.PotionEffectType;
 
 import com.leontg77.uhc.scenario.Scenario;
 
+/**
+ * NightmareMode scenario class
+ * 
+ * @author LeonTG77
+ */
 public class NightmareMode extends Scenario implements Listener {
 	private boolean enabled = false;
 	
@@ -47,10 +52,6 @@ public class NightmareMode extends Scenario implements Listener {
 	
 	@EventHandler
 	public void onCreatureSpawn(CreatureSpawnEvent event) {
-		if (!isEnabled()) {
-			return;
-		}
-		
 		if (event.getEntity() instanceof Witch) {
 			event.getEntity().addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 1726272000, 4));
 		} 
@@ -67,16 +68,13 @@ public class NightmareMode extends Scenario implements Listener {
 	
 	@EventHandler
 	public void onEntityDamage(EntityDamageEvent event) {
-		if (!isEnabled()) {
-			return;
-		}
-		
 		if (event.getEntity() instanceof Zombie) {
 			if (event.getCause() == DamageCause.FIRE || event.getCause() == DamageCause.FIRE_TICK) {
 				if ((new Random().nextInt(99) + 1) >= 50) {
 					event.setCancelled(true);
 				}
 			}
+			return;
 		}
 		
 		if (event.getEntity() instanceof Enderman) {
@@ -88,15 +86,12 @@ public class NightmareMode extends Scenario implements Listener {
 	
 	@EventHandler
 	public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
-		if (!isEnabled()) {
-			return;
-		}
-		
 		if (event.getEntity() instanceof Player) {
 			if (event.getDamager() instanceof Arrow) {
 				if (((Arrow) event.getDamager()) instanceof Skeleton) {
 					((Player) event.getEntity()).addPotionEffect(new PotionEffect(PotionEffectType.POISON, 60, 1));
 				}
+				return;
 			}
 			
 			if (event.getDamager() instanceof Enderman) {
@@ -107,10 +102,6 @@ public class NightmareMode extends Scenario implements Listener {
 	
 	@EventHandler
 	public void onEntityExplode(EntityExplodeEvent event) {
-		if (!isEnabled()) {
-			return;
-		}
-		
 		if (event.getEntity() instanceof Creeper) {
 			event.getEntity().getWorld().spawn(event.getEntity().getLocation(), Silverfish.class);
 			event.getEntity().getWorld().spawn(event.getEntity().getLocation(), Silverfish.class);
@@ -122,10 +113,6 @@ public class NightmareMode extends Scenario implements Listener {
 	
 	@EventHandler
 	public void onEntityDeath(EntityDeathEvent event) {
-		if (!isEnabled()) {
-			return;
-		}
-		
 		if (event.getEntity() instanceof Creeper) {
 			if ((new Random().nextInt(99) + 1) >= 50) {
 				event.getEntity().getWorld().spawn(event.getEntity().getLocation(), Silverfish.class);
@@ -139,6 +126,7 @@ public class NightmareMode extends Scenario implements Listener {
 		else if (event.getEntity() instanceof Spider) {
 			Location loc = event.getEntity().getLocation();
 			Block b = loc.getBlock();
+			
 			b.getRelative(BlockFace.EAST).setType(Material.WEB);
 			b.getRelative(BlockFace.WEST).setType(Material.WEB);
 			b.getRelative(BlockFace.SOUTH).setType(Material.WEB);

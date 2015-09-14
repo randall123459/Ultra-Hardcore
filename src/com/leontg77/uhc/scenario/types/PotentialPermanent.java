@@ -14,6 +14,11 @@ import com.leontg77.uhc.Game;
 import com.leontg77.uhc.scenario.Scenario;
 import com.leontg77.uhc.utils.PlayerUtils;
 
+/**
+ * PotentialPermanent scenario class
+ * 
+ * @author LeonTG77
+ */
 public class PotentialPermanent extends Scenario implements Listener {
 	private boolean enabled = false;
 
@@ -31,6 +36,7 @@ public class PotentialPermanent extends Scenario implements Listener {
 			}
 	
 			Game.getInstance().setAbsorption(true);
+			Game.getInstance().setGoldenHeadsHeal(2);
 		} else {
 			for (Player online : PlayerUtils.getPlayers()) {
 				online.removePotionEffect(PotionEffectType.ABSORPTION);
@@ -45,10 +51,6 @@ public class PotentialPermanent extends Scenario implements Listener {
 	
 	@EventHandler
 	public void onPlayerItemConsume(PlayerItemConsumeEvent event) {
-		if (!isEnabled()) {
-			return;
-		}
-		
 		if (event.getItem().getType() != Material.GOLDEN_APPLE) {
 			return;
 		}

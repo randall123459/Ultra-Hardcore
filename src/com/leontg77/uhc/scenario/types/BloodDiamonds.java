@@ -9,6 +9,11 @@ import org.bukkit.event.block.BlockBreakEvent;
 
 import com.leontg77.uhc.scenario.Scenario;
 
+/**
+ * BloodDiamonds scenario class
+ * 
+ * @author LeonTG77
+ */
 public class BloodDiamonds extends Scenario implements Listener {
 	private boolean enabled = false;
 	
@@ -26,11 +31,7 @@ public class BloodDiamonds extends Scenario implements Listener {
 
 	@EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
-		if (!isEnabled()) {
-			return;
-		}
-		
-    	Player player = event.getPlayer();
+		Player player = event.getPlayer();
 		Block block = event.getBlock();
     	
     	if (block.getType() == Material.DIAMOND_ORE) {

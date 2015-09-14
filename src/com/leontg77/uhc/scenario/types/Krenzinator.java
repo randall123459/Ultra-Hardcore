@@ -12,19 +12,23 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
-import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.event.vehicle.VehicleEnterEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapelessRecipe;
 
 import com.leontg77.uhc.scenario.Scenario;
 
+/**
+ * Krenzinator scenario class
+ * 
+ * @author dans1988
+ */
 public class Krenzinator extends Scenario implements Listener {
-    private final ShapelessRecipe diamond = new ShapelessRecipe(new ItemStack(Material.DIAMOND)).addIngredient(9, Material.REDSTONE_BLOCK);
+    private ShapelessRecipe diamond = new ShapelessRecipe(new ItemStack(Material.DIAMOND)).addIngredient(9, Material.REDSTONE_BLOCK);
 	private boolean enabled = false;
 
 	public Krenzinator() {
-		super("Krenzinator", "Play UHC like Krenzinator does");
+		super("Krenzinator", "Play UHC like Krenzinator does, Reddit post: https://redd.it/2ee99q");
 	}
 
 	public void setEnabled(boolean enable) {
@@ -38,30 +42,9 @@ public class Krenzinator extends Scenario implements Listener {
 	public boolean isEnabled() {
 		return enabled;
 	}
-	
-	@EventHandler
-	public void onPrepareItemCraft(PrepareItemCraftEvent event) {
-		if (isEnabled()) {
-			return;
-		}
-		
-		ItemStack item = event.getRecipe().getResult();
-		
-		if (item.getType() == Material.DIAMOND) {
-			if (event.getRecipe() instanceof ShapelessRecipe) {
-				if (((ShapelessRecipe) event.getRecipe()).getIngredientList().contains(new ItemStack(Material.REDSTONE_BLOCK))) {
-					event.getInventory().setResult(new ItemStack(Material.AIR));
-				}
-			}
-		}
-	}
 
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPlayerDeath(PlayerDeathEvent event) {
-		if (!isEnabled()) {
-			return;
-		}
-
 		Player victim = event.getEntity();
 
 		if (victim.getUniqueId().toString().equals("f6eb67da-99f1-4352-b5c5-c0440be575f1") || victim.getUniqueId().toString().equals("42d908a4-c270-4059-b796-53d217f9429f")) {
@@ -73,11 +56,7 @@ public class Krenzinator extends Scenario implements Listener {
 	
 	@EventHandler
     public void onVehicleEnter(VehicleEnterEvent event) {
-		if (!isEnabled()) {
-			return;
-		}
-
-        if (((event.getVehicle() instanceof Horse)) && ((event.getEntered() instanceof Player))) {
+		if (((event.getVehicle() instanceof Horse)) && ((event.getEntered() instanceof Player))) {
             
             Horse horse = (Horse) event.getVehicle();
             
@@ -92,10 +71,6 @@ public class Krenzinator extends Scenario implements Listener {
 	
 	@EventHandler(priority = EventPriority.HIGH)
 	public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
-		if (!isEnabled()) {
-			return;
-		}
-
 		if (event.getDamager().getType().equals(EntityType.EGG)) {
 			event.setDamage(1.0);
 		}  
@@ -103,7 +78,7 @@ public class Krenzinator extends Scenario implements Listener {
 	
 	@EventHandler
     public void onCraft(CraftItemEvent event)  {
-        if (!isEnabled() || event.isCancelled()) {
+        if (event.isCancelled()) {
             return;
         }
         

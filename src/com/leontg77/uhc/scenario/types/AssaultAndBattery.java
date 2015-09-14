@@ -21,6 +21,11 @@ import com.leontg77.uhc.Teams;
 import com.leontg77.uhc.scenario.Scenario;
 import com.leontg77.uhc.utils.PlayerUtils;
 
+/**
+ * AssaultAndBattery scenario class
+ * 
+ * @author LeonTG77
+ */
 public class AssaultAndBattery extends Scenario implements Listener, CommandExecutor {
 	private HashMap<String, Type> types = new HashMap<String, Type>();
 	private boolean enabled = false;
@@ -58,7 +63,8 @@ public class AssaultAndBattery extends Scenario implements Listener, CommandExec
 					ArrayList<String> entry = new ArrayList<String>(team.getEntries());
 					types.put(entry.get(0), Type.ASSAULT);
 					types.put(entry.get(1), Type.BATTERY);
-				} else {
+				} 
+				else {
 					for (String entry : team.getEntries()) {
 						Player player = Bukkit.getServer().getPlayer(entry);
 						
@@ -72,7 +78,22 @@ public class AssaultAndBattery extends Scenario implements Listener, CommandExec
 			}
 			
 			for (Player online : PlayerUtils.getPlayers()) {
-				online.chat("/class");
+				if (!types.containsKey(online.getName())) {
+					online.sendMessage(Main.prefix() + "You are both, you can only do all types of damage.");
+					return;
+				}
+				
+				switch (types.get(online.getName())) {
+				case ASSAULT:
+					online.sendMessage(Main.prefix() + "You are the assaulter, you can only do melee damage.");
+					break;
+				case BATTERY:
+					online.sendMessage(Main.prefix() + "You are the battery, you can only do projectile damage.");
+					break;
+				case BOTH:
+					online.sendMessage(Main.prefix() + "You are both, you can only do all types of damage.");
+					break;
+				}
 			}
 		} else {
 			types.clear();
@@ -85,10 +106,6 @@ public class AssaultAndBattery extends Scenario implements Listener, CommandExec
 	
 	@EventHandler
 	public void onPlayerDeath(PlayerDeathEvent event) {
-		if (!isEnabled()) {
-			return;
-		}
-		 
 		Player player = event.getEntity();
 		Team team = player.getScoreboard().getEntryTeam(player.getName());
 		
@@ -104,12 +121,8 @@ public class AssaultAndBattery extends Scenario implements Listener, CommandExec
 		types.remove(player.getName());
 	}
 
-	@EventHandler(ignoreCancelled = true)
+	@EventHandler
 	public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
-		if (!isEnabled()) {
-			return;
-		}
-		
 		if (event.getEntity() instanceof Player) {
 			if (event.getDamager() instanceof Player) {
 				Player player = (Player) event.getDamager();
@@ -203,7 +216,7 @@ public class AssaultAndBattery extends Scenario implements Listener, CommandExec
 			player.sendMessage(Main.prefix() + "Batteries: " + battery.toString().trim());
 			player.sendMessage(Main.prefix() + "Both: " + both.toString().trim());
 		}
-		return false;
+		return true;
 	}
 	
 	public enum Type {

@@ -4,25 +4,36 @@ import java.util.ArrayList;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scoreboard.Team;
 
+import com.leontg77.uhc.Main;
 import com.leontg77.uhc.scenario.Scenario;
 import com.leontg77.uhc.utils.PlayerUtils;
 
-public class Kings extends Scenario implements Listener {
+/**
+ * Kings scenario class
+ * 
+ * @author LeonTG77
+ */
+public class Kings extends Scenario implements Listener, CommandExecutor {
 	private ArrayList<String> kings = new ArrayList<String>();
 	private boolean enabled = false;
 	
 	public Kings() {
 		super("Kings", "Theres a king on each team, the king has 20 max hearts and resistance, if the king dies the teammates will be poisoned.");
+		Main main = Main.plugin;
+		
+		main.getCommand("addking").setExecutor(this);
+		main.getCommand("remking").setExecutor(this);
 	}
 	
 	public void setEnabled(boolean enable) {
@@ -49,12 +60,8 @@ public class Kings extends Scenario implements Listener {
 		return enabled;
 	}
 	
-	@EventHandler(priority = EventPriority.HIGH)
+	@EventHandler
     public void onPlayerDeath(PlayerDeathEvent event) {
-        if (!isEnabled()) {
-            return;
-        }
-
         Player player = event.getEntity();
 
         if (!kings.contains(player.getName())) {
@@ -70,81 +77,70 @@ public class Kings extends Scenario implements Listener {
         kings.remove(player.getName());
         PlayerUtils.broadcast(ChatColor.GOLD + "The king on team " + team.getName().substring(3) + " has died, " + kings.size() + " remaining.");
         
-        for (String m8s : team.getEntries()) {
-        	Player teams = Bukkit.getServer().getPlayer(m8s);
+        for (String entry : team.getEntries()) {
+        	Player teamMate = Bukkit.getServer().getPlayer(entry);
         	
-        	if (teams == null) {
-        		continue;
+        	if (teamMate != null) {
+        		PotionEffect effectOne = new PotionEffect(PotionEffectType.CONFUSION, 80, 0); 
+            	PotionEffect effectTwo = new PotionEffect(PotionEffectType.WEAKNESS, 3600, 0); 
+            	PotionEffect effectThree = new PotionEffect(PotionEffectType.POISON, 260, 0); 
+            	
+            	teamMate.addPotionEffect(effectOne); 
+            	teamMate.addPotionEffect(effectTwo); 
+            	teamMate.addPotionEffect(effectThree);
         	}
-        	
-        	PotionEffect sadnessEffect = new PotionEffect(PotionEffectType.CONFUSION, 80, 0); 
-        	PotionEffect sadnessEffect2 = new PotionEffect(PotionEffectType.WEAKNESS, 3600, 0); 
-        	PotionEffect sadnessEffect3 = new PotionEffect(PotionEffectType.POISON, 260, 0); 
-        	teams.addPotionEffect(sadnessEffect); 
-        	teams.addPotionEffect(sadnessEffect2); 
-        	teams.addPotionEffect(sadnessEffect3);
         }
     }
-	
-	@EventHandler
-	public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
-		ArrayList<String> ar = new ArrayList<String>();
-		for (String arg : event.getMessage().split(" ")) {
-			ar.add(arg);
-		}
-		String cmd = ar.get(0);
-		ar.remove(0);
-		final Player player = event.getPlayer();
-		final String[] args = ar.toArray(new String[ar.size()]);
-		
-		if (cmd.equalsIgnoreCase("/setking")) {
-			event.setCancelled(true);
+
+	@Override
+	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+		if (cmd.getName().equalsIgnoreCase("addking")) {
 			if (!isEnabled()) {
-				player.sendMessage(ChatColor.RED + "Kings are not enabled.");
-				return;
+				sender.sendMessage(Main.prefix() + "\"Kings\" is not enabled.");
+				return true;
 			}
 			
 			if (args.length == 0) {
-				player.sendMessage(ChatColor.RED + "Usage: /setking <player>");
-				return;
+				sender.sendMessage(Main.prefix() + "Usage: /setking <player>");
+				return true;
 			}
 			
 			Player target = Bukkit.getServer().getPlayer(args[0]);
 			
 			if (target == null) {
-				player.sendMessage(ChatColor.RED + "That player is not online.");
-				return;
+				sender.sendMessage(ChatColor.RED + "That player is not online.");
+				return true;
 			}
 			
-			PotionEffect sadnessEffect = new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 0x7fffffff, 0); 
-			PotionEffect sadnessEffect2 = new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 0x7fffffff, 0); 
-			PotionEffect sadnessEffect3 = new PotionEffect(PotionEffectType.SPEED, 0x7fffffff, 0); 
-			target.addPotionEffect(sadnessEffect); 
-			target.addPotionEffect(sadnessEffect2);
-			target.addPotionEffect(sadnessEffect3);
+			PotionEffect effectOne = new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 1726272000, 0); 
+			PotionEffect effectTwo = new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 1726272000, 0); 
+			PotionEffect effectThree = new PotionEffect(PotionEffectType.SPEED, 1726272000, 0); 
+			
+			target.addPotionEffect(effectOne); 
+			target.addPotionEffect(effectTwo);
+			target.addPotionEffect(effectThree);
 			
 			target.setMaxHealth(40);
 			target.setHealth(40);
 			kings.add(target.getName());
 		}
 		
-		if (cmd.equalsIgnoreCase("/remking")) {
-			event.setCancelled(true);
+		if (cmd.getName().equalsIgnoreCase("remking")) {
 			if (!isEnabled()) {
-				player.sendMessage(ChatColor.RED + "Kings are not enabled.");
-				return;
+				sender.sendMessage(Main.prefix() + "\"Kings\" is not enabled.");
+				return true;
 			}
 			
 			if (args.length == 0) {
-				player.sendMessage(ChatColor.RED + "Usage: /remking <player>");
-				return;
-			}
+				sender.sendMessage(ChatColor.RED + "Usage: /remking <player>");
+				return true;
+			} 
 			
 			Player target = Bukkit.getServer().getPlayer(args[0]);
 			
 			if (target == null) {
-				player.sendMessage(ChatColor.RED + "That player is not online.");
-				return;
+				sender.sendMessage(ChatColor.RED + "That player is not online.");
+				return true;
 			}
 			
 			for (PotionEffect effect : target.getActivePotionEffects()) {
@@ -155,5 +151,6 @@ public class Kings extends Scenario implements Listener {
 			target.setHealth(20);
 			kings.remove(target.getName());
 		}
+		return true;
 	}
 }

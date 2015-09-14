@@ -6,25 +6,36 @@ import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.scenario.Scenario;
 import com.leontg77.uhc.utils.PlayerUtils;
 
-public class BestPvE extends Scenario implements Listener {
+/**
+ * BestPvE scenario class
+ * 
+ * @author LeonTG77
+ */
+public class BestPvE extends Scenario implements Listener, CommandExecutor {
 	private HashSet<String> list = new HashSet<String>();
 	private boolean enabled = false;
 	private BukkitRunnable task;
 
 	public BestPvE() {
 		super("BestPvE", "Everyone starts on a list called bestpve list, if you take damage you are removed from the list. The only way to get back on the list is getting a kill, All players on the bestpve list gets 1 extra heart each 10 minutes.");
+		Main main = Main.plugin;
+	
+		main.getCommand("pve").setExecutor(this);
+		main.getCommand("pvelist").setExecutor(this);
 	}
 	
 	public void setEnabled(boolean enable) {
@@ -66,10 +77,6 @@ public class BestPvE extends Scenario implements Listener {
 	
 	@EventHandler
 	public void onPlayerDeath(PlayerDeathEvent event) {
-		if (!isEnabled()) {
-			return;
-		}
-		
 		if (event.getEntity().getKiller() == null) {
 			return;
 		}
@@ -88,10 +95,6 @@ public class BestPvE extends Scenario implements Listener {
 
 	@EventHandler(ignoreCancelled = true)
 	public void onEntityDamage(EntityDamageEvent event) {
-		if (!isEnabled()) {
-			return;
-		}
-		
 		if (!(event.getEntity() instanceof Player)) {
 			return;
 		}
@@ -108,81 +111,69 @@ public class BestPvE extends Scenario implements Listener {
 		}
 	}
 	
-	@EventHandler
-	public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
-		Player sender = event.getPlayer();
-		
-		if (event.getMessage().split(" ")[0].equalsIgnoreCase("/pvelist")) {
+	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+		if (cmd.getName().equalsIgnoreCase("pvelist")) {
 			if (!isEnabled()) {
-				sender.sendMessage(ChatColor.RED + "BestPvE is not enabled.");
-				event.setCancelled(true);
-				return;
+				sender.sendMessage(Main.prefix() + "\"BestPvE\" is not enabled.");
+				return true;
 			}
+
+			ArrayList<String> btc = new ArrayList<String>(list);
+			StringBuilder btclist = new StringBuilder("");
 			
-			ArrayList<String> pve = new ArrayList<String>(list);
-			StringBuilder pvelist = new StringBuilder("");
-			
-			for (int i = 0; i < pve.size(); i++) {
-				if (pvelist.length() > 0 && i == pve.size() - 1) {
-					pvelist.append(" §7and §6");
+			for (int i = 0; i < list.size(); i++) {
+				if (btclist.length() > 0 && i == btc.size() - 1) {
+					btclist.append(" §7and §a");
 				}
-				else if (pvelist.length() > 0 && pvelist.length() != pve.size()) {
-					pvelist.append("§7, §6");
+				else if (btclist.length() > 0 && btclist.length() != btc.size()) {
+					btclist.append("§7, §a");
 				}
 				
-				pvelist.append(ChatColor.GOLD + pve.get(i));
+				btclist.append(ChatColor.GOLD + btc.get(i));
 			}
 			
-			event.getPlayer().sendMessage(Main.prefix() + "People still on the best pve list: §6" + (pvelist.length() > 0 ? pvelist.toString().trim() : "None") + "§7.");
-			event.setCancelled(true);
+			sender.sendMessage(Main.prefix() + "People still on the BestPvE list:\n§a" + (btclist.length() > 0 ? btclist.toString().trim() : "None") + "§7.");
 		}
 		
-		if (event.getMessage().split(" ")[0].equalsIgnoreCase("/pve")) {
-			event.setCancelled(true);
+		if (cmd.getName().equalsIgnoreCase("pve")) {
 			if (!isEnabled()) {
-				sender.sendMessage(ChatColor.RED + "BestPvE is not enabled.");
-				return;
+				sender.sendMessage(Main.prefix() + "\"BestPvE\" is not enabled.");
+				return true;
 			}
-			
-			ArrayList<String> ar = new ArrayList<String>();
-			for (String arg : event.getMessage().split(" ")) {
-				ar.add(arg);
-			}
-			ar.remove(0);
-			String[] args = ar.toArray(new String[ar.size()]);
 			
 			if (sender.hasPermission("uhc.bestpve.admin")) {
 				if (args.length < 2) {
-					sender.sendMessage(Main.prefix() + "Help for best pve:");
+					sender.sendMessage(Main.prefix() + "Help for BestPvE:");
 					sender.sendMessage(ChatColor.GRAY + "- §f/pve add <player> - Adds an player manually to the list.");
 					sender.sendMessage(ChatColor.GRAY + "- §f/pve remove <player> - Removes an player manually to the list.");
-					return;
+					return true;
 				}
 				
 				if (args[0].equalsIgnoreCase("add")) {
 					if (list.contains(args[1])) {
-						sender.sendMessage(ChatColor.RED + args[1] + " already on the best pve list.");
-						return;
+						sender.sendMessage(Main.prefix() + ChatColor.RED + args[1] + " already on the BestPvE list.");
+						return true;
 					}
 					
 					list.add(args[1]);
-					sender.sendMessage(Main.prefix() + args[1] + " added to the best pve list.");
+					sender.sendMessage(Main.prefix() + args[1] + " added to the BestPvE list.");
 				} else if (args[0].equalsIgnoreCase("remove")) {
 					if (!list.contains(args[1])) {
-						sender.sendMessage(ChatColor.RED + args[1] + " is not on the best pve list.");
-						return;
+						sender.sendMessage(Main.prefix() + ChatColor.RED + args[1] + " is not on the BestPvE list.");
+						return true;
 					}
 					
 					list.remove(args[1]);
-					sender.sendMessage(Main.prefix() + args[1] + " removed from the best pve list.");
+					sender.sendMessage(Main.prefix() + args[1] + " removed from the BestPvE list.");
 				} else {
-					sender.sendMessage(Main.prefix() + "Help for best pve:");
+					sender.sendMessage(Main.prefix() + "Help for BestPvE:");
 					sender.sendMessage(ChatColor.GRAY + "- §f/pve add <player> - Adds an player manually to the list.");
 					sender.sendMessage(ChatColor.GRAY + "- §f/pve remove <player> - Removes an player manually to the list.");
 				}
 			} else {
-				sender.sendMessage(ChatColor.RED + "You do not have access to that command.");
+				sender.sendMessage(Main.NO_PERMISSION_MESSAGE);
 			}
 		}
+		return true;
 	}
 }

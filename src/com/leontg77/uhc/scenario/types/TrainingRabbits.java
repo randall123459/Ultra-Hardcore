@@ -14,6 +14,11 @@ import org.bukkit.potion.PotionEffectType;
 import com.leontg77.uhc.scenario.Scenario;
 import com.leontg77.uhc.utils.PlayerUtils;
 
+/**
+ * TrainingRabbits scenario class
+ * 
+ * @author LeonTG77
+ */
 public class TrainingRabbits extends Scenario implements Listener {
 	public static HashMap<String, Integer> jump = new HashMap<String, Integer>();
 	private boolean enabled = false;
@@ -67,7 +72,7 @@ public class TrainingRabbits extends Scenario implements Listener {
 		player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 1726272000, level));
 	}
 
-	@EventHandler(ignoreCancelled = true)
+	@EventHandler
 	public void onEntityDamage(EntityDamageEvent event) {
 		if (!isEnabled()) {
 			return;

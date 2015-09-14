@@ -14,8 +14,13 @@ import org.bukkit.scoreboard.Team;
 
 import com.leontg77.uhc.scenario.Scenario;
 
+/**
+ * Compensation scenario class
+ * 
+ * @author TheRCPanda
+ */
 public class Compensation extends Scenario implements Listener {
-	private static boolean enabled = false;
+	private boolean enabled = false;
 	
 	public Compensation() {
 		super("Compensation", "When a player on a team dies, the player's max health is divided up and added to the max health of the player's teammates. The extra health received will regenerate in 30 seconds.");
@@ -31,10 +36,6 @@ public class Compensation extends Scenario implements Listener {
 	
 	@EventHandler
     public void onCraft(PrepareItemCraftEvent event) {
-		if (!isEnabled()) {
-			return;
-		}
-		
 		if (event.getRecipe().getResult().getType() == Material.ARROW) {
 			event.getInventory().getResult().setAmount(event.getInventory().getResult().getAmount() * 4);
 		}
@@ -42,10 +43,6 @@ public class Compensation extends Scenario implements Listener {
 	
 	@EventHandler
     public void onDeath(PlayerDeathEvent event) {
-		if (!isEnabled()) {
-			return;
-		}
-		
 		Player victim = event.getEntity();
         double victimMaxHealth = victim.getMaxHealth();
 
@@ -57,7 +54,6 @@ public class Compensation extends Scenario implements Listener {
             double healthPerPerson = victimMaxHealth / victimTeam.getSize();
             int healthPerPersonRounded = (int) healthPerPerson;
 
-            @SuppressWarnings("unused")
 			double excessHealth = healthPerPerson - healthPerPersonRounded;
 
             int ticksRegen = healthPerPersonRounded * 50;
@@ -72,17 +68,13 @@ public class Compensation extends Scenario implements Listener {
                 p.setMaxHealth(p.getMaxHealth() + healthPerPerson);
                 p.removePotionEffect(PotionEffectType.REGENERATION);
                 p.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, ticksRegen, 0));
-                /*p.setHealth(p.getHealth() + excessHealth);*/
+                p.setHealth(p.getHealth() + excessHealth);
             }
         }
     }
 
     @EventHandler
     public void onEat(PlayerItemConsumeEvent event) {
-    	if (!isEnabled()) {
-    		return;
-    	}
-    	
     	Player player = event.getPlayer();
 
         if (event.getItem().getType() == Material.GOLDEN_APPLE) {

@@ -9,28 +9,43 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scoreboard.Team;
 
 import com.leontg77.uhc.Main;
+import com.leontg77.uhc.Spectator;
 import com.leontg77.uhc.Teams;
 import com.leontg77.uhc.scenario.Scenario;
 import com.leontg77.uhc.utils.PlayerUtils;
 
+/**
+ * Moles scenario class
+ * 
+ * @author Bergasms, modified by LeonTG77
+ */
 @SuppressWarnings("deprecation")
-public class Moles extends Scenario implements Listener {
+public class Moles extends Scenario implements Listener, CommandExecutor {
 	private ArrayList<String> moles = new ArrayList<String>();
 	private boolean enabled = false;
 
 	public Moles() {
 		super("Moles", "There are a mole on each team, moles on each team work together to take out the normal teams.");
+		Main main = Main.plugin;
+		
+		main.getCommand("moles").setExecutor(this);
+		main.getCommand("molehelp").setExecutor(this);
+		main.getCommand("mcc").setExecutor(this);
+		main.getCommand("mcl").setExecutor(this);
+		main.getCommand("mcp").setExecutor(this);
 	}
 
 	public void setEnabled(boolean enable) {
@@ -113,162 +128,9 @@ public class Moles extends Scenario implements Listener {
 	public boolean isEnabled() {
 		return enabled;
 	}
-	
-	@EventHandler
-	public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
-		Player player = event.getPlayer();
-		
-		if (event.getMessage().split(" ")[0].equalsIgnoreCase("/moles")) {
-			if (!isEnabled()) {
-				player.sendMessage(ChatColor.RED + "This is not a moles game or moles are not set yet.");
-				event.setCancelled(true);
-				return;
-			}
-			
-			if (player.hasPermission("uhc.moles")) {
-				StringBuilder pvelist = new StringBuilder("");
-				
-				for (int i = 0; i < moles.size(); i++) {
-					if (pvelist.length() > 0 && i == moles.size() - 1) {
-						pvelist.append(" §7and §6");
-					}
-					else if (pvelist.length() > 0 && pvelist.length() != moles.size()) {
-						pvelist.append("§7, §6");
-					}
-					
-					pvelist.append(ChatColor.GOLD + moles.get(i));
-				}
-				
-				event.getPlayer().sendMessage(Main.prefix() + "The moles are: §6" + (pvelist.length() > 0 ? pvelist.toString().trim() : "None") + "§7.");
-				event.setCancelled(true);
-			} else {
-				player.sendMessage(ChatColor.RED + "You do not have access to that command.");
-				event.setCancelled(true);
-			}
-		}
-		
-		if (event.getMessage().split(" ")[0].equalsIgnoreCase("/molehelp")) {
-			if (!isEnabled()) {
-				player.sendMessage(ChatColor.RED + "This is not a moles game or moles are not set yet.");
-				event.setCancelled(true);
-				return;
-			}
-			
-			if (!moles.contains(player.getName())) {
-				player.sendMessage(Main.prefix().replaceAll("UHC", "Moles") + "You are not a mole.");
-				event.setCancelled(true);
-				return;
-			}
-	
-			player.sendMessage(Main.prefix().replaceAll("UHC", "Moles") + "Mole help:");
-			player.sendMessage("§7- §f/mcl §o(Tell your location to the moles)");
-			player.sendMessage("§7- §f/mcc §o(Chat with the other moles)");
-			player.sendMessage("§7- §f/mcp §o(Display the other moles)");
-			event.setCancelled(true);
-		}
-		
-		if (event.getMessage().split(" ")[0].equalsIgnoreCase("/mcl")) {
-			if (!isEnabled()) {
-				player.sendMessage(ChatColor.RED + "This is not a moles game or moles are not set yet.");
-				event.setCancelled(true);
-				return;
-			}
-			
-			if (!moles.contains(player.getName())) {
-				player.sendMessage(Main.prefix().replaceAll("UHC", "Moles") + "You are not a mole.");
-				event.setCancelled(true);
-				return;
-			}
-			
-			for (String mole : moles) {
-				Player m = Bukkit.getServer().getPlayer(mole);
-				
-				if (m != null) {
-					m.sendMessage(Main.prefix().replaceAll("UHC", "MoleLoc") + player.getName() + ": §fx:" + player.getLocation().getBlockX() + ", y:" + player.getLocation().getBlockY() + ", z:" + player.getLocation().getBlockZ() + ".");
-				}
-			}
-			event.setCancelled(true);
-		}
-		
-		if (event.getMessage().split(" ")[0].equalsIgnoreCase("/mcc")) {
-			if (!isEnabled()) {
-				player.sendMessage(ChatColor.RED + "This is not a moles game or moles are not set yet.");
-				event.setCancelled(true);
-				return;
-			}
-			
-			if (!moles.contains(player.getName())) {
-				player.sendMessage(Main.prefix().replaceAll("UHC", "Moles") + "You are not a mole.");
-				event.setCancelled(true);
-				return;
-			}
-			
-			ArrayList<String> ar = new ArrayList<String>();
-			for (String arg : event.getMessage().split(" ")) {
-				ar.add(arg);
-			}
-			ar.remove(0);
-			String[] args = ar.toArray(new String[ar.size()]);
-			
-			if (args.length == 0) {
-				player.sendMessage(ChatColor.RED + "Usage: /mcc <message>");
-				event.setCancelled(true);
-				return;
-			}
-			
-			StringBuilder b = new StringBuilder();
-			
-			for (int i = 0; i < args.length; i++) {
-				b.append(args[i]).append(" ");
-			}
-			
-			for (String mole : moles) {
-				Player m = Bukkit.getServer().getPlayer(mole);
-				
-				if (m != null) {
-					m.sendMessage(Main.prefix().replaceAll("UHC", "MoleChat") + player.getName() + ": §f" + b.toString().trim());
-				}
-			}
-			event.setCancelled(true);
-		}
-		
-		if (event.getMessage().split(" ")[0].equalsIgnoreCase("/mcp")) {
-			if (!isEnabled()) {
-				player.sendMessage(ChatColor.RED + "This is not a moles game or moles are not set yet.");
-				event.setCancelled(true);
-				return;
-			}
-			
-			if (!moles.contains(player.getName())) {
-				player.sendMessage(Main.prefix().replaceAll("UHC", "Moles") + "You are not a mole.");
-				event.setCancelled(true);
-				return;
-			}
-			
-			StringBuilder pvelist = new StringBuilder("");
-			
-			for (int i = 0; i < moles.size(); i++) {
-				if (pvelist.length() > 0 && i == moles.size() - 1) {
-					pvelist.append(" §7and §6");
-				}
-				else if (pvelist.length() > 0 && pvelist.length() != moles.size()) {
-					pvelist.append("§7, §6");
-				}
-				
-				pvelist.append(ChatColor.GOLD + moles.get(i));
-			}
-			
-			event.getPlayer().sendMessage(Main.prefix().replaceAll("UHC", "Moles") + "The moles are: §6" + (pvelist.length() > 0 ? pvelist.toString().trim() : "None") + "§7.");
-			event.setCancelled(true);
-		}
-	}
 
 	@EventHandler
 	public void onInventoryClick(InventoryClickEvent event) {
-		if (!isEnabled()) {
-			return;
-		}
-
 		if (event.isCancelled()) {
 			return;
 		}
@@ -312,8 +174,7 @@ public class Moles extends Scenario implements Listener {
 			player.getInventory().setItem(14, wool6);
 			event.setCancelled(true);
 		}
-		
-		if (event.getCurrentItem().hasItemMeta() && event.getCurrentItem().getItemMeta().hasDisplayName() && event.getCurrentItem().getItemMeta().getDisplayName().equals("§aThe Potter")) {
+		else if (event.getCurrentItem().hasItemMeta() && event.getCurrentItem().getItemMeta().hasDisplayName() && event.getCurrentItem().getItemMeta().getDisplayName().equals("§aThe Potter")) {
 			ItemStack wool1 = new ItemStack (Material.POTION, 1, (short) 16388);
 			
 			ItemStack wool2 = new ItemStack (Material.POTION, 1, (short) 16392);
@@ -338,8 +199,7 @@ public class Moles extends Scenario implements Listener {
 			player.getInventory().setItem(14, wool6);
 			event.setCancelled(true);
 		}
-
-		if (event.getCurrentItem().hasItemMeta() && event.getCurrentItem().getItemMeta().hasDisplayName() && event.getCurrentItem().getItemMeta().getDisplayName().equals("§aThe Pyro")) {
+		else if (event.getCurrentItem().hasItemMeta() && event.getCurrentItem().getItemMeta().hasDisplayName() && event.getCurrentItem().getItemMeta().getDisplayName().equals("§aThe Pyro")) {
 			ItemStack wool1 = new ItemStack (Material.LAVA_BUCKET, 1);
 			
 			ItemStack wool2 = new ItemStack (Material.MONSTER_EGG, 5, (short) 61);
@@ -364,8 +224,7 @@ public class Moles extends Scenario implements Listener {
 			player.getInventory().setItem(14, wool6);
 			event.setCancelled(true);
 		}
-
-		if (event.getCurrentItem().hasItemMeta() && event.getCurrentItem().getItemMeta().hasDisplayName() && event.getCurrentItem().getItemMeta().getDisplayName().equals("§aThe Trapper")) {
+		else if (event.getCurrentItem().hasItemMeta() && event.getCurrentItem().getItemMeta().hasDisplayName() && event.getCurrentItem().getItemMeta().getDisplayName().equals("§aThe Trapper")) {
 			ItemStack wool1 = new ItemStack (Material.TNT, 3);
 			
 			ItemStack wool2 = new ItemStack (Material.LAVA_BUCKET, 1);
@@ -398,8 +257,7 @@ public class Moles extends Scenario implements Listener {
 			player.getInventory().setItem(14, wool6);
 			event.setCancelled(true);
 		}
-
-		if (event.getCurrentItem().hasItemMeta() && event.getCurrentItem().getItemMeta().hasDisplayName() && event.getCurrentItem().getItemMeta().getDisplayName().equals("§aThe Troll")) {
+		else if (event.getCurrentItem().hasItemMeta() && event.getCurrentItem().getItemMeta().hasDisplayName() && event.getCurrentItem().getItemMeta().getDisplayName().equals("§aThe Troll")) {
 			ItemStack wool1 = new ItemStack (Material.FIREWORK, 64);
 			
 			ItemStack wool2 = new ItemStack (Material.ENCHANTED_BOOK, 10);
@@ -424,8 +282,7 @@ public class Moles extends Scenario implements Listener {
 			player.getInventory().setItem(14, wool6);
 			event.setCancelled(true);
 		}
-
-		if (event.getCurrentItem().hasItemMeta() && event.getCurrentItem().getItemMeta().hasDisplayName() && event.getCurrentItem().getItemMeta().getDisplayName().equals("§aThe Fighter")) {
+		else if (event.getCurrentItem().hasItemMeta() && event.getCurrentItem().getItemMeta().hasDisplayName() && event.getCurrentItem().getItemMeta().getDisplayName().equals("§aThe Fighter")) {
 			ItemStack wool1 = new ItemStack (Material.GOLDEN_APPLE);
 			
 			ItemStack wool2 = new ItemStack (Material.DIAMOND_SWORD);
@@ -454,15 +311,12 @@ public class Moles extends Scenario implements Listener {
 
 	@EventHandler
 	public void onBlockPlace(BlockPlaceEvent event) {
-		if (!isEnabled()) {
-			return;
-		}
-
 		if (event.isCancelled()) {
 			return;
 		}
 
 		ItemStack is = event.getItemInHand();
+		
 		if ((is.hasItemMeta()) && (is.getItemMeta().getLore() != null)) {
 			float yaw = event.getPlayer().getLocation().getYaw();
 			Location l = event.getBlock().getLocation();
@@ -473,18 +327,160 @@ public class Moles extends Scenario implements Listener {
 			
 			if (is.hasItemMeta() && is.getItemMeta().hasLore() && is.getItemMeta().getLore().contains("§5§oDrop Trap")) {
 				createDropTrap(yaw, w, l);
-			} else if (is.hasItemMeta() && is.getItemMeta().hasLore() && is.getItemMeta().getLore().contains("§5§oLava Trap")) {
+			} 
+			else if (is.hasItemMeta() && is.getItemMeta().hasLore() && is.getItemMeta().getLore().contains("§5§oLava Trap")) {
 				createLavaTrap(yaw, w, l);
-			} else if (is.hasItemMeta() && is.getItemMeta().hasLore() && is.getItemMeta().getLore().contains("§5§oTNT Trap")) {
+			} 
+			else if (is.hasItemMeta() && is.getItemMeta().hasLore() && is.getItemMeta().getLore().contains("§5§oTNT Trap")) {
 				createTntTrap(yaw, w, l);
-			} else if (is.hasItemMeta() && is.getItemMeta().hasLore() && is.getItemMeta().getLore().contains("§5§oEscape Hatch")) {
+			} 
+			else if (is.hasItemMeta() && is.getItemMeta().hasLore() && is.getItemMeta().getLore().contains("§5§oEscape Hatch")) {
 				createEscapeHatch(yaw, w, l);
-			} else if (is.hasItemMeta() && is.getItemMeta().hasLore() && is.getItemMeta().getLore().contains("§5§oHole")) {
+			} 
+			else if (is.hasItemMeta() && is.getItemMeta().hasLore() && is.getItemMeta().getLore().contains("§5§oHole")) {
 				createHole(yaw, w, l);
-			} else if (is.hasItemMeta() && is.getItemMeta().hasLore() && is.getItemMeta().getLore().contains("§5§oStaircase")) {
+			} 
+			else if (is.hasItemMeta() && is.getItemMeta().hasLore() && is.getItemMeta().getLore().contains("§5§oStaircase")) {
 				createStaircase(yaw, w, l);
 			}
 		}
+	}
+
+	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+		if (!(sender instanceof Player)) {
+			sender.sendMessage(ChatColor.RED + "Only players can use mole commands.");
+			return true;
+		}
+		
+		Player player = (Player) sender;
+		
+		if (cmd.getName().equalsIgnoreCase("moles")) {
+			if (!isEnabled()) {
+				player.sendMessage(Main.prefix() + "\"Moles\" is not enabled.");
+				return true;
+			}
+			
+			if (Spectator.getManager().isSpectating(player)) {
+				StringBuilder moleList = new StringBuilder("");
+				int i = 1;
+				
+				for (String mole : moles) {
+					if (moleList.length() > 0) {
+						if (i == moles.size()) {
+							moleList.append(" §7and §a");
+						} else {
+							moleList.append("§7, §a");
+						}
+					}
+					
+					moleList.append(ChatColor.GREEN + mole);
+					i++;
+				}
+				
+				player.sendMessage(Main.prefix() + "The moles are: §a" + (moleList.length() > 0 ? moleList.toString().trim() : "None") + "§7.");
+			} else {
+				player.sendMessage(Main.NO_PERMISSION_MESSAGE);
+			}
+		}
+		
+		if (cmd.getName().equalsIgnoreCase("molehelp")) {
+			if (!isEnabled()) {
+				player.sendMessage(Main.prefix() + "\"Moles\" is not enabled.");
+				return true;
+			}
+			
+			if (!moles.contains(player.getName())) {
+				player.sendMessage(Main.prefix().replaceAll("UHC", "Moles") + "You are not a mole.");
+				return true;
+			}
+	
+			player.sendMessage(Main.prefix().replaceAll("UHC", "Moles") + "Mole help:");
+			player.sendMessage("§7- §f/mcl §7- §o(Tell your location to the moles)");
+			player.sendMessage("§7- §f/mcc §7- §o(Chat with the other moles)");
+			player.sendMessage("§7- §f/mcp §7- §o(Display the other moles)");
+		}
+		
+		if (cmd.getName().equalsIgnoreCase("mcl")) {
+			if (!isEnabled()) {
+				player.sendMessage(Main.prefix() + "\"Moles\" is not enabled.");
+				return true;
+			}
+			
+			if (!moles.contains(player.getName())) {
+				player.sendMessage(Main.prefix().replaceAll("UHC", "Moles") + "You are not a mole.");
+				return true;
+			}
+			
+			for (String mole : moles) {
+				Player moleP = Bukkit.getServer().getPlayer(mole);
+				
+				if (moleP != null) {
+					moleP.sendMessage(Main.prefix().replaceAll("UHC", "MoleLoc") + player.getName() + ": §fx:" + player.getLocation().getBlockX() + ", y:" + player.getLocation().getBlockY() + ", z:" + player.getLocation().getBlockZ() + " (" + player.getWorld().getEnvironment().name().replaceAll("_", " ").replaceAll("NORMAL", "overworld").toLowerCase().replaceAll("normal", "overworld") + ")");
+				}
+			}
+		}
+		
+		if (cmd.getName().equalsIgnoreCase("mcc")) {
+			if (!isEnabled()) {
+				player.sendMessage(Main.prefix() + "\"Moles\" is not enabled.");
+				return true;
+			}
+			
+			if (!moles.contains(player.getName())) {
+				player.sendMessage(Main.prefix().replaceAll("UHC", "Moles") + "You are not a mole.");
+				return true;
+			}
+			
+			if (args.length == 0) {
+				player.sendMessage(Main.prefix() + "Usage: /mcc <message>");
+				return true;
+			}
+			
+			StringBuilder message = new StringBuilder();
+			
+			for (int i = 0; i < args.length; i++) {
+				message.append(args[i]).append(" ");
+			}
+			
+			for (String mole : moles) {
+				Player moleP = Bukkit.getServer().getPlayer(mole);
+				
+				if (moleP != null) {
+					moleP.sendMessage(Main.prefix().replaceAll("UHC", "MoleChat") + player.getName() + ": §f" + message.toString().trim());
+				}
+			}
+		}
+		
+		if (cmd.getName().equalsIgnoreCase("mcp")) {
+			if (!isEnabled()) {
+				player.sendMessage(Main.prefix() + "\"Moles\" is not enabled.");
+				return true;
+			}
+			
+			if (!moles.contains(player.getName())) {
+				player.sendMessage(Main.prefix().replaceAll("UHC", "Moles") + "You are not a mole.");
+				return true;
+			}
+			
+			StringBuilder moleList = new StringBuilder("");
+			int i = 1;
+			
+			for (String mole : moles) {
+				if (moleList.length() > 0) {
+					if (i == moles.size()) {
+						moleList.append(" §7and §a");
+					} else {
+						moleList.append("§7, §a");
+					}
+				}
+				
+				moleList.append(ChatColor.GREEN + mole);
+				i++;
+			}
+			
+			player.sendMessage(Main.prefix() + "The moles are: §a" + (moleList.length() > 0 ? moleList.toString().trim() : "None") + "§7.");
+		}
+		return true;
 	}
 
 	private void createHole(float yaw, World world, Location location) {

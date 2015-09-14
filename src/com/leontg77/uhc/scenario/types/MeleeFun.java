@@ -12,6 +12,7 @@ import com.leontg77.uhc.scenario.Scenario;
 
 /**
  * MeleeFun scenario class.
+ * 
  * @author D4mnX
  */
 public class MeleeFun extends Scenario implements Listener {
@@ -31,11 +32,7 @@ public class MeleeFun extends Scenario implements Listener {
 	
 	@EventHandler
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
-		if (!isEnabled()) {
-			return;
-		}
-		
-        if (!(event.getEntity() instanceof Player)) {
+		if (!(event.getEntity() instanceof Player)) {
             return;
         }
 

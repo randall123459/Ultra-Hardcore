@@ -1,9 +1,8 @@
 package com.leontg77.uhc.scenario.types;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -14,8 +13,13 @@ import com.leontg77.uhc.Main;
 import com.leontg77.uhc.scenario.Scenario;
 import com.leontg77.uhc.utils.PlayerUtils;
 
+/**
+ * Inventors scenario class
+ * 
+ * @author LeonTG77
+ */
 public class Inventors extends Scenario implements Listener {
-	private ArrayList<Material> crafted = new ArrayList<Material>();
+	private HashSet<String> crafted = new HashSet<String>();
 	private boolean enabled = false;
 
 	public Inventors() {
@@ -32,16 +36,12 @@ public class Inventors extends Scenario implements Listener {
 	
 	@EventHandler
 	public void onCraftItem(CraftItemEvent event) {
-		if (!isEnabled()) {
-			return;
-		}
-		
 		Player player = (Player) event.getWhoClicked();
 		ItemStack item = event.getRecipe().getResult();
 		
-		if (!crafted.contains(item.getType())) {
-			crafted.add(item.getType());
-			PlayerUtils.broadcast(Main.prefix().replaceAll("UHC", "Inventors") + ChatColor.GREEN + player.getName() + " §7crafted " + item.getType().name().toLowerCase().replaceAll("_", " ") + " first.");
+		if (!crafted.contains(item.getType().name() + item.getDurability())) {
+			crafted.add(item.getType().name() + item.getDurability());
+			PlayerUtils.broadcast(Main.prefix().replaceAll("UHC", "Inventors") + ChatColor.GREEN + player.getName() + " §7crafted §6" + item.getType().name().toLowerCase().replaceAll("_", " ") + (item.getDurability() > 0 ? ":" + item.getDurability() : "") + " §7first.");
 		}
 	}
 }

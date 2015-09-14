@@ -9,6 +9,11 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
 import com.leontg77.uhc.scenario.Scenario;
 
+/**
+ * Depths scenario class
+ * 
+ * @author LeonTG77
+ */
 public class Depths extends Scenario implements Listener {
 	private boolean enabled = false;
 	
@@ -24,12 +29,8 @@ public class Depths extends Scenario implements Listener {
 		return enabled;
 	}
 	
-	@EventHandler(ignoreCancelled = true)
+	@EventHandler
 	public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
-		if (!isEnabled()) {
-			return;
-		}
-		
 		if (event.getDamager() instanceof Entity || (event.getDamager() instanceof Projectile && ((Projectile) event.getDamager()).getShooter() instanceof Entity)) {
 			if (event.getDamager() instanceof Player || (event.getDamager() instanceof Projectile && ((Projectile) event.getDamager()).getShooter() instanceof Player)) {
 				return;
@@ -39,11 +40,14 @@ public class Depths extends Scenario implements Listener {
 			
 			if (e.getLocation().getBlockY() <= 15) {
 				event.setDamage(event.getDamage() * 5);
-			} else if (e.getLocation().getBlockY() <= 30) {
+			}
+			else if (e.getLocation().getBlockY() <= 30) {
 				event.setDamage(event.getDamage() * 3);
-			} else if (e.getLocation().getBlockY() <= 45) {
+			}
+			else if (e.getLocation().getBlockY() <= 45) {
 				event.setDamage(event.getDamage() * 2);
-			} else if (e.getLocation().getBlockY() <= 60) {
+			}
+			else if (e.getLocation().getBlockY() <= 60) {
 				event.setDamage(event.getDamage() * 1.5);
 			} 
 		}
