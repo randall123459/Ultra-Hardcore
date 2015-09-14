@@ -168,9 +168,17 @@ public class PlayerUtils {
 		return list;
 	}
 	
+	/**
+	 * Give the given item to the given player.
+	 * <p>
+	 * Method is made so if the inventory is full it drops the item to the ground.
+	 * 
+	 * @param player the player giving to.
+	 * @param item the item giving.
+	 */
 	public static void giveItem(Player player, ItemStack item) {
 		if (player != null) {
-			if (player.getInventory().firstEmpty() > -1) {
+			if (hasSpaceFor(player, item)) {
 				player.getInventory().addItem(item);
 			} else {
 				player.sendMessage(Main.prefix() + "A item was dropped on the ground since your inventory is full!");
@@ -180,6 +188,24 @@ public class PlayerUtils {
 				i.setVelocity(new Vector(0, 0.2, 0));
 			}
 		}
+	}
+	
+	public static boolean hasSpaceFor(Player player, ItemStack item) {
+		if (player.getInventory().firstEmpty() == -1) {
+			for (int i = 0; i < 35; i++) {
+				if (player.getInventory().getItem(i).getType().equals(item.getType())) {
+					if ((player.getInventory().getItem(i).getAmount() + item.getAmount()) <= item.getMaxStackSize()) {
+						return true;
+					}
+				}
+				if (i == 34) {
+					return false;
+				}
+			}
+		} else {
+			return true;
+		}
+		return false;
 	}
 
 	/**
@@ -204,7 +230,11 @@ public class PlayerUtils {
 			}
 		}
 		
-		return total <= entered;
+		if (total < entered) {
+			return false;
+		} else {
+			return true;
+		}
 	}
 	
 	/**
@@ -228,7 +258,7 @@ public class PlayerUtils {
 		Game game = Game.getInstance();
 
         IChatBaseComponent headerJSON = ChatSerializer.a("{text:'§8=-=-= §4Arctic UHC §8=-=-=\n§a/rules §8❘ §a/post §8❘ §a/lag §8❘ §a/ms §8❘ §a/hof\n'}");
-        IChatBaseComponent footerJSON = ChatSerializer.a("{text:'\n§7" + GameUtils.getTeamSize() + game.getScenarios() + (game.getTeamSize() > 0 || game.getTeamSize() == -2 ? "\n§4Host: §a" + Settings.getInstance().getConfig().getString("game.host") : "") + "'}");
+        IChatBaseComponent footerJSON = ChatSerializer.a("{text:'\n§7" + GameUtils.getTeamSize() + game.getScenarios() + (game.getTeamSize() > 0 || game.getTeamSize() < -1 ? "\n§4Host: §a" + Settings.getInstance().getConfig().getString("game.host") : "") + "'}");
 
         PacketPlayOutPlayerListHeaderFooter headerPacket = new PacketPlayOutPlayerListHeaderFooter(headerJSON);
  
