@@ -12,11 +12,16 @@ import org.bukkit.inventory.meta.ItemMeta;
 import com.leontg77.uhc.scenario.Scenario;
 import com.leontg77.uhc.utils.PlayerUtils;
 
-public class GoneFishin extends Scenario implements Listener {
+/**
+ * GoneFishing scenario class
+ * 
+ * @author LeonTG77
+ */
+public class GoneFishing extends Scenario implements Listener {
 	private boolean enabled = false;
 	
-	public GoneFishin() {
-		super("GoneFishin", "Everyone is given an op fishing rod and a stack of anvils, enchantment tables cannot be crafted.");
+	public GoneFishing() {
+		super("GoneFishing", "Everyone is given an op fishing rod and a stack of anvils, enchantment tables cannot be crafted.");
 	}
 
 	public void setEnabled(boolean enable) {
@@ -24,15 +29,22 @@ public class GoneFishin extends Scenario implements Listener {
 		
 		if (enable) {
 			for (Player online : PlayerUtils.getPlayers()) {
-				online.setLevel(20000);
-				online.getInventory().addItem(new ItemStack (Material.ANVIL, 64));
 				ItemStack rod = new ItemStack (Material.FISHING_ROD);
 				ItemMeta meta = rod.getItemMeta();
 				meta.addEnchant(Enchantment.DURABILITY, 250, true);
 				meta.addEnchant(Enchantment.LUCK, 250, true);
 				meta.addEnchant(Enchantment.LURE, 3, true);
 				rod.setItemMeta(meta);
+				
+				online.getInventory().addItem(new ItemStack (Material.ANVIL, 64));
 				online.getInventory().addItem(rod);
+				online.setLevel(20000);
+			}
+		} else {
+			for (Player online : PlayerUtils.getPlayers()) {
+				online.getInventory().remove(Material.FISHING_ROD);
+				online.getInventory().remove(Material.ANVIL);
+				online.setLevel(0);
 			}
 		}
 	}
@@ -43,10 +55,6 @@ public class GoneFishin extends Scenario implements Listener {
 	
 	@EventHandler
 	public void onPrepareItemCraft(PrepareItemCraftEvent event) {
-		if (!isEnabled()) {
-			return;
-		}
-		
 		ItemStack item = event.getRecipe().getResult();
 		
 		if (item.getType() == Material.ENCHANTMENT_TABLE) {
