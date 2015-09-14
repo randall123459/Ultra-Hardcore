@@ -1,6 +1,7 @@
 package com.leontg77.uhc.cmds;
 
 import java.sql.Date;
+import java.util.ArrayList;
 
 import org.bukkit.BanList.Type;
 import org.bukkit.Bukkit;
@@ -10,6 +11,8 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.inventory.ItemStack;
 
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.Scoreboards;
@@ -78,6 +81,8 @@ public class TempbanCommand implements CommandExecutor {
 			    		Bukkit.getServer().getBanList(Type.NAME).addBan(target.getName(), msg, date, sender.getName());
 				    	target.kickPlayer("§7" + msg + " §8- §cLasts: §7" + args[1]);
 				    	target.setWhitelisted(false);
+				    	PlayerDeathEvent event = new PlayerDeathEvent(target, new ArrayList<ItemStack>(), 0, null);
+						Bukkit.getServer().getPluginManager().callEvent(event);
 						Scoreboards.getManager().resetScore(args[0]);
 				    	Scoreboards.getManager().resetScore(target.getName());
 					}
