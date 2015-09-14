@@ -119,6 +119,8 @@ public class Main extends JavaPlugin {
 	public static HashMap<String, BukkitRunnable> relog = new HashMap<String, BukkitRunnable>();
 	public static HashMap<String, Integer> teamKills = new HashMap<String, Integer>();
 	public static HashMap<String, Integer> kills = new HashMap<String, Integer>();
+
+	public static final String NO_PERMISSION_MESSAGE = Main.prefix() + ChatColor.RED + "You can't use that command.";
 	
 	@Override
 	public void onDisable() {
