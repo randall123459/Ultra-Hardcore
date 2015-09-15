@@ -19,6 +19,7 @@ public class HealCommand implements CommandExecutor {
 					if (sender instanceof Player) {
 						Player player = (Player) sender;
 						player.setHealth(20.0);
+						player.setFireTicks(0);
 						player.sendMessage(Main.prefix() + "You have been healed.");
 					} else {
 						sender.sendMessage(ChatColor.RED + "Only players can heal themselves.");
@@ -30,10 +31,11 @@ public class HealCommand implements CommandExecutor {
 					if (args[0].equals("*")) {
 						for (Player online : PlayerUtils.getPlayers()) {
 							online.setHealth(20.0);
-							online.sendMessage(Main.prefix() + "You have been healed.");
+							online.setFireTicks(0);
 						}
-						sender.sendMessage(Main.prefix() + "You healed everyone.");
-					} else {
+						PlayerUtils.broadcast(Main.prefix() + "All players have been healed.");
+					} 
+					else {
 						Player target = Bukkit.getServer().getPlayer(args[0]);
 						
 						if (target == null) {
@@ -41,20 +43,23 @@ public class HealCommand implements CommandExecutor {
 						}
 
 						target.setHealth(20.0);
+						target.setFireTicks(0);
 						target.sendMessage(Main.prefix() + "You have been healed.");
 						sender.sendMessage(Main.prefix() + "You healed " + target.getName() + ".");
 					}
-				} else {
+				} 
+				else {
 					if (sender instanceof Player) {
 						Player player = (Player) sender;
 						player.setHealth(20.0);
+						player.setFireTicks(0);
 						player.sendMessage(Main.prefix() + "You have been healed.");
 					} else {
 						sender.sendMessage(ChatColor.RED + "Only players can heal themselves.");
 					}
 				}
 			} else {
-				sender.sendMessage(ChatColor.RED + "You do not have access to that command.");
+				sender.sendMessage(Main.NO_PERMISSION_MESSAGE);
 			}
 		}
 		return true;
