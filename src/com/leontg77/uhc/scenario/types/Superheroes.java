@@ -21,6 +21,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import com.leontg77.uhc.Main;
+import com.leontg77.uhc.Spectator;
 import com.leontg77.uhc.scenario.Scenario;
 import com.leontg77.uhc.utils.PlayerUtils;
 
@@ -162,65 +163,67 @@ public class Superheroes extends Scenario implements Listener, CommandExecutor {
 				return true;
 			}
 			
-			StringBuilder health = new StringBuilder("");
-			StringBuilder invis = new StringBuilder("");
-			StringBuilder jump = new StringBuilder("");
-			StringBuilder resistance = new StringBuilder("");
-			StringBuilder speed = new StringBuilder("");
-			StringBuilder strength = new StringBuilder("");
-			
-			for (String key : type.keySet()) {
-				if (type.get(key) == HeroType.HEALTH) {
-					if (health.length() > 0) {
-						health.append("§7, §a");
+			if (Spectator.getManager().isSpectating(player)) {
+				StringBuilder health = new StringBuilder("");
+				StringBuilder invis = new StringBuilder("");
+				StringBuilder jump = new StringBuilder("");
+				StringBuilder resistance = new StringBuilder("");
+				StringBuilder speed = new StringBuilder("");
+				StringBuilder strength = new StringBuilder("");
+				
+				for (String key : type.keySet()) {
+					if (type.get(key) == HeroType.HEALTH) {
+						if (health.length() > 0) {
+							health.append("§7, §a");
+						}
+						
+						health.append(ChatColor.GREEN + key);
+					} 
+					else if (type.get(key) == HeroType.INVIS) {
+						if (invis.length() > 0) {
+							invis.append("§7, §a");
+						}
+						
+						invis.append(ChatColor.GREEN + key);
 					}
-					
-					health.append(ChatColor.GREEN + key);
-				} 
-				else if (type.get(key) == HeroType.INVIS) {
-					if (invis.length() > 0) {
-						invis.append("§7, §a");
+					else if (type.get(key) == HeroType.JUMP) {
+						if (jump.length() > 0) {
+							jump.append("§7, §a");
+						}
+						
+						jump.append(ChatColor.GREEN + key);
 					}
-					
-					invis.append(ChatColor.GREEN + key);
+					else if (type.get(key) == HeroType.RESISTANCE) {
+						if (resistance.length() > 0) {
+							resistance.append("§7, §a");
+						}
+						
+						resistance.append(ChatColor.GREEN + key);
+					}
+					else if (type.get(key) == HeroType.SPEED) {
+						if (speed.length() > 0) {
+							speed.append("§7, §a");
+						}
+						
+						speed.append(ChatColor.GREEN + key);
+					}
+					else if (type.get(key) == HeroType.STRENGTH) {
+						if (strength.length() > 0) {
+							strength.append("§7, §a");
+						}
+						
+						strength.append(ChatColor.GREEN + key);
+					}
 				}
-				else if (type.get(key) == HeroType.JUMP) {
-					if (jump.length() > 0) {
-						jump.append("§7, §a");
-					}
-					
-					jump.append(ChatColor.GREEN + key);
-				}
-				else if (type.get(key) == HeroType.RESISTANCE) {
-					if (resistance.length() > 0) {
-						resistance.append("§7, §a");
-					}
-					
-					resistance.append(ChatColor.GREEN + key);
-				}
-				else if (type.get(key) == HeroType.SPEED) {
-					if (speed.length() > 0) {
-						speed.append("§7, §a");
-					}
-					
-					speed.append(ChatColor.GREEN + key);
-				}
-				else if (type.get(key) == HeroType.STRENGTH) {
-					if (strength.length() > 0) {
-						strength.append("§7, §a");
-					}
-					
-					strength.append(ChatColor.GREEN + key);
-				}
+				
+				player.sendMessage(Main.prefix() + "List of types:");
+				player.sendMessage("§8» §7Health: " + health.toString().trim());
+				player.sendMessage("§8» §7Invis: " + invis.toString().trim());
+				player.sendMessage("§8» §7Jump: " + jump.toString().trim());
+				player.sendMessage("§8» §7Resistance: " + resistance.toString().trim());
+				player.sendMessage("§8» §7Speed: " + speed.toString().trim());
+				player.sendMessage("§8» §7Strength: " + strength.toString().trim());
 			}
-			
-			player.sendMessage(Main.prefix() + "List of types:");
-			player.sendMessage("§8» §7Health: " + health.toString().trim());
-			player.sendMessage("§8» §7Invis: " + invis.toString().trim());
-			player.sendMessage("§8» §7Jump: " + jump.toString().trim());
-			player.sendMessage("§8» §7Resistance: " + resistance.toString().trim());
-			player.sendMessage("§8» §7Speed: " + speed.toString().trim());
-			player.sendMessage("§8» §7Strength: " + strength.toString().trim());
 		}
 		
 		if (cmd.getName().equalsIgnoreCase("super")) {
