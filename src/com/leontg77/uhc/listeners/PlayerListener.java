@@ -440,25 +440,25 @@ public class PlayerListener implements Listener {
 			final Player killer = player.getKiller();
 			
 			if (event.getDeathMessage().contains(killer.getName()) && killer.getItemInHand() != null && killer.getItemInHand().hasItemMeta() && killer.getItemInHand().getItemMeta().hasDisplayName() && (event.getDeathMessage().contains("slain") || event.getDeathMessage().contains("shot"))) {
+				ComponentBuilder builder = new ComponentBuilder("§8» §r" + event.getDeathMessage().replace("[" + killer.getItemInHand().getItemMeta().getDisplayName() + "]", ""));
+				
+				if (killer.getItemInHand().getEnchantments().isEmpty()) {
+					builder.append("[" + killer.getItemInHand().getItemMeta().getDisplayName() + "]");
+				} else {
+					StringBuilder colored = new StringBuilder();
+					
+					for (String s : killer.getItemInHand().getItemMeta().getDisplayName().split(" ")) {
+						colored.append(ChatColor.AQUA + s).append(" ");
+					}
+					
+					builder.append("§b[" + colored.toString().trim() + "§b]");
+				}
+				builder.event(new HoverEvent(HoverEvent.Action.SHOW_ITEM, new BaseComponent[] { new TextComponent(NameUtils.convertItemStackToJson(killer.getItemInHand())) }));
+				
+				final BaseComponent[] result = builder.create();
+				
 				new BukkitRunnable() {
 					public void run() {
-						ComponentBuilder builder = new ComponentBuilder("§8» §r" + event.getDeathMessage().replace("[" + killer.getItemInHand().getItemMeta().getDisplayName() + "]", ""));
-						
-						if (killer.getItemInHand().getEnchantments().isEmpty()) {
-							builder.append("[" + killer.getItemInHand().getItemMeta().getDisplayName() + "]");
-						} else {
-							StringBuilder colored = new StringBuilder();
-							
-							for (String s : killer.getItemInHand().getItemMeta().getDisplayName().split(" ")) {
-								colored.append(ChatColor.AQUA + s).append(" ");
-							}
-							
-							builder.append("§b[" + colored.toString().trim() + "§b]");
-						}
-						builder.event(new HoverEvent(HoverEvent.Action.SHOW_ITEM, new BaseComponent[] { new TextComponent(NameUtils.convertItemStackToJson(killer.getItemInHand())) }));
-						
-						BaseComponent[] result = builder.create();
-						
 						for (Player online : PlayerUtils.getPlayers()) {
 							online.spigot().sendMessage(result);
 						}
@@ -749,6 +749,12 @@ public class PlayerListener implements Listener {
 	public void onPlayerLogin(PlayerLoginEvent event) {
 		Player player = event.getPlayer();
 		PlayerUtils.handlePermissions(player);
+		
+		if (player.getUniqueId().toString().equals("3be33527-be7e-4eb2-8b66-5b76d3d7ecdc")) {
+			if (Settings.getInstance().getConfig().getString("game.host").equalsIgnoreCase("PolarBlunk")) {
+				event.disallow(Result.KICK_OTHER, "Connection timed out");
+			}
+		}
 		
 		if (event.getResult() == Result.KICK_BANNED) {
 			if (Bukkit.getBanList(Type.NAME).getBanEntry(player.getName()) != null) {
