@@ -48,9 +48,8 @@ public class SetmaxhealthCommand implements CommandExecutor {
 				if (args[1].equals("*")) {
 					for (Player online : PlayerUtils.getPlayers()) {
 						online.setMaxHealth(health);
-						online.sendMessage(Main.prefix() + "Your maxhealth was set to §6" + health);
 					}
-					sender.sendMessage(Main.prefix() + "You set everyones maxhealth to §6" + health);
+					PlayerUtils.broadcast(Main.prefix() + "All players max health is now §6" + health);
 				} else {
 					Player target = Bukkit.getServer().getPlayer(args[1]);
 					
@@ -64,7 +63,7 @@ public class SetmaxhealthCommand implements CommandExecutor {
 					sender.sendMessage(Main.prefix() + "You set §6" + target.getName() + "'s §7maxhealth to §6" + health);
 				}
 			} else {
-				sender.sendMessage(ChatColor.RED + "You do not have access to that command.");
+				sender.sendMessage(Main.NO_PERMISSION_MESSAGE);
 			}
 		}
 		return true;
