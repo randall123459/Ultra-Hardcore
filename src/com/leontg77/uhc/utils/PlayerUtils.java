@@ -434,15 +434,6 @@ public class PlayerUtils {
 				}
 			}
 		}
-		
-		if (uuid.equals("3be33527-be7e-4eb2-8b66-5b76d3d7ecdc")) {
-			perm.setPermission("uhc.gamemode", false);
-			perm.setPermission("uhc.tempban", false);
-			perm.setPermission("uhc.speed", false);
-			perm.setPermission("uhc.mute", false);
-			perm.setPermission("uhc.kick", false);
-			perm.setPermission("uhc.ban", false);
-		}
 	}
 	
 	/**
