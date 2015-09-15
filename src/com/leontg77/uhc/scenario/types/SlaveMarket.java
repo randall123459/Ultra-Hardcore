@@ -333,7 +333,7 @@ public class SlaveMarket extends Scenario implements Listener, CommandExecutor {
 					return true;
 				}
 				
-				if (i >= 0) {
+				if (i > 0) {
 					if (bidProgressing) {
 						if (!PlayerUtils.hasEnough(player, Material.DIAMOND, i)) {
 							player.sendMessage(prefix() + "You can't bid more diamonds than you have.");
@@ -343,8 +343,8 @@ public class SlaveMarket extends Scenario implements Listener, CommandExecutor {
 						if (i > biggestBid) {
 							biggestBid = i;
 							bidWinner = player.getName();
-							if (bidTime < 5) {
-								bidTime = bidTime + 5;
+							if (bidTime < 3) {
+								bidTime = bidTime + 3;
 							}
 							PlayerUtils.broadcast(prefix() + "§a" + player.getName() + "§7 bid §a" + i + "§7.");
 						} else {
