@@ -29,8 +29,10 @@ commands:
     aliases: [cc]
   clearinv:
     description: Clear someones inv.
+    aliases: [clear, clearinv, ci]
   clearxp:
     description: Clear someones xp.
+    aliases: [cxp]
   edit:
     description: Edit the sign you are looking at.
   end:
@@ -105,8 +107,7 @@ commands:
   spread:
     description: Spread all players and freeze them.
   ac:
-    description: StaffChat Command
-    aliases: [sc]
+    description: StaffChat Command.
   start:
     description: Start command.
   stats:
