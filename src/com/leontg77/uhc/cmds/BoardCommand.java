@@ -46,12 +46,16 @@ public class BoardCommand implements CommandExecutor {
 						Scoreboards.getManager().setScore("§8» §cArena:", 9);
 						Scoreboards.getManager().setScore("§8» §7/a ", 8);
 					}
-					Scoreboards.getManager().setScore("§b ", 7);
-					Scoreboards.getManager().setScore("§8» §cTeamsize:", 6);
-					Scoreboards.getManager().setScore("§8» §7" + GameUtils.getTeamSize(), 5);
+					if (!GameUtils.getTeamSize().isEmpty()) {
+						Scoreboards.getManager().setScore("§b ", 7);
+						Scoreboards.getManager().setScore("§8» §cTeamsize:", 6);
+						Scoreboards.getManager().setScore("§8» §7" + GameUtils.getTeamSize(), 5);
+					}
 					Scoreboards.getManager().setScore("§c ", 4);
 					Scoreboards.getManager().setScore("§8» §cScenarios:", 3);
-					Scoreboards.getManager().setScore("§8» §7" + settings.getConfig().getString("game.scenarios"), 2);
+					for (String scen : settings.getConfig().getString("game.scenarios").split(" ")) {
+						Scoreboards.getManager().setScore("§8» §7" + scen, 2);
+					}
 					Scoreboards.getManager().setScore("§d ", 1);
 				}
 			} else {
