@@ -130,16 +130,32 @@ public class Runnables {
 							online.removePotionEffect(effect.getType());	
 						}
 					}
+					
+					if (ScenarioManager.getInstance().getScenario("SlaveMarket").isEnabled()) {
+						for (ItemStack item : online.getInventory().getContents()) {
+							if (item == null) {
+								continue;
+							}
+							
+							if (item.getType() == Material.DIAMOND) {
+								continue;
+							}
+							
+							online.getInventory().remove(item);	
+						}
+					} else {
+						online.getInventory().clear();
+					}
 
 					online.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 250, 100));
 					if (!online.getUniqueId().toString().equals("cb996bf0-333f-42c2-85ca-3a9bec231cc6")) {
 						online.addPotionEffect(new PotionEffect(PotionEffectType.SATURATION, 6000, 100));
 					}
+					
 					online.setItemOnCursor(new ItemStack (Material.AIR));
 					online.awardAchievement(Achievement.OPEN_INVENTORY);
 					online.getInventory().setArmorContents(null);
 					online.setHealth(online.getMaxHealth());
-					online.getInventory().clear();
 					online.setAllowFlight(false);
 					online.setSaturation(20);
 					online.setFoodLevel(20);
@@ -154,8 +170,6 @@ public class Runnables {
 					SpecInfo.totalGold.clear();
 					Main.relog.clear();
 					
-					online.sendMessage(Main.prefix() + "Remember to read the match post: " + Settings.getInstance().getConfig().getString("matchpost"));
-					online.sendMessage(Main.prefix() + "If you have any questions, use /helpop.");
 					PlayerUtils.sendTitle(online, "§aGo!", "§7Good luck, have fun!", 1, 20, 1);
 					
 					User data = User.get(online);
