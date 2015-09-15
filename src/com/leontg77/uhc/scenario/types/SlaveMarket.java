@@ -289,7 +289,7 @@ public class SlaveMarket extends Scenario implements Listener, CommandExecutor {
 							    	}
 							    	return;
 								}
-								if (bidTime < 6) {
+								if (bidTime < 4) {
 									PlayerUtils.broadcast(prefix() + "Bidding ends in §a" + bidTime + "§7.");
 
 									for (Player online : PlayerUtils.getPlayers()) {
