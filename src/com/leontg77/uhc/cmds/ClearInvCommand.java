@@ -36,10 +36,10 @@ public class ClearInvCommand implements CommandExecutor {
 							online.getInventory().clear();
 							online.getInventory().setArmorContents(null);
 							online.setItemOnCursor(new ItemStack (Material.AIR));
-							online.sendMessage(Main.prefix() + "Your inventory was cleared.");
 						}
-						sender.sendMessage(Main.prefix() + "You cleared everyones inventory.");
-					} else {
+						PlayerUtils.broadcast(Main.prefix() + "All players inventories have been cleared.");
+					} 
+					else {
 						Player target = Bukkit.getServer().getPlayer(args[0]);
 						
 						if (target == null) {
@@ -52,7 +52,8 @@ public class ClearInvCommand implements CommandExecutor {
 						target.sendMessage(Main.prefix() + "Your inventory was cleared.");
 						sender.sendMessage(Main.prefix() + "You cleared " + target.getName() + "'s inventory.");
 					}
-				} else {
+				} 
+				else {
 					if (sender instanceof Player) {
 						Player player = (Player) sender;
 						player.getInventory().clear();
@@ -64,7 +65,7 @@ public class ClearInvCommand implements CommandExecutor {
 					}
 				}
 			} else {
-				sender.sendMessage(ChatColor.RED + "You do not have access to that command.");
+				sender.sendMessage(Main.NO_PERMISSION_MESSAGE);
 			}
 		}
 		return true;

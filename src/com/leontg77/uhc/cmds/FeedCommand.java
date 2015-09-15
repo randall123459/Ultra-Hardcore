@@ -32,10 +32,10 @@ public class FeedCommand implements CommandExecutor {
 						for (Player online : PlayerUtils.getPlayers()) {
 							online.setFoodLevel(20);
 							online.setSaturation(20.0f);
-							online.sendMessage(Main.prefix() + "You have been fed.");
 						}
-						sender.sendMessage(Main.prefix() + "You fed everyone.");
-					} else {
+						PlayerUtils.broadcast(Main.prefix() + "All players have been fed.");
+					} 
+					else {
 						Player target = Bukkit.getServer().getPlayer(args[0]);
 						
 						if (target == null) {
@@ -47,7 +47,8 @@ public class FeedCommand implements CommandExecutor {
 						target.sendMessage(Main.prefix() + "You have been fed.");
 						sender.sendMessage(Main.prefix() + "You fed " + target.getName() + ".");
 					}
-				} else {
+				} 
+				else {
 					if (sender instanceof Player) {
 						Player player = (Player) sender;
 						player.setFoodLevel(20);
@@ -58,7 +59,7 @@ public class FeedCommand implements CommandExecutor {
 					}
 				}
 			} else {
-				sender.sendMessage(ChatColor.RED + "You do not have access to that command.");
+				sender.sendMessage(Main.NO_PERMISSION_MESSAGE);
 			}
 		}
 		return true;

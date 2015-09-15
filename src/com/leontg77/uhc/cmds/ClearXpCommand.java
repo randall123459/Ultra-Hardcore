@@ -32,10 +32,10 @@ public class ClearXpCommand implements CommandExecutor {
 						for (Player online : PlayerUtils.getPlayers()) {
 							online.setExp(0);
 							online.setLevel(0);
-							online.sendMessage(Main.prefix() + "Your xp was cleared.");
 						}
-						sender.sendMessage(Main.prefix() + "You cleared everyones xp.");
-					} else {
+						PlayerUtils.broadcast(Main.prefix() + "All players xp bars have been cleared.");
+					} 
+					else {
 						Player target = Bukkit.getServer().getPlayer(args[0]);
 						
 						if (target == null) {
@@ -47,7 +47,8 @@ public class ClearXpCommand implements CommandExecutor {
 						target.sendMessage(Main.prefix() + "Your xp was cleared.");
 						sender.sendMessage(Main.prefix() + "You cleared " + target.getName() + "'s xp.");
 					}
-				} else {
+				} 
+				else {
 					if (sender instanceof Player) {
 						Player player = (Player) sender;
 						player.setExp(0);
@@ -58,7 +59,7 @@ public class ClearXpCommand implements CommandExecutor {
 					}
 				}
 			} else {
-				sender.sendMessage(ChatColor.RED + "You do not have access to that command.");
+				sender.sendMessage(Main.NO_PERMISSION_MESSAGE);
 			}
 		}
 		return true;
