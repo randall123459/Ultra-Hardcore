@@ -181,7 +181,7 @@ public class MysteryTeams extends Scenario implements Listener, CommandExecutor 
 								}
 							}
 							
-							members.append(teams.get(team.getKey()).contains(member) ? ChatColor.GREEN + Bukkit.getOfflinePlayer(UUID.fromString(member)).getName() : ChatColor.RED + Bukkit.getOfflinePlayer(UUID.fromString(member)).getName());
+							members.append(orgTeams.get(team.getKey()).contains(member) ? ChatColor.GREEN + Bukkit.getOfflinePlayer(UUID.fromString(member)).getName() : ChatColor.RED + Bukkit.getOfflinePlayer(UUID.fromString(member)).getName());
 							i++;
 						}
 						
