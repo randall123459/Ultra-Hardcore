@@ -38,29 +38,36 @@ public class GameUtils {
 		case INGAME:
 			if (getTeamSize().startsWith("No")) {
 				return "No games running.";
-			} else if (getTeamSize().startsWith("Open")) {
+			} 
+			else if (getTeamSize().startsWith("Open")) {
 				return "Open for visitors.";
-			} else {
+			} 
+			else {
 				return "Started.";
 			}
 		case LOBBY:
 			if (Bukkit.getServer().hasWhitelist()) {
 				if (getTeamSize().startsWith("No")) {
 					return "No games running.";
-				} else if (getTeamSize().startsWith("Open")) {
+				} 
+				else if (getTeamSize().startsWith("Open")) {
 					return "Open for visitors.";
-				} else {
+				} 
+				else {
 					return "Not open yet.";
 				}
-			} else {
+			} 
+			else {
 				return "Waiting for players...";
 			}
 		case SCATTER:
 			if (getTeamSize().startsWith("No")) {
 				return "No games running.";
-			} else if (getTeamSize().startsWith("Open")) {
+			} 
+			else if (getTeamSize().startsWith("Open")) {
 				return "Open for visitors.";
-			} else {
+			} 
+			else {
 				return "Scattering...";
 			}
 		default:
@@ -79,16 +86,21 @@ public class GameUtils {
 		if (game.isFFA()) {
 			if (game.getTeamSize() == 1) {
 				return "FFA ";
-			} else if (game.getTeamSize() == 0) {
+			} 
+			else if (game.getTeamSize() == 0) {
 				return "No ";
-			} else if (game.getTeamSize() == -1) {
+			}
+			else if (game.getTeamSize() == -1) {
 				return "Open ";
-			} else if (game.getTeamSize() == -2) {
+			} 
+			else if (game.getTeamSize() == -2) {
 				return "";
-			} else {
+			}
+			else {
 				return "rTo" + (game.getTeamSize() > 0 ? game.getTeamSize() : "X") + " ";
 			}
-		} else {
+		} 
+		else {
 			return "To" + (game.getTeamSize() > 0 ? game.getTeamSize() : "X") + " ";
 		}
 	}
@@ -103,13 +115,14 @@ public class GameUtils {
 		
 		if (host.equalsIgnoreCase("LeonTG77")) {
 			return "Leon";
-		} else if (host.equalsIgnoreCase("PolarBlunk")) {
+		} 
+		else if (host.equalsIgnoreCase("PolarBlunk")) {
 			return "Polar";
-		} else if (host.equalsIgnoreCase("Itz_Isaac")) {
+		} 
+		else if (host.equalsIgnoreCase("Itz_Isaac")) {
 			return "Isaac";
 		}
-		
-		return null;
+		return "none";
 	}
 
 	/**
@@ -121,9 +134,11 @@ public class GameUtils {
 	public static String getHost(String host) {
 		if (host.equalsIgnoreCase("LeonTG77") || host.equalsIgnoreCase("leon")) {
 			return "Leon";
-		} else if (host.equalsIgnoreCase("polar") || host.equalsIgnoreCase("polarblunk")) {
+		} 
+		else if (host.equalsIgnoreCase("polar") || host.equalsIgnoreCase("polarblunk")) {
 			return "Polar";
-		} else if (host.equalsIgnoreCase("Itz_Isaac") || host.equalsIgnoreCase("isaac")) {
+		} 
+		else if (host.equalsIgnoreCase("Itz_Isaac") || host.equalsIgnoreCase("isaac")) {
 			return "Isaac";
 		}
 		return host;
