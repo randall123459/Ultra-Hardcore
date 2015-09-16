@@ -11,9 +11,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
+import com.leontg77.uhc.Main;
 import com.leontg77.uhc.User;
 import com.leontg77.uhc.User.Rank;
-import com.leontg77.uhc.Main;
 import com.leontg77.uhc.utils.NameUtils;
 import com.leontg77.uhc.utils.PlayerUtils;
 
