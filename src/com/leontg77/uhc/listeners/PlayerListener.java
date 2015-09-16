@@ -31,7 +31,6 @@ import org.bukkit.block.Skull;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.ExperienceOrb;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -65,14 +64,13 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Team;
-import org.bukkit.util.Vector;
 
 import com.leontg77.uhc.Arena;
+import com.leontg77.uhc.Fireworks;
 import com.leontg77.uhc.Game;
 import com.leontg77.uhc.InvGUI;
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.Main.State;
-import com.leontg77.uhc.Fireworks;
 import com.leontg77.uhc.Parkour;
 import com.leontg77.uhc.Runnables;
 import com.leontg77.uhc.Scoreboards;
@@ -109,19 +107,15 @@ public class PlayerListener implements Listener {
 		Player player = event.getPlayer();
 		event.setJoinMessage(null);
 		
-		User data = User.get(player);
-		data.getFile().set("username", player.getName());
-		data.saveFile();
+		User user = User.get(player);
+		user.getFile().set("username", player.getName());
+		user.getFile().set("uuid", player.getUniqueId().toString());
+		user.saveFile();
 		
 		player.setNoDamageTicks(0);
 		
 		Spectator.getManager().hideSpectators(player);
 		PlayerUtils.setTabList(player);
-		
-		if (Main.relog.containsKey(player.getName())) {
-			Main.relog.get(player.getName()).cancel();
-			Main.relog.remove(player.getName());
-		}
 		
 		if (!TeamCommand.invites.containsKey(player)) {
 			TeamCommand.invites.put(player, new ArrayList<Player>());
@@ -135,7 +129,7 @@ public class PlayerListener implements Listener {
 		}
 		
 		if (State.isState(State.INGAME) && !player.isWhitelisted() && !Spectator.getManager().isSpectating(player)) {
-			player.sendMessage(Main.prefix() + "You joined a game that you didn't play from the start (or you was idle for too long).");
+			player.sendMessage(Main.prefix() + "You joined a game that you didn't play from the start.");
 
 			player.getInventory().setArmorContents(null);
 			player.getInventory().clear();
@@ -146,27 +140,26 @@ public class PlayerListener implements Listener {
 		
 		if (!Spectator.getManager().isSpectating(player)) {
 			PlayerUtils.broadcast("§8[§a+§8] §7" + player.getName() + " has joined.");
-			if (data.isNew()) {
-				PlayerUtils.broadcast(Main.prefix() + ChatColor.GREEN + player.getName() + " §7just joined for the first time.");
+			if (user.isNew()) {
+				PlayerUtils.broadcast(Main.prefix() + ChatColor.GOLD + player.getName() + " §7just joined for the first time.");
 				
 				File f = new File(plugin.getDataFolder() + File.separator + "users" + File.separator);
 				PlayerUtils.broadcast(Main.prefix() + "The server has now §a" + f.listFiles().length + "§7 unique joins.");
 			}
 		}
 		
-		player.sendMessage("§8---------------------------");
-		player.sendMessage(" §8» §6Welcome to Arctic UHC");
-		player.sendMessage("§8---------------------------");
+		player.sendMessage("§8» ----------[ §4§lArctic UHC §8]---------- «");
 		if (GameUtils.getTeamSize().startsWith("No")) {
-			player.sendMessage(" §8» §cNo games scheduled");
-		} else if (GameUtils.getTeamSize().startsWith("Open")) {
-			player.sendMessage(" §8» §7Open PvP, use §a/a §7to join.");
-		} else {
-			player.sendMessage(" §8» §aHost: §7" + Settings.getInstance().getConfig().getString("game.host"));
-			player.sendMessage(" §8» §aTeamsize: §7" + GameUtils.getTeamSize());
-			player.sendMessage(" §8» §aGamemode: §7" + Settings.getInstance().getConfig().getString("game.scenarios"));
+			player.sendMessage("§8» §c No games running");
+		} 
+		else if (GameUtils.getTeamSize().startsWith("Open")) {
+			player.sendMessage("§8» §7 Open PvP, use §a/a §7to join.");
+		} 
+		else {
+			player.sendMessage("§8» §7 Host: §6" + Settings.getInstance().getConfig().getString("game.host"));
+			player.sendMessage("§8» §7 Gamemode: §6" + GameUtils.getTeamSize() + Settings.getInstance().getConfig().getString("game.scenarios"));
 		}
-		player.sendMessage("§8---------------------------");
+		player.sendMessage("§8» --------------------------------- «");
 		
 		if (SpreadCommand.scatterLocs.containsKey(player.getName()) && SpreadCommand.isReady) {
 			if (State.isState(State.SCATTER)) {
@@ -203,7 +196,7 @@ public class PlayerListener implements Listener {
 	
 	@EventHandler
 	public void onPlayerQuit(PlayerQuitEvent event) {
-		final Player player = event.getPlayer();
+		Player player = event.getPlayer();
 		event.setQuitMessage(null);
 		
 		PlayerUtils.handleLeavePermissions(player);
@@ -216,55 +209,6 @@ public class PlayerListener implements Listener {
 		
 		if (!Spectator.getManager().isSpectating(player)) {
 			PlayerUtils.broadcast("§8[§c-§8] §7" + player.getName() + " has left.");
-			
-			if (State.isState(State.INGAME)) {
-				Main.relog.put(player.getName(), new BukkitRunnable() {
-					public void run() {
-						if (!player.isOnline()) {
-							if (player.isWhitelisted()) {
-								player.setWhitelisted(false);
-								Scoreboards.getManager().resetScore(player.getName());
-								Main.relog.remove(player.getName());
-								
-								for (ItemStack content : player.getInventory().getContents()) {
-									if (content != null) {
-										Item item = player.getWorld().dropItem(player.getLocation().add(0.5, 0.7, 0.5), content);
-										item.setVelocity(new Vector(0, 0.2, 0));
-									}
-								}
-
-								for (ItemStack armorContent : player.getInventory().getArmorContents()) {
-									if (armorContent != null && armorContent.getType() != Material.AIR) {
-										Item item = player.getWorld().dropItem(player.getLocation().add(0.5, 0.7, 0.5), armorContent);
-										item.setVelocity(new Vector(0, 0.2, 0));
-									}
-								}
-								
-								ExperienceOrb exp = player.getWorld().spawn(player.getLocation().add(0.5, 0.7, 0.5), ExperienceOrb.class);
-								exp.setExperience((int) player.getExp());
-								exp.setVelocity(new Vector(0, 0.2, 0));
-
-								player.getInventory().setArmorContents(null);
-								player.getInventory().clear();
-								player.setExp(0);
-								
-								final Team team = Teams.getManager().getTeam(player);
-								
-								PlayerDeathEvent event = new PlayerDeathEvent(player, new ArrayList<ItemStack>(), 0, null);
-								Bukkit.getServer().getPluginManager().callEvent(event);
-								
-								new BukkitRunnable() {
-									public void run() {
-										PlayerUtils.broadcast("§8» " + (team == null ? "§f" : team.getPrefix()) + player.getName() + " §ftook too long to come back");
-									}
-								}.runTaskLater(Main.plugin, 1);
-							}
-						}
-					}
-				});
-				
-				Main.relog.get(player.getName()).runTaskLater(Main.plugin, 12000);
-			}
 		}
 	}
 	
@@ -753,6 +697,7 @@ public class PlayerListener implements Listener {
 		if (player.getUniqueId().toString().equals("3be33527-be7e-4eb2-8b66-5b76d3d7ecdc")) {
 			if (Settings.getInstance().getConfig().getString("game.host").equalsIgnoreCase("PolarBlunk")) {
 				event.disallow(Result.KICK_OTHER, "Connection timed out");
+				return;
 			}
 		}
 		
