@@ -198,16 +198,18 @@ public class SlaveMarket extends Scenario implements Listener, CommandExecutor {
 	    			sender.sendMessage(ChatColor.RED + "Usage: /startbid <player> <time>");
 					return true;
 				}
-				
+
+	    		PlayerUtils.broadcast(prefix() + "The bidding of player §a" + args[0] + "§7 is about to start.");
+	    		
 				for (Player online : PlayerUtils.getPlayers()) {
-		    		online.sendMessage(prefix() + "The bidding of player §a" + args[0] + "§7 is about to start.");
-		    		online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 1);
+		    		online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
 		    	}
 				
 				Bukkit.getServer().getScheduler().runTaskLater(Main.plugin, new Runnable() {
 					public void run() {
+			    		PlayerUtils.broadcast(prefix() + "Bidding starts in §a3§7.");
+			    		
 				    	for (Player online : PlayerUtils.getPlayers()) {
-				    		online.sendMessage(prefix() + "Bidding starts in §a3§7.");
 				    		online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 1);
 				    	}
 					}
@@ -215,8 +217,9 @@ public class SlaveMarket extends Scenario implements Listener, CommandExecutor {
 				
 				Bukkit.getServer().getScheduler().runTaskLater(Main.plugin, new Runnable() {
 					public void run() {
+			    		PlayerUtils.broadcast(prefix() + "Bidding starts in §a2§7.");
+			    		
 				    	for (Player online : PlayerUtils.getPlayers()) {
-				    		online.sendMessage(prefix() + "Bidding starts in §a2§7.");
 				    		online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 1);
 				    	}
 					}
@@ -224,9 +227,10 @@ public class SlaveMarket extends Scenario implements Listener, CommandExecutor {
 				
 				Bukkit.getServer().getScheduler().runTaskLater(Main.plugin, new Runnable() {
 					public void run() {
+			    		PlayerUtils.broadcast(prefix() + "Bidding starts in §a1§7.");
+			    		
 						for (Player online : PlayerUtils.getPlayers()) {
-				    		online.sendMessage(prefix() + "Bidding starts in §a1§7.");
-				    		online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 1);
+				    		online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
 				    	}
 					}
 				}, 60);
@@ -242,8 +246,9 @@ public class SlaveMarket extends Scenario implements Listener, CommandExecutor {
 							return;
 						}
 
+			    		PlayerUtils.broadcast(prefix() + "The bidding of player §a" + args[0] + "§7 has started.");
+			    		
 						for (Player online : PlayerUtils.getPlayers()) {
-				    		online.sendMessage(prefix() + "The bidding of player §a" + args[0] + "§7 has started.");
 				    		online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 1);
 				    	}
 						
