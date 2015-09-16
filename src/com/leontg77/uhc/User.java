@@ -153,6 +153,7 @@ public class User {
 		saveFile();
 		
 		if (player != null) {
+			PlayerUtils.handleLeavePermissions(player);
 			PlayerUtils.handlePermissions(player);
 		}
 	}
