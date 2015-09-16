@@ -257,9 +257,20 @@ public class PlayerUtils {
 		CraftPlayer craft = (CraftPlayer) player;
 		Game game = Game.getInstance();
 
-        IChatBaseComponent headerJSON = ChatSerializer.a("{text:'§8=-=-= §4Arctic UHC §8=-=-=\n§a/rules §8❘ §a/post §8❘ §a/lag §8❘ §a/ms §8❘ §a/hof\n'}");
-        IChatBaseComponent footerJSON = ChatSerializer.a("{text:'\n§7" + GameUtils.getTeamSize() + game.getScenarios() + (game.getTeamSize() > 0 || game.getTeamSize() < -1 ? "\n§4Host: §a" + Settings.getInstance().getConfig().getString("game.host") : "") + "'}");
-
+        IChatBaseComponent headerJSON = ChatSerializer.a(
+        	"{text:'§8» ----------[ §4§lArctic UHC §r§8]---------- «\n" +
+        	"§a/rules §8- §a/post §8- §a/lag §8- §a/ms §8- §a/hof\n" +
+        	"'}"
+        );
+        
+        IChatBaseComponent footerJSON = ChatSerializer.a(
+        	"{text:'\n" +
+        	"§7" + GameUtils.getTeamSize() + game.getScenarios() + (game.getTeamSize() > 0 || game.getTeamSize() < -1 ? "\n" +
+        	"§4Host: §a" + Settings.getInstance().getConfig().getString("game.host") : "") + "\n" +
+        	"§8» --------------------------------- «'}"
+        );
+        
+        
         PacketPlayOutPlayerListHeaderFooter headerPacket = new PacketPlayOutPlayerListHeaderFooter(headerJSON);
  
         try {
@@ -269,10 +280,10 @@ public class PlayerUtils {
         }
         catch (Exception e) {
             Bukkit.getServer().getLogger().severe("§cCould not send tab list packets to " + player.getName());
+            return;
         }
-        finally {
-            craft.getHandle().playerConnection.sendPacket(headerPacket);
-        }
+        
+        craft.getHandle().playerConnection.sendPacket(headerPacket);
 	}
 	
 	/**
