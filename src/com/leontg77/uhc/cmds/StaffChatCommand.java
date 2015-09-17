@@ -4,7 +4,10 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
+import com.leontg77.uhc.Main;
+import com.leontg77.uhc.utils.NameUtils;
 import com.leontg77.uhc.utils.PlayerUtils;
 
 public class StaffChatCommand implements CommandExecutor {
@@ -25,9 +28,9 @@ public class StaffChatCommand implements CommandExecutor {
 		               
 		        String msg = message.toString().trim();
 
-				PlayerUtils.broadcast("§c§lStaffChat §8» §a" + sender.getName() + "§8: §f" + msg, "uhc.staff");
+				PlayerUtils.broadcast("§c§lStaffChat §8» §a" + (sender instanceof Player ? sender.getName() : NameUtils.fixString(sender.getName(), false)) + "§8: §f" + msg, "uhc.staff");
 			} else {
-				sender.sendMessage(ChatColor.RED + "You do not have access to that command.");
+				sender.sendMessage(Main.NO_PERMISSION_MESSAGE);
 			}
 		}
 		return true;
