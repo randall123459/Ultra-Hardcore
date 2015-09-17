@@ -9,17 +9,20 @@ import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Color;
 import org.bukkit.Difficulty;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.material.MaterialData;
 import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.plugin.PluginDescriptionFile;
@@ -116,9 +119,10 @@ public class Main extends JavaPlugin {
 	public static HashMap<String, PermissionAttachment> permissions = new HashMap<String, PermissionAttachment>();
 	public static HashMap<CommandSender, CommandSender> msg = new HashMap<CommandSender, CommandSender>();
 	public static HashMap<Inventory, BukkitRunnable> invsee = new HashMap<Inventory, BukkitRunnable>();
-	public static HashMap<String, BukkitRunnable> relog = new HashMap<String, BukkitRunnable>();
+	public static HashMap<Inventory, BukkitRunnable> rules = new HashMap<Inventory, BukkitRunnable>();
 	public static HashMap<String, Integer> teamKills = new HashMap<String, Integer>();
 	public static HashMap<String, Integer> kills = new HashMap<String, Integer>();
+	public static HashMap<Player, int[]> rainbow = new HashMap<Player, int[]>();
 
 	public static final String NO_PERMISSION_MESSAGE = Main.prefix() + ChatColor.RED + "You can't use that command.";
 	
@@ -280,14 +284,32 @@ public class Main extends JavaPlugin {
 						online.setGameMode(GameMode.SPECTATOR);
 					}
 					
+					if (online.getInventory().getHelmet() != null && online.getInventory().getHelmet().getType() == Material.LEATHER_HELMET) {
+						online.getInventory().setHelmet(rainbowArmor(online, online.getInventory().getHelmet()));
+					}
+               
+					if (online.getInventory().getChestplate() != null && online.getInventory().getChestplate().getType() == Material.LEATHER_CHESTPLATE) {
+						online.getInventory().setChestplate(rainbowArmor(online, online.getInventory().getChestplate()));
+					}
+               
+					if (online.getInventory().getLeggings() != null && online.getInventory().getLeggings().getType() == Material.LEATHER_LEGGINGS) {
+						online.getInventory().setLeggings(rainbowArmor(online, online.getInventory().getLeggings()));
+					}
+               
+					if (online.getInventory().getBoots() != null && online.getInventory().getBoots().getType() == Material.LEATHER_BOOTS) {
+						online.getInventory().setBoots(rainbowArmor(online, online.getInventory().getBoots()));
+					}
+					
 					if (Game.getInstance().tabShowsHealthColor()) {
 						ChatColor color;
 
 						if (online.getHealth() < 6.66D) {
 							color = ChatColor.RED;
-						} else if (online.getHealth() < 13.33D) {
+						} 
+						else if (online.getHealth() < 13.33D) {
 							color = ChatColor.YELLOW;
-						} else {
+						} 
+						else {
 							color = ChatColor.GREEN;
 						}
 					    
@@ -373,7 +395,66 @@ public class Main extends JavaPlugin {
 	}
 	
 	/**
+	 * Change the color of the given type to a rainbow color.
+	 *  
+	 * @param player the players armor.
+	 * @param type the type.
+	 * @return The new colored leather armor.
+	 */
+	public ItemStack rainbowArmor(Player player, ItemStack item) {
+		if (!rainbow.containsKey(player)) {
+			rainbow.put(player, new int[] { 0, 0, 255 });
+		}
+		
+		int[] rain = rainbow.get(player);
+			
+		int blue = rain[0];
+		int green = rain[1];
+		int red = rain[2];		
+
+		if (red == 255 && blue == 0) {
+			green++;
+		}
+			
+		if (green == 255 && blue == 0) {
+			red--;
+		}
+		
+		if (green == 255 && red == 0) {
+			blue++;
+		}
+			
+		if (blue == 255 && red == 0) {
+			green--;
+		}
+			
+		if (green == 0 && blue == 255) {
+			red++;
+		}
+			
+		if (green == 0 && red == 255) {
+			blue--;
+		}
+			
+		rainbow.put(player, new int[] { blue, green, red });
+
+    	ItemStack armor = new ItemStack (item.getType(), item.getAmount(), item.getDurability());
+		LeatherArmorMeta meta = (LeatherArmorMeta) armor.getItemMeta();
+		meta.setColor(Color.fromBGR(blue, green, red));
+		meta.setDisplayName(item.hasItemMeta() && item.getItemMeta().hasDisplayName() ? item.getItemMeta().getDisplayName() : null);
+		meta.setLore(item.hasItemMeta() && item.getItemMeta().hasLore() ? item.getItemMeta().getLore() : new ArrayList<String>());
+		
+		for (Entry<Enchantment, Integer> ench : item.getEnchantments().entrySet()) {
+			meta.addEnchant(ench.getKey(), ench.getValue(), true);
+		}
+		
+		armor.setItemMeta(meta);
+		return armor;
+	}
+	
+	/**
 	 * The game state class.
+	 * 
 	 * @author LeonTG77
 	 */
 	public enum State {
@@ -412,6 +493,7 @@ public class Main extends JavaPlugin {
 	
 	/**
 	 * Border types enum class.
+	 * 
 	 * @author LeonTG77
 	 */
 	public enum Border {
