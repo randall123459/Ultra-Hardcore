@@ -3,6 +3,7 @@ package com.leontg77.uhc;
 import static com.leontg77.uhc.Main.plugin;
 
 import java.io.File;
+import java.util.Date;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -21,11 +22,10 @@ import com.leontg77.uhc.utils.PlayerUtils;
  * @author LeonTG77
  */
 public class User {
-	private Player player;
-	private boolean creating = false;
-	
 	private FileConfiguration config;
 	private File file;
+	
+	private Player player;
 	
 	/**
 	 * Gets the data of the given player.
@@ -71,6 +71,7 @@ public class User {
         }
         
         file = new File(f, uuid + ".yml");
+        boolean creating = false;
         
         if (!file.exists()) {
         	try {
@@ -90,7 +91,8 @@ public class User {
             	config.set("uuid", player.getUniqueId().toString());
         	}
         	
-        	config.set("firstjoined", System.currentTimeMillis());
+        	config.set("firstjoined", new Date().getTime());
+        	config.set("isnew", true);
         	config.set("rank", Rank.USER.name());
         	config.set("muted", false);
         	config.set("stats.gamesplayed", 0);
@@ -109,7 +111,16 @@ public class User {
 	 * @return <code>True</code> if it's the first time, <code>false</code> otherwise
 	 */
 	public boolean isNew() {
-		return creating;
+		boolean joined = config.getBoolean("isnew", false);
+		
+		if (joined) {
+        	config.set("isnew", false);
+        	saveFile();
+            return true;
+        } 
+		else {
+			return false;
+        }
 	}
 	
 	/**
