@@ -18,7 +18,7 @@ public class HealCommand implements CommandExecutor {
 				if (args.length == 0) {
 					if (sender instanceof Player) {
 						Player player = (Player) sender;
-						player.setHealth(20.0);
+						player.setHealth(player.getMaxHealth());
 						player.setFireTicks(0);
 						player.sendMessage(Main.prefix() + "You have been healed.");
 					} else {
@@ -30,7 +30,7 @@ public class HealCommand implements CommandExecutor {
 				if (sender.hasPermission("uhc.heal.other")) {
 					if (args[0].equals("*")) {
 						for (Player online : PlayerUtils.getPlayers()) {
-							online.setHealth(20.0);
+							online.setHealth(online.getMaxHealth());
 							online.setFireTicks(0);
 						}
 						PlayerUtils.broadcast(Main.prefix() + "All players have been healed.");
@@ -42,7 +42,7 @@ public class HealCommand implements CommandExecutor {
 							sender.sendMessage(ChatColor.RED + "That player is not online.");
 						}
 
-						target.setHealth(20.0);
+						target.setHealth(target.getMaxHealth());
 						target.setFireTicks(0);
 						target.sendMessage(Main.prefix() + "You have been healed.");
 						sender.sendMessage(Main.prefix() + "You healed " + target.getName() + ".");
@@ -51,7 +51,7 @@ public class HealCommand implements CommandExecutor {
 				else {
 					if (sender instanceof Player) {
 						Player player = (Player) sender;
-						player.setHealth(20.0);
+						player.setHealth(player.getMaxHealth());
 						player.setFireTicks(0);
 						player.sendMessage(Main.prefix() + "You have been healed.");
 					} else {
