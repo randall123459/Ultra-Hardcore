@@ -178,6 +178,10 @@ public class Arena {
 		player.setLevel(0);
 		player.setExp(0);
 		
+		if (player.isDead()) {
+			player.spigot().respawn();
+		}
+		
 		World world = Bukkit.getServer().getWorld(settings.getData().getString("spawn.world"));
 		double x = settings.getData().getDouble("spawn.x");
 		double y = settings.getData().getDouble("spawn.y");
