@@ -1,6 +1,9 @@
 package com.leontg77.uhc;
 
+import org.bukkit.entity.Player;
+
 import com.leontg77.uhc.Main.Border;
+import com.leontg77.uhc.utils.PlayerUtils;
 
 public class Game {
 	private Settings settings = Settings.getInstance();
@@ -214,6 +217,28 @@ public class Game {
 	
 	public void setTeamManagement(boolean enable) {
 		settings.getData().set("teams.management", enable);
+		settings.saveConfig();
+	}
+
+	public boolean isRR() {
+		return settings.getConfig().getBoolean("rr.state", false);
+	}
+	
+	public void setRR(boolean enable) {
+		settings.getConfig().set("rr.state", enable);
+		settings.saveConfig();
+		
+		for (Player online : PlayerUtils.getPlayers()) {
+			PlayerUtils.setTabList(online);
+		}
+	}
+
+	public String getRRName() {
+		return settings.getConfig().getString("rr.name", "ANAMEHEREPLEASE");
+	}
+	
+	public void setRRName(String name) {
+		settings.getConfig().set("rr.name", name);
 		settings.saveConfig();
 	}
 }

@@ -373,6 +373,29 @@ public class ConfigCommand implements CommandExecutor, TabCompleter {
 
 					sender.sendMessage(Main.prefix() + "You set the game world to §a" + args[1] + "§7.");
 					break;
+				case RR:
+					if (args[1].equalsIgnoreCase("true")) {
+						PlayerUtils.broadcast(Main.prefix() + "This is now an recorded round.");
+						game.setRR(true);
+						
+						Scoreboards.getManager().kills.setDisplayName("§6" + game.getRRName());
+					} else if (args[1].equalsIgnoreCase("false")) {
+						PlayerUtils.broadcast(Main.prefix() + "This is no longer an recorded round.");
+						game.setRR(false);
+						
+						Scoreboards.getManager().kills.setDisplayName("§4UHC §8- §7" + Settings.getInstance().getConfig().getString("game.host"));
+					} else {
+						sender.sendMessage(ChatColor.RED + "RR can only be true or false.");
+					}
+					break;
+				case RRNAME:
+					sender.sendMessage(Main.prefix() + "You set the RR name to §a" + args[1].replaceAll("_", " ") + "§7.");
+					game.setRRName(args[1].replaceAll("_", " "));
+					
+					if (game.isRR()) {
+						Scoreboards.getManager().kills.setDisplayName("§6" + game.getRRName());
+					}
+					break;
 				default:
 					sender.sendMessage(ChatColor.RED + "You typed the wrong type or value.");
 					break;
@@ -495,6 +518,6 @@ public class ConfigCommand implements CommandExecutor, TabCompleter {
 	}
 	
 	public enum ConfigValue {
-		HOST, WORLD, FFA, TEAMSIZE, SCENARIOS, SHEARS, SHEARRATE, FLINTRATE, BORDER, ABSORPTION, GOLDENHEADS, HEADHEALS, NOTCHAPPLES, PEARLDAMAGE, DEATHLIGHTNING, NETHER, THEEND, GHASTDROPS, NERFEDSTRENGTH, TABCOLORS, HARDERCRAFTING, PVP, MEETUP, MATCHPOST, MAXPLAYERS, STATE;
+		HOST, WORLD, FFA, TEAMSIZE, SCENARIOS, SHEARS, SHEARRATE, FLINTRATE, BORDER, ABSORPTION, GOLDENHEADS, HEADHEALS, NOTCHAPPLES, PEARLDAMAGE, DEATHLIGHTNING, NETHER, THEEND, GHASTDROPS, NERFEDSTRENGTH, TABCOLORS, HARDERCRAFTING, PVP, MEETUP, MATCHPOST, MAXPLAYERS, STATE, RR, RRNAME;
 	}
 }
