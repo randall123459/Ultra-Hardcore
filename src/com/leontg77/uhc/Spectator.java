@@ -180,6 +180,16 @@ public class Spectator {
 			}
 
 			player.sendMessage(Main.prefix() + "You are no longer in spectator mode.");
+
+			World w = Bukkit.getServer().getWorld(settings.getData().getString("spawn.world"));
+			double x = settings.getData().getDouble("spawn.x");
+			double y = settings.getData().getDouble("spawn.y");
+			double z = settings.getData().getDouble("spawn.z");
+			float yaw = (float) settings.getData().getDouble("spawn.yaw");
+			float pitch = (float) settings.getData().getDouble("spawn.pitch");
+			
+			Location loc = new Location(w, x, y, z, yaw, pitch);
+			player.teleport(loc);
 		}
 		
 		player.setGameMode(GameMode.SURVIVAL);
@@ -195,16 +205,6 @@ public class Spectator {
 		player.removePotionEffect(PotionEffectType.NIGHT_VISION);
 		player.getInventory().setArmorContents(null);
 		player.getInventory().clear();
-		
-		World w = Bukkit.getServer().getWorld(settings.getData().getString("spawn.world"));
-		double x = settings.getData().getDouble("spawn.x");
-		double y = settings.getData().getDouble("spawn.y");
-		double z = settings.getData().getDouble("spawn.z");
-		float yaw = (float) settings.getData().getDouble("spawn.yaw");
-		float pitch = (float) settings.getData().getDouble("spawn.pitch");
-		
-		Location loc = new Location(w, x, y, z, yaw, pitch);
-		player.teleport(loc);
 		
 		for (Player online : PlayerUtils.getPlayers()) {
 			if (isSpectating(online)) {
@@ -225,7 +225,8 @@ public class Spectator {
 	public void toggle(Player player, boolean force) {
 		if (isSpectating(player)) {
 			enableSpecmode(player, force);
-		} else {
+		} 
+		else {
 			disableSpecmode(player, force);
 		}
 	}
