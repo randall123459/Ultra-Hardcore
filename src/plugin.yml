@@ -108,6 +108,7 @@ commands:
     description: Spread all players and freeze them.
   ac:
     description: StaffChat Command.
+    aliases: [sc]
   start:
     description: Start command.
   stats:
