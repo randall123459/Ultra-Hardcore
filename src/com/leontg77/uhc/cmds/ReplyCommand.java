@@ -25,7 +25,7 @@ public class ReplyCommand implements CommandExecutor {
 	        CommandSender target = Main.msg.get(sender);
 					
 			if (target == null) {
-				sender.sendMessage(ChatColor.RED + "That player is not online.");
+				sender.sendMessage(ChatColor.RED + "You have no one to reply to.");
 				return true;
 			}
 			
@@ -43,9 +43,9 @@ public class ReplyCommand implements CommandExecutor {
 		        	return true;
 	        	}
 	        }
-	   
-	    	sender.sendMessage("§6me §8-> §a" + target.getName() + " §8§l» §f" + msg);
-	    	target.sendMessage("§a" + sender.getName() + " §8-> §6me §8§l» §f" + msg);
+	 
+	    	sender.sendMessage("§6me §8-> §a" + target.getName() + " §8» §f" + msg);
+	    	target.sendMessage("§6" + sender.getName() + " §8-> §6me §8» §f" + msg);
 	    	Main.msg.put(target, sender);
 	    	Main.msg.put(sender, target);
 	    }
