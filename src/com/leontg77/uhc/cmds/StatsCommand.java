@@ -10,6 +10,8 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import com.leontg77.uhc.Game;
+import com.leontg77.uhc.Main;
 import com.leontg77.uhc.User;
 import com.leontg77.uhc.utils.NumberUtils;
 
@@ -17,6 +19,11 @@ public class StatsCommand implements CommandExecutor {
 	
 	public boolean onCommand(final CommandSender sender, Command cmd, String label, String[] args) {
 		if (cmd.getName().equalsIgnoreCase("stats")) {
+			if (Game.getInstance().isRR()) {
+				sender.sendMessage(Main.prefix() + "No.");
+				return true;
+			}
+			
 			TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 			
 			if (args.length == 0) {

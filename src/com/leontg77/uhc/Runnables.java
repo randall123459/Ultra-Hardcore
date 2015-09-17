@@ -168,7 +168,6 @@ public class Runnables {
 					Main.kills.put(online.getName(), 0);
 					SpecInfo.totalDiamonds.clear();
 					SpecInfo.totalGold.clear();
-					Main.relog.clear();
 					
 					PlayerUtils.sendTitle(online, "§aGo!", "§7Good luck, have fun!", 1, 20, 1);
 					
@@ -212,6 +211,8 @@ public class Runnables {
 					
 					world.setGameRuleValue("doMobSpawning", "false");
 					world.setGameRuleValue("doDaylightCycle", "true");
+					world.setThundering(false);
+					world.setStorm(false);
 					
 					for (Entity mobs : world.getEntities()) {
 						if (mobs.getType() == EntityType.BLAZE ||
@@ -239,8 +240,6 @@ public class Runnables {
 					
 					if (game.getBorderShrinkTime() == Border.START) {
 						world.getWorldBorder().setSize(299, meetup * 60);
-						world.setThundering(false);
-						world.setStorm(false);
 					}
 				}
 			}
@@ -490,6 +489,300 @@ public class Runnables {
 					for (Player online : PlayerUtils.getPlayers()) {
 						online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
 					}
+				}
+			}
+		}, 1200, 1200);
+	}
+	
+	/**
+	 * Start the countdown for the recorded round.
+	 */
+	public static void startRR() {
+		for (Player online : PlayerUtils.getPlayers()) {
+			PlayerUtils.sendTitle(online, "§c3", "", 1, 20, 1);
+			online.playSound(online.getLocation(), Sound.SUCCESSFUL_HIT, 1, 0);
+		}
+		
+		Bukkit.getServer().getScheduler().runTaskLater(Main.plugin, new Runnable() {
+			public void run() {
+				for (Player online : PlayerUtils.getPlayers()) {
+					PlayerUtils.sendTitle(online, "§e2", "", 1, 20, 1);
+					online.playSound(online.getLocation(), Sound.SUCCESSFUL_HIT, 1, 0);
+				}
+			}
+		}, 20);
+		
+		Bukkit.getServer().getScheduler().runTaskLater(Main.plugin, new Runnable() {
+			public void run() {
+				for (Player online : PlayerUtils.getPlayers()) {
+					PlayerUtils.sendTitle(online, "§a1", "", 1, 20, 1);
+					online.playSound(online.getLocation(), Sound.SUCCESSFUL_HIT, 1, 0);
+				}
+			}
+		}, 40);
+		
+		Bukkit.getServer().getScheduler().runTaskLater(Main.plugin, new Runnable() {
+			public void run() {
+				for (Player online : PlayerUtils.getPlayers()) {
+					online.playSound(online.getLocation(), Sound.SUCCESSFUL_HIT, 1, 1);
+					
+					if (Spectator.getManager().isSpectating(online)) {
+						for (Achievement a : Achievement.values()) {
+							if (online.hasAchievement(a)) {
+								online.removeAchievement(a);
+							}
+						}
+						
+						for (PotionEffect effect : online.getActivePotionEffects()) {
+							if (effect.getType().equals(PotionEffectType.NIGHT_VISION)) {
+								continue;
+							}
+							
+							online.removePotionEffect(effect.getType());	
+						}
+						
+						online.awardAchievement(Achievement.OPEN_INVENTORY);
+						online.setHealth(online.getMaxHealth());
+						online.setSaturation(20);
+						online.setFoodLevel(20);
+						online.setFireTicks(0);
+						online.setLevel(0);
+						online.setExp(0);
+						PlayerUtils.sendTitle(online, "§aGo!", "§7Have fun spectating!", 1, 20, 1);
+						continue;
+					}
+					
+					for (Achievement a : Achievement.values()) {
+						if (online.hasAchievement(a)) {
+							online.removeAchievement(a);
+						}
+					}
+					
+					if (online.getGameMode() != GameMode.SURVIVAL) {
+						online.setGameMode(GameMode.SURVIVAL);
+					}
+					
+					if (ScenarioManager.getInstance().getScenario("Kings").isEnabled()) {
+						for (PotionEffect effect : online.getActivePotionEffects()) {
+							if (effect.getType().equals(PotionEffectType.DAMAGE_RESISTANCE)) {
+								continue;
+							}
+							
+							if (effect.getType().equals(PotionEffectType.INCREASE_DAMAGE)) {
+								continue;
+							}
+							
+							if (effect.getType().equals(PotionEffectType.SPEED)) {
+								continue;
+							}
+							
+							online.removePotionEffect(effect.getType());	
+						}
+					} else {
+						for (PotionEffect effect : online.getActivePotionEffects()) {
+							online.removePotionEffect(effect.getType());	
+						}
+					}
+					
+					online.getInventory().clear();
+					online.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 250, 100));
+					online.setItemOnCursor(new ItemStack (Material.AIR));
+					online.awardAchievement(Achievement.OPEN_INVENTORY);
+					online.getInventory().setArmorContents(null);
+					online.setHealth(online.getMaxHealth());
+					online.setAllowFlight(false);
+					online.setSaturation(20);
+					online.setFoodLevel(20);
+					online.setFlying(false);
+					online.setFireTicks(0);
+					online.setLevel(0);
+					online.setExp(0);
+
+					SpecInfo.totalDiamonds.clear();
+					SpecInfo.totalGold.clear();
+					
+					PlayerUtils.sendTitle(online, "§aGo!", "§7Good luck, have fun!", 1, 20, 1);
+				}
+				
+				for (String e : Scoreboards.getManager().kills.getScoreboard().getEntries()) {
+					Scoreboards.getManager().resetScore(e);
+				}
+
+				game.setPregameBoard(false);
+				game.setArenaBoard(false);
+				
+				timerRR();
+				Bukkit.getServer().getPluginManager().registerEvents(new SpecInfo(), Main.plugin);
+				PlayerUtils.broadcast(Main.prefix() + "Start of episode 1");
+				State.setState(State.INGAME);
+				Scoreboards.getManager().kills.setDisplayName("§6" + game.getRRName());
+				pvp = 0;
+				meetup = 1;
+				
+				for (World world : Bukkit.getWorlds()) {
+					if (world.getName().equals("lobby") || world.getName().equals("arena")) {
+						continue;
+					}
+					
+					world.setTime(0);
+					world.setDifficulty(Difficulty.HARD);
+					world.setPVP(false);
+					
+					world.setGameRuleValue("doMobSpawning", "false");
+					world.setGameRuleValue("doDaylightCycle", "true");
+					
+					world.setThundering(false);
+					world.setStorm(false);
+					
+					for (Entity mobs : world.getEntities()) {
+						if (mobs.getType() == EntityType.BLAZE ||
+							mobs.getType() == EntityType.CAVE_SPIDER ||
+							mobs.getType() == EntityType.CREEPER ||
+							mobs.getType() == EntityType.ENDERMAN ||
+							mobs.getType() == EntityType.ZOMBIE ||
+							mobs.getType() == EntityType.WITCH ||
+							mobs.getType() == EntityType.WITHER ||
+							mobs.getType() == EntityType.DROPPED_ITEM ||
+							mobs.getType() == EntityType.GHAST ||
+							mobs.getType() == EntityType.GIANT ||
+							mobs.getType() == EntityType.MAGMA_CUBE ||
+							mobs.getType() == EntityType.DROPPED_ITEM ||
+							mobs.getType() == EntityType.SKELETON ||
+							mobs.getType() == EntityType.SPIDER ||
+							mobs.getType() == EntityType.SLIME ||
+							mobs.getType() == EntityType.SILVERFISH ||
+							mobs.getType() == EntityType.SKELETON || 
+							mobs.getType() == EntityType.EXPERIENCE_ORB) {
+							
+							mobs.remove();
+						}
+					}
+				}
+			}
+		}, 60);
+	}
+	
+	/**
+	 * Start the recorded round timers.
+	 */
+	public static void timerRR() {
+		if (Bukkit.getScheduler().isQueued(task) || Bukkit.getScheduler().isCurrentlyRunning(task)) {
+			Bukkit.getScheduler().cancelTask(task);
+		}
+		
+		task = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(Main.plugin, new Runnable() {
+			public void run() {
+				pvp++;
+				heal--;
+				
+				if (pvp == 20) {
+					PlayerUtils.broadcast(Main.prefix() + "End of episode 1 | Start of episode 2");
+					PlayerUtils.broadcast(Main.prefix() + "PvP has been enabled!");
+					
+					for (Player online : PlayerUtils.getPlayers()) {
+						online.playSound(online.getLocation(), Sound.FIREWORK_TWINKLE, 1, 1);
+					}
+					
+					for (World world : Bukkit.getWorlds()) {
+						if (world.getName().equals("lobby") || world.getName().equals("arena")) {
+							continue;
+						}
+						
+						world.setPVP(true);
+					}
+					heal = 20;
+					meetup++;
+				}
+				
+				if (pvp == 40) {
+					PlayerUtils.broadcast(Main.prefix() + "End of episode 2 | Start of episode 3");
+					
+					for (Player online : PlayerUtils.getPlayers()) {
+						online.playSound(online.getLocation(), Sound.FIREWORK_TWINKLE, 1, 1);
+					}
+					heal = 20;
+					meetup++;
+				}
+				
+				if (pvp == 60) {
+					PlayerUtils.broadcast(Main.prefix() + "End of episode 3 | Start of episode 4");
+					
+					for (Player online : PlayerUtils.getPlayers()) {
+						online.playSound(online.getLocation(), Sound.FIREWORK_TWINKLE, 1, 1);
+					}
+					heal = 20;
+					meetup++;
+				}
+				
+				if (pvp == 80) {
+					PlayerUtils.broadcast(Main.prefix() + "End of episode 4 | Start of episode 5");
+					
+					for (Player online : PlayerUtils.getPlayers()) {
+						online.playSound(online.getLocation(), Sound.FIREWORK_TWINKLE, 1, 1);
+					}
+					heal = 20;
+					meetup++;
+				}
+				
+				if (pvp == 100) {
+					PlayerUtils.broadcast(Main.prefix() + "End of episode 5 | Start of episode 6");
+					PlayerUtils.broadcast(Main.prefix() + "Perma day activated!");
+					
+					for (Player online : PlayerUtils.getPlayers()) {
+						online.playSound(online.getLocation(), Sound.FIREWORK_TWINKLE, 1, 1);
+					}
+					
+					for (World world : Bukkit.getWorlds()) {
+						if (world.getName().equals("lobby") || world.getName().equals("arena")) {
+							continue;
+						}
+
+						world.setGameRuleValue("doDaylightCycle", "false");
+						world.setTime(6000);
+					}
+					heal = 20;
+					meetup++;
+				}
+				
+				if (pvp == 120) {
+					PlayerUtils.broadcast(Main.prefix() + "End of episode 6 | Start of episode 7");
+					PlayerUtils.broadcast(Main.prefix() + "Meetup is now!");
+					
+					for (Player online : PlayerUtils.getPlayers()) {
+						online.playSound(online.getLocation(), Sound.FIREWORK_TWINKLE, 1, 1);
+					}
+					heal = 20;
+					meetup++;
+				}
+				
+				if (pvp == 140) {
+					PlayerUtils.broadcast(Main.prefix() + "End of episode 7 | Start of episode 8");
+					
+					for (Player online : PlayerUtils.getPlayers()) {
+						online.playSound(online.getLocation(), Sound.FIREWORK_TWINKLE, 1, 1);
+					}
+					heal = 20;
+					meetup++;
+				}
+				
+				if (pvp == 160) {
+					PlayerUtils.broadcast(Main.prefix() + "End of episode 8 | Start of episode 9");
+					
+					for (Player online : PlayerUtils.getPlayers()) {
+						online.playSound(online.getLocation(), Sound.FIREWORK_TWINKLE, 1, 1);
+					}
+					heal = 20;
+					meetup++;
+				}
+				
+				if (pvp == 180) {
+					PlayerUtils.broadcast(Main.prefix() + "End of episode 9 | Start of episode 10");
+					
+					for (Player online : PlayerUtils.getPlayers()) {
+						online.playSound(online.getLocation(), Sound.FIREWORK_TWINKLE, 1, 1);
+					}
+					heal = 20;
+					meetup++;
 				}
 			}
 		}, 1200, 1200);

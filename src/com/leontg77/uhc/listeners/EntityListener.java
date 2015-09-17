@@ -134,6 +134,10 @@ public class EntityListener implements Listener {
     		}
     	}
     	
+    	if (game.isRR()) {
+    		return;
+    	}
+    	
     	ItemStack potion = new ItemStack (Material.POTION, 1, (short) 8261);
     	
     	if (entity instanceof Witch) {
@@ -203,6 +207,10 @@ public class EntityListener implements Listener {
 		if (!(event.getDamager() instanceof Projectile) || !(event.getEntity() instanceof Player)) {
 			return;
 		}
+    	
+    	if (game.isRR()) {
+    		return;
+    	}
 		
 		if (ScenarioManager.getInstance().getScenario("Paranoia").isEnabled()) {
 			return;
@@ -243,6 +251,10 @@ public class EntityListener implements Listener {
 		if (!(event.getDamager() instanceof Projectile) || !(event.getEntity() instanceof Player)) {
 			return;
 		}
+    	
+    	if (game.isRR()) {
+    		return;
+    	}
 		
 		if (ScenarioManager.getInstance().getScenario("RewardingLongshots").isEnabled()) {
 			return;

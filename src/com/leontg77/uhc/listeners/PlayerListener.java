@@ -12,13 +12,12 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
-import net.minecraft.server.v1_8_R3.EnumParticle;
-import net.minecraft.server.v1_8_R3.PacketPlayOutWorldParticles;
 
 import org.bukkit.BanEntry;
 import org.bukkit.BanList.Type;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Difficulty;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -28,10 +27,9 @@ import org.bukkit.World;
 import org.bukkit.World.Environment;
 import org.bukkit.block.Block;
 import org.bukkit.block.Skull;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -112,6 +110,7 @@ public class PlayerListener implements Listener {
 		user.getFile().set("uuid", player.getUniqueId().toString());
 		user.saveFile();
 		
+		// They think they can relog to have no damage ticks, HAHA!!! :D
 		player.setNoDamageTicks(0);
 		
 		Spectator.getManager().hideSpectators(player);
@@ -138,8 +137,15 @@ public class PlayerListener implements Listener {
 			Spectator.getManager().enableSpecmode(player, true);
 		}
 		
+		for (Player online : PlayerUtils.getPlayers()) {
+			if (online.canSee(player)) {
+				online.sendMessage("§8[§a+§8] §7" + player.getName() + " has joined.");
+			}
+		}
+		
+		Bukkit.getLogger().info("§8[§a+§8] §7" + player.getName() + " has joined.");
+		
 		if (!Spectator.getManager().isSpectating(player)) {
-			PlayerUtils.broadcast("§8[§a+§8] §7" + player.getName() + " has joined.");
 			if (user.isNew()) {
 				PlayerUtils.broadcast(Main.prefix() + ChatColor.GOLD + player.getName() + " §7just joined for the first time.");
 				
@@ -148,18 +154,20 @@ public class PlayerListener implements Listener {
 			}
 		}
 		
-		player.sendMessage("§8» ----------[ §4§lArctic UHC §8]---------- «");
-		if (GameUtils.getTeamSize().startsWith("No")) {
-			player.sendMessage("§8» §c No games running");
-		} 
-		else if (GameUtils.getTeamSize().startsWith("Open")) {
-			player.sendMessage("§8» §7 Open PvP, use §a/a §7to join.");
-		} 
-		else {
-			player.sendMessage("§8» §7 Host: §6" + Settings.getInstance().getConfig().getString("game.host"));
-			player.sendMessage("§8» §7 Gamemode: §6" + GameUtils.getTeamSize() + Settings.getInstance().getConfig().getString("game.scenarios"));
+		if (!game.isRR()) {
+			player.sendMessage("§8» ----------[ §4§lArctic UHC §8]---------- «");
+			if (GameUtils.getTeamSize().startsWith("No")) {
+				player.sendMessage("§8» §c No games running");
+			} 
+			else if (GameUtils.getTeamSize().startsWith("Open")) {
+				player.sendMessage("§8» §7 Open PvP, use §a/a §7to join.");
+			} 
+			else {
+				player.sendMessage("§8» §7 Host: §6" + Settings.getInstance().getConfig().getString("game.host"));
+				player.sendMessage("§8» §7 Gamemode: §6" + GameUtils.getTeamSize() + Settings.getInstance().getConfig().getString("game.scenarios"));
+			}
+			player.sendMessage("§8» --------------------------------- «");
 		}
-		player.sendMessage("§8» --------------------------------- «");
 		
 		if (SpreadCommand.scatterLocs.containsKey(player.getName()) && SpreadCommand.isReady) {
 			if (State.isState(State.SCATTER)) {
@@ -207,74 +215,77 @@ public class PlayerListener implements Listener {
 			player.getInventory().setArmorContents(null);
 		}
 		
-		if (!Spectator.getManager().isSpectating(player)) {
-			PlayerUtils.broadcast("§8[§c-§8] §7" + player.getName() + " has left.");
+		if (Main.msg.containsKey(player)) {
+			Main.msg.remove(player);
 		}
+		
+		for (CommandSender key : Main.msg.keySet()) {
+			if (Main.msg.get(key).equals(player)) {
+				Main.msg.remove(key);
+			}
+		}
+		
+		for (Player online : PlayerUtils.getPlayers()) {
+			if (online.canSee(player)) {
+				online.sendMessage("§8[§c-§8] §7" + player.getName() + " has left.");
+			}
+		}
+		
+		Bukkit.getLogger().info("§8[§c-§8] §7" + player.getName() + " has left.");
 	}
 	
 	@EventHandler
 	public void onPlayerDeath(final PlayerDeathEvent event) {
 		final Player player = event.getEntity().getPlayer();
 		
+		if (!game.isRR()) {
+			new BukkitRunnable() {
+				public void run() {
+					player.spigot().respawn();
+				}
+			}.runTaskLater(Main.plugin, 20);
+		}
+		
 		if (Arena.getManager().isEnabled()) {
+			Team team = Teams.getManager().getTeam(player);
+			User user = User.get(player);
+			
 	    	event.setDeathMessage(null);
-			User data = User.get(player);
+			event.setDroppedExp(0);
+		
+			Arena.getManager().removePlayer(player, true);
+			
 			if (!Bukkit.hasWhitelist()) {
-				data.increaseStat("arenadeaths");
+				user.increaseStat("arenadeaths");
 			}
 	    	
-			int i = 0;
-			
-			for (final ItemStack drops : event.getDrops()) {
-				final Item item = player.getWorld().dropItem(player.getLocation(), drops);
-				item.setPickupDelay(0);
-				
-				new BukkitRunnable() {
-					public void run() {
-						if (item.isValid()) {
-							item.remove();
-							PacketPlayOutWorldParticles packet = new PacketPlayOutWorldParticles(EnumParticle.SMOKE_NORMAL, false, (float) item.getLocation().getX(), (float) item.getLocation().getY(), (float) item.getLocation().getZ(), 0.001f, 0.001f, 0.001f, 0.01f, 1000, null);
-							
-							for (Player players : Bukkit.getWorld("arena").getPlayers()) {
-								CraftPlayer pl = (CraftPlayer) players;
-								pl.getHandle().playerConnection.sendPacket(packet);
-								players.playSound(item.getLocation(), "random.pop", 1, 1);
-							}
-						}
-					}
-				}.runTaskLater(Main.plugin, 40 + i);
-				i++;
-			}
-	 
-	    	ItemStack skull = new ItemStack(Material.GOLDEN_APPLE);
+			ItemStack skull = new ItemStack(Material.GOLDEN_APPLE);
 			ItemMeta skullMeta = skull.getItemMeta();
 			skullMeta.setDisplayName("§6Golden Head");
 			skullMeta.setLore(Arrays.asList(ChatColor.DARK_PURPLE + "Some say consuming the head of a", ChatColor.DARK_PURPLE + "fallen foe strengthens the blood.", ChatColor.AQUA + "Made from the head of: " + player.getName()));
 			skull.setItemMeta(skullMeta);
 			
 			event.getDrops().clear();
-			player.getWorld().dropItem(player.getLocation(), new ItemStack(Material.DIAMOND, 1));
-			player.getWorld().dropItem(player.getLocation(), new ItemStack(Material.ARROW, 32));
-			player.getWorld().dropItem(player.getLocation(), skull);
-		
-			Arena.getManager().removePlayer(player, true);
+			event.getDrops().add(new ItemStack(Material.DIAMOND, 1));
+			event.getDrops().add(new ItemStack(Material.ARROW, 32));
+			event.getDrops().add(skull);
 			
-			if (player.getKiller() == null) {
-				Arena.getManager().setScore("§8» §a§lPvE", Arena.getManager().getScore("§8» §a§lPvE") + 1);
-				Arena.getManager().resetScore(player.getName());
+			Player killer = player.getKiller();
+			
+			if (killer == null) {
 				player.sendMessage(Main.prefix() + "You were killed by PvE.");
-				
-				Team team = Teams.getManager().getTeam(player);
-				
-				for (Player p : Arena.getManager().getPlayers()) {
-					p.sendMessage("§8» " + (team == null ? "§f" : team.getPrefix()) + player.getName() + " §fwas killed by PvE");
-				}
+				Arena.getManager().killstreak.put(player, 0); 
 
 				if (Arena.getManager().killstreak.containsKey(player) && Arena.getManager().killstreak.get(player) > 4) {
 					PlayerUtils.broadcast(Main.prefix() + ChatColor.GREEN + player.getName() + "'s §7killstreak of " + Arena.getManager().killstreak.get(player) + " was shut down by PvE");
 				}
 				
-				Arena.getManager().killstreak.put(player, 0);   
+				for (Player p : Arena.getManager().getPlayers()) {
+					p.sendMessage("§8» " + (team == null ? "§f" : team.getPrefix()) + player.getName() + " §fwas killed by PvE");
+				}
+				
+				Arena.getManager().setScore("§8» §a§lPvE", Arena.getManager().getScore("§8» §a§lPvE") + 1);
+				Arena.getManager().resetScore(player.getName());
 				return;
 			}
 			
@@ -282,75 +293,78 @@ public class PlayerListener implements Listener {
 				PlayerUtils.broadcast(Main.prefix() + ChatColor.GREEN + player.getName() + "'s §7killstreak of " + Arena.getManager().killstreak.get(player) + " was shut down by §a" + player.getKiller().getName());
 			}
 			
+			player.sendMessage(Main.prefix() + "You were killed by §a" + killer.getName() + "§7.");
 			Arena.getManager().killstreak.put(player, 0);
 			
-			player.getKiller().setLevel(player.getKiller().getLevel() + 1);
-			User killerData = User.get(player.getKiller());
-			if (!Bukkit.hasWhitelist()) {
-				killerData.increaseStat("kills");
-			}
-			player.sendMessage(Main.prefix() + "You were killed by §a" + player.getKiller().getName() + "§7.");
+			Team kTeam = Teams.getManager().getTeam(killer);
+			killer.setLevel(killer.getLevel() + 1);
+			User uKiller = User.get(killer);
 			
-			Team team = Teams.getManager().getTeam(player);
-			Team kTeam = Teams.getManager().getTeam(player.getKiller());
+			if (!Bukkit.hasWhitelist()) {
+				uKiller.increaseStat("kills");
+			}
 			
 			for (Player p : Arena.getManager().getPlayers()) {
-				p.sendMessage("§8» " + (team == null ? "§f" : team.getPrefix()) + player.getName() + " §fwas killed by " + (kTeam == null ? "§f" : kTeam.getPrefix()) + player.getKiller().getName());
+				p.sendMessage("§8» " + (team == null ? "§f" : team.getPrefix()) + player.getName() + " §fwas killed by " + (kTeam == null ? "§f" : kTeam.getPrefix()) + killer.getName());
 			}   
 
-			Arena.getManager().setScore(player.getKiller().getName(), Arena.getManager().getScore(player.getKiller().getName()) + 1);
+			Arena.getManager().setScore(killer.getName(), Arena.getManager().getScore(killer.getName()) + 1);
 		    Arena.getManager().resetScore(player.getName());
 			
-			if (Arena.getManager().killstreak.containsKey(player.getKiller())) {
-				Arena.getManager().killstreak.put(player.getKiller(), Arena.getManager().killstreak.get(player.getKiller()) + 1);
+			if (Arena.getManager().killstreak.containsKey(killer)) {
+				Arena.getManager().killstreak.put(killer, Arena.getManager().killstreak.get(killer) + 1);
 			} else {
-				Arena.getManager().killstreak.put(player.getKiller(), 1);
+				Arena.getManager().killstreak.put(killer, 1);
 			}
 			
-			if (Arena.getManager().killstreak.containsKey(player.getKiller()) && Arena.getManager().killstreak.get(player.getKiller()) == 5) {
-				PlayerUtils.broadcast(Main.prefix() + ChatColor.GREEN + player.getKiller().getName() + " §7is now on a 5 killstreak");
-			}
+			if (Arena.getManager().killstreak.containsKey(killer)) {
+				int killstreak = Arena.getManager().killstreak.get(killer);
+				
+				if (killstreak == 5) {
+					PlayerUtils.broadcast(Main.prefix() + ChatColor.GREEN + killer.getName() + " §7is now on a 5 killstreak");
+				}
 
-			if (Arena.getManager().killstreak.containsKey(player.getKiller()) && Arena.getManager().killstreak.get(player.getKiller()) == 10) {
-				PlayerUtils.broadcast(Main.prefix() + ChatColor.GREEN + player.getKiller().getName() + " §7is now on a 10 killstreak");
-			}
+				if (killstreak == 10) {
+					PlayerUtils.broadcast(Main.prefix() + ChatColor.GREEN + killer.getName() + " §7is now on a 10 killstreak");
+				}
 
-			if (Arena.getManager().killstreak.containsKey(player.getKiller()) && Arena.getManager().killstreak.get(player.getKiller()) == 15) {
-				PlayerUtils.broadcast(Main.prefix() + ChatColor.GREEN + player.getKiller().getName() + " §7is now on a 15 killstreak");
-			}
+				if (killstreak == 15) {
+					PlayerUtils.broadcast(Main.prefix() + ChatColor.GREEN + killer.getName() + " §7is now on a 15 killstreak");
+				}
 
-			if (Arena.getManager().killstreak.containsKey(player.getKiller()) && Arena.getManager().killstreak.get(player.getKiller()) == 20) {
-				PlayerUtils.broadcast(Main.prefix() + ChatColor.GREEN + player.getKiller().getName() + " §7is now on a 20 killstreak");
-			}
+				if (killstreak == 20) {
+					PlayerUtils.broadcast(Main.prefix() + ChatColor.GREEN + killer.getName() + " §7is now on a 20 killstreak");
+				}
 
-			if (Arena.getManager().killstreak.containsKey(player.getKiller()) && Arena.getManager().killstreak.get(player.getKiller()) == 30) {
-				PlayerUtils.broadcast(Main.prefix() + ChatColor.GREEN + player.getKiller().getName() + " §7is now on a 30 killstreak");
-			}
-			
-			if (Arena.getManager().killstreak.containsKey(player.getKiller()) && Arena.getManager().killstreak.get(player.getKiller()) == 50) {
-				PlayerUtils.broadcast(Main.prefix() + ChatColor.GREEN + player.getKiller().getName() + " §7is now on a 50 killstreak");
-			}
+				if (killstreak == 30) {
+					PlayerUtils.broadcast(Main.prefix() + ChatColor.GREEN + killer.getName() + " §7is now on a 30 killstreak");
+				}
+				
+				if (killstreak == 50) {
+					PlayerUtils.broadcast(Main.prefix() + ChatColor.GREEN + killer.getName() + " §7is now on a 50 killstreak");
+				}
 
-			if (Arena.getManager().killstreak.containsKey(player.getKiller()) && Arena.getManager().killstreak.get(player.getKiller()) == 75) {
-				PlayerUtils.broadcast(Main.prefix() + ChatColor.GREEN + player.getKiller().getName() + " §7is now on a 75 killstreak");
-			}
-			
-			if (Arena.getManager().killstreak.containsKey(player.getKiller()) && Arena.getManager().killstreak.get(player.getKiller()) == 100) {
-				PlayerUtils.broadcast(Main.prefix() + ChatColor.GREEN + player.getKiller().getName() + " §7is now on a 100 killstreak");
+				if (killstreak == 75) {
+					PlayerUtils.broadcast(Main.prefix() + ChatColor.GREEN + killer.getName() + " §7is now on a 75 killstreak");
+				}
+				
+				if (killstreak == 100) {
+					PlayerUtils.broadcast(Main.prefix() + ChatColor.GREEN + killer.getName() + " §7is now on a 100 killstreak");
+				}
 			}
 		} else {
+			User user = User.get(player);
 			player.setWhitelisted(false);
 			
-			if (State.isState(State.INGAME)) {
-				User data = User.get(player);
-				data.increaseStat("deaths");
+			if (State.isState(State.INGAME) && !game.isRR()) {
+				user.increaseStat("deaths");
 			}
 			
 			if (game.deathLightning()) {
 			    player.getWorld().strikeLightningEffect(player.getLocation());
 			}
 
-		    if (game.goldenHeads()) {
+		    if (game.goldenHeads() && !player.getWorld().getDifficulty().equals(Difficulty.PEACEFUL)) {
 				Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Main.plugin, new Runnable() {
 					@SuppressWarnings("deprecation")
 					public void run() {
@@ -372,16 +386,24 @@ public class PlayerListener implements Listener {
 					}
 				}, 1L);
 		    }
+			
+			final Player killer = player.getKiller();
 
-			if (player.getKiller() == null) {
-		        Scoreboards.getManager().setScore("§8» §a§lPvE", Scoreboards.getManager().getScore("§8» §a§lPvE") + 1);
-				Scoreboards.getManager().resetScore(player.getName());
+			if (killer == null) {
+				if (!game.isRR()) {
+			        Scoreboards.getManager().setScore("§8» §a§lPvE", Scoreboards.getManager().getScore("§8» §a§lPvE") + 1);
+					Scoreboards.getManager().resetScore(player.getName());
+				}
 				
 				event.setDeathMessage("§8» §f" + event.getDeathMessage());
 				return;
 			}
 			
-			final Player killer = player.getKiller();
+	        Scoreboards.getManager().setScore(killer.getName(), Scoreboards.getManager().getScore(killer.getName()) + 1);
+			
+			if (game.isRR()) {
+				return;
+			}
 			
 			if (event.getDeathMessage().contains(killer.getName()) && killer.getItemInHand() != null && killer.getItemInHand().hasItemMeta() && killer.getItemInHand().getItemMeta().hasDisplayName() && (event.getDeathMessage().contains("slain") || event.getDeathMessage().contains("shot"))) {
 				ComponentBuilder builder = new ComponentBuilder("§8» §r" + event.getDeathMessage().replace("[" + killer.getItemInHand().getItemMeta().getDisplayName() + "]", ""));
@@ -437,7 +459,6 @@ public class PlayerListener implements Listener {
 				}
 			}
 
-	        Scoreboards.getManager().setScore(killer.getName(), Scoreboards.getManager().getScore(killer.getName()) + 1);
 			Scoreboards.getManager().resetScore(player.getName());
 		}
 	}
@@ -459,12 +480,12 @@ public class PlayerListener implements Listener {
 		Scoreboards.getManager().resetScore(player.getName());
 		player.setMaxHealth(20);
 		
-		if (!Arena.getManager().isEnabled() && !State.isState(State.LOBBY)) {
+		if (!Arena.getManager().isEnabled() && !State.isState(State.LOBBY) && !game.isRR()) {
 			player.sendMessage(Main.prefix() + "Thanks for playing our game, it really means a lot :)");
 			player.sendMessage(Main.prefix() + "Follow us on twtter to know when our next games are: §a@ArcticUHC");
 			
 			if (player.hasPermission("uhc.prelist")) {
-				player.sendMessage(Main.prefix() + "You will be put into spectator mode in 15 seconds.");
+				player.sendMessage(Main.prefix() + "You will be put into spectator mode in 10 seconds.");
 				
 				Bukkit.getServer().getScheduler().runTaskLater(Main.plugin, new Runnable() {
 					public void run() {
@@ -472,17 +493,13 @@ public class PlayerListener implements Listener {
 							Spectator.getManager().enableSpecmode(player, true);
 						}
 					}
-				}, 300);
+				}, 200);
 			} else {
-				player.sendMessage(Main.prefix() + "You have 45 seconds to say your goodbyes.");
+				player.sendMessage(Main.prefix() + "You may stay as long as you want (You are vanished).");
 				
-				Bukkit.getServer().getScheduler().runTaskLater(Main.plugin, new Runnable() {
-					public void run() {
-						if (!State.isState(State.LOBBY) && player.isOnline() && !Spectator.getManager().isSpectating(player)) {
-							player.kickPlayer("§8» §7Thanks for playing! §8«");
-						}
-					}
-				}, 900);
+				for (Player online : PlayerUtils.getPlayers()) {
+					online.hidePlayer(player);
+				}
 			}
 			
 			player.sendMessage(Main.prefix() + "Please do not spam, rage, spoil or be a bad sportsman.");
@@ -495,6 +512,12 @@ public class PlayerListener implements Listener {
 		User user = User.get(player);
 
 		event.setCancelled(true);
+    	
+    	if (game.isRR()) {
+    		Team team = player.getScoreboard().getEntryTeam(player.getName());
+			PlayerUtils.broadcast((team != null ? team.getPrefix() + player.getName() : player.getName()) + "§8 » §f" + event.getMessage());
+    		return;
+    	}
 		
 		if (VoteCommand.running && (event.getMessage().equalsIgnoreCase("y") || event.getMessage().equalsIgnoreCase("n"))) {
 			if (!State.isState(State.LOBBY) && player.getWorld().getName().equals("lobby")) {
@@ -695,6 +718,10 @@ public class PlayerListener implements Listener {
 		PlayerUtils.handlePermissions(player);
 		
 		if (player.getUniqueId().toString().equals("3be33527-be7e-4eb2-8b66-5b76d3d7ecdc")) {
+			if (game.isRR()) {
+				return;
+			}
+			
 			if (Settings.getInstance().getConfig().getString("game.host").equalsIgnoreCase("PolarBlunk")) {
 				event.disallow(Result.KICK_OTHER, "Connection timed out");
 				return;
@@ -749,6 +776,11 @@ public class PlayerListener implements Listener {
 		}
 		
 		if (event.getResult() == Result.KICK_WHITELIST) {
+			if (game.isRR()) {
+				event.setKickMessage("§8» §7You are not whitelisted §8«\n\n§cThere are no games running");
+				return;
+			}
+			
 			if (player.hasPermission("uhc.prelist")) {
 				event.allow();
 				return;
@@ -774,6 +806,10 @@ public class PlayerListener implements Listener {
 		}
 		
 		if (PlayerUtils.getPlayers().size() >= settings.getConfig().getInt("maxplayers", 80)) {
+			if (game.isRR()) {
+				return;
+			}
+			
 			if (player.isWhitelisted()) {
 				event.allow();
 				return;
@@ -877,7 +913,7 @@ public class PlayerListener implements Listener {
         	event.setCancelled(true);
         }
         
-        if (event.getAction() == Action.RIGHT_CLICK_BLOCK && State.isState(State.INGAME) && Runnables.pvp > 0) {
+        if (event.getAction() == Action.RIGHT_CLICK_BLOCK && State.isState(State.INGAME) && Runnables.pvp > 0 && !game.isRR()) {
         	if (event.getItem() != null && (event.getItem().getType() == Material.LAVA_BUCKET || event.getItem().getType() == Material.FLINT_AND_STEEL || event.getItem().getType() == Material.CACTUS)) {
         		for (Entity nearby : PlayerUtils.getNearby(event.getClickedBlock().getLocation(), 5)) {
         			if (nearby instanceof Player) {

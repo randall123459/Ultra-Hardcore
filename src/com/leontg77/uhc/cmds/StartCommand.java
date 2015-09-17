@@ -6,6 +6,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
+import com.leontg77.uhc.Game;
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.Main.State;
 import com.leontg77.uhc.Runnables;
@@ -54,18 +55,25 @@ public class StartCommand implements CommandExecutor {
 					Runnables.heal = a;
 					Runnables.pvp = b;
 					Runnables.meetup = c;
+
+					if (Game.getInstance().isRR()) {
+						Runnables.timerRR();
+					} else {
+						Runnables.timer();
+					}
 					
-					Runnables.timer();
 					Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer cancel");
 					
-					if (Runnables.heal > 0) {
-						Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer 60 &cFinal heal in&8:&7");
-					} else if (Runnables.pvp > 0) {
-						Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer " + (Runnables.pvp * 60) + " &cPvP in&8:&7");
-					} else if (Runnables.meetup > 0) {
-						Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer " + (Runnables.meetup * 60) + " &cMeetup in&8:&7");
-					} else {
-						Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer -1 &6Meetup is now!");
+					if (!Game.getInstance().isRR()) {
+						if (Runnables.heal > 0) {
+							Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer 60 &cFinal heal in&8:&7");
+						} else if (Runnables.pvp > 0) {
+							Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer " + (Runnables.pvp * 60) + " &cPvP in&8:&7");
+						} else if (Runnables.meetup > 0) {
+							Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer " + (Runnables.meetup * 60) + " &cMeetup in&8:&7");
+						} else {
+							Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer -1 &6Meetup is now!");
+						}
 					}
 					break;
 				case LOBBY:
@@ -73,9 +81,14 @@ public class StartCommand implements CommandExecutor {
 					break;
 				case SCATTER:
 					PlayerUtils.broadcast(Main.prefix() + "The game is starting.");
-					PlayerUtils.broadcast(Main.prefix() + "Remember to read the match post: " + Settings.getInstance().getConfig().getString("matchpost"));
-					PlayerUtils.broadcast(Main.prefix() + "If you have any questions, use /helpop.");
-					Runnables.start();
+					
+					if (Game.getInstance().isRR()) {
+						Runnables.startRR();
+					} else {
+						PlayerUtils.broadcast(Main.prefix() + "Remember to read the match post: " + Settings.getInstance().getConfig().getString("matchpost"));
+						PlayerUtils.broadcast(Main.prefix() + "If you have any questions, use /helpop.");
+						Runnables.start();
+					}
 					break;
 				default:
 					break;

@@ -17,7 +17,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import com.leontg77.uhc.Fireworks;
 import com.leontg77.uhc.Game;
@@ -44,6 +43,87 @@ public class EndCommand implements CommandExecutor {
 		
 		if (cmd.getName().equalsIgnoreCase("end")) {
 			if (sender.hasPermission("uhc.end")) {
+				if (game.isRR()) {
+					HandlerList.unregisterAll(new SpecInfo());
+					Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer cancel");
+					Spectator.getManager().spectators.clear();
+					SpecInfo.totalDiamonds.clear();
+					Parkour.getManager().setup();
+					State.setState(State.LOBBY);
+					SpecInfo.totalGold.clear();
+					
+					World w = Bukkit.getServer().getWorld(settings.getData().getString("spawn.world"));
+					double x = settings.getData().getDouble("spawn.x");
+					double y = settings.getData().getDouble("spawn.y");
+					double z = settings.getData().getDouble("spawn.z");
+					float yaw = (float) settings.getData().getDouble("spawn.yaw");
+					float pitch = (float) settings.getData().getDouble("spawn.pitch");
+
+					Location loc = new Location(w, x, y, z, yaw, pitch);
+					
+					for (Player online : PlayerUtils.getPlayers()) {
+						for (Player online2 : PlayerUtils.getPlayers()) {
+							online.showPlayer(online2);
+							online2.showPlayer(online);
+						}
+						
+						if (Spectator.getManager().isSpectating(online)) {
+							Spectator.getManager().disableSpecmode(online, true);
+						}
+						
+						online.setMaxHealth(20.0);
+						online.setHealth(20.0);
+						online.setFireTicks(0);
+						online.setSaturation(20);
+						online.teleport(loc);
+						online.setLevel(0);
+						online.setExp(0);
+						online.setFoodLevel(20);
+						online.getInventory().clear();
+						online.getInventory().setArmorContents(null);
+						online.setItemOnCursor(new ItemStack (Material.AIR));
+						online.setGameMode(GameMode.SURVIVAL);
+						
+						for (PotionEffect effect : online.getActivePotionEffects()) {
+							online.removePotionEffect(effect.getType());	
+						}
+					}
+					
+					for (String e : Scoreboards.getManager().kills.getScoreboard().getEntries()) {
+						Scoreboards.getManager().resetScore(e);
+					}
+					
+					for (String team : Teams.getManager().getTeam("spec").getEntries()) {
+						Teams.getManager().getTeam("spec").removeEntry(team);
+					}
+
+					for (OfflinePlayer whitelisted : Bukkit.getServer().getWhitelistedPlayers()) {
+	       				whitelisted.setWhitelisted(false);
+	       			}
+
+					for (Scenario scen : ScenarioManager.getInstance().getEnabledScenarios()) {
+	       				scen.disableScenario();
+	       			}
+					
+					try {
+						Bukkit.getServer().getScheduler().cancelTask(Runnables.task);;
+					} catch (Exception e) {
+						Bukkit.getLogger().warning("§cCould not cancel task " + Runnables.task);
+					}
+					
+					File playerData = new File(Bukkit.getWorlds().get(0).getWorldFolder(), "playerdata");
+					File stats = new File(Bukkit.getWorlds().get(0).getWorldFolder(), "stats");
+					
+					for (File dataFiles : playerData.listFiles()) {
+						dataFiles.delete();
+					}
+					
+					for (File statsFiles : stats.listFiles()) {
+						statsFiles.delete();
+					}
+					return true;
+				}
+				
 				if (args.length < 2) {
 					sender.sendMessage(Main.prefix() + "Usage: /end <kills> <winners>");
 					return true;
@@ -68,7 +148,6 @@ public class EndCommand implements CommandExecutor {
 				SpecInfo.totalGold.clear();
 				TeamCommand.sTeam.clear();
 				Main.teamKills.clear();
-				Main.relog.clear();
 				Main.kills.clear();
 				
 				ArrayList<String> winners = new ArrayList<String>();
@@ -132,6 +211,11 @@ public class EndCommand implements CommandExecutor {
 				game.setFFA(true);
 				
 				for (Player online : PlayerUtils.getPlayers()) {
+					for (Player online2 : PlayerUtils.getPlayers()) {
+						online.showPlayer(online2);
+						online2.showPlayer(online);
+					}
+					
 					if (Spectator.getManager().isSpectating(online)) {
 						Spectator.getManager().disableSpecmode(online, true);
 					}
@@ -169,14 +253,6 @@ public class EndCommand implements CommandExecutor {
 				for (Scenario scen : ScenarioManager.getInstance().getEnabledScenarios()) {
        				scen.disableScenario();
        			}
-				
-				for (BukkitRunnable run : Main.relog.values()) {
-					try {
-						run.cancel();
-					} catch (Exception e) {
-						Bukkit.getLogger().warning("§cCould not cancel task " + run.getTaskId());
-					}
-				}
 				
 				try {
 					Bukkit.getServer().getScheduler().cancelTask(Runnables.task);;

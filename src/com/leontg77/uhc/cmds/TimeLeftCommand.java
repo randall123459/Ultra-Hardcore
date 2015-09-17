@@ -4,6 +4,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
+import com.leontg77.uhc.Game;
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.Main.State;
 import com.leontg77.uhc.Runnables;
@@ -13,6 +14,12 @@ public class TimeLeftCommand implements CommandExecutor {
 
 	public boolean onCommand(CommandSender sender, Command cmd,	String label, String[] args) {
 		if (cmd.getName().equalsIgnoreCase("timeleft")) {
+			if (Game.getInstance().isRR()) {
+				sender.sendMessage(Main.prefix() + "Current Episode: §a" + Runnables.meetup + " mins");
+				sender.sendMessage(Main.prefix() + "Time to next episode: §a" + Runnables.heal + " mins");
+				return true;
+			}
+			
 			if (GameUtils.getTeamSize().startsWith("No") || GameUtils.getTeamSize().startsWith("Open")) {
 				sender.sendMessage(Main.prefix() + "There are no matches running.");
 				return true;
