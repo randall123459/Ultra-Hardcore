@@ -26,7 +26,7 @@ public class WorldListener implements Listener {
 
 	@EventHandler
 	public void onWeatherChange(WeatherChangeEvent event) {
-		if (event.toWeatherState()) {
+    	if (event.toWeatherState()) {
 			if (event.getWorld().getName().equals("lobby") || event.getWorld().getName().equalsIgnoreCase("arena")) {
 				event.setCancelled(true);
 				return;
@@ -50,13 +50,17 @@ public class WorldListener implements Listener {
 
 	@EventHandler
 	public void onThunderChange(ThunderChangeEvent event) {
-		if (event.toThunderState()) {
+    	if (event.toThunderState()) {
 			event.setCancelled(true);
 		}
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onChunkPopulate(ChunkPopulateEvent event) {
+		if (event.getWorld().getName().equals("lobby") || event.getWorld().getName().equalsIgnoreCase("arena")) {
+			return;
+		}
+		
 		WorldData worldData = AntiStripmine.getManager().getWorldData(event.getWorld());
 		
 		if (!worldData.isEnabled()) {
@@ -76,6 +80,10 @@ public class WorldListener implements Listener {
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onWorldInit(WorldInitEvent event) {
+		if (event.getWorld().getName().equals("lobby") || event.getWorld().getName().equalsIgnoreCase("arena")) {
+			return;
+		}
+		
 		AntiStripmine.getManager().registerWorld(event.getWorld());
 	}
 }
