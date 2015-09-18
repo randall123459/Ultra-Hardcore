@@ -19,7 +19,7 @@ public class RulesCommand implements CommandExecutor {
 		Player player = (Player) sender;
 		
 		if (cmd.getName().equalsIgnoreCase("rules")) {
-			InvGUI.getManager().openRules(player);
+			InvGUI.getManager().openGameInfo(player);
 		}
 		return true;
 	}
