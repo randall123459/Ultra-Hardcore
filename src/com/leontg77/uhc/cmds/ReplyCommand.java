@@ -13,7 +13,7 @@ public class ReplyCommand implements CommandExecutor {
 	public boolean onCommand(CommandSender sender, Command cmd, String label, final String[] args) {
 		if (cmd.getName().equalsIgnoreCase("reply")) {
 			if (args.length == 0) {
-	    		sender.sendMessage(ChatColor.RED + "Usage: /reply <message>");
+	    		sender.sendMessage(Main.prefix() + "Usage: /reply <message>");
 	        	return true;
 	        }   
 	    	
