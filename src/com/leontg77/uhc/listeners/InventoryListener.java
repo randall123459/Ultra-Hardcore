@@ -79,6 +79,11 @@ public class InventoryListener implements Listener {
 			return;
 		}
 		
+		if (event.getInventory().getTitle().equals("§4ArcticUHC Game Information")) {
+			event.setCancelled(true);
+			return;
+		}
+		
 		if (!Spectator.getManager().isSpectating(player)) {
 			return;
 		}
@@ -200,6 +205,11 @@ public class InventoryListener implements Listener {
 		if (Main.invsee.containsKey(inv)) {
 			Main.invsee.get(inv).cancel();
 			Main.invsee.remove(inv);
+		}
+		
+		if (Main.rules.containsKey(inv)) {
+			Main.rules.get(inv).cancel();
+			Main.rules.remove(inv);
 		}
 
 		if (Arena.getManager().isEnabled() && event.getInventory() instanceof EnchantingInventory) {
