@@ -5,6 +5,7 @@ import static com.leontg77.uhc.Main.plugin;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 
@@ -17,7 +18,6 @@ import org.bukkit.BanEntry;
 import org.bukkit.BanList.Type;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Difficulty;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -215,16 +215,6 @@ public class PlayerListener implements Listener {
 			player.getInventory().setArmorContents(null);
 		}
 		
-		if (Main.msg.containsKey(player)) {
-			Main.msg.remove(player);
-		}
-		
-		for (CommandSender key : Main.msg.keySet()) {
-			if (Main.msg.get(key).equals(player)) {
-				Main.msg.remove(key);
-			}
-		}
-		
 		for (Player online : PlayerUtils.getPlayers()) {
 			if (online.canSee(player)) {
 				online.sendMessage("§8[§c-§8] §7" + player.getName() + " has left.");
@@ -232,19 +222,33 @@ public class PlayerListener implements Listener {
 		}
 		
 		Bukkit.getLogger().info("§8[§c-§8] §7" + player.getName() + " has left.");
+		
+		if (Main.msg.containsKey(player)) {
+			Main.msg.remove(player);
+		}
+		
+		HashSet<CommandSender> temp = new HashSet<CommandSender>();
+		
+		for (CommandSender key : Main.msg.keySet()) {
+			temp.add(key);
+		}
+		
+		for (CommandSender key : temp) {
+			if (Main.msg.get(key).equals(player)) {
+				Main.msg.remove(key);
+			}
+		}
 	}
 	
 	@EventHandler
 	public void onPlayerDeath(final PlayerDeathEvent event) {
 		final Player player = event.getEntity().getPlayer();
 		
-		if (!game.isRR()) {
-			new BukkitRunnable() {
-				public void run() {
-					player.spigot().respawn();
-				}
-			}.runTaskLater(Main.plugin, 20);
-		}
+		new BukkitRunnable() {
+			public void run() {
+				player.spigot().respawn();
+			}
+		}.runTaskLater(Main.plugin, 20);
 		
 		if (Arena.getManager().isEnabled()) {
 			Team team = Teams.getManager().getTeam(player);
@@ -301,7 +305,7 @@ public class PlayerListener implements Listener {
 			User uKiller = User.get(killer);
 			
 			if (!Bukkit.hasWhitelist()) {
-				uKiller.increaseStat("kills");
+				uKiller.increaseStat("arenakills");
 			}
 			
 			for (Player p : Arena.getManager().getPlayers()) {
@@ -364,7 +368,7 @@ public class PlayerListener implements Listener {
 			    player.getWorld().strikeLightningEffect(player.getLocation());
 			}
 
-		    if (game.goldenHeads() && !player.getWorld().getDifficulty().equals(Difficulty.PEACEFUL)) {
+		    if (game.goldenHeads() && !(player.getWorld().getName().equals("lobby") || player.getWorld().getName().equals("arena"))) {
 				Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Main.plugin, new Runnable() {
 					@SuppressWarnings("deprecation")
 					public void run() {
@@ -390,7 +394,7 @@ public class PlayerListener implements Listener {
 			final Player killer = player.getKiller();
 
 			if (killer == null) {
-				if (!game.isRR()) {
+				if (!game.isRR() && State.isState(State.INGAME)) {
 			        Scoreboards.getManager().setScore("§8» §a§lPvE", Scoreboards.getManager().getScore("§8» §a§lPvE") + 1);
 					Scoreboards.getManager().resetScore(player.getName());
 				}
@@ -494,6 +498,10 @@ public class PlayerListener implements Listener {
 						}
 					}
 				}, 200);
+				
+				for (Player online : PlayerUtils.getPlayers()) {
+					online.hidePlayer(player);
+				}
 			} else {
 				player.sendMessage(Main.prefix() + "You may stay as long as you want (You are vanished).");
 				
