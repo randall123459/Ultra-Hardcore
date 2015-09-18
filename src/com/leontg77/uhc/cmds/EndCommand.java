@@ -1,7 +1,11 @@
 package com.leontg77.uhc.cmds;
 
 import java.io.File;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.TimeZone;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -106,9 +110,9 @@ public class EndCommand implements CommandExecutor {
 	       			}
 					
 					try {
-						Bukkit.getServer().getScheduler().cancelTask(Runnables.task);;
+						Bukkit.getServer().getScheduler().cancelTask(Runnables.taskMinutes);;
 					} catch (Exception e) {
-						Bukkit.getLogger().warning("§cCould not cancel task " + Runnables.task);
+						Bukkit.getLogger().warning("§cCould not cancel task " + Runnables.taskMinutes);
 					}
 					
 					File playerData = new File(Bukkit.getWorlds().get(0).getWorldFolder(), "playerdata");
@@ -180,12 +184,17 @@ public class EndCommand implements CommandExecutor {
 				
 				PlayerUtils.broadcast(" ");
 				PlayerUtils.broadcast(Main.prefix() + "With §a" + kills + "§7 kills.");
-				PlayerUtils.broadcast(Main.prefix() + "Congratz on the win!");
+				PlayerUtils.broadcast(Main.prefix() + "Congrats on the win!");
 				PlayerUtils.broadcast(Main.prefix() + "View the hall of fame with §a/hof");
+				
+				TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+				DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+				Date date = new Date();
 				
 				if (settings.getHOF().contains(host)) {
 					int id = settings.getHOF().getConfigurationSection(host).getKeys(false).size() + 1;
-				
+
+					settings.getHOF().set(host + "." + id + ".date", dateFormat.format(date));
 					settings.getHOF().set(host + "." + id + ".winners", winners);
 					settings.getHOF().set(host + "." + id + ".kills", kills);
 					settings.getHOF().set(host + "." + id + ".teamsize", GameUtils.getTeamSize().trim());
@@ -193,6 +202,7 @@ public class EndCommand implements CommandExecutor {
 					settings.saveHOF();
 				
 				} else {
+					settings.getHOF().set(host + "." + 1 + ".date", dateFormat.format(date));
 					settings.getHOF().set(host + "." + 1 + ".winners", winners);
 					settings.getHOF().set(host + "." + 1 + ".kills", kills);
 					settings.getHOF().set(host + "." + 1 + ".teamsize", GameUtils.getTeamSize().trim());
@@ -255,9 +265,9 @@ public class EndCommand implements CommandExecutor {
        			}
 				
 				try {
-					Bukkit.getServer().getScheduler().cancelTask(Runnables.task);;
+					Bukkit.getServer().getScheduler().cancelTask(Runnables.taskMinutes);;
 				} catch (Exception e) {
-					Bukkit.getLogger().warning("§cCould not cancel task " + Runnables.task);
+					Bukkit.getLogger().warning("§cCould not cancel task " + Runnables.taskMinutes);
 				}
 				
 				File playerData = new File(Bukkit.getWorlds().get(0).getWorldFolder(), "playerdata");
