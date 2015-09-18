@@ -19,6 +19,13 @@ public class StatsCommand implements CommandExecutor {
 	
 	public boolean onCommand(final CommandSender sender, Command cmd, String label, String[] args) {
 		if (cmd.getName().equalsIgnoreCase("stats")) {
+			boolean broken = true;
+			
+			if (broken) {
+				sender.sendMessage(Main.prefix() + "§cStats are broken, will be fixed shortly.");
+				return true;
+			}
+			
 			if (Game.getInstance().isRR()) {
 				sender.sendMessage(Main.prefix() + "No.");
 				return true;
@@ -29,27 +36,27 @@ public class StatsCommand implements CommandExecutor {
 			if (args.length == 0) {
 				if (sender instanceof Player) {
 					Player player = (Player) sender;
-					User data = User.get(player);
+					User user = User.get(player);
 					
 					player.sendMessage("§8---------------------------");
 					player.sendMessage(" §8» §6Your stats");
-					player.sendMessage(" §8» §6First joined: §7" + new Date(data.getFile().getLong("firstjoined")));
+					player.sendMessage(" §8» §6First joined: §7" + new Date(user.getFile().getLong("firstjoined")));
 					player.sendMessage("§8---------------------------");
-					player.sendMessage(" §8» §aWins: §7" + data.getStat("wins"));
-					player.sendMessage(" §8» §aKills: §7" + data.getStat("kills"));
-					player.sendMessage(" §8» §aDeaths: §7" + data.getStat("deaths"));
-					if (data.getStat("deaths") == 0) {
-						player.sendMessage(" §8» §aK/D: §7" + data.getStat("kills"));
+					player.sendMessage(" §8» §aWins: §7" + user.getStat("wins"));
+					player.sendMessage(" §8» §aKills: §7" + user.getStat("kills"));
+					player.sendMessage(" §8» §aDeaths: §7" + user.getStat("deaths"));
+					if (user.getStat("deaths") == 0) {
+						player.sendMessage(" §8» §aK/D: §7" + user.getStat("kills"));
 					} else {
-						player.sendMessage(" §8» §aK/D: §7" + NumberUtils.convertDouble((((double) data.getStat("kills")) / ((double) data.getStat("deaths")))));
+						player.sendMessage(" §8» §aK/D: §7" + NumberUtils.convertDouble((((double) user.getStat("kills")) / ((double) user.getStat("deaths")))));
 					}
-					player.sendMessage(" §8» §aGames played: §7" + data.getStat("gamesplayed"));
-					player.sendMessage(" §8» §aArena kills: §7" + data.getStat("arenakills"));
-					player.sendMessage(" §8» §aArena deaths: §7" + data.getStat("arenadeaths"));
-					if (data.getStat("arenadeaths") == 0) {
-						player.sendMessage(" §8» §aArena K/D: §7" + data.getStat("arenakills"));
+					player.sendMessage(" §8» §aGames played: §7" + user.getStat("gamesplayed"));
+					player.sendMessage(" §8» §aArena kills: §7" + user.getStat("arenakills"));
+					player.sendMessage(" §8» §aArena deaths: §7" + user.getStat("arenadeaths"));
+					if (user.getStat("arenadeaths") == 0) {
+						player.sendMessage(" §8» §aArena K/D: §7" + user.getStat("arenakills"));
 					} else {
-						player.sendMessage(" §8» §aArena K/D: §7" + NumberUtils.convertDouble((((double) data.getStat("arenakills")) / ((double) data.getStat("arenadeaths")))));
+						player.sendMessage(" §8» §aArena K/D: §7" + NumberUtils.convertDouble((((double) user.getStat("arenakills")) / ((double) user.getStat("arenadeaths")))));
 					}
 					player.sendMessage("§8---------------------------");
 				} else {
@@ -65,27 +72,27 @@ public class StatsCommand implements CommandExecutor {
 				return true;
 			}
 			
-			User data = User.get(target);
+			User user = User.get(target);
 			
 			sender.sendMessage("§8---------------------------");
 			sender.sendMessage(" §8» §6" + target.getName() + "'s stats");
-			sender.sendMessage(" §8» §6First joined: §7" + new Date(data.getFile().getLong("firstjoined")));
+			sender.sendMessage(" §8» §6First joined: §7" + new Date(user.getFile().getLong("firstjoined")));
 			sender.sendMessage("§8---------------------------");
-			sender.sendMessage(" §8» §aWins: §7" + data.getStat("wins"));
-			sender.sendMessage(" §8» §aKills: §7" + data.getStat("kills"));
-			sender.sendMessage(" §8» §aDeaths: §7" + data.getStat("deaths"));
-			if (data.getStat("deaths") == 0) {
-				sender.sendMessage(" §8» §aK/D: §7" + data.getStat("kills"));
+			sender.sendMessage(" §8» §aWins: §7" + user.getStat("wins"));
+			sender.sendMessage(" §8» §aKills: §7" + user.getStat("kills"));
+			sender.sendMessage(" §8» §aDeaths: §7" + user.getStat("deaths"));
+			if (user.getStat("deaths") == 0) {
+				sender.sendMessage(" §8» §aK/D: §7" + user.getStat("kills"));
 			} else {
-				sender.sendMessage(" §8» §aK/D: §7" + NumberUtils.convertDouble((((double) data.getStat("kills")) / ((double) data.getStat("deaths")))));
+				sender.sendMessage(" §8» §aK/D: §7" + NumberUtils.convertDouble((((double) user.getStat("kills")) / ((double) user.getStat("deaths")))));
 			}
-			sender.sendMessage(" §8» §aGames played: §7" + data.getStat("gamesplayed"));
-			sender.sendMessage(" §8» §aArena kills: §7" + data.getStat("arenakills"));
-			sender.sendMessage(" §8» §aArena deaths: §7" + data.getStat("arenadeaths"));
-			if (data.getStat("arenadeaths") == 0) {
-				sender.sendMessage(" §8» §aArena K/D: §7" + data.getStat("arenakills"));
+			sender.sendMessage(" §8» §aGames played: §7" + user.getStat("gamesplayed"));
+			sender.sendMessage(" §8» §aArena kills: §7" + user.getStat("arenakills"));
+			sender.sendMessage(" §8» §aArena deaths: §7" + user.getStat("arenadeaths"));
+			if (user.getStat("arenadeaths") == 0) {
+				sender.sendMessage(" §8» §aArena K/D: §7" + user.getStat("arenakills"));
 			} else {
-				sender.sendMessage(" §8» §aArena K/D: §7" + NumberUtils.convertDouble((((double) data.getStat("arenakills")) / ((double) data.getStat("arenadeaths")))));
+				sender.sendMessage(" §8» §aArena K/D: §7" + NumberUtils.convertDouble((((double) user.getStat("arenakills")) / ((double) user.getStat("arenadeaths")))));
 			}
 			sender.sendMessage("§8---------------------------");
 		}
