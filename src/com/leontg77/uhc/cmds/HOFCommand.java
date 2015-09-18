@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.TimeZone;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -16,9 +17,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.SkullMeta;
 
 import com.leontg77.uhc.Settings;
+import com.leontg77.uhc.User;
 import com.leontg77.uhc.utils.GameUtils;
+import com.leontg77.uhc.utils.NameUtils;
+import com.leontg77.uhc.utils.PlayerUtils;
 
 public class HOFCommand implements CommandExecutor, TabCompleter {
 	public static HashMap<Player, HashMap<Integer, Inventory>> pages = new HashMap<Player, HashMap<Integer, Inventory>>();
@@ -49,11 +54,11 @@ public class HOFCommand implements CommandExecutor, TabCompleter {
 				return true;
 			}
 			
-
+			TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 			
-			Inventory inv = Bukkit.getServer().createInventory(null, 54, host + "'s Hall of Fame");
-			Inventory inv2 = Bukkit.getServer().createInventory(null, 54, host + "'s Hall of Fame");
-			Inventory inv3 = Bukkit.getServer().createInventory(null, 54, host + "'s Hall of Fame");
+			Inventory inv = Bukkit.getServer().createInventory(null, 54, ChatColor.DARK_RED + host + "'s Hall of Fame");
+			Inventory inv2 = Bukkit.getServer().createInventory(null, 54, ChatColor.DARK_RED + host + "'s Hall of Fame");
+			Inventory inv3 = Bukkit.getServer().createInventory(null, 54, ChatColor.DARK_RED + host + "'s Hall of Fame");
 
 			HashMap<Integer, Inventory> invs = new HashMap<Integer, Inventory>();
 			pages.put(player, invs);
@@ -73,17 +78,27 @@ public class HOFCommand implements CommandExecutor, TabCompleter {
 			for (String section : Settings.getInstance().getHOF().getConfigurationSection(host).getKeys(false)) {
 				ItemStack game = new ItemStack (Material.GOLDEN_APPLE);
 				ItemMeta meta = game.getItemMeta();
-				meta.setDisplayName(ChatColor.GOLD + host + "'s #" + section);
+				meta.setDisplayName("§8» §6" + host + "'s #" + section + " §8«");
 				ArrayList<String> lore = new ArrayList<String>();
+				lore.add("§7" + settings.getHOF().getString(host + "." + section + ".date", "N/A"));
 				lore.add(" ");
-				lore.add("§aWinners: ");
+				lore.add("§8» §cWinners:");
 				for (String winners : settings.getHOF().getStringList(host + "." + section + ".winners")) {
-					lore.add("§7" + winners);
+					lore.add("§8» §7" + winners);
 				}
 				lore.add(" ");
-				lore.add("§aKills: §7" + settings.getHOF().getString(host + "." + section + ".kills"));
-				lore.add("§aTeamsize: §7" + settings.getHOF().getString(host + "." + section + ".teamsize"));
-				lore.add("§aGamemodes: §7" + settings.getHOF().getString(host + "." + section + ".scenarios"));
+				lore.add("§8» §cKills:");
+				lore.add("§8» §7" + settings.getHOF().getString(host + "." + section + ".kills", "-1"));
+				if (!settings.getHOF().getString(host + "." + section + ".teamsize", "FFA").isEmpty()) {
+					lore.add(" ");
+					lore.add("§8» §cTeamsize:");
+					lore.add("§8» §7" + settings.getHOF().getString(host + "." + section + ".teamsize", "FFA"));
+				}
+				lore.add(" ");
+				lore.add("§8» §cScenario:");
+				for (String scenario : settings.getHOF().getString(host + "." + section + ".scenarios", "Vanilla+").split(" ")) {
+					lore.add("§8» §7" + scenario);
+				}
 				lore.add(" ");
 				meta.setLore(lore);
 				game.setItemMeta(meta);
@@ -95,26 +110,43 @@ public class HOFCommand implements CommandExecutor, TabCompleter {
 				} else {
 					inv3.addItem(game);
 				}
-				
-				ItemStack nextpage = new ItemStack (Material.ARROW);
-				ItemMeta pagemeta = nextpage.getItemMeta();
-				pagemeta.setDisplayName(ChatColor.GREEN + "Next page");
-				pagemeta.setLore(Arrays.asList("§7Switch to the next page."));
-				nextpage.setItemMeta(pagemeta);
-				
-				ItemStack prevpage = new ItemStack (Material.ARROW);
-				ItemMeta prevmeta = prevpage.getItemMeta();
-				prevmeta.setDisplayName(ChatColor.GREEN + "Previous page");
-				prevmeta.setLore(Arrays.asList("§7Switch to the previous page."));
-				prevpage.setItemMeta(prevmeta);
-				
-				inv.setItem(51, nextpage);
-				inv2.setItem(47, prevpage);
-				inv2.setItem(51, nextpage);
-				inv3.setItem(47, prevpage);
-				
 				i++;
 			}
+
+			ItemStack nextpage = new ItemStack (Material.ARROW);
+			ItemMeta pagemeta = nextpage.getItemMeta();
+			pagemeta.setDisplayName(ChatColor.GREEN + "Next page");
+			pagemeta.setLore(Arrays.asList("§7Switch to the next page."));
+			nextpage.setItemMeta(pagemeta);
+			
+			ItemStack prevpage = new ItemStack (Material.ARROW);
+			ItemMeta prevmeta = prevpage.getItemMeta();
+			prevmeta.setDisplayName(ChatColor.GREEN + "Previous page");
+			prevmeta.setLore(Arrays.asList("§7Switch to the previous page."));
+			prevpage.setItemMeta(prevmeta);
+			
+			inv.setItem(51, nextpage);
+			inv2.setItem(47, prevpage);
+			inv2.setItem(51, nextpage);
+			inv3.setItem(47, prevpage);
+			
+			String name = GameUtils.getHostName(host);
+			
+			ItemStack head = new ItemStack (Material.SKULL_ITEM, 1, (short) 3);
+			SkullMeta headMeta = (SkullMeta) head.getItemMeta();
+			headMeta.setDisplayName("§8» §6" + name + " §8«");
+			headMeta.setOwner(name);
+			ArrayList<String> hlore = new ArrayList<String>();
+			hlore.add(" ");
+			hlore.add("§8» §7Total games hosted: §6" + Settings.getInstance().getHOF().getConfigurationSection(host).getKeys(false).size());
+			hlore.add("§8» §7Rank: §6" + NameUtils.fixString(User.get(PlayerUtils.getOfflinePlayer(name)).getRank().name(), false));
+			hlore.add(" ");
+			headMeta.setLore(hlore);
+			head.setItemMeta(headMeta);
+			
+			inv.setItem(49, head);
+			inv2.setItem(49, head);
+			inv3.setItem(49, head);
 			
 			player.openInventory(inv);
 		}
@@ -126,10 +158,8 @@ public class HOFCommand implements CommandExecutor, TabCompleter {
 			if (args.length == 1) {
 	        	ArrayList<String> arg = new ArrayList<String>();
 	        	ArrayList<String> types = new ArrayList<String>();
-	        	types.add("Axlur");
 	        	types.add("Leon");
 	        	types.add("Polar");
-	        	types.add("Pop");
 	        	types.add("Isaac");
 	        	
 	        	if (!args[0].equals("")) {
