@@ -767,28 +767,31 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
 	
 	/**
 	 * Sends the help list to a player.
+	 * 
 	 * @param player the player.
 	 */
 	public void sendHelp(Player player) {
 		player.sendMessage(Main.prefix() + "Team help:");
-		player.sendMessage("§8» §f/team create - Create a team.");
-		player.sendMessage("§8» §f/team leave - Leave your team.");
-		player.sendMessage("§8» §f/team invite <player> - Invite a player to your team.");
-		player.sendMessage("§8» §f/team kick <player> - Kick a player to your team.");
-		player.sendMessage("§8» §f/team accept <player> - Accept the players request.");
-		player.sendMessage("§8» §f/team deny <player> - Deny the players request.");
-		player.sendMessage("§8» §f/team info - Display your team info.");
+		player.sendMessage("§8» §f/pm <message> §7- §f§oTalk in team chat.");
+		player.sendMessage("§8» §f/tl §7- §f§oTell your coords to your teammates.");
+		player.sendMessage("§8» §f/team create §7- §f§oCreate a team.");
+		player.sendMessage("§8» §f/team leave §7- §f§oLeave your team.");
+		player.sendMessage("§8» §f/team invite <player> §7- §f§oInvite a player to your team.");
+		player.sendMessage("§8» §f/team kick <player> §7- §f§oKick a player to your team.");
+		player.sendMessage("§8» §f/team accept <player> §7- §f§oAccept the players request.");
+		player.sendMessage("§8» §f/team deny <player> §7- §f§oDeny the players request.");
+		player.sendMessage("§8» §f/team info §7- §f§oDisplay your team info.");
 		if (player.hasPermission("uhc.teamadmin")) {
 			player.sendMessage(Main.prefix() + "Team admin help:");
-			player.sendMessage("§8» §f/team info <player> - Display the targets team info.");
-			player.sendMessage("§8» §f/team enable - Enable team management.");
-			player.sendMessage("§8» §f/team disable - Disable team management.");
-			player.sendMessage("§8» §f/team add <team> <player> - Add a player to a team.");
-			player.sendMessage("§8» §f/team remove <player> - Remove a player from his team.");
-			player.sendMessage("§8» §f/team delete <team> - Empty a specific team.");
-			player.sendMessage("§8» §f/team friendlyfire <true|false> - Toggle FriendlyFire.");
-			player.sendMessage("§8» §f/team list - List all teams.");
-			player.sendMessage("§8» §f/team clear - Clear all teams.");
+			player.sendMessage("§8» §f/team info <player> §7- §f§oDisplay the targets team info.");
+			player.sendMessage("§8» §f/team enable §7- §f§oEnable team management.");
+			player.sendMessage("§8» §f/team disable §7- §f§oDisable team management.");
+			player.sendMessage("§8» §f/team add <team> <player> §7- §f§oAdd a player to a team.");
+			player.sendMessage("§8» §f/team remove <player> §7- §f§oRemove a player from his team.");
+			player.sendMessage("§8» §f/team delete <team> §7- §f§oEmpty a specific team.");
+			player.sendMessage("§8» §f/team friendlyfire <true|false> §7- §f§oToggle FriendlyFire.");
+			player.sendMessage("§8» §f/team list §7- §f§oList all teams.");
+			player.sendMessage("§8» §f/team clear §7- §f§oClear all teams.");
 		}
 	}
 }
