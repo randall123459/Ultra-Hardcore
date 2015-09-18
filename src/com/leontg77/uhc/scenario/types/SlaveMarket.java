@@ -202,7 +202,7 @@ public class SlaveMarket extends Scenario implements Listener, CommandExecutor {
 	    		PlayerUtils.broadcast(prefix() + "The bidding of player §a" + args[0] + "§7 is about to start.");
 	    		
 				for (Player online : PlayerUtils.getPlayers()) {
-		    		online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
+		    		online.playSound(online.getLocation(), Sound.FIREWORK_LAUNCH, 1, 0);
 		    	}
 				
 				Bukkit.getServer().getScheduler().runTaskLater(Main.plugin, new Runnable() {
@@ -230,7 +230,7 @@ public class SlaveMarket extends Scenario implements Listener, CommandExecutor {
 			    		PlayerUtils.broadcast(prefix() + "Bidding starts in §a1§7.");
 			    		
 						for (Player online : PlayerUtils.getPlayers()) {
-				    		online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
+				    		online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 1);
 				    	}
 					}
 				}, 60);
@@ -249,7 +249,7 @@ public class SlaveMarket extends Scenario implements Listener, CommandExecutor {
 			    		PlayerUtils.broadcast(prefix() + "The bidding of player §a" + args[0] + "§7 has started.");
 			    		
 						for (Player online : PlayerUtils.getPlayers()) {
-				    		online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 1);
+				    		online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
 				    	}
 						
 				    	bidProgressing = true;
@@ -270,6 +270,10 @@ public class SlaveMarket extends Scenario implements Listener, CommandExecutor {
 								    		return;
 							    		}
 							    		PlayerUtils.broadcast(prefix() + ChatColor.GREEN + bidWinner + "§7 has won the bidding on §a" + args[0] + "§7 for §a" + biggestBid + "§7 diamonds.");
+
+										for (Player online : PlayerUtils.getPlayers()) {
+								    		online.playSound(online.getLocation(), Sound.FIREWORK_TWINKLE, 1, 1);
+								    	}
 							    		
 							    		for (ItemStack item : target.getInventory().getContents()) {
 							    			if (item != null && item.getType() == Material.DIAMOND) {
