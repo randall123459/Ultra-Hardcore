@@ -27,6 +27,10 @@ public class NameUtils {
 	 * @return The new fixed text.
 	 */
 	public static String fixString(String text, boolean replaceUnderscore) {
+		if (text.equalsIgnoreCase("vip")) {
+			return "VIP";
+		}
+		
 		if (replaceUnderscore) {
 			return text.substring(0, 1).toUpperCase() + text.substring(1).toLowerCase().replaceAll("_", " ");
 		} else {
