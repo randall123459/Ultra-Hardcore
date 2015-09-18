@@ -35,11 +35,17 @@ import com.leontg77.uhc.utils.PlayerUtils;
 public class Runnables {
 	private static Settings settings = Settings.getInstance();
 	private static Game game = Game.getInstance();
+
+	public static int taskSeconds;
+	public static int taskMinutes;
 	
-	public static int task;
 	public static int heal;
 	public static int pvp;
 	public static int meetup;
+	
+	public static int healSeconds;
+	public static int pvpSeconds;
+	public static int meetupSeconds;
 	
 	/**
 	 * Start the countdown for the game.
@@ -189,16 +195,23 @@ public class Runnables {
 				game.setPregameBoard(false);
 				game.setArenaBoard(false);
 				
-				timer();
 				Bukkit.getServer().getPluginManager().registerEvents(new SpecInfo(), Main.plugin);
 				State.setState(State.INGAME);
 				Scoreboards.getManager().setScore("§8» §a§lPvE", 1);
 				Scoreboards.getManager().setScore("§8» §a§lPvE", 0);
+				
 				heal = 1;
 				pvp = settings.getConfig().getInt("time.pvp");
 				meetup = settings.getConfig().getInt("time.meetup");
+				
+				healSeconds = 60;
+				pvpSeconds = (settings.getConfig().getInt("time.pvp") * 60);
+				meetupSeconds = (settings.getConfig().getInt("time.meetup") * 60);
+				
 				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer cancel");
 				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer 60 &cFinal heal in&8:&7");
+				
+				timer();
 				
 				for (World world : Bukkit.getWorlds()) {
 					if (world.getName().equals("lobby") || world.getName().equals("arena")) {
@@ -250,11 +263,11 @@ public class Runnables {
 	 * Start the timers.
 	 */
 	public static void timer() {
-		if (Bukkit.getScheduler().isQueued(task) || Bukkit.getScheduler().isCurrentlyRunning(task)) {
-			Bukkit.getScheduler().cancelTask(task);
+		if (Bukkit.getScheduler().isQueued(taskMinutes) || Bukkit.getScheduler().isCurrentlyRunning(taskMinutes)) {
+			Bukkit.getScheduler().cancelTask(taskMinutes);
 		}
 		
-		task = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(Main.plugin, new Runnable() {
+		taskMinutes = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(Main.plugin, new Runnable() {
 			public void run() {
 				heal--;
 				pvp--;
@@ -492,6 +505,14 @@ public class Runnables {
 				}
 			}
 		}, 1200, 1200);
+		
+		taskSeconds = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(Main.plugin, new Runnable() {
+			public void run() {
+				healSeconds--;
+				pvpSeconds--;
+				meetupSeconds--;
+			}
+		}, 20, 20);
 	}
 	
 	/**
@@ -666,11 +687,11 @@ public class Runnables {
 	 * Start the recorded round timers.
 	 */
 	public static void timerRR() {
-		if (Bukkit.getScheduler().isQueued(task) || Bukkit.getScheduler().isCurrentlyRunning(task)) {
-			Bukkit.getScheduler().cancelTask(task);
+		if (Bukkit.getScheduler().isQueued(taskMinutes) || Bukkit.getScheduler().isCurrentlyRunning(taskMinutes)) {
+			Bukkit.getScheduler().cancelTask(taskMinutes);
 		}
 		
-		task = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(Main.plugin, new Runnable() {
+		taskMinutes = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(Main.plugin, new Runnable() {
 			public void run() {
 				pvp++;
 				heal--;
