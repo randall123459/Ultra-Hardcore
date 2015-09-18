@@ -143,4 +143,26 @@ public class GameUtils {
 		}
 		return host;
 	}
+
+	/**
+	 * Get the host name for the given alt name.
+	 * 
+	 * @param host The host.
+	 * @return The hof name.
+	 */
+	public static String getHostName(String host) {
+		if (host.equalsIgnoreCase("Leon")) {
+			return "LeonTG77";
+		} 
+		else if (host.equalsIgnoreCase("Polar")) {
+			return "PolarBlunk";
+		} 
+		else if (host.equalsIgnoreCase("Isaac")) {
+			return "Itz_Isaac";
+		}
+		else if (host.equalsIgnoreCase("Axlur")) {
+			return "AxlurUHC";
+		}
+		return host;
+	}
 }
