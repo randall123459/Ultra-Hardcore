@@ -350,6 +350,10 @@ public class Main extends JavaPlugin {
 						if (world.getName().equals("lobby") && world.getTime() != 18000) {
 							world.setTime(18000);
 						}
+						
+						if (world.getName().equals("arena") && world.getTime() != 6000) {
+							world.setTime(6000);
+						}
 					} else {
 						if (world.getDifficulty() != Difficulty.HARD) {
 							world.setDifficulty(Difficulty.HARD);
@@ -386,9 +390,9 @@ public class Main extends JavaPlugin {
         
         Bukkit.getServer().addRecipe(goldenhead);
         Bukkit.getServer().addRecipe(goldenmelon);
-        
-        headRecipe = goldenhead;
+
         melonRecipe = goldenmelon;
+        headRecipe = goldenhead;
 
         plugin.getLogger().info("Golden Head recipe added.");
         plugin.getLogger().info("Golden Melon recipe added.");
