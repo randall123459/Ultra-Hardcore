@@ -8,6 +8,7 @@ import com.leontg77.uhc.Game;
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.Main.State;
 import com.leontg77.uhc.Runnables;
+import com.leontg77.uhc.utils.DateUtils;
 import com.leontg77.uhc.utils.GameUtils;
 
 public class TimeLeftCommand implements CommandExecutor {
@@ -30,10 +31,10 @@ public class TimeLeftCommand implements CommandExecutor {
 				return true;
 			}
 			
-			sender.sendMessage(Main.prefix() + "Time left information:");
-			sender.sendMessage(Runnables.heal <= 0 ? "§8§l» §7Final heal has passed." : "§8§l» §7" + Runnables.heal + " minutes to final heal.");
-			sender.sendMessage(Runnables.pvp <= 0 ? "§8§l» §7PvP is enabled." : "§8§l» §7" + Runnables.pvp + " minutes to pvp.");
-			sender.sendMessage(Runnables.meetup <= 0 ? "§8§l» §7Meetup is now!" : "§8§l» §7" + Runnables.meetup + " minutes to meetup.");
+			sender.sendMessage(Main.prefix() + "Timers:");
+			sender.sendMessage(Runnables.healSeconds <= 0 ? "§8» §7Final heal has passed." : "§8» §7Final heal in: §a" + DateUtils.ticksToDigitalString(Runnables.healSeconds));
+			sender.sendMessage(Runnables.pvpSeconds <= 0 ? "§8» §7PvP is enabled." : "§8» §7PvP in: §a" + DateUtils.ticksToDigitalString(Runnables.pvpSeconds));
+			sender.sendMessage(Runnables.meetupSeconds <= 0 ? "§8» §7Meetup is now!" : "§8» §7Meetup in: §a" + DateUtils.ticksToDigitalString(Runnables.meetupSeconds));
 		}
 		return true;
 	}
