@@ -57,10 +57,6 @@ public class WorldListener implements Listener {
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onChunkPopulate(ChunkPopulateEvent event) {
-		if (event.getWorld().getName().equals("lobby") || event.getWorld().getName().equalsIgnoreCase("arena")) {
-			return;
-		}
-		
 		WorldData worldData = AntiStripmine.getManager().getWorldData(event.getWorld());
 		
 		if (!worldData.isEnabled()) {
@@ -80,10 +76,6 @@ public class WorldListener implements Listener {
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onWorldInit(WorldInitEvent event) {
-		if (event.getWorld().getName().equals("lobby") || event.getWorld().getName().equalsIgnoreCase("arena")) {
-			return;
-		}
-		
 		AntiStripmine.getManager().registerWorld(event.getWorld());
 	}
 }
