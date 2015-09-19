@@ -494,6 +494,10 @@ public class PlayerListener implements Listener {
 				Bukkit.getServer().getScheduler().runTaskLater(Main.plugin, new Runnable() {
 					public void run() {
 						if (!State.isState(State.LOBBY) && player.isOnline() && !Spectator.getManager().isSpectating(player)) {
+							for (Player online : PlayerUtils.getPlayers()) {
+								online.showPlayer(player);
+							}
+							
 							Spectator.getManager().enableSpecmode(player, true);
 						}
 					}
