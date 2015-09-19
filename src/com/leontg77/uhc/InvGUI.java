@@ -107,24 +107,24 @@ public class InvGUI {
 				
 				ItemStack info = new ItemStack (Material.BOOK);
 				ItemMeta infoMeta = info.getItemMeta();
-				infoMeta.setDisplayName("§4Player information");
+				infoMeta.setDisplayName("§8» §6Player Info §8«");
 				ArrayList<String> lore = new ArrayList<String>();
-				lore.add("§aName: §7" + target.getName());
+				lore.add("§8» §7Name: §a" + target.getName());
 				lore.add(" ");
 				int health = (int) target.getHealth();
-				lore.add("§aHearts: §7" + (((double) health) / 2) + "§4♥");
-				lore.add("§a% Health: §7" + NumberUtils.makePercent(target.getHealth()) + "%");
-				lore.add("§aHunger: §7" + (target.getFoodLevel() / 2));
-				lore.add("§aXp level: §7" + target.getLevel());
-				lore.add("§aLocation: §7x:" + target.getLocation().getBlockX() + ", y:" + target.getLocation().getBlockY() + ", z:" + target.getLocation().getBlockZ() + " (" + target.getWorld().getEnvironment().name().replaceAll("_", "").toLowerCase().replaceAll("normal", "overworld") + ")");
+				lore.add("§8» §7Hearts: §6" + (((double) health) / 2) + "§4♥");
+				lore.add("§8» §7Percent: §6" + NumberUtils.makePercent(target.getHealth()) + "%");
+				lore.add("§8» §7Hunger: §6" + (target.getFoodLevel() / 2));
+				lore.add("§8» §7Xp level: §6" + target.getLevel());
+				lore.add("§8» §7Location: §6x:" + target.getLocation().getBlockX() + ", y:" + target.getLocation().getBlockY() + ", z:" + target.getLocation().getBlockZ() + " (" + target.getWorld().getEnvironment().name().replaceAll("_", "").toLowerCase().replaceAll("normal", "overworld") + ")");
 				lore.add(" ");
-				lore.add("§cPotion effects:");
+				lore.add("§8» §cPotion effects:");
 				if (target.getActivePotionEffects().size() == 0) {
-					lore.add(ChatColor.GRAY + "None");
+					lore.add("§8» §7None");
 				}
 				for (PotionEffect effects : target.getActivePotionEffects()) {
 					if ((effects.getDuration() / 20) > 0) {
-						lore.add("§aP:§7" + NameUtils.getPotionName(effects.getType()) + " §aT:§7" + (effects.getAmplifier() + 1) + " §aD:§7" + DateUtils.ticksToString(effects.getDuration() / 20));
+						lore.add("§8» §7P:§6" + NameUtils.getPotionName(effects.getType()) + " §7T:§6" + (effects.getAmplifier() + 1) + " §7D:§6" + DateUtils.ticksToString(effects.getDuration() / 20));
 					}
 				}
 				infoMeta.setLore(lore);
@@ -174,6 +174,17 @@ public class InvGUI {
 		lore.add("§8» §7Towering: §aAllowed, but come down at meetup.");
 		lore.add("§8» §7Forting: §aAllowed before meetup.");
 		lore.add(" ");
+		lore.add("§8» §7You can follow our twitter @ArcticUHC to find");
+		lore.add(" §7out when our next games are.");
+		lore.add(" ");
+		lore.add("§8» §7Final heal is 1 minute after start, ");
+		lore.add(" §7no more are given after that.");
+		lore.add(" ");
+		lore.add("§8» §7Our UHC plugin is custom coded by LeonTG77.");
+		lore.add(" ");
+		lore.add("§8» §7VIP's are trusted players, they can spectate");
+		lore.add(" §7and join before whitelist is off");
+		lore.add(" ");
 		generalMeta.setLore(lore);
 		general.setItemMeta(generalMeta);
 		inv.setItem(0, general);
@@ -197,7 +208,7 @@ public class InvGUI {
 		pvpMeta.setDisplayName("§8» §6PvP Rules §8«");
 		lore.add(" ");
 		lore.add("§8» §7iPvP: §cNot Allowed before pvp.");
-		lore.add("§8» §7Team Killing: " + (GameUtils.getTeamSize().startsWith("r") ? "§cNot Allowed." : "§aAllowed."));
+		lore.add("§8» §7Team Killing: " + (GameUtils.getTeamSize().startsWith("r") && !ScenarioManager.getInstance().getScenario("Moles").isEnabled() ? "§cNot Allowed." : "§aAllowed."));
 		lore.add("§8» §7Stalking: §aAllowed. §c(Not excessive)");
 		lore.add("§8» §7Stealing: §aAllowed.");
 		lore.add("§8» §7Crossteaming: §cNot Allowed.");
@@ -237,7 +248,11 @@ public class InvGUI {
 		lore.add(" ");
 		lore.add("§8» §7Suiciding in random team games: §cNot Allowed.");
 		lore.add("§8» §7TS in random team games: §cRequired.");
+		lore.add(" ");
+		lore.add("§8» §7Xray/Cavefinder: §cNot Allowed.");
 		lore.add("§8» §7Hacked Client: §cNot Allowed.");
+		lore.add("§8» §7Fast Break: §cNot Allowed.");
+		lore.add(" ");
 		lore.add("§8» §7F3+A Spam: §cNot Allowed.");
 		lore.add("§8» §7Full Bright: §aAllowed.");
 		lore.add(" ");
@@ -322,8 +337,8 @@ public class InvGUI {
 			lore.add("§8» §7Tier 2: §aEnabled.");
 			lore.add("§8» §7Splash: §aEnabled.");
 			lore.add(" ");
-			lore.add("§8» §7Ghast Drop: §6" + (game.ghastDropGold() ? "Gold Ingot." : "Ghast Tear."));
 			lore.add("§8» §7Golden Melon: §6" + (game.goldenMelonNeedsIngots() ? "Gold Ingots." : "Golden Nuggets."));
+			lore.add("§8» §7Ghast Drop: §6" + (game.ghastDropGold() ? "Gold Ingot." : "Ghast Tear."));
 			lore.add(" ");
 		}
 		netherMeta.setLore(lore);
@@ -354,9 +369,9 @@ public class InvGUI {
 		lore.add("§8» §7Apple Rates: §6Vanilla (0.55%)");
 		lore.add("§8» §7Shears: " + (game.shears() ? "§aEnabled." : "§cDisabled.") + "");
 		lore.add("§8» §7Flint Rates: §6" + game.getFlintRates() + "%");
-		lore.add("§8» §7Mob rates: §6Vanilla.");
-		lore.add("§8» §7Ore rates: §6Vanilla.");
-		lore.add("§8» §7Cave rates: §6Vanilla.");
+		lore.add("§8» §7Mob Rates: §6Vanilla.");
+		lore.add("§8» §7Ore Rates: §6Vanilla.");
+		lore.add("§8» §7Cave Rates: §6Vanilla.");
 		lore.add("§8» §7Witch Potion: §6If poisoned 100%, if not 30%");
 		lore.add(" ");
 		ratesMeta.setLore(lore);
@@ -383,7 +398,9 @@ public class InvGUI {
 		lore.add(" ");
 		lore.add("§8» §7Enderpearl Damage: " + (game.pearlDamage() ? "§aEnabled." : "§cDisabled."));
 		lore.add("§8» §7Death Lightning: " + (game.deathLightning() ? "§aEnabled." : "§cDisabled."));
+		lore.add(" ");
 		lore.add("§8» §7Border shrinks: §6" + ((game.getBorderShrinkTime() == Border.NEVER ? "Never" : (game.getBorderShrinkTime() == Border.START ? "From " : "At ") + game.getBorderShrinkTime().name().toLowerCase())) + ".");
+		lore.add("§8» §7Saturation Fix: §aEnabled.");
 		lore.add(" ");
 		miscIMeta.setLore(lore);
 		miscI.setItemMeta(miscIMeta);
@@ -408,9 +425,9 @@ public class InvGUI {
 				}
 				else {
 					lore.add(Main.prefix() + "Time left information:");
-					lore.add(Runnables.healSeconds <= 0 ? "§8» §7Final heal has passed." : "§8» §7Final heal in: §a" + DateUtils.ticksToDigitalString(Runnables.healSeconds));
-					lore.add(Runnables.pvpSeconds <= 0 ? "§8» §7PvP is enabled." : "§8» §7PvP in: §a" + DateUtils.ticksToDigitalString(Runnables.pvpSeconds));
-					lore.add(Runnables.meetupSeconds <= 0 ? "§8» §7Meetup is now!" : "§8» §7Meetup in: §a" + DateUtils.ticksToDigitalString(Runnables.meetupSeconds));
+					lore.add(Runnables.healSeconds <= 0 ? "§8» §eFinal heal has passed." : "§8» §7Final heal in: §a" + DateUtils.ticksToString(Runnables.healSeconds));
+					lore.add(Runnables.pvpSeconds <= 0 ? "§8» §aPvP is enabled." : "§8» §7PvP in: §a" + DateUtils.ticksToString(Runnables.pvpSeconds));
+					lore.add(Runnables.meetupSeconds <= 0 ? "§8» §cMeetup is now!" : "§8» §7Meetup in: §a" + DateUtils.ticksToString(Runnables.meetupSeconds));
 				}
 				lore.add(" ");
 				timerMeta.setLore(lore);
