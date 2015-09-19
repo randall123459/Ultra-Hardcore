@@ -209,7 +209,7 @@ public class Runnables {
 				meetupSeconds = (settings.getConfig().getInt("time.meetup") * 60);
 				
 				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer cancel");
-				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer 60 &cFinal heal in&8:&7");
+				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer 60 &7Final heal is given in &8»&a");
 				
 				timer();
 				
@@ -286,7 +286,7 @@ public class Runnables {
 					}
 
 					Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer cancel");
-					Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer " + (pvp * 60) + " &cPvP in&8:&7");
+					Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer " + (pvp * 60) + " &7PvP is enabled in &8»&a");
 				}
 				
 				if (heal == -1) {
@@ -327,21 +327,16 @@ public class Runnables {
 					}
 					
 					Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer cancel");
-					Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer " + (meetup * 60) + " &cMeetup in&8:&7");
+					Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer " + (meetup * 60) + " &7Meetup is in &8»&a");
 				}
 				
 				if (meetup == 0) {
 					Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer cancel");
+					Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer -1 &6Meetup is now!");
 					
 					PlayerUtils.broadcast(ChatColor.DARK_GRAY + "»»»»»»»»»»»»»»»«««««««««««««««");
 					PlayerUtils.broadcast(ChatColor.RED + " ");
-					PlayerUtils.broadcast(ChatColor.RED + " Meetup has started!");	
-					if (game.getBorderShrinkTime() == Border.MEETUP) {
-						Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer 120 &6Meetup is now! &8❘ &cBorder will start shrinking in&8:&7");
-						PlayerUtils.broadcast(ChatColor.RED + " The border will start shrinking in §a2 §cminutes.");	
-					} else {
-						Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer -1 &6Meetup is now!");
-					}
+					PlayerUtils.broadcast(ChatColor.RED + " Meetup is now, head to 0,0!");
 					PlayerUtils.broadcast(ChatColor.RED + " ");
 					PlayerUtils.broadcast(ChatColor.DARK_GRAY + "»»»»»»»»»»»»»»»«««««««««««««««");
 					
@@ -368,8 +363,6 @@ public class Runnables {
 				
 				if (meetup == -2 && game.getBorderShrinkTime() == Border.MEETUP) {
 					PlayerUtils.broadcast(Main.prefix() + "Border will now shrink to §6300x300 §7over §a10 §7minutes.");
-					Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer cancel");
-					Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer 600 &6Meetup is now! &8❘ &cBorder stops shrinking in&8:&7");
 					
 					for (Player online : PlayerUtils.getPlayers()) {
 						online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
@@ -386,8 +379,6 @@ public class Runnables {
 				
 				if (meetup == -12 && game.getBorderShrinkTime() == Border.MEETUP) {
 					PlayerUtils.broadcast(Main.prefix() + "Border has stopped shrinking.");
-					Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer cancel");
-					Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer -1 &6Meetup is now! &8❘ &cBorder has stopped shrinking.");
 					
 					for (Player online : PlayerUtils.getPlayers()) {
 						online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
