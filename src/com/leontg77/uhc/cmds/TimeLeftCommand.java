@@ -32,9 +32,9 @@ public class TimeLeftCommand implements CommandExecutor {
 			}
 			
 			sender.sendMessage(Main.prefix() + "Timers:");
-			sender.sendMessage(Runnables.healSeconds <= 0 ? "§8» §7Final heal has passed." : "§8» §7Final heal in: §a" + DateUtils.ticksToDigitalString(Runnables.healSeconds));
-			sender.sendMessage(Runnables.pvpSeconds <= 0 ? "§8» §7PvP is enabled." : "§8» §7PvP in: §a" + DateUtils.ticksToDigitalString(Runnables.pvpSeconds));
-			sender.sendMessage(Runnables.meetupSeconds <= 0 ? "§8» §7Meetup is now!" : "§8» §7Meetup in: §a" + DateUtils.ticksToDigitalString(Runnables.meetupSeconds));
+			sender.sendMessage(Runnables.healSeconds <= 0 ? "§8» §eFinal heal has passed." : "§8» §7Final heal in: §a" + DateUtils.ticksToString(Runnables.healSeconds));
+			sender.sendMessage(Runnables.pvpSeconds <= 0 ? "§8» §aPvP is enabled." : "§8» §7PvP in: §a" + DateUtils.ticksToString(Runnables.pvpSeconds));
+			sender.sendMessage(Runnables.meetupSeconds <= 0 ? "§8» §cMeetup is now!" : "§8» §7Meetup in: §a" + DateUtils.ticksToString(Runnables.meetupSeconds));
 		}
 		return true;
 	}
