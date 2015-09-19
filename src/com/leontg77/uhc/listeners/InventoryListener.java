@@ -53,7 +53,7 @@ public class InventoryListener implements Listener {
 			}
 		}
 		
-		if (event.getInventory().getTitle().equals("Player Inventory")) {
+		if (event.getInventory().getTitle().endsWith("'s Inventory")) {
 			event.setCancelled(true);
 			return;
 		}
@@ -71,11 +71,6 @@ public class InventoryListener implements Listener {
 				HOFCommand.page.put(player, HOFCommand.page.get(player) - 1); 
 				player.openInventory(HOFCommand.pages.get(player).get(HOFCommand.page.get(player)));
 			}
-			return;
-		}
-		
-		if (event.getInventory().getTitle().equals("Arctic UHC Rules")) {
-			event.setCancelled(true);
 			return;
 		}
 		
