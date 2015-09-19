@@ -16,50 +16,10 @@ import com.leontg77.uhc.utils.DateUtils;
 import com.leontg77.uhc.utils.PlayerUtils;
 
 public class TimerCommand implements CommandExecutor, TabCompleter {
+	private BukkitRunnable run = null;
+	private boolean countdown = true;
 	private String message;
 	private int ticks;
-	private boolean countdown = true;
-	private BukkitRunnable run = new BukkitRunnable() {
-		public void run() {
-			if (countdown) {
-				for (Player online : PlayerUtils.getPlayers()) {
-					PlayerUtils.sendAction(online, message + " " + DateUtils.ticksToString(ticks)); 
-				}
-				ticks--;
-				
-				if (ticks == 0) {
-					try {
-						run.cancel();
-						run = new BukkitRunnable() {
-							public void run() {
-								if (countdown) {
-									for (Player online : PlayerUtils.getPlayers()) {
-										PlayerUtils.sendAction(online, message + " " + DateUtils.ticksToString(ticks)); 
-									}
-									ticks--;
-									
-									if (ticks == 0) {
-										try {
-											run.cancel();
-											cancel();
-										} catch (Exception e) {}
-									}
-								} else {
-									for (Player online : PlayerUtils.getPlayers()) {
-										PlayerUtils.sendAction(online, message); 
-									}
-								}
-							}
-						};
-					} catch (Exception e) {}
-				}
-			} else {
-				for (Player online : PlayerUtils.getPlayers()) {
-					PlayerUtils.sendAction(online, message); 
-				}
-			}
-		}
-	};
 	
 	public boolean onCommand(final CommandSender sender, Command cmd, String label, String[] args) {
 		if (cmd.getName().equalsIgnoreCase("timer")) {
@@ -75,32 +35,18 @@ public class TimerCommand implements CommandExecutor, TabCompleter {
 				}
 
 				if (args.length >= 1 && args[0].equalsIgnoreCase("cancel")) {
-					try {
+					if (run != null) {
 						run.cancel();
-						run = new BukkitRunnable() {
-							public void run() {
-								if (countdown) {
-									for (Player online : PlayerUtils.getPlayers()) {
-										PlayerUtils.sendAction(online, message + " " + DateUtils.ticksToString(ticks)); 
-									}
-									ticks--;
-									
-									if (ticks == 0) {
-										run.cancel();
-										cancel();
-									}
-								} else {
-									for (Player online : PlayerUtils.getPlayers()) {
-										PlayerUtils.sendAction(online, message); 
-									}
-								}
-							}
-						};
-					} catch (Exception e) {
+						run = null;
+						sender.sendMessage(Main.prefix() + "Timer cancelled.");
+					} else {
 						sender.sendMessage(ChatColor.RED + "Timer is not running.");
-						return true;
 					}
-					sender.sendMessage(Main.prefix() + "Timer cancelled.");
+					return true;
+				}
+				
+				if (run != null) {
+					sender.sendMessage(ChatColor.RED + "Timer is already running.");
 					return true;
 				}
 
@@ -119,17 +65,35 @@ public class TimerCommand implements CommandExecutor, TabCompleter {
 					countdown = true;
 				}
 
-				StringBuilder sb = new StringBuilder();
+				StringBuilder msg = new StringBuilder();
+				
 				for (int i = 1; i < args.length; i++) {
-					sb.append(args[i]).append(" ");
+					msg.append(args[i]).append(" ");
 				}
-				try {
-					run.runTaskTimer(Main.plugin, 0, 20);
-				} catch (Exception e) {
-					sender.sendMessage(ChatColor.RED + "Timer is already running.");
-					return true;
-				}
-				this.message = ChatColor.translateAlternateColorCodes('&', sb.toString().trim());
+				
+				run = new BukkitRunnable() {
+					public void run() {
+						if (countdown) {
+							for (Player online : PlayerUtils.getPlayers()) {
+								PlayerUtils.sendAction(online, message + " " + DateUtils.ticksToString(ticks)); 
+							}
+							ticks--;
+							
+							if (ticks < 0) {
+								cancel();
+								run = null;
+							}
+						} else {
+							for (Player online : PlayerUtils.getPlayers()) {
+								PlayerUtils.sendAction(online, message); 
+							}
+						}
+					}
+				};
+				
+				run.runTaskTimer(Main.plugin, 0, 20);
+				
+				this.message = ChatColor.translateAlternateColorCodes('&', msg.toString().trim());
 				this.ticks = millis;
 				sender.sendMessage(Main.prefix() + "Timer started.");
 			}
