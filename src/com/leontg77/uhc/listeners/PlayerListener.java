@@ -110,6 +110,10 @@ public class PlayerListener implements Listener {
 		user.getFile().set("uuid", player.getUniqueId().toString());
 		user.saveFile();
 		
+		if (player.isDead()) {
+			player.spigot().respawn();
+		}
+		
 		// They think they can relog to have no damage ticks, HAHA!!! :D
 		player.setNoDamageTicks(0);
 		
@@ -729,6 +733,10 @@ public class PlayerListener implements Listener {
 		Player player = event.getPlayer();
 		PlayerUtils.handlePermissions(player);
 		
+		if (event.getKickMessage().contains("Death in Hardcore")) {
+			event.allow();
+		}
+		
 		if (player.getUniqueId().toString().equals("3be33527-be7e-4eb2-8b66-5b76d3d7ecdc")) {
 			if (game.isRR()) {
 				return;
@@ -1001,7 +1009,7 @@ public class PlayerListener implements Listener {
 		Player player = event.getPlayer();
 		Location from = event.getFrom();
 		
-		if (game.nether()) {
+		if (game.nether() && BlockUtils.hasBlockNearby(Material.PORTAL, event.getFrom())) {
 			String fromName = event.getFrom().getWorld().getName();
 	        String targetName;
 	        
@@ -1044,7 +1052,7 @@ public class PlayerListener implements Listener {
             }
 		}
 		
-		if (game.theEnd()) {
+		if (game.theEnd() && BlockUtils.hasBlockNearby(Material.ENDER_PORTAL, event.getFrom())) {
 			String fromName = event.getFrom().getWorld().getName();
 	        String targetName;
 	        
