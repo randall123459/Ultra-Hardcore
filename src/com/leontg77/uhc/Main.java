@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.logging.Logger;
 
@@ -131,29 +132,8 @@ public class Main extends JavaPlugin {
 		PluginDescriptionFile file = getDescription();
 		logger.info(file.getName() + " is now disabled.");
 		
-		settings.getData().set("state", State.getState().name());
-		settings.saveData();
-		
-		ArrayList<String> scens = new ArrayList<String>();
-		
-		for (Scenario scen : ScenarioManager.getInstance().getEnabledScenarios()) {
-			scens.add(scen.getName());
-		}
-		
-		settings.getData().set("scenarios", scens);
-		settings.saveData();
-		
-		for (Entry<String, Integer> tkEntry : teamKills.entrySet()) {
-			settings.getData().set("teamkills." + tkEntry.getKey(), tkEntry.getValue());
-		}
-		settings.saveData();
-		
-		for (Entry<String, Integer> kEntry : kills.entrySet()) {
-			settings.getData().set("kills." + kEntry.getKey(), kEntry.getValue());
-		}
-		settings.saveData();
-		
 		BiomeSwap.getManager().resetBiomes();
+		saveData();
 		
 		plugin = null;
 	}
@@ -174,8 +154,8 @@ public class Main extends JavaPlugin {
 		Arena.getManager().setup();
 		Teams.getManager().setup();
 		UBL.getManager().setup();
-		
-		State.setState(State.valueOf(settings.getData().getString("state", State.LOBBY.name())));
+
+		recoverData();
 		addRecipes();
 		
 		Bukkit.getServer().getPluginManager().registerEvents(new BlockListener(), this);
@@ -271,10 +251,6 @@ public class Main extends JavaPlugin {
 		
 		for (Player online : PlayerUtils.getPlayers()) {	
 			PlayerUtils.handlePermissions(online);
-		}
-		
-		for (String scen : settings.getData().getStringList("scenarios")) {
-			ScenarioManager.getInstance().getScenario(scen).enableScenario();
 		}
 		
 		Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
@@ -454,6 +430,63 @@ public class Main extends JavaPlugin {
 		
 		armor.setItemMeta(meta);
 		return armor;
+	}
+	
+	/**
+	 * Save all the data from the reload.
+	 */
+	public void saveData() {
+		settings.getData().set("state", State.getState().name());
+		settings.saveData();
+		
+		ArrayList<String> scens = new ArrayList<String>();
+		
+		for (Scenario scen : ScenarioManager.getInstance().getEnabledScenarios()) {
+			scens.add(scen.getName());
+		}
+		
+		settings.getData().set("scenarios", scens);
+		settings.saveData();
+		
+		for (Entry<String, Integer> tkEntry : teamKills.entrySet()) {
+			settings.getData().set("teamkills." + tkEntry.getKey(), tkEntry.getValue());
+		}
+		settings.saveData();
+		
+		for (Entry<String, Integer> kEntry : kills.entrySet()) {
+			settings.getData().set("kills." + kEntry.getKey(), kEntry.getValue());
+		}
+		settings.saveData();
+		
+		for (Entry<String, List<String>> entry : TeamCommand.sTeam.entrySet()) {
+			settings.getData().set("team." + entry.getKey(), entry.getValue());
+		}
+		settings.saveData();
+	}
+	
+	/**
+	 * Recover all the data from the reload.
+	 */
+	public void recoverData() {
+		State.setState(State.valueOf(settings.getData().getString("state", State.LOBBY.name())));
+		
+		for (String name : settings.getData().getConfigurationSection("kills").getKeys(false)) {
+			kills.put("kills." + name, settings.getData().getInt("kills." + name));
+		}
+		
+		for (String name : settings.getData().getConfigurationSection("teamkills").getKeys(false)) {
+			teamKills.put("teamkills." + name, settings.getData().getInt("teamkills." + name));
+		}
+		
+		if (settings.getData().getConfigurationSection("team") != null) {
+			for (String name : settings.getData().getConfigurationSection("team").getKeys(false)) {
+				TeamCommand.sTeam.put("team." + name, settings.getData().getStringList("team." + name));
+			}
+		}
+		
+		for (String scen : settings.getData().getStringList("scenarios")) {
+			ScenarioManager.getInstance().getScenario(scen).enableScenario();
+		}
 	}
 	
 	/**
