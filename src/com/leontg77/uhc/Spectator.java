@@ -156,7 +156,9 @@ public class Spectator {
 		player.getInventory().setItem(7, vision);
 		
 		for (Player online : PlayerUtils.getPlayers()) {
-			if (!isSpectating(online)) {
+			if (isSpectating(online)) {
+				online.showPlayer(player);
+			} else {
 				online.hidePlayer(player);
 			}
 			
