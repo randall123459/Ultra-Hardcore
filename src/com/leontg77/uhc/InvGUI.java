@@ -369,9 +369,11 @@ public class InvGUI {
 		lore.add("§8» §7Apple Rates: §6Vanilla (0.55%)");
 		lore.add("§8» §7Shears: " + (game.shears() ? "§aEnabled." : "§cDisabled.") + "");
 		lore.add("§8» §7Flint Rates: §6" + game.getFlintRates() + "%");
+		lore.add(" ");
 		lore.add("§8» §7Mob Rates: §6Vanilla.");
 		lore.add("§8» §7Ore Rates: §6Vanilla.");
 		lore.add("§8» §7Cave Rates: §6Vanilla.");
+		lore.add(" ");
 		lore.add("§8» §7Witch Potion: §6If poisoned 100%, if not 30%");
 		lore.add(" ");
 		ratesMeta.setLore(lore);
@@ -424,7 +426,6 @@ public class InvGUI {
 					lore.add("§8» §7The game has not started yet.");
 				}
 				else {
-					lore.add(Main.prefix() + "Time left information:");
 					lore.add(Runnables.healSeconds <= 0 ? "§8» §eFinal heal has passed." : "§8» §7Final heal in: §a" + DateUtils.ticksToString(Runnables.healSeconds));
 					lore.add(Runnables.pvpSeconds <= 0 ? "§8» §aPvP is enabled." : "§8» §7PvP in: §a" + DateUtils.ticksToString(Runnables.pvpSeconds));
 					lore.add(Runnables.meetupSeconds <= 0 ? "§8» §cMeetup is now!" : "§8» §7Meetup in: §a" + DateUtils.ticksToString(Runnables.meetupSeconds));
@@ -434,6 +435,7 @@ public class InvGUI {
 				timer.setItemMeta(timerMeta);
 				inv.setItem(25, timer);
 				lore.clear();
+				player.updateInventory();
 			}
 		});
 		
