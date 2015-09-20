@@ -28,8 +28,8 @@ import com.leontg77.uhc.Teams;
 import com.leontg77.uhc.utils.PlayerUtils;
 
 public class TeamCommand implements CommandExecutor, TabCompleter {
-	public static HashMap<Player, ArrayList<Player>> invites = new HashMap<Player, ArrayList<Player>>();
-	public static HashMap<String, ArrayList<String>> sTeam = new HashMap<String, ArrayList<String>>();
+	public static HashMap<Player, List<Player>> invites = new HashMap<Player, List<Player>>();
+	public static HashMap<String, List<String>> sTeam = new HashMap<String, List<String>>();
 
 	public boolean onCommand(CommandSender sender, Command cmd, String label, final String[] args) {
 		if (!(sender instanceof Player)) {
@@ -383,7 +383,7 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
 						player.sendMessage(Main.prefix() + ChatColor.GREEN + target.getName() + "'s §7team info:");
 						player.sendMessage("§8» §7Team: §cNone");
 						if (Main.kills.containsKey(target.getName())) {
-							player.sendMessage("§8» §7Kills:" + Main.kills.get(target.getName()));
+							player.sendMessage("§8» §7Kills: §a" + Main.kills.get(target.getName()));
 						}
 						return true;
 					}
