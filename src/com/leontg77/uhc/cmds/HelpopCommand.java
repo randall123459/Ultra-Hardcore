@@ -34,7 +34,7 @@ public class HelpopCommand implements CommandExecutor {
 				sb.append(args[i]).append(" ");
 			}
 			
-			String msg = ChatColor.translateAlternateColorCodes('&', sb.toString().trim());
+			String msg = sb.toString().trim();
 
 			PlayerUtils.broadcast(Main.prefix().replaceAll("UHC", "HelpOp") + "§7" + sender.getName() + "§7: §6" + msg, "uhc.staff");
 			for (Player online : PlayerUtils.getPlayers()) {
