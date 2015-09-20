@@ -24,6 +24,7 @@ import com.leontg77.uhc.scenario.types.Cryophobia;
 import com.leontg77.uhc.scenario.types.CutClean;
 import com.leontg77.uhc.scenario.types.Depths;
 import com.leontg77.uhc.scenario.types.Diamondless;
+import com.leontg77.uhc.scenario.types.DragonRush;
 import com.leontg77.uhc.scenario.types.EnchantParanoia;
 import com.leontg77.uhc.scenario.types.EnchantedDeath;
 import com.leontg77.uhc.scenario.types.Fallout;
@@ -101,6 +102,7 @@ public class ScenarioManager {
 		// TODO: Finish scenarios.add(new DamageCycle());
 		scenarios.add(new Depths());
 		scenarios.add(new Diamondless());
+		scenarios.add(new DragonRush());
 		scenarios.add(new EnchantedDeath());
 		/* TODO: Enchanted Books and Enchant preview */ scenarios.add(new EnchantParanoia());
 		scenarios.add(new Fallout());
