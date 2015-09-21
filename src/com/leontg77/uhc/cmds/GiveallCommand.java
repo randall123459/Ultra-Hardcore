@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import com.leontg77.uhc.Main;
+import com.leontg77.uhc.utils.PlayerUtils;
 
 @SuppressWarnings("deprecation")
 public class GiveallCommand implements CommandExecutor {	
@@ -17,32 +18,39 @@ public class GiveallCommand implements CommandExecutor {
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (cmd.getName().equalsIgnoreCase("giveall")) {
 			if (sender.hasPermission("uhc.giveall")) {
-				if (args.length < 2) {
-					sender.sendMessage(ChatColor.RED + "Usage: /giveall <item> <amount> [durability]");
+				if (args.length == 0) {
+					sender.sendMessage(Main.prefix() + "Usage: /giveall <item> [amount] [durability]");
 					return true;
 				}
-					
+				
 				Material material = null;
-				
-				for (Material m : Material.values()) {
-					if (m.name().equals(args[0].toUpperCase()) || args[0].startsWith(Integer.toString(m.getId()))) {
-						material = m;
-					}
-				}
-				
 				int amount = 1;
 				short durability = 0;
+				
+				try {
+					material = Material.getMaterial(Integer.parseInt(args[0]));
+				} 
+				catch (Exception e) {
+					for (Material types : Material.values()) {
+						if (types.name().startsWith(args[0].toUpperCase())) {
+							material = types;
+							break;
+						}
+					}
+				}
 				
 				if (material == null) {
 					sender.sendMessage(ChatColor.RED + "Unknown item name.");
 					return true;
 				}
 				
-				try {
-					amount = Integer.parseInt(args[1]);
-				} catch (Exception e) {
-					sender.sendMessage(ChatColor.RED + "That is not a vaild amount.");
-					return true;
+				if (args.length > 1) {
+					try {
+						amount = Integer.parseInt(args[1]);
+					} catch (Exception e) {
+						sender.sendMessage(ChatColor.RED + "That is not a vaild amount.");
+						return true;
+					}
 				}
 				
 				if (args.length > 2) {
@@ -55,11 +63,13 @@ public class GiveallCommand implements CommandExecutor {
 				}
 
 				ItemStack item = new ItemStack(material, amount, durability);
+				PlayerUtils.broadcast(Main.prefix() + "You've been given §a" + amount + " §7of §6" + item.getType().name().toLowerCase().replaceAll("_", " ") + "§7.");
+				
 				for (Player online : Bukkit.getServer().getOnlinePlayers()) {
-					online.sendMessage(Main.prefix() + "You've been given §6" + amount + " §7of §6" + item.getType().name().toLowerCase().replaceAll("_", "") + "§7.");
-					item.setAmount(amount);
-					online.getInventory().addItem(item);
+					PlayerUtils.giveItem(online, item);
 				}
+			} else {
+				sender.sendMessage(Main.NO_PERMISSION_MESSAGE);
 			}
 		}
 		return true;
