@@ -26,6 +26,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.material.MaterialData;
 import org.bukkit.permissions.PermissionAttachment;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -33,6 +34,13 @@ import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Score;
 import org.bukkit.scoreboard.Scoreboard;
 
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.ProtocolManager;
+import com.comphenix.protocol.events.ListenerPriority;
+import com.comphenix.protocol.events.PacketAdapter;
+import com.comphenix.protocol.events.PacketEvent;
+import com.comphenix.protocol.events.PacketListener;
 import com.leontg77.uhc.Spectator.SpecInfo;
 import com.leontg77.uhc.cmds.AboardCommand;
 import com.leontg77.uhc.cmds.ArenaCommand;
@@ -154,7 +162,11 @@ public class Main extends JavaPlugin {
 		Arena.getManager().setup();
 		Teams.getManager().setup();
 		UBL.getManager().setup();
-
+		
+		ProtocolManager manager = ProtocolLibrary.getProtocolManager();
+	    PacketListener listener = new HardcoreHearts(this); 
+	    
+        manager.addPacketListener(listener);
 		recoverData();
 		addRecipes();
 		
@@ -470,22 +482,26 @@ public class Main extends JavaPlugin {
 	public void recoverData() {
 		State.setState(State.valueOf(settings.getData().getString("state", State.LOBBY.name())));
 		
-		for (String name : settings.getData().getConfigurationSection("kills").getKeys(false)) {
-			kills.put("kills." + name, settings.getData().getInt("kills." + name));
-		}
-		
-		for (String name : settings.getData().getConfigurationSection("teamkills").getKeys(false)) {
-			teamKills.put("teamkills." + name, settings.getData().getInt("teamkills." + name));
-		}
-		
-		if (settings.getData().getConfigurationSection("team") != null) {
-			for (String name : settings.getData().getConfigurationSection("team").getKeys(false)) {
-				TeamCommand.sTeam.put("team." + name, settings.getData().getStringList("team." + name));
+		try {
+			for (String name : settings.getData().getConfigurationSection("kills").getKeys(false)) {
+				kills.put("kills." + name, settings.getData().getInt("kills." + name));
 			}
-		}
-		
-		for (String scen : settings.getData().getStringList("scenarios")) {
-			ScenarioManager.getInstance().getScenario(scen).enableScenario();
+			
+			for (String name : settings.getData().getConfigurationSection("teamkills").getKeys(false)) {
+				teamKills.put("teamkills." + name, settings.getData().getInt("teamkills." + name));
+			}
+			
+			if (settings.getData().getConfigurationSection("team") != null) {
+				for (String name : settings.getData().getConfigurationSection("team").getKeys(false)) {
+					TeamCommand.sTeam.put("team." + name, settings.getData().getStringList("team." + name));
+				}
+			}
+			
+			for (String scen : settings.getData().getStringList("scenarios")) {
+				ScenarioManager.getInstance().getScenario(scen).enableScenario();
+			}
+		} catch (Exception e) {
+			
 		}
 	}
 	
@@ -535,5 +551,26 @@ public class Main extends JavaPlugin {
 	 */
 	public enum Border {
 		NEVER, START, PVP, MEETUP;
+	}
+	
+	/**
+	 * Hardcore hearts class
+	 * <p> 
+	 * This class manages the hardcore hearts feature.
+	 *
+	 * @author ghowden
+	 */
+	public class HardcoreHearts extends PacketAdapter {
+
+		public HardcoreHearts(Plugin plugin) {
+			super(plugin, ListenerPriority.NORMAL, PacketType.Play.Server.LOGIN);
+		}
+
+	    @Override
+	    public void onPacketSending(PacketEvent event) {
+	        if (event.getPacketType().equals(PacketType.Play.Server.LOGIN)) {
+	            event.getPacket().getBooleans().write(0, true);
+	        }
+	    }
 	}
 }
