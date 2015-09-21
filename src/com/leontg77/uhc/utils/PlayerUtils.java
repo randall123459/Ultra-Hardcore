@@ -15,6 +15,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.Sound;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
@@ -182,9 +183,9 @@ public class PlayerUtils {
 				player.getInventory().addItem(item);
 			} else {
 				player.sendMessage(Main.prefix() + "A item was dropped on the ground since your inventory is full!");
-				player.playSound(player.getLocation(), "random.pop", 1, 1);
+				player.playSound(player.getLocation(), Sound.ITEM_PICKUP, 1, 1);
 				
-				Item i = player.getWorld().dropItem(player.getLocation().add(0.5, 0.7, 0.5), item);
+				Item i = player.getWorld().dropItem(player.getLocation().add(0, 0.7, 0), item);
 				i.setVelocity(new Vector(0, 0.2, 0));
 			}
 		}
@@ -193,11 +194,12 @@ public class PlayerUtils {
 	public static boolean hasSpaceFor(Player player, ItemStack item) {
 		if (player.getInventory().firstEmpty() == -1) {
 			for (int i = 0; i < 35; i++) {
-				if (player.getInventory().getItem(i).getType().equals(item.getType())) {
+				if (player.getInventory().getItem(i).equals(item)) {
 					if ((player.getInventory().getItem(i).getAmount() + item.getAmount()) <= item.getMaxStackSize()) {
 						return true;
 					}
 				}
+				
 				if (i == 34) {
 					return false;
 				}
