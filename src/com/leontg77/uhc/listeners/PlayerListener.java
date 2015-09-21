@@ -141,15 +141,9 @@ public class PlayerListener implements Listener {
 			Spectator.getManager().enableSpecmode(player, true);
 		}
 		
-		for (Player online : PlayerUtils.getPlayers()) {
-			if (online.canSee(player)) {
-				online.sendMessage("§8[§a+§8] §7" + player.getName() + " has joined.");
-			}
-		}
-		
-		Bukkit.getLogger().info("§8[§a+§8] §7" + player.getName() + " has joined.");
-		
 		if (!Spectator.getManager().isSpectating(player)) {
+			PlayerUtils.broadcast("§8[§a+§8] §7" + player.getName() + " has joined.");
+			
 			if (user.isNew()) {
 				PlayerUtils.broadcast(Main.prefix() + ChatColor.GOLD + player.getName() + " §7just joined for the first time.");
 				
@@ -219,13 +213,9 @@ public class PlayerListener implements Listener {
 			player.getInventory().setArmorContents(null);
 		}
 		
-		for (Player online : PlayerUtils.getPlayers()) {
-			if (online.canSee(player)) {
-				online.sendMessage("§8[§c-§8] §7" + player.getName() + " has left.");
-			}
+		if (!Spectator.getManager().isSpectating(player)) {
+			PlayerUtils.broadcast("§8[§c-§8] §7" + player.getName() + " has left.");
 		}
-		
-		Bukkit.getLogger().info("§8[§c-§8] §7" + player.getName() + " has left.");
 		
 		if (Main.msg.containsKey(player)) {
 			Main.msg.remove(player);
@@ -252,7 +242,7 @@ public class PlayerListener implements Listener {
 			public void run() {
 				player.spigot().respawn();
 			}
-		}.runTaskLater(Main.plugin, 20);
+		}.runTaskLater(Main.plugin, 18);
 		
 		if (Arena.getManager().isEnabled()) {
 			Team team = Teams.getManager().getTeam(player);
@@ -617,7 +607,7 @@ public class PlayerListener implements Listener {
 			}
 
 			Team team = player.getScoreboard().getEntryTeam(player.getName());
-			PlayerUtils.broadcast("§c§lStaff §8❘ §f" + (team != null ? (team.getName().equals("spec") ? player.getName() : team.getPrefix() + player.getName()) : player.getName()) + "§8 » §f" + ChatColor.translateAlternateColorCodes('&', event.getMessage()));
+			PlayerUtils.broadcast("§c§lStaff §8❘ §f" + (team != null ? (team.getName().equals("spec") ? player.getName() : team.getPrefix() + player.getName()) : player.getName()) + "§8 » §f" + event.getMessage());
 		}
 		else if (user.getRank() == Rank.VIP) {
 			if (game.isMuted()) {
@@ -631,7 +621,7 @@ public class PlayerListener implements Listener {
 			}
 
 			Team team = player.getScoreboard().getEntryTeam(player.getName());
-			PlayerUtils.broadcast("§5§lVIP §8❘ §f" + (team != null ? (team.getName().equals("spec") ? player.getName() : team.getPrefix() + player.getName()) : player.getName()) + "§8 » §f" + ChatColor.translateAlternateColorCodes('&', event.getMessage()));
+			PlayerUtils.broadcast("§5§lVIP §8❘ §f" + (team != null ? (team.getName().equals("spec") ? player.getName() : team.getPrefix() + player.getName()) : player.getName()) + "§8 » §f" + event.getMessage());
 		} 
 		else {
 			if (game.isMuted()) {
@@ -732,10 +722,6 @@ public class PlayerListener implements Listener {
 	public void onPlayerLogin(PlayerLoginEvent event) {
 		Player player = event.getPlayer();
 		PlayerUtils.handlePermissions(player);
-		
-		if (event.getKickMessage().contains("Death in Hardcore")) {
-			event.allow();
-		}
 		
 		if (player.getUniqueId().toString().equals("3be33527-be7e-4eb2-8b66-5b76d3d7ecdc")) {
 			if (game.isRR()) {
