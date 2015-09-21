@@ -1,8 +1,9 @@
 name: UHC
 main: com.leontg77.uhc.Main
-version: 1.7.2
+version: 1.7.6
 author: LeonTG77
 description: UHC plugin made for Leons UHC
+softdepend: [ProtocolLib]
 
 commands:
   aboard:
