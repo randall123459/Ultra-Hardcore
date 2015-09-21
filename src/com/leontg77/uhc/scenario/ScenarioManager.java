@@ -58,6 +58,7 @@ import com.leontg77.uhc.scenario.types.Skyhigh;
 import com.leontg77.uhc.scenario.types.SlaveMarket;
 import com.leontg77.uhc.scenario.types.SlimyCrack;
 import com.leontg77.uhc.scenario.types.Superheroes;
+import com.leontg77.uhc.scenario.types.Switcheroo;
 import com.leontg77.uhc.scenario.types.Timebomb;
 import com.leontg77.uhc.scenario.types.TrainingRabbits;
 import com.leontg77.uhc.scenario.types.TripleOres;
@@ -137,6 +138,7 @@ public class ScenarioManager {
 		scenarios.add(new SlaveMarket());
 		scenarios.add(new SlimyCrack());
 		scenarios.add(new Superheroes());
+		scenarios.add(new Switcheroo());
 		scenarios.add(new Timebomb());
 		scenarios.add(new TrainingRabbits());
 		scenarios.add(new TripleOres());
