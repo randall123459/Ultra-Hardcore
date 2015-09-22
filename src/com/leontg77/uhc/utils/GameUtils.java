@@ -101,7 +101,7 @@ public class GameUtils {
 			}
 		} 
 		else {
-			return "To" + (game.getTeamSize() > 0 ? game.getTeamSize() : "X") + " ";
+			return "cTo" + (game.getTeamSize() > 0 ? game.getTeamSize() : "X") + " ";
 		}
 	}
 	
