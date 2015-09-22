@@ -2,6 +2,9 @@ package com.leontg77.uhc.scenario.types;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
@@ -21,7 +24,7 @@ import com.leontg77.uhc.utils.PlayerUtils;
  * 
  * @author LeonTG77
  */
-public class TeamHealth extends Scenario {
+public class TeamHealth extends Scenario implements Listener {
 	public BukkitRunnable run = null;
 	private boolean enabled = false;
 
@@ -104,4 +107,14 @@ public class TeamHealth extends Scenario {
 	public boolean isEnabled() {
 		return enabled;
 	}
+	
+	@EventHandler
+    public void onDeath(PlayerDeathEvent event) {
+		Player player = event.getEntity();
+		Team team = Teams.getManager().getTeam(player);
+
+        if (team != null) {
+            team.removeEntry(player.getName());
+        }
+    }
 }
