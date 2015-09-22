@@ -81,7 +81,7 @@ public class PlayerUtils {
 			}
 		}
 		
-		Bukkit.getLogger().info(message.replaceAll("§l", ""));
+		Bukkit.getLogger().info(message.replaceAll("§l", "").replaceAll("§o", "").replaceAll("§r", "").replaceAll("§m", "").replaceAll("§n", ""));
 	}
 	
 	/**
@@ -94,7 +94,7 @@ public class PlayerUtils {
 			online.sendMessage(message);
 		}
 		
-		Bukkit.getLogger().info(message.replaceAll("§l", ""));
+		Bukkit.getLogger().info(message.replaceAll("§l", "").replaceAll("§o", "").replaceAll("§r", "").replaceAll("§m", "").replaceAll("§n", ""));
 	}
 
 	/**
