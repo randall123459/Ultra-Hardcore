@@ -68,12 +68,12 @@ import com.leontg77.uhc.Fireworks;
 import com.leontg77.uhc.Game;
 import com.leontg77.uhc.InvGUI;
 import com.leontg77.uhc.Main;
-import com.leontg77.uhc.Main.State;
 import com.leontg77.uhc.Parkour;
 import com.leontg77.uhc.Runnables;
 import com.leontg77.uhc.Scoreboards;
 import com.leontg77.uhc.Settings;
 import com.leontg77.uhc.Spectator;
+import com.leontg77.uhc.State;
 import com.leontg77.uhc.Teams;
 import com.leontg77.uhc.UBL;
 import com.leontg77.uhc.User;
@@ -559,28 +559,21 @@ public class PlayerListener implements Listener {
 			
 			if (player.getUniqueId().toString().equals("02dc5178-f7ec-4254-8401-1a57a7442a2f")) {
 				if (settings.getConfig().getString("game.host").equals(player.getName())) {
-					PlayerUtils.broadcast("§3§lHost §8�?� §f" + (team != null ? (team.getName().equals("spec") ? player.getName() : team.getPrefix() + player.getName()) : player.getName()) + "§8 » §f" + ChatColor.translateAlternateColorCodes('&', event.getMessage()));
+					PlayerUtils.broadcast("§3§lHost §8| §f" + (team != null ? (team.getName().equals("spec") ? player.getName() : team.getPrefix() + player.getName()) : player.getName()) + "§8 » §f" + ChatColor.translateAlternateColorCodes('&', event.getMessage()));
 				} else {
-					PlayerUtils.broadcast("§3§lCo Host §8�?� §f" + (team != null ? (team.getName().equals("spec") ? player.getName() : team.getPrefix() + player.getName()) : player.getName()) + "§8 » §f" + ChatColor.translateAlternateColorCodes('&', event.getMessage()));
-				}	
-			} 
-			else if (player.getUniqueId().toString().equals("3be33527-be7e-4eb2-8b66-5b76d3d7ecdc")) {
-				if (settings.getConfig().getString("game.host").equals(player.getName())) {
-					PlayerUtils.broadcast("§4§lHost §8�?� §f" + (team != null ? (team.getName().equals("spec") ? player.getName() : team.getPrefix() + player.getName()) : player.getName()) + "§8 » §f" + ChatColor.translateAlternateColorCodes('&', event.getMessage()));
-				} else {
-					if (game.isMuted()) {
-						player.sendMessage(Main.prefix() + "All players are muted.");
-						return;
-					}
-					
-					PlayerUtils.broadcast("§4§lCo Host §8�?� §f" + (team != null ? (team.getName().equals("spec") ? player.getName() : team.getPrefix() + player.getName()) : player.getName()) + "§8 » §f" + ChatColor.translateAlternateColorCodes('&', event.getMessage()));
+					PlayerUtils.broadcast("§3§lCo Host §8| §f" + (team != null ? (team.getName().equals("spec") ? player.getName() : team.getPrefix() + player.getName()) : player.getName()) + "§8 » §f" + ChatColor.translateAlternateColorCodes('&', event.getMessage()));
 				}	
 			}
 			else {
+				if (player.isOp()) {
+					PlayerUtils.broadcast("§4§lOwner §8| §f" + (team != null ? (team.getName().equals("spec") ? player.getName() : team.getPrefix() + player.getName()) : player.getName()) + "§8 » §f" + ChatColor.translateAlternateColorCodes('&', event.getMessage()));
+					return;
+				}
+				
 				if (settings.getConfig().getString("game.host").equals(player.getName())) {
-					PlayerUtils.broadcast("§4§lHost §8�?� §f" + (team != null ? (team.getName().equals("spec") ? player.getName() : team.getPrefix() + player.getName()) : player.getName()) + "§8 » §f" + ChatColor.translateAlternateColorCodes('&', event.getMessage()));
+					PlayerUtils.broadcast("§4§lHost §8| §f" + (team != null ? (team.getName().equals("spec") ? player.getName() : team.getPrefix() + player.getName()) : player.getName()) + "§8 » §f" + ChatColor.translateAlternateColorCodes('&', event.getMessage()));
 				} else {
-					PlayerUtils.broadcast("§4§lCo Host §8�?� §f" + (team != null ? (team.getName().equals("spec") ? player.getName() : team.getPrefix() + player.getName()) : player.getName()) + "§8 » §f" + ChatColor.translateAlternateColorCodes('&', event.getMessage()));
+					PlayerUtils.broadcast("§4§lCo Host §8| §f" + (team != null ? (team.getName().equals("spec") ? player.getName() : team.getPrefix() + player.getName()) : player.getName()) + "§8 » §f" + ChatColor.translateAlternateColorCodes('&', event.getMessage()));
 				}	
 			}
 		}
@@ -591,7 +584,7 @@ public class PlayerListener implements Listener {
 			}
 
 			Team team = player.getScoreboard().getEntryTeam(player.getName());
-			PlayerUtils.broadcast("§4§lTrial Host §8�?� §f" + (team != null ? (team.getName().equals("spec") ? player.getName() : team.getPrefix() + player.getName()) : player.getName()) + "§8 » §f" + ChatColor.translateAlternateColorCodes('&', event.getMessage()));
+			PlayerUtils.broadcast("§4§lTrial Host §8| §f" + (team != null ? (team.getName().equals("spec") ? player.getName() : team.getPrefix() + player.getName()) : player.getName()) + "§8 » §f" + ChatColor.translateAlternateColorCodes('&', event.getMessage()));
 		}
 		else if (user.getRank() == Rank.STAFF) {
 			if (user.isMuted()) {
@@ -600,11 +593,11 @@ public class PlayerListener implements Listener {
 			}
 
 			Team team = player.getScoreboard().getEntryTeam(player.getName());
-			PlayerUtils.broadcast("§c§lStaff §8�?� §f" + (team != null ? (team.getName().equals("spec") ? player.getName() : team.getPrefix() + player.getName()) : player.getName()) + "§8 » §f" + event.getMessage());
+			PlayerUtils.broadcast("§c§lStaff §8| §f" + (team != null ? (team.getName().equals("spec") ? player.getName() : team.getPrefix() + player.getName()) : player.getName()) + "§8 » §f" + event.getMessage());
 		}
 		else if (user.getRank() == Rank.VIP) {
 			if (game.isMuted()) {
-				player.sendMessage(Main.prefix() + "All players are muted.");
+				player.sendMessage(Main.prefix() + "The chat is currently muted.");
 				return;
 			}
 			
@@ -614,11 +607,11 @@ public class PlayerListener implements Listener {
 			}
 
 			Team team = player.getScoreboard().getEntryTeam(player.getName());
-			PlayerUtils.broadcast("§5§lVIP §8�?� §f" + (team != null ? (team.getName().equals("spec") ? player.getName() : team.getPrefix() + player.getName()) : player.getName()) + "§8 » §f" + event.getMessage());
+			PlayerUtils.broadcast("§5§lVIP §8| §f" + (team != null ? (team.getName().equals("spec") ? player.getName() : team.getPrefix() + player.getName()) : player.getName()) + "§8 » §f" + event.getMessage());
 		} 
 		else {
 			if (game.isMuted()) {
-				player.sendMessage(Main.prefix() + "All players are muted.");
+				player.sendMessage(Main.prefix() + "The chat is currently muted.");
 				return;
 			}
 			
