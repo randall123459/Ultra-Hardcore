@@ -79,7 +79,6 @@ import com.leontg77.uhc.UBL;
 import com.leontg77.uhc.User;
 import com.leontg77.uhc.User.Rank;
 import com.leontg77.uhc.cmds.SpreadCommand;
-import com.leontg77.uhc.cmds.TeamCommand;
 import com.leontg77.uhc.cmds.VoteCommand;
 import com.leontg77.uhc.scenario.ScenarioManager;
 import com.leontg77.uhc.utils.BlockUtils;
@@ -102,8 +101,8 @@ public class PlayerListener implements Listener {
 	
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
+		Spectator spec = Spectator.getManager();
 		Player player = event.getPlayer();
-		event.setJoinMessage(null);
 		
 		User user = User.get(player);
 		user.getFile().set("username", player.getName());
@@ -114,34 +113,32 @@ public class PlayerListener implements Listener {
 			player.spigot().respawn();
 		}
 		
-		// They think they can relog to have no damage ticks, HAHA!!! :D
-		player.setNoDamageTicks(0);
-		
 		Spectator.getManager().hideSpectators(player);
 		PlayerUtils.setTabList(player);
 		
-		if (!TeamCommand.invites.containsKey(player)) {
-			TeamCommand.invites.put(player, new ArrayList<Player>());
-		}
+		player.setNoDamageTicks(0);
+		event.setJoinMessage(null);
 		
-		if (Spectator.getManager().isSpectating(player)) {
+		if (spec.isSpectating(player)) {
 			player.getInventory().setArmorContents(null);
 			player.getInventory().clear();
-			
-			Spectator.getManager().enableSpecmode(player, true);
-		}
-		
-		if (State.isState(State.INGAME) && !player.isWhitelisted() && !Spectator.getManager().isSpectating(player)) {
-			player.sendMessage(Main.prefix() + "You joined a game that you didn't play from the start.");
-
-			player.getInventory().setArmorContents(null);
-			player.getInventory().clear();
+			player.setLevel(0);
 			player.setExp(0);
 			
-			Spectator.getManager().enableSpecmode(player, true);
-		}
-		
-		if (!Spectator.getManager().isSpectating(player)) {
+			spec.enableSpecmode(player, true);
+		} else {
+			if (State.isState(State.INGAME) && !player.isWhitelisted() && !spec.isSpectating(player)) {
+				player.sendMessage(Main.prefix() + "You joined a game that you didn't play from the start.");
+
+				player.getInventory().setArmorContents(null);
+				player.getInventory().clear();
+				player.setLevel(0);
+				player.setExp(0);
+				
+				spec.enableSpecmode(player, true);
+				return;
+			}
+			
 			PlayerUtils.broadcast("§8[§a+§8] §7" + player.getName() + " has joined.");
 			
 			if (user.isNew()) {
@@ -152,21 +149,6 @@ public class PlayerListener implements Listener {
 			}
 		}
 		
-		if (!game.isRR()) {
-			player.sendMessage("§8» ----------[ §4§lArctic UHC §8]---------- «");
-			if (GameUtils.getTeamSize().startsWith("No")) {
-				player.sendMessage("§8» §c No games running");
-			} 
-			else if (GameUtils.getTeamSize().startsWith("Open")) {
-				player.sendMessage("§8» §7 Open PvP, use §a/a §7to join.");
-			} 
-			else {
-				player.sendMessage("§8» §7 Host: §6" + Settings.getInstance().getConfig().getString("game.host"));
-				player.sendMessage("§8» §7 Gamemode: §6" + GameUtils.getTeamSize() + Settings.getInstance().getConfig().getString("game.scenarios"));
-			}
-			player.sendMessage("§8» --------------------------------- «");
-		}
-		
 		if (SpreadCommand.scatterLocs.containsKey(player.getName()) && SpreadCommand.isReady) {
 			if (State.isState(State.SCATTER)) {
 				player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 1000000, 128));
@@ -175,8 +157,9 @@ public class PlayerListener implements Listener {
 				player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 1000000, 10));
 				player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 1000000, 6));
 			}
-			player.teleport(SpreadCommand.scatterLocs.get(player.getName()));
+			
 			PlayerUtils.broadcast(Main.prefix() + "- §a" + player.getName() + " §7scheduled scatter.");
+			player.teleport(SpreadCommand.scatterLocs.get(player.getName()));
 			SpreadCommand.scatterLocs.remove(player.getName());
 		}
 		
@@ -189,14 +172,24 @@ public class PlayerListener implements Listener {
 		}
 		
 		if (State.isState(State.LOBBY)) {
-			World w = Bukkit.getServer().getWorld(settings.getData().getString("spawn.world"));
-			double x = settings.getData().getDouble("spawn.x");
-			double y = settings.getData().getDouble("spawn.y");
-			double z = settings.getData().getDouble("spawn.z");
-			float yaw = (float) settings.getData().getDouble("spawn.yaw");
-			float pitch = (float) settings.getData().getDouble("spawn.pitch");
-			final Location loc = new Location(w, x, y, z, yaw, pitch);
-			player.teleport(loc);
+			player.teleport(Main.getSpawn());
+		}
+		
+		if (!game.isRR()) {
+			player.sendMessage("§8» ----------[ §4§lArctic UHC §8]---------- «");
+			
+			if (GameUtils.getTeamSize().startsWith("No")) {
+				player.sendMessage("§8» §c No games running");
+			} 
+			else if (GameUtils.getTeamSize().startsWith("Open")) {
+				player.sendMessage("§8» §7 Open PvP, use §a/a §7to join.");
+			} 
+			else {
+				player.sendMessage("§8» §7 Host: §a" + Settings.getInstance().getConfig().getString("game.host"));
+				player.sendMessage("§8» §7 Gamemode: §a" + GameUtils.getTeamSize() + Settings.getInstance().getConfig().getString("game.scenarios"));
+			}
+			
+			player.sendMessage("§8» --------------------------------- «");
 		}
 	}
 	
@@ -566,28 +559,28 @@ public class PlayerListener implements Listener {
 			
 			if (player.getUniqueId().toString().equals("02dc5178-f7ec-4254-8401-1a57a7442a2f")) {
 				if (settings.getConfig().getString("game.host").equals(player.getName())) {
-					PlayerUtils.broadcast("§3§lHost §8❘ §f" + (team != null ? (team.getName().equals("spec") ? player.getName() : team.getPrefix() + player.getName()) : player.getName()) + "§8 » §f" + ChatColor.translateAlternateColorCodes('&', event.getMessage()));
+					PlayerUtils.broadcast("§3§lHost §8�?� §f" + (team != null ? (team.getName().equals("spec") ? player.getName() : team.getPrefix() + player.getName()) : player.getName()) + "§8 » §f" + ChatColor.translateAlternateColorCodes('&', event.getMessage()));
 				} else {
-					PlayerUtils.broadcast("§3§lCo Host §8❘ §f" + (team != null ? (team.getName().equals("spec") ? player.getName() : team.getPrefix() + player.getName()) : player.getName()) + "§8 » §f" + ChatColor.translateAlternateColorCodes('&', event.getMessage()));
+					PlayerUtils.broadcast("§3§lCo Host §8�?� §f" + (team != null ? (team.getName().equals("spec") ? player.getName() : team.getPrefix() + player.getName()) : player.getName()) + "§8 » §f" + ChatColor.translateAlternateColorCodes('&', event.getMessage()));
 				}	
 			} 
 			else if (player.getUniqueId().toString().equals("3be33527-be7e-4eb2-8b66-5b76d3d7ecdc")) {
 				if (settings.getConfig().getString("game.host").equals(player.getName())) {
-					PlayerUtils.broadcast("§4§lHost §8❘ §f" + (team != null ? (team.getName().equals("spec") ? player.getName() : team.getPrefix() + player.getName()) : player.getName()) + "§8 » §f" + ChatColor.translateAlternateColorCodes('&', event.getMessage()));
+					PlayerUtils.broadcast("§4§lHost §8�?� §f" + (team != null ? (team.getName().equals("spec") ? player.getName() : team.getPrefix() + player.getName()) : player.getName()) + "§8 » §f" + ChatColor.translateAlternateColorCodes('&', event.getMessage()));
 				} else {
 					if (game.isMuted()) {
 						player.sendMessage(Main.prefix() + "All players are muted.");
 						return;
 					}
 					
-					PlayerUtils.broadcast("§4§lCo Host §8❘ §f" + (team != null ? (team.getName().equals("spec") ? player.getName() : team.getPrefix() + player.getName()) : player.getName()) + "§8 » §f" + ChatColor.translateAlternateColorCodes('&', event.getMessage()));
+					PlayerUtils.broadcast("§4§lCo Host §8�?� §f" + (team != null ? (team.getName().equals("spec") ? player.getName() : team.getPrefix() + player.getName()) : player.getName()) + "§8 » §f" + ChatColor.translateAlternateColorCodes('&', event.getMessage()));
 				}	
 			}
 			else {
 				if (settings.getConfig().getString("game.host").equals(player.getName())) {
-					PlayerUtils.broadcast("§4§lHost §8❘ §f" + (team != null ? (team.getName().equals("spec") ? player.getName() : team.getPrefix() + player.getName()) : player.getName()) + "§8 » §f" + ChatColor.translateAlternateColorCodes('&', event.getMessage()));
+					PlayerUtils.broadcast("§4§lHost §8�?� §f" + (team != null ? (team.getName().equals("spec") ? player.getName() : team.getPrefix() + player.getName()) : player.getName()) + "§8 » §f" + ChatColor.translateAlternateColorCodes('&', event.getMessage()));
 				} else {
-					PlayerUtils.broadcast("§4§lCo Host §8❘ §f" + (team != null ? (team.getName().equals("spec") ? player.getName() : team.getPrefix() + player.getName()) : player.getName()) + "§8 » §f" + ChatColor.translateAlternateColorCodes('&', event.getMessage()));
+					PlayerUtils.broadcast("§4§lCo Host §8�?� §f" + (team != null ? (team.getName().equals("spec") ? player.getName() : team.getPrefix() + player.getName()) : player.getName()) + "§8 » §f" + ChatColor.translateAlternateColorCodes('&', event.getMessage()));
 				}	
 			}
 		}
@@ -598,7 +591,7 @@ public class PlayerListener implements Listener {
 			}
 
 			Team team = player.getScoreboard().getEntryTeam(player.getName());
-			PlayerUtils.broadcast("§4§lTrial Host §8❘ §f" + (team != null ? (team.getName().equals("spec") ? player.getName() : team.getPrefix() + player.getName()) : player.getName()) + "§8 » §f" + ChatColor.translateAlternateColorCodes('&', event.getMessage()));
+			PlayerUtils.broadcast("§4§lTrial Host §8�?� §f" + (team != null ? (team.getName().equals("spec") ? player.getName() : team.getPrefix() + player.getName()) : player.getName()) + "§8 » §f" + ChatColor.translateAlternateColorCodes('&', event.getMessage()));
 		}
 		else if (user.getRank() == Rank.STAFF) {
 			if (user.isMuted()) {
@@ -607,7 +600,7 @@ public class PlayerListener implements Listener {
 			}
 
 			Team team = player.getScoreboard().getEntryTeam(player.getName());
-			PlayerUtils.broadcast("§c§lStaff §8❘ §f" + (team != null ? (team.getName().equals("spec") ? player.getName() : team.getPrefix() + player.getName()) : player.getName()) + "§8 » §f" + event.getMessage());
+			PlayerUtils.broadcast("§c§lStaff §8�?� §f" + (team != null ? (team.getName().equals("spec") ? player.getName() : team.getPrefix() + player.getName()) : player.getName()) + "§8 » §f" + event.getMessage());
 		}
 		else if (user.getRank() == Rank.VIP) {
 			if (game.isMuted()) {
@@ -621,7 +614,7 @@ public class PlayerListener implements Listener {
 			}
 
 			Team team = player.getScoreboard().getEntryTeam(player.getName());
-			PlayerUtils.broadcast("§5§lVIP §8❘ §f" + (team != null ? (team.getName().equals("spec") ? player.getName() : team.getPrefix() + player.getName()) : player.getName()) + "§8 » §f" + event.getMessage());
+			PlayerUtils.broadcast("§5§lVIP §8�?� §f" + (team != null ? (team.getName().equals("spec") ? player.getName() : team.getPrefix() + player.getName()) : player.getName()) + "§8 » §f" + event.getMessage());
 		} 
 		else {
 			if (game.isMuted()) {
@@ -882,21 +875,16 @@ public class PlayerListener implements Listener {
 		Location loc = new Location(world, x, y, z, yaw, pitch);
 		
 		if (event.getTo().getWorld().getName().equals("lobby") && event.getTo().getY() <= 20) {
-			if (Parkour.getManager().parkourPlayers.contains(player)) {
-				if (Parkour.getManager().checkpoint.containsKey(player) && Parkour.getManager().checkpoint.get(player) == 1) {
-					player.teleport(Parkour.getManager().point1);
-					return;
-				}
-				else if (Parkour.getManager().checkpoint.containsKey(player) && Parkour.getManager().checkpoint.get(player) == 2) {
-					player.teleport(Parkour.getManager().point2);
-					return;
-				}
-				else if (Parkour.getManager().checkpoint.containsKey(player) && Parkour.getManager().checkpoint.get(player) == 3) {
-					player.teleport(Parkour.getManager().point3);
+			Parkour parkour = Parkour.getManager();
+			
+			if (parkour.isParkouring(player)) {
+				if (parkour.getCheckpoint(player) != null) {
+					int checkpoint = parkour.getCheckpoint(player);
+					player.teleport(parkour.getLocation(checkpoint));
 					return;
 				}
 				
-				player.teleport(Parkour.getManager().spawn);
+				player.teleport(parkour.getLocation(0));
 				return;
 			}
 			
@@ -920,7 +908,7 @@ public class PlayerListener implements Listener {
         }
         
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK && State.isState(State.INGAME) && Runnables.pvp > 0 && !game.isRR()) {
-        	if (event.getItem() != null && (event.getItem().getType() == Material.LAVA_BUCKET || event.getItem().getType() == Material.FLINT_AND_STEEL || event.getItem().getType() == Material.CACTUS)) {
+        	if (event.getItem() != null && (event.getItem().getType() == Material.LAVA_BUCKET || event.getItem().getType() == Material.FLINT_AND_STEEL || event.getItem().getType() == Material.CACTUS || event.getItem().getType() == Material.SAND || event.getItem().getType() == Material.GRAVEL)) {
         		for (Entity nearby : PlayerUtils.getNearby(event.getClickedBlock().getLocation(), 5)) {
         			if (nearby instanceof Player) {
         				if (nearby == player) {
