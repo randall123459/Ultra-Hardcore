@@ -6,8 +6,8 @@ import org.bukkit.command.CommandSender;
 
 import com.leontg77.uhc.Game;
 import com.leontg77.uhc.Main;
-import com.leontg77.uhc.Main.State;
 import com.leontg77.uhc.Runnables;
+import com.leontg77.uhc.State;
 import com.leontg77.uhc.utils.DateUtils;
 import com.leontg77.uhc.utils.GameUtils;
 

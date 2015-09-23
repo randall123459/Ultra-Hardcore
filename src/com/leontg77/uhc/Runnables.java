@@ -19,7 +19,6 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scoreboard.Team;
 
 import com.leontg77.uhc.Main.Border;
-import com.leontg77.uhc.Main.State;
 import com.leontg77.uhc.Spectator.SpecInfo;
 import com.leontg77.uhc.cmds.TeamCommand;
 import com.leontg77.uhc.scenario.ScenarioManager;

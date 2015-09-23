@@ -15,10 +15,10 @@ import org.bukkit.entity.Player;
 import com.leontg77.uhc.Game;
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.Main.Border;
-import com.leontg77.uhc.Main.State;
 import com.leontg77.uhc.Runnables;
 import com.leontg77.uhc.Scoreboards;
 import com.leontg77.uhc.Settings;
+import com.leontg77.uhc.State;
 import com.leontg77.uhc.utils.PlayerUtils;
 
 public class ConfigCommand implements CommandExecutor, TabCompleter {

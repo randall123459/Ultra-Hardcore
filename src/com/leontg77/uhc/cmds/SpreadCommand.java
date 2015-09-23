@@ -19,10 +19,10 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Team;
 
 import com.leontg77.uhc.Main;
-import com.leontg77.uhc.Main.State;
 import com.leontg77.uhc.Parkour;
 import com.leontg77.uhc.Scoreboards;
 import com.leontg77.uhc.Settings;
+import com.leontg77.uhc.State;
 import com.leontg77.uhc.Teams;
 import com.leontg77.uhc.utils.PlayerUtils;
 import com.leontg77.uhc.utils.ScatterUtils;

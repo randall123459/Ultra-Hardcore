@@ -24,7 +24,7 @@ import org.bukkit.util.Vector;
 
 import com.leontg77.uhc.Arena;
 import com.leontg77.uhc.Game;
-import com.leontg77.uhc.Main.State;
+import com.leontg77.uhc.State;
 import com.leontg77.uhc.utils.BlockUtils;
 
 /**
