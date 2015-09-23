@@ -28,14 +28,14 @@ public class Parkour implements Listener {
 	private static Parkour manager = new Parkour();
 	public BukkitRunnable task;
 
-	public Location spawn = new Location(Bukkit.getWorld("lobby"), 29.5, 34, 0.5, -90, 0);
-	public Location point1 = new Location(Bukkit.getWorld("lobby"), 90.5, 36, 2.5, -90, 0);
-	public Location point2 = new Location(Bukkit.getWorld("lobby"), 134.5, 41, 12.5, 0, 0);
-	public Location point3 = new Location(Bukkit.getWorld("lobby"), 102.5, 54, 17.5, -180, 0);
+	private Location spawn = new Location(Bukkit.getWorld("lobby"), 29.5, 34, 0.5, -90, 0);
+	private Location point1 = new Location(Bukkit.getWorld("lobby"), 90.5, 36, 2.5, -90, 0);
+	private Location point2 = new Location(Bukkit.getWorld("lobby"), 134.5, 41, 12.5, 0, 0);
+	private Location point3 = new Location(Bukkit.getWorld("lobby"), 102.5, 54, 17.5, -180, 0);
 	
-	public HashSet<Player> parkourPlayers = new HashSet<Player>();
-	public HashMap<Player, Integer> checkpoint = new HashMap<Player, Integer>();
-	public HashMap<Player, Integer> time = new HashMap<Player, Integer>();
+	private HashSet<Player> players = new HashSet<Player>();
+	private HashMap<Player, Integer> checkpoint = new HashMap<Player, Integer>();
+	private HashMap<Player, Integer> time = new HashMap<Player, Integer>();
 
 	/**
 	 * Gets the instance of this class
@@ -68,10 +68,37 @@ public class Parkour implements Listener {
 	 */
 	public void shutdown() {
 		HandlerList.unregisterAll(this);
-		parkourPlayers.clear();
 		checkpoint.clear();
+		players.clear();
 		task.cancel();
 		time.clear();
+	}
+	
+	public Location getLocation(int checkpoint) {
+		if (checkpoint == 1) {
+			return point1;
+		}
+		else if (checkpoint == 2) {
+			return point2;
+		}
+		else if (checkpoint == 3) {
+			return point3;
+		}
+		else {
+			return spawn;
+		}
+	}
+	
+	public boolean isParkouring(Player player) {
+		return players.contains(player);
+	}
+	
+	public Integer getCheckpoint(Player player) {
+		return checkpoint.get(player);
+	}
+	
+	public Integer getTime(Player player) {
+		return time.get(player);
 	}
 	
 	@EventHandler
@@ -89,7 +116,7 @@ public class Parkour implements Listener {
 			}
 			
 			if (((ArmorStand) point).getCustomName().contains("Start")) {
-				if (parkourPlayers.contains(player)) {
+				if (players.contains(player)) {
 					player.sendMessage(Main.prefix() + "The timer has been reset to §a0s§7.");
 					player.playSound(player.getLocation(), "random.pop", 1, 1);
 					time.put(player, 0);
@@ -98,12 +125,12 @@ public class Parkour implements Listener {
 				
 				player.sendMessage(Main.prefix() + "Parkour started.");
 				player.playSound(player.getLocation(), "random.pop", 1, 1);
-				parkourPlayers.add(player);
+				players.add(player);
 				checkpoint.put(player, 0);
 				time.put(player, 0);
 			}
 			
-			if (!parkourPlayers.contains(player)) {
+			if (!players.contains(player)) {
 				return;
 			}
 			
@@ -112,9 +139,9 @@ public class Parkour implements Listener {
 					return;
 				}
 				
-				player.sendMessage(Main.prefix() + "You reached checkpoint 1.");
+				player.sendMessage(Main.prefix() + "You reached checkpoint §c1§7.");
 				player.playSound(player.getLocation(), "random.pop", 1, 1);
-				parkourPlayers.add(player);
+				players.add(player);
 				checkpoint.put(player, 1);
 			}
 			
@@ -123,9 +150,9 @@ public class Parkour implements Listener {
 					return;
 				}
 				
-				player.sendMessage(Main.prefix() + "You reached checkpoint 2.");
+				player.sendMessage(Main.prefix() + "You reached checkpoint §c2§7.");
 				player.playSound(player.getLocation(), "random.pop", 1, 1);
-				parkourPlayers.add(player);
+				players.add(player);
 				checkpoint.put(player, 2);
 			}
 			
@@ -134,9 +161,9 @@ public class Parkour implements Listener {
 					return;
 				}
 				
-				player.sendMessage(Main.prefix() + "You reached checkpoint 3.");
+				player.sendMessage(Main.prefix() + "You reached checkpoint §c3§7.");
 				player.playSound(player.getLocation(), "random.pop", 1, 1);
-				parkourPlayers.add(player);
+				players.add(player);
 				checkpoint.put(player, 3);
 			}
 			
@@ -144,7 +171,7 @@ public class Parkour implements Listener {
 				player.sendMessage(Main.prefix() + "You finished the parkour, time used: §a" + DateUtils.ticksToString(time.get(player)));
 				player.playSound(player.getLocation(), Sound.LEVEL_UP, 1, 1);
 				
-				parkourPlayers.remove(player);
+				players.remove(player);
 				checkpoint.remove(player);
 				time.remove(player);
 			}
