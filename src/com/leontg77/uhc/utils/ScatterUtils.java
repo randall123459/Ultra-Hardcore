@@ -73,16 +73,16 @@ public class ScatterUtils {
 	/**
 	 * Check if a location is a vaild scatter point.
 	 * 
-	 * @param l the location .
+	 * @param loc the location.
 	 * @return True if its vaild, false otherwise.
 	 */
-	private static boolean isVaildLocation(Location l) {
-		l.setY(l.getWorld().getHighestBlockYAt(l));
+	private static boolean isVaildLocation(Location loc) {
+		loc.setY(loc.getWorld().getHighestBlockYAt(loc));
 		
-		Material m = l.add(0, -1, 0).getBlock().getType();
+		Material m = loc.add(0, -1, 0).getBlock().getType();
 		boolean vaild = true;
 		
-		if (l.getBlockY() < 60) {
+		if (loc.getBlockY() < 60) {
 			vaild = false;
 		}	
 		
