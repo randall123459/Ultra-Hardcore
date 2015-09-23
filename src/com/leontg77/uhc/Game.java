@@ -208,7 +208,7 @@ public class Game {
 	
 	public void setArenaBoard(boolean enable) {
 		settings.getData().set("boards.arena", enable);
-		settings.saveConfig();
+		settings.saveData();
 	}
 
 	public boolean teamManagement() {
@@ -217,7 +217,7 @@ public class Game {
 	
 	public void setTeamManagement(boolean enable) {
 		settings.getData().set("teams.management", enable);
-		settings.saveConfig();
+		settings.saveData();
 	}
 
 	public boolean isRR() {
@@ -226,7 +226,7 @@ public class Game {
 	
 	public void setRR(boolean enable) {
 		settings.getConfig().set("rr.state", enable);
-		settings.saveConfig();
+		settings.saveData();
 		
 		for (Player online : PlayerUtils.getPlayers()) {
 			PlayerUtils.setTabList(online);
