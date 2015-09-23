@@ -13,6 +13,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.Difficulty;
 import org.bukkit.GameMode;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
@@ -117,20 +118,22 @@ import com.leontg77.uhc.utils.PlayerUtils;
  * @author LeonTG77
  */
 public class Main extends JavaPlugin {
-	private Settings settings = Settings.getInstance();
+	private static Settings settings = Settings.getInstance();
 	private Logger logger = getLogger();
 	public static Main plugin;
 	
-	public static BukkitRunnable countdown;
 	public static Recipe headRecipe;
 	public static Recipe melonRecipe;
 	
 	public static HashMap<String, PermissionAttachment> permissions = new HashMap<String, PermissionAttachment>();
 	public static HashMap<CommandSender, CommandSender> msg = new HashMap<CommandSender, CommandSender>();
+	
 	public static HashMap<Inventory, BukkitRunnable> invsee = new HashMap<Inventory, BukkitRunnable>();
 	public static HashMap<Inventory, BukkitRunnable> rules = new HashMap<Inventory, BukkitRunnable>();
+	
 	public static HashMap<String, Integer> teamKills = new HashMap<String, Integer>();
 	public static HashMap<String, Integer> kills = new HashMap<String, Integer>();
+	
 	public static HashMap<Player, int[]> rainbow = new HashMap<Player, int[]>();
 
 	public static final String NO_PERMISSION_MESSAGE = Main.prefix() + ChatColor.RED + "You can't use that command.";
@@ -360,6 +363,18 @@ public class Main extends JavaPlugin {
 	public static String prefix() {
 		String prefix = "§4§lUHC §8» §7";
 		return prefix;
+	}
+	
+	public static Location getSpawn() {
+		World w = Bukkit.getServer().getWorld(settings.getData().getString("spawn.world", "lobby"));
+		double x = settings.getData().getDouble("spawn.x", 0.5);
+		double y = settings.getData().getDouble("spawn.y", 0.5);
+		double z = settings.getData().getDouble("spawn.z", 0.5);
+		float yaw = (float) settings.getData().getDouble("spawn.yaw", 0);
+		float pitch = (float) settings.getData().getDouble("spawn.pitch", 0);
+		
+		Location loc = new Location(w, x, y, z, yaw, pitch);
+		return loc;
 	}
 	
 	/**
