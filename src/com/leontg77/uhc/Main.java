@@ -41,7 +41,6 @@ import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
-import com.comphenix.protocol.events.PacketListener;
 import com.leontg77.uhc.Spectator.SpecInfo;
 import com.leontg77.uhc.cmds.AboardCommand;
 import com.leontg77.uhc.cmds.ArenaCommand;
@@ -105,7 +104,6 @@ import com.leontg77.uhc.listeners.EntityListener;
 import com.leontg77.uhc.listeners.InventoryListener;
 import com.leontg77.uhc.listeners.PlayerListener;
 import com.leontg77.uhc.listeners.WorldListener;
-import com.leontg77.uhc.scenario.Scenario;
 import com.leontg77.uhc.scenario.ScenarioManager;
 import com.leontg77.uhc.utils.NumberUtils;
 import com.leontg77.uhc.utils.PlayerUtils;
@@ -118,7 +116,6 @@ import com.leontg77.uhc.utils.PlayerUtils;
  * @author LeonTG77
  */
 public class Main extends JavaPlugin {
-	private static Settings settings = Settings.getInstance();
 	private Logger logger = getLogger();
 	public static Main plugin;
 	
@@ -135,8 +132,9 @@ public class Main extends JavaPlugin {
 	public static HashMap<String, Integer> kills = new HashMap<String, Integer>();
 	
 	public static HashMap<Player, int[]> rainbow = new HashMap<Player, int[]>();
-
+	
 	public static final String NO_PERMISSION_MESSAGE = Main.prefix() + ChatColor.RED + "You can't use that command.";
+	private static Settings settings = Settings.getInstance();
 	
 	@Override
 	public void onDisable() {
@@ -167,9 +165,8 @@ public class Main extends JavaPlugin {
 		UBL.getManager().setup();
 		
 		ProtocolManager manager = ProtocolLibrary.getProtocolManager();
-	    PacketListener listener = new HardcoreHearts(this); 
+	    manager.addPacketListener(new HardcoreHearts(this));
 	    
-        manager.addPacketListener(listener);
 		recoverData();
 		addRecipes();
 		
@@ -464,29 +461,18 @@ public class Main extends JavaPlugin {
 	 */
 	public void saveData() {
 		settings.getData().set("state", State.getState().name());
-		settings.saveData();
-		
-		ArrayList<String> scens = new ArrayList<String>();
-		
-		for (Scenario scen : ScenarioManager.getInstance().getEnabledScenarios()) {
-			scens.add(scen.getName());
-		}
-		
-		settings.getData().set("scenarios", scens);
-		settings.saveData();
+		settings.getData().set("scenarios", ScenarioManager.getInstance().getEnabledScenarios());
 		
 		for (Entry<String, Integer> tkEntry : teamKills.entrySet()) {
 			settings.getData().set("teamkills." + tkEntry.getKey(), tkEntry.getValue());
 		}
-		settings.saveData();
 		
 		for (Entry<String, Integer> kEntry : kills.entrySet()) {
 			settings.getData().set("kills." + kEntry.getKey(), kEntry.getValue());
 		}
-		settings.saveData();
 		
 		for (Entry<String, List<String>> entry : TeamCommand.sTeam.entrySet()) {
-			settings.getData().set("team." + entry.getKey(), entry.getValue());
+			settings.getData().set("teams.data." + entry.getKey(), entry.getValue());
 		}
 		settings.saveData();
 	}
@@ -501,61 +487,34 @@ public class Main extends JavaPlugin {
 			for (String name : settings.getData().getConfigurationSection("kills").getKeys(false)) {
 				kills.put("kills." + name, settings.getData().getInt("kills." + name));
 			}
-			
+		} catch (Exception e) {
+			logger.warning("Could not recover kills data.");
+		}
+		
+		try {
 			for (String name : settings.getData().getConfigurationSection("teamkills").getKeys(false)) {
 				teamKills.put("teamkills." + name, settings.getData().getInt("teamkills." + name));
 			}
-			
+		} catch (Exception e) {
+			logger.warning("Could not recover team kills data.");
+		}
+		
+		try {
 			if (settings.getData().getConfigurationSection("team") != null) {
-				for (String name : settings.getData().getConfigurationSection("team").getKeys(false)) {
-					TeamCommand.sTeam.put("team." + name, settings.getData().getStringList("team." + name));
+				for (String name : settings.getData().getConfigurationSection("teams.data").getKeys(false)) {
+					TeamCommand.sTeam.put("teams.data." + name, settings.getData().getStringList("teams.data." + name));
 				}
 			}
-			
+		} catch (Exception e) {
+			logger.warning("Could not recover team data.");
+		}
+		
+		try {
 			for (String scen : settings.getData().getStringList("scenarios")) {
 				ScenarioManager.getInstance().getScenario(scen).enableScenario();
 			}
 		} catch (Exception e) {
-			
-		}
-	}
-	
-	/**
-	 * The game state class.
-	 * 
-	 * @author LeonTG77
-	 */
-	public enum State {
-		LOBBY, SCATTER, INGAME;
-
-		private static State currentState;
-		
-		/**
-		 * Sets the current state to be #.
-		 * @param state the state setting it to.
-		 */
-		public static void setState(State state) {
-			Settings.getInstance().getData().set("state", state.name().toUpperCase());
-			Settings.getInstance().saveData();
-			
-			currentState = state;
-		}
-		
-		/**
-		 * Checks if the state is #.
-		 * @param state The state checking.
-		 * @return True if it's the given state.
-		 */
-		public static boolean isState(State state) {
-			return currentState == state;
-		}
-		
-		/**
-		 * Gets the current state.
-		 * @return The state
-		 */
-		public static State getState() {
-			return currentState;
+			logger.warning("Could not recover scenario data.");
 		}
 	}
 	
