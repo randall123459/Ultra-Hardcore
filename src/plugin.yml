@@ -88,7 +88,8 @@ commands:
     description: Reply to your latest msg.
     aliases: [r]
   rules:
-    description: View our rules.
+    description: View the game information.
+    aliases: [uhc, info]
   scenario:
     description: Enable and disable scenarios
     aliases: [scen]
