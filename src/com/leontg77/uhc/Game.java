@@ -9,14 +9,29 @@ public class Game {
 	private Settings settings = Settings.getInstance();
 	private static Game instance = new Game();
 	
+	/**
+	 * Get the instance of the class.
+	 * 
+	 * @return The instance.
+	 */
 	public static Game getInstance() {
 		return instance;
 	}
 	
+	/**
+	 * Check if the game is in FFA mode
+	 * 
+	 * @return True if it is, false otherwise.
+	 */
 	public boolean isFFA() {
 		return settings.getConfig().getBoolean("game.ffa", true);
 	}
 	
+	/**
+	 * Change the FFA mode.
+	 * 
+	 * @param ffa True to enable, false to disable.
+	 */
 	public void setFFA(boolean ffa) {
 		settings.getConfig().set("game.ffa", ffa);
 		settings.saveConfig();
