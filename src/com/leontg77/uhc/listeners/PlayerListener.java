@@ -309,38 +309,10 @@ public class PlayerListener implements Listener {
 			}
 			
 			if (Arena.getManager().killstreak.containsKey(killer)) {
-				int killstreak = Arena.getManager().killstreak.get(killer);
+				String killstreak = String.valueOf(Arena.getManager().killstreak.get(killer));
 				
-				if (killstreak == 5) {
-					PlayerUtils.broadcast(Main.prefix() + ChatColor.GREEN + killer.getName() + " §7is now on a 5 killstreak");
-				}
-
-				if (killstreak == 10) {
-					PlayerUtils.broadcast(Main.prefix() + ChatColor.GREEN + killer.getName() + " §7is now on a 10 killstreak");
-				}
-
-				if (killstreak == 15) {
-					PlayerUtils.broadcast(Main.prefix() + ChatColor.GREEN + killer.getName() + " §7is now on a 15 killstreak");
-				}
-
-				if (killstreak == 20) {
-					PlayerUtils.broadcast(Main.prefix() + ChatColor.GREEN + killer.getName() + " §7is now on a 20 killstreak");
-				}
-
-				if (killstreak == 30) {
-					PlayerUtils.broadcast(Main.prefix() + ChatColor.GREEN + killer.getName() + " §7is now on a 30 killstreak");
-				}
-				
-				if (killstreak == 50) {
-					PlayerUtils.broadcast(Main.prefix() + ChatColor.GREEN + killer.getName() + " §7is now on a 50 killstreak");
-				}
-
-				if (killstreak == 75) {
-					PlayerUtils.broadcast(Main.prefix() + ChatColor.GREEN + killer.getName() + " §7is now on a 75 killstreak");
-				}
-				
-				if (killstreak == 100) {
-					PlayerUtils.broadcast(Main.prefix() + ChatColor.GREEN + killer.getName() + " §7is now on a 100 killstreak");
+				if (killstreak.endsWith("0") || killstreak.endsWith("5")) {
+					PlayerUtils.broadcast(Main.prefix() + ChatColor.GREEN + killer.getName() + " §7is now on a §6" + killstreak + " §7killstreak");
 				}
 			}
 		} else {
