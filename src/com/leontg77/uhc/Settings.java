@@ -111,7 +111,7 @@ public class Settings {
         
 		worlds = YamlConfiguration.loadConfiguration(wfile);
 	
-		Bukkit.getLogger().info("[UHC] Configs has been setup.");
+		Main.plugin.getLogger().info("Configs has been setup.");
 	}
     
 	/**
