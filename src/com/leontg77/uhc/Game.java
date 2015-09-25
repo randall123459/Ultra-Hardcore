@@ -37,6 +37,11 @@ public class Game {
 		settings.saveConfig();
 	}
 	
+	/**
+	 * Get the game teamsize.
+	 * 
+	 * @return The teamsize.
+	 */
 	public int getTeamSize() {
 		return settings.getConfig().getInt("game.teamsize", 0);
 	}
