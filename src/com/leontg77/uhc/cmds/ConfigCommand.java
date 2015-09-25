@@ -19,6 +19,7 @@ import com.leontg77.uhc.Runnables;
 import com.leontg77.uhc.Scoreboards;
 import com.leontg77.uhc.Settings;
 import com.leontg77.uhc.State;
+import com.leontg77.uhc.utils.GameUtils;
 import com.leontg77.uhc.utils.PlayerUtils;
 
 public class ConfigCommand implements CommandExecutor, TabCompleter {
@@ -114,7 +115,7 @@ public class ConfigCommand implements CommandExecutor, TabCompleter {
 						return true;
 					}
 					
-					PlayerUtils.broadcast(Main.prefix() + "Flint rates are now §a" + f + "§7.");
+					PlayerUtils.broadcast(Main.prefix() + "Flint rates are now §a" + f + "%");
 					game.setFlintRates(f);
 					break;
 				case GHASTDROPS:
@@ -286,7 +287,7 @@ public class ConfigCommand implements CommandExecutor, TabCompleter {
 						return true;
 					}
 					
-					PlayerUtils.broadcast(Main.prefix() + "Shear rates are now §a" + s + "§7.");
+					PlayerUtils.broadcast(Main.prefix() + "Shear rates are now §a" + s + "%");
 					game.setShearRates(s);
 					break;
 				case SHEARS:
@@ -323,8 +324,8 @@ public class ConfigCommand implements CommandExecutor, TabCompleter {
 						return true;
 					}
 					
-					PlayerUtils.broadcast(Main.prefix() + "The teamsize is now §a" + tz + "§7.");
 					game.setTeamSize(tz);
+					PlayerUtils.broadcast(Main.prefix() + "The teamsize is now §a" + GameUtils.getTeamSize() + "§7.");
 					
 					for (Player online : PlayerUtils.getPlayers()) {
 						PlayerUtils.setTabList(online);
