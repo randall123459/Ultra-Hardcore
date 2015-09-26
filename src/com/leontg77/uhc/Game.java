@@ -51,11 +51,11 @@ public class Game {
 		settings.saveConfig();
 	}
 	
-	public Border getBorderShrinkTime() {
+	public Border getBorderShrink() {
 		return Border.valueOf(settings.getConfig().getString("feature.border.shrinkAt", Border.MEETUP.name()));
 	}
 	
-	public void setBorderShrinkTime(Border border) {
+	public void setBorderShrink(Border border) {
 		settings.getConfig().set("feature.border.shrinkAt", border.name());
 		settings.saveConfig();
 	}

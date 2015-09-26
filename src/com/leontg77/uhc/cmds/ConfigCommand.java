@@ -73,7 +73,7 @@ public class ConfigCommand implements CommandExecutor, TabCompleter {
 					}
 					
 					PlayerUtils.broadcast(Main.prefix() + "Border will now shrink " + (border == Border.START ? "from" : "at") + " " + border.name().toLowerCase());
-					game.setBorderShrinkTime(border);
+					game.setBorderShrink(border);
 					break;
 				case DEATHLIGHTNING:
 					if (args[1].equalsIgnoreCase("true")) {
