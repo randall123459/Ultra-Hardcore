@@ -14,7 +14,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Score;
 import org.bukkit.scoreboard.Scoreboard;
+import org.bukkit.scoreboard.Team;
 
+import com.leontg77.uhc.utils.PlayerUtils;
 import com.leontg77.uhc.utils.ScatterUtils;
 
 /**
@@ -164,35 +166,44 @@ public class Arena {
 	public void removePlayer(Player player, boolean death) {
 		players.remove(player);
 		
-		if (death) {
-			return;
+		if (!death) {
+			Team team = Teams.getManager().getTeam(player);
+			Arena.getManager().killstreak.put(player, 0); 
+
+			if (Arena.getManager().killstreak.containsKey(player) && Arena.getManager().killstreak.get(player) > 4) {
+				PlayerUtils.broadcast(Main.prefix() + "§6" + player.getName() + "'s §7killstreak of §a" + Arena.getManager().killstreak.get(player) + " §7was shut down from logging out");
+			}
+			
+			for (Player p : Arena.getManager().getPlayers()) {
+				p.sendMessage("§8» " + (team == null ? "§f" : team.getPrefix()) + player.getName() + " §fwas killed from logging out");
+			}
+			
+			player.setItemOnCursor(new ItemStack (Material.AIR));
+			player.getInventory().setArmorContents(null);
+			player.getInventory().clear();
+			player.setMaxHealth(20.0);
+			player.setSaturation(20);
+			player.setFoodLevel(20);
+			player.setHealth(20.0);
+			player.setLevel(0);
+			player.setExp(0);
+			
+			if (player.isDead()) {
+				player.spigot().respawn();
+			}
+			
+			board.resetScores(player.getName());
+			
+			World world = Bukkit.getServer().getWorld(settings.getData().getString("spawn.world"));
+			double x = settings.getData().getDouble("spawn.x");
+			double y = settings.getData().getDouble("spawn.y");
+			double z = settings.getData().getDouble("spawn.z");
+			float yaw = (float) settings.getData().getDouble("spawn.yaw");
+			float pitch = (float) settings.getData().getDouble("spawn.pitch");
+			
+			Location loc = new Location(world, x, y, z, yaw, pitch);
+			player.teleport(loc);
 		}
-		
-		player.setItemOnCursor(new ItemStack (Material.AIR));
-		player.getInventory().setArmorContents(null);
-		player.getInventory().clear();
-		player.setMaxHealth(20.0);
-		player.setSaturation(20);
-		player.setFoodLevel(20);
-		player.setHealth(20.0);
-		player.setLevel(0);
-		player.setExp(0);
-		
-		if (player.isDead()) {
-			player.spigot().respawn();
-		}
-		
-		board.resetScores(player.getName());
-		
-		World world = Bukkit.getServer().getWorld(settings.getData().getString("spawn.world"));
-		double x = settings.getData().getDouble("spawn.x");
-		double y = settings.getData().getDouble("spawn.y");
-		double z = settings.getData().getDouble("spawn.z");
-		float yaw = (float) settings.getData().getDouble("spawn.yaw");
-		float pitch = (float) settings.getData().getDouble("spawn.pitch");
-		
-		Location loc = new Location(world, x, y, z, yaw, pitch);
-		player.teleport(loc);
 	}
 	
 	/**
