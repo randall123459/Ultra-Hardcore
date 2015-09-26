@@ -1,4 +1,4 @@
-package com.leontg77.uhc;
+package com.leontg77.uhc.managers;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -16,6 +16,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import com.leontg77.uhc.Main;
 import com.leontg77.uhc.utils.DateUtils;
 import com.leontg77.uhc.utils.PlayerUtils;
 

@@ -1,4 +1,4 @@
-package com.leontg77.uhc;
+package com.leontg77.uhc.managers;
 
 import java.util.Random;
 
@@ -11,6 +11,7 @@ import org.bukkit.entity.Firework;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import com.leontg77.uhc.Main;
 import com.leontg77.uhc.utils.BlockUtils;
 
 /**
