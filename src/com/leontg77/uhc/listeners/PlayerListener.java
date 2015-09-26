@@ -363,10 +363,6 @@ public class PlayerListener implements Listener {
 			
 	        Scoreboards.getManager().setScore(killer.getName(), Scoreboards.getManager().getScore(killer.getName()) + 1);
 			
-			if (game.isRR()) {
-				return;
-			}
-			
 			if (event.getDeathMessage().contains(killer.getName()) && killer.getItemInHand() != null && killer.getItemInHand().hasItemMeta() && killer.getItemInHand().getItemMeta().hasDisplayName() && (event.getDeathMessage().contains("slain") || event.getDeathMessage().contains("shot"))) {
 				ComponentBuilder builder = new ComponentBuilder("§8» §r" + event.getDeathMessage().replace("[" + killer.getItemInHand().getItemMeta().getDisplayName() + "]", ""));
 				
@@ -399,7 +395,11 @@ public class PlayerListener implements Listener {
 			} else {
 				event.setDeathMessage("§8» §f" + event.getDeathMessage());
 			}
-
+			
+			if (game.isRR()) {
+				return;
+			}
+			
 			if (State.isState(State.INGAME)) {
 				User killerData = User.get(killer);
 				killerData.increaseStat("kills");
