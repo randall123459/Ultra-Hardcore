@@ -16,14 +16,14 @@ import org.bukkit.command.CommandSender;
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.Settings;
 
-public class SetupCommand implements CommandExecutor {
+public class WorldCommand implements CommandExecutor {
 	private Settings config = Settings.getInstance();
 
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-		if (cmd.getName().equalsIgnoreCase("setup")) {
-			if (sender.hasPermission("uhc.setup")) {
+		if (cmd.getName().equalsIgnoreCase("world")) {
+			if (sender.hasPermission("uhc.world")) {
 				if (args.length < 7) {
-					sender.sendMessage(Main.prefix() + "Usage: /setup <worldname> <radius> <seed> <worldtype> <nether> <end> <antistripmine>");
+					sender.sendMessage(Main.prefix() + "Usage: /world <worldname> <radius> <seed> <worldtype> <nether> <end> <antistripmine>");
 					return true;
 				}
 				
@@ -182,8 +182,8 @@ public class SetupCommand implements CommandExecutor {
 	}
 	
 	public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {
-		if (cmd.getName().equalsIgnoreCase("setup")) {
-			if (sender.hasPermission("uhc.setup")) {
+		if (cmd.getName().equalsIgnoreCase("world")) {
+			if (sender.hasPermission("uhc.world")) {
 				if (args.length == 1) {
 		        	ArrayList<String> arg = new ArrayList<String>();
 		        	ArrayList<String> types = new ArrayList<String>();
