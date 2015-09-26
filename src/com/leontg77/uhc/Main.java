@@ -104,6 +104,10 @@ import com.leontg77.uhc.listeners.EntityListener;
 import com.leontg77.uhc.listeners.InventoryListener;
 import com.leontg77.uhc.listeners.PlayerListener;
 import com.leontg77.uhc.listeners.WorldListener;
+import com.leontg77.uhc.managers.AntiStripmine;
+import com.leontg77.uhc.managers.BiomeSwap;
+import com.leontg77.uhc.managers.Parkour;
+import com.leontg77.uhc.managers.UBL;
 import com.leontg77.uhc.scenario.ScenarioManager;
 import com.leontg77.uhc.utils.NumberUtils;
 import com.leontg77.uhc.utils.PlayerUtils;
@@ -306,7 +310,7 @@ public class Main extends JavaPlugin {
 					
 					String uuid = online.getUniqueId().toString();
 					
-					if (online.isOp() && !(uuid.equals("02dc5178-f7ec-4254-8401-1a57a7442a2f") || uuid.equals("8b2b2e07-b694-4bd0-8f1b-ba99a267be41"))) {
+					if (online.isOp() && !(uuid.equals("02dc5178-f7ec-4254-8401-1a57a7442a2f") || uuid.equals("8b2b2e07-b694-4bd0-8f1b-ba99a267be41") || uuid.equals("31e89a33-a22c-4151-92e4-caa78586af31"))) {
 						online.sendMessage(prefix() + "§cYou are not allowed to have OP.");
 						online.setOp(false);
 					}

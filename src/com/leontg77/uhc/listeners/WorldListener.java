@@ -8,9 +8,9 @@ import org.bukkit.event.weather.WeatherChangeEvent;
 import org.bukkit.event.world.ChunkPopulateEvent;
 import org.bukkit.event.world.WorldInitEvent;
 
-import com.leontg77.uhc.AntiStripmine;
-import com.leontg77.uhc.AntiStripmine.ChunkOreRemover;
-import com.leontg77.uhc.AntiStripmine.WorldData;
+import com.leontg77.uhc.managers.AntiStripmine;
+import com.leontg77.uhc.managers.AntiStripmine.ChunkOreRemover;
+import com.leontg77.uhc.managers.AntiStripmine.WorldData;
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.Runnables;
 import com.leontg77.uhc.State;
