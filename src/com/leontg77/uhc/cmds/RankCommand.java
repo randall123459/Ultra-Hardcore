@@ -14,6 +14,7 @@ import org.bukkit.entity.Player;
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.User;
 import com.leontg77.uhc.User.Rank;
+import com.leontg77.uhc.managers.Fireworks;
 import com.leontg77.uhc.utils.NameUtils;
 import com.leontg77.uhc.utils.PlayerUtils;
 
@@ -21,7 +22,7 @@ public class RankCommand implements CommandExecutor, TabCompleter {
 
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (cmd.getName().equalsIgnoreCase("rank")) {
-			if (sender.hasPermission("uhc.rank") || (sender instanceof Player && ((Player) sender).getUniqueId().toString().equals("8b2b2e07-b694-4bd0-8f1b-ba99a267be41"))) {
+			if (sender.hasPermission("uhc.rank")) {
 				if (args.length < 2) {
 					sender.sendMessage(Main.prefix() + "Usage: /rank <player> <newrank>");
 					return true;
@@ -46,6 +47,7 @@ public class RankCommand implements CommandExecutor, TabCompleter {
 				}
 				
 				User.get(target).setRank(rank);
+				Fireworks.getInstance().launchRandomFirework(target.getLocation());
 				PlayerUtils.broadcast(Main.prefix() + "§6" + target.getName() + " §7has been given §a" + (rank == Rank.VIP ? "VIP" : NameUtils.fixString(rank.name(), false)) + " §7rank.");
 			} else {
 				sender.sendMessage(Main.prefix() + "You can't use that command.");
@@ -56,7 +58,7 @@ public class RankCommand implements CommandExecutor, TabCompleter {
 	
 	public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {
 		if (cmd.getName().equalsIgnoreCase("rank")) {
-			if (sender.hasPermission("uhc.rank") || (sender instanceof Player && ((Player) sender).getUniqueId().toString().equals("8b2b2e07-b694-4bd0-8f1b-ba99a267be41"))) {
+			if (sender.hasPermission("uhc.rank")) {
 				ArrayList<String> arg = new ArrayList<String>();
 				
 				if (args.length == 1) {
