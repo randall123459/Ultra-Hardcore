@@ -182,6 +182,8 @@ public class Arena {
 			player.spigot().respawn();
 		}
 		
+		board.resetScores(player.getName());
+		
 		World world = Bukkit.getServer().getWorld(settings.getData().getString("spawn.world"));
 		double x = settings.getData().getDouble("spawn.x");
 		double y = settings.getData().getDouble("spawn.y");
