@@ -149,6 +149,14 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
 						sendHelp(player);
 					}
 				}
+				else if (args[0].equalsIgnoreCase("color")) {
+					if (player.hasPermission("uhc.teamadmin")) {
+						Teams.getManager().setup();
+						PlayerUtils.broadcast(Main.prefix() + "All teams has been re-colored.");
+					} else {
+						sendHelp(player);
+					}
+				}
 				else if (args[0].equalsIgnoreCase("list")) {
 					if (player.hasPermission("uhc.teamadmin")) {
 						player.sendMessage(Main.prefix() + "List of teams:");
@@ -366,6 +374,14 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
 					}
 					PlayerUtils.broadcast(Main.prefix() + "Team management has been disabled.");
 					game.setTeamManagement(false);
+				} else {
+					sendHelp(player);
+				}
+			}
+			else if (args[0].equalsIgnoreCase("color")) {
+				if (player.hasPermission("uhc.teamadmin")) {
+					Teams.getManager().setup();
+					PlayerUtils.broadcast(Main.prefix() + "All teams has been re-colored.");
 				} else {
 					sendHelp(player);
 				}
