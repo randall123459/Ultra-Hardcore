@@ -35,7 +35,7 @@ import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Score;
 import org.bukkit.scoreboard.Scoreboard;
 
-import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.PacketType.Play.Server;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.ListenerPriority;
@@ -462,16 +462,18 @@ public class Main extends JavaPlugin {
 	}
 	
 	/**
-	 * Save all the data from the reload.
+	 * Save all the data to the data file.
 	 */
 	public void saveData() {
 		settings.getData().set("state", State.getState().name());
 		
+		List<String> list = new ArrayList<String>();
+		
 		for (Scenario scen : ScenarioManager.getInstance().getEnabledScenarios()) {
-			List<String> list = settings.getData().getStringList("scenarios");
 			list.add(scen.getName());
-			settings.getData().set("scenarios", list);
 		}
+	
+		settings.getData().set("scenarios", list);
 		
 		for (Entry<String, Integer> tkEntry : teamKills.entrySet()) {
 			settings.getData().set("teamkills." + tkEntry.getKey(), tkEntry.getValue());
@@ -488,7 +490,7 @@ public class Main extends JavaPlugin {
 	}
 	
 	/**
-	 * Recover all the data from the reload.
+	 * Recover all the data from the data files.
 	 */
 	public void recoverData() {
 		State.setState(State.valueOf(settings.getData().getString("state", State.LOBBY.name())));
@@ -534,7 +536,17 @@ public class Main extends JavaPlugin {
 	 * @author LeonTG77
 	 */
 	public enum Border {
-		NEVER, START, PVP, MEETUP;
+		NEVER(""), START("from "), PVP("at "), MEETUP("at ");
+		
+		private String preText;
+		
+		private Border(String preText) {
+			this.preText = preText;
+		}
+		
+		public String getPreText() {
+			return preText;
+		}
 	}
 	
 	/**
@@ -547,12 +559,12 @@ public class Main extends JavaPlugin {
 	public class HardcoreHearts extends PacketAdapter {
 
 		public HardcoreHearts(Plugin plugin) {
-			super(plugin, ListenerPriority.NORMAL, PacketType.Play.Server.LOGIN);
+			super(plugin, ListenerPriority.NORMAL, Server.LOGIN);
 		}
 
 	    @Override
 	    public void onPacketSending(PacketEvent event) {
-	        if (event.getPacketType().equals(PacketType.Play.Server.LOGIN)) {
+	        if (event.getPacketType().equals(Server.LOGIN)) {
 	            event.getPacket().getBooleans().write(0, true);
 	        }
 	    }
