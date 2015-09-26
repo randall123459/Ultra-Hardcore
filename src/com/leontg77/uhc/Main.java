@@ -108,6 +108,7 @@ import com.leontg77.uhc.managers.AntiStripmine;
 import com.leontg77.uhc.managers.BiomeSwap;
 import com.leontg77.uhc.managers.Parkour;
 import com.leontg77.uhc.managers.UBL;
+import com.leontg77.uhc.scenario.Scenario;
 import com.leontg77.uhc.scenario.ScenarioManager;
 import com.leontg77.uhc.utils.NumberUtils;
 import com.leontg77.uhc.utils.PlayerUtils;
@@ -465,7 +466,12 @@ public class Main extends JavaPlugin {
 	 */
 	public void saveData() {
 		settings.getData().set("state", State.getState().name());
-		settings.getData().set("scenarios", ScenarioManager.getInstance().getEnabledScenarios());
+		
+		for (Scenario scen : ScenarioManager.getInstance().getEnabledScenarios()) {
+			List<String> list = settings.getData().getStringList("scenarios");
+			list.add(scen.getName());
+			settings.getData().set("scenarios", list);
+		}
 		
 		for (Entry<String, Integer> tkEntry : teamKills.entrySet()) {
 			settings.getData().set("teamkills." + tkEntry.getKey(), tkEntry.getValue());
