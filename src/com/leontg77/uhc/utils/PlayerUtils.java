@@ -265,7 +265,7 @@ public class PlayerUtils {
 		
 		IChatBaseComponent headerJSON = ChatSerializer.a(
 	      	"{text:'§8» ----------[ §4§lArctic UHC §r§8]---------- «\n" +
-	       	"§a/rules §8- §a/post §8- §a/lag §8- §a/ms §8- §a/hof\n" +
+	       	"§a/rules §8- §a/ms §8- §a/lag §8- §a/post §8- §a/hof\n" +
 	        "'}"
 	    );
 	        
