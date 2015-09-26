@@ -2,6 +2,7 @@ package com.leontg77.uhc.cmds;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -58,19 +59,23 @@ public class ArenaCommand implements CommandExecutor {
 					
 					Bukkit.getScheduler().runTaskLater(Main.plugin, new Runnable() {
 						public void run() {
-							Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "wb arena fill 420");
-							Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "wb fill confirm");
+							PlayerUtils.broadcast(Main.prefix() + "World reset done, setting up borders.");
 							
-							Bukkit.getWorld("arena").getWorldBorder().setSize(399);
-							Bukkit.getWorld("arena").getWorldBorder().setCenter(0.5, 0.5);
-							Bukkit.getWorld("arena").getWorldBorder().setWarningDistance(0);
-							Bukkit.getWorld("arena").getWorldBorder().setWarningTime(60);
-							Bukkit.getWorld("arena").getWorldBorder().setDamageAmount(0.1);
-							Bukkit.getWorld("arena").getWorldBorder().setDamageBuffer(50);
-							Bukkit.getWorld("arena").setGameRuleValue("doDaylightCycle", "false");
-							Bukkit.getWorld("arena").setTime(6000);
+							World world = Bukkit.getServer().getWorld("arena");
+							
+							world.getWorldBorder().setSize(400);
+							world.getWorldBorder().setCenter(0.0, 0.0);
+							world.getWorldBorder().setWarningDistance(0);
+							world.getWorldBorder().setWarningTime(60);
+							world.getWorldBorder().setDamageAmount(0.1);
+							world.getWorldBorder().setDamageBuffer(50);
+							world.setGameRuleValue("doDaylightCycle", "false");
+							world.setTime(6000);
 							
 							PlayerUtils.broadcast(Main.prefix() + "Borders setup, pregenning arena world.");
+							
+							Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "wb arena fill 420");
+							Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "wb fill confirm");
 						}
 					}, 200);
 					
