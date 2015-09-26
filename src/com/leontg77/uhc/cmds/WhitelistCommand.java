@@ -15,13 +15,19 @@ import org.bukkit.entity.Player;
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.utils.PlayerUtils;
 
+/**
+ * Whitelist command class.
+ * 
+ * @author LeonTG77
+ */
 public class WhitelistCommand implements CommandExecutor, TabCompleter {
 
+	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (cmd.getName().equalsIgnoreCase("whitelist")) {
 			if (sender.hasPermission("uhc.whitelist")) {
 	           	if (args.length == 0) {
-	        		sender.sendMessage(ChatColor.RED + "Usage: /whitelist <on|off|add|remove|all|clear|list> [player]");
+	        		sender.sendMessage(Main.prefix() + "Usage: /whitelist <on|off|add|remove|all|clear|list> [player]");
 	        		return true;
 	           	}
 				
@@ -53,11 +59,29 @@ public class WhitelistCommand implements CommandExecutor, TabCompleter {
 	           			PlayerUtils.broadcast(Main.prefix() + "The whitelist has been cleared.");
 	           		} 
 	           		else if (args[0].equalsIgnoreCase("list")) {
-	           			if (sender instanceof Player) {
-		           			((Player) sender).chat("/minecraft:whitelist list");
-	           			} else {
-	           				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "minecraft:whitelist list");
-	           			}
+	           			if (Bukkit.getWhitelistedPlayers().size() < 1) {
+	        		    	sender.sendMessage(Main.prefix() + "There are no whitelisted players.");
+	        				return true;
+	        			}
+	           			
+	           			StringBuilder list = new StringBuilder();
+	        	    	int i = 1;
+	        	    		
+	        	    	for (OfflinePlayer whitelisted : Bukkit.getWhitelistedPlayers()) {
+	        	    		if (list.length() > 0) {
+	        					if (i == Bukkit.getWhitelistedPlayers().size()) {
+	        						list.append(" and ");
+	        					} else {
+	        						list.append(", ");
+	        					}
+	        				}
+	        				
+	        				list.append(whitelisted.getName());
+	        				i++;
+	        			}
+	        	    			
+	        	    	sender.sendMessage(Main.prefix() + "There are §6" + (i - 1) + " §7whitelisted players");
+	        	    	sender.sendMessage("§8» §7Whitelisted players: §f" + list.toString() + ".");
 	           		} 
 	           		else {
 		           		sender.sendMessage(ChatColor.RED + "Usage: /whitelist <on|off|add|remove|all|clear|list> [player]");
@@ -107,22 +131,41 @@ public class WhitelistCommand implements CommandExecutor, TabCompleter {
            			PlayerUtils.broadcast(Main.prefix() + "The whitelist has been cleared.");
            		}
            		else if (args[0].equalsIgnoreCase("list")) {
-           			if (sender instanceof Player) {
-	           			((Player) sender).chat("/minecraft:whitelist list");
-           			} else {
-           				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "minecraft:whitelist list");
-           			}
+           			if (Bukkit.getWhitelistedPlayers().size() < 1) {
+        		    	sender.sendMessage(Main.prefix() + "There are no whitelisted players.");
+        				return true;
+        			}
+           			
+           			StringBuilder list = new StringBuilder();
+        	    	int i = 1;
+        	    		
+        	    	for (OfflinePlayer whitelisted : Bukkit.getWhitelistedPlayers()) {
+        	    		if (list.length() > 0) {
+        					if (i == Bukkit.getWhitelistedPlayers().size()) {
+        						list.append(" and ");
+        					} else {
+        						list.append(", ");
+        					}
+        				}
+        				
+        				list.append(whitelisted.getName());
+        				i++;
+        			}
+        	    			
+        	    	sender.sendMessage(Main.prefix() + "There are §6" + (i - 1) + " §7whitelisted players");
+        	    	sender.sendMessage("§8» §7Whitelisted players: §f" + list.toString() + ".");
            		} 
            		else {
-	           		sender.sendMessage(ChatColor.RED + "Usage: /whitelist <on|off|add|remove|all|clear|list> [player]");
+	           		sender.sendMessage(Main.prefix() + "Usage: /whitelist <on|off|add|remove|all|clear|list> [player]");
            		}
 			} else {
-				sender.sendMessage(ChatColor.RED + "You do not have access to that command.");
+				sender.sendMessage(Main.NO_PERMISSION_MESSAGE);
 			}
 		}
 		return true;
 	}
-	
+
+	@Override
 	public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {
 		if (cmd.getName().equalsIgnoreCase("whitelist")) {
 			if (sender.hasPermission("uhc.whitelist")) {
