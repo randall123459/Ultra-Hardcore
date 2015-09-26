@@ -203,6 +203,10 @@ public class User {
 	 * @param stat the stat name.
 	 */
 	public void increaseStat(String stat) {
+		if (Game.getInstance().isRR()) {
+			return;
+		}
+		
 		config.set("stats." + stat, config.getInt("stats." + stat, 0) + 1);
 		saveFile();
 	}
