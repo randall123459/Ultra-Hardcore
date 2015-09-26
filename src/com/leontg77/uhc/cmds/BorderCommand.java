@@ -22,7 +22,8 @@ public class BorderCommand implements CommandExecutor {
 		
 		if (cmd.getName().equalsIgnoreCase("border")) {
 			if (args.length == 0) {
-				player.sendMessage(Main.prefix() + "The border is currently: §a" + (((int) player.getWorld().getWorldBorder().getSize()) + 1) + "x" + (((int) player.getWorld().getWorldBorder().getSize()) + 1));
+				int size = (int) player.getWorld().getWorldBorder().getSize();
+				player.sendMessage(Main.prefix() + "The border is currently: §a" + size + "x" + size);
 				return true;
 			}
 			
@@ -38,19 +39,19 @@ public class BorderCommand implements CommandExecutor {
 
 				player.getWorld().getWorldBorder().setWarningDistance(0);
 				player.getWorld().getWorldBorder().setDamageAmount(0.1);
-				player.getWorld().getWorldBorder().setSize(radius - 1);
+				player.getWorld().getWorldBorder().setSize(radius);
 				player.getWorld().getWorldBorder().setDamageBuffer(30);
 				player.getWorld().getWorldBorder().setWarningTime(60);
 				
 				if (player.getWorld().getEnvironment() == Environment.NETHER) {
-					player.getWorld().getWorldBorder().setCenter(0, 0);
-				} else {
 					player.getWorld().getWorldBorder().setCenter(0.5, 0.5);
+				} else {
+					player.getWorld().getWorldBorder().setCenter(0.0, 0.0);
 				}
 				
 				PlayerUtils.broadcast(Main.prefix() + "Border setup with radius of " + radius + "x" + radius + ".");
 			} else {
-				player.sendMessage(Main.prefix() + "You can't use that command.");
+				player.sendMessage(Main.NO_PERMISSION_MESSAGE);
 			}
 		}
 		return true;

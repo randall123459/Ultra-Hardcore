@@ -37,6 +37,7 @@ public class Teams {
 	 * Set up all the teams.
 	 */
 	public void setup() {
+		teams.clear();
 		ArrayList<String> list = new ArrayList<String>();
 
 		list.add(ChatColor.BLACK.toString());

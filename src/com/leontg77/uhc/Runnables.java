@@ -251,7 +251,7 @@ public class Runnables {
 					}
 					
 					if (game.getBorderShrinkTime() == Border.START) {
-						world.getWorldBorder().setSize(299, meetup * 60);
+						world.getWorldBorder().setSize(300, meetup * 60);
 					}
 				}
 			}
@@ -321,7 +321,7 @@ public class Runnables {
 						world.setPVP(true);
 						
 						if (game.getBorderShrinkTime() == Border.PVP) {
-							world.getWorldBorder().setSize(299, meetup * 60);
+							world.getWorldBorder().setSize(300, meetup * 60);
 						}
 					}
 					
@@ -372,7 +372,7 @@ public class Runnables {
 							continue;
 						}
 
-						world.getWorldBorder().setSize(299, 600);
+						world.getWorldBorder().setSize(300, 600);
 					}
 				}
 				
