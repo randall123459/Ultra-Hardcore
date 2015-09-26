@@ -21,7 +21,7 @@ public class RandomCommand implements CommandExecutor {
 		if (cmd.getName().equalsIgnoreCase("random")) {
 			if (sender.hasPermission("uhc.random")) {
 				if (args.length == 0) {
-					sender.sendMessage(ChatColor.RED + "Usage: /random <size> [playersnotplaying...]");
+					sender.sendMessage(Main.prefix() + "Usage: /random <size> [playersnotplaying...]");
 					return true;
 				}
 				
@@ -61,7 +61,6 @@ public class RandomCommand implements CommandExecutor {
 							
 							Player p = a.get(i);
 							t.addEntry(p.getName());
-							p.sendMessage(Main.prefix() + "You were added to team " + t.getName());
 						}
 					} catch (Exception e) {
 						sender.sendMessage(ChatColor.RED + "Not enough players for this team.");
@@ -69,6 +68,11 @@ public class RandomCommand implements CommandExecutor {
 
 					if (t.getSize() > 0) {
 						sender.sendMessage(Main.prefix() + "Created a rTo" + size + " using team " + t.getName() + ".");
+						Teams.getManager().sendMessage(t, Main.prefix() + "You were added to §a" + t.getName() + "§7.");
+						Teams.getManager().sendMessage(t, Main.prefix() + "Your teammates:");
+						for (String entry : t.getEntries()) {
+							Teams.getManager().sendMessage(t, Main.prefix() + "§a" + entry);
+						}
 					}
 					return true;
 				}
@@ -117,9 +121,14 @@ public class RandomCommand implements CommandExecutor {
 
 				if (t.getSize() > 0) {
 					sender.sendMessage(Main.prefix() + "Created a rTo" + size + " using team " + t.getName() + ".");
+					Teams.getManager().sendMessage(t, Main.prefix() + "You were added to §a" + t.getName() + "§7.");
+					Teams.getManager().sendMessage(t, Main.prefix() + "Your teammates:");
+					for (String entry : t.getEntries()) {
+						Teams.getManager().sendMessage(t, Main.prefix() + "§a" + entry);
+					}
 				}
 			} else {
-				sender.sendMessage(ChatColor.RED + "You do not have access to that command.");
+				sender.sendMessage(Main.NO_PERMISSION_MESSAGE);
 			}
 		}
 		return true;
