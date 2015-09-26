@@ -88,15 +88,15 @@ public class ConfigCommand implements CommandExecutor, TabCompleter {
 					break;
 				case FFA:
 					if (args[1].equalsIgnoreCase("true")) {
-						sender.sendMessage(Main.prefix() + "You have enabled ffa mode.");
 						game.setFFA(true);
+						PlayerUtils.broadcast(Main.prefix() + "The teamsize is now §a" + GameUtils.getTeamSize().trim() + "§7.");
 						
 						for (Player online : PlayerUtils.getPlayers()) {
 							PlayerUtils.setTabList(online);
 						}
 					} else if (args[1].equalsIgnoreCase("false")) {
-						sender.sendMessage(Main.prefix() + "You have disabled ffa mode.");
 						game.setFFA(false);
+						PlayerUtils.broadcast(Main.prefix() + "The teamsize is now §a" + GameUtils.getTeamSize().trim() + "§7.");
 						
 						for (Player online : PlayerUtils.getPlayers()) {
 							PlayerUtils.setTabList(online);
@@ -325,7 +325,7 @@ public class ConfigCommand implements CommandExecutor, TabCompleter {
 					}
 					
 					game.setTeamSize(tz);
-					PlayerUtils.broadcast(Main.prefix() + "The teamsize is now §a" + GameUtils.getTeamSize() + "§7.");
+					PlayerUtils.broadcast(Main.prefix() + "The teamsize is now §a" + GameUtils.getTeamSize().trim() + "§7.");
 					
 					for (Player online : PlayerUtils.getPlayers()) {
 						PlayerUtils.setTabList(online);
