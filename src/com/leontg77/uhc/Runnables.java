@@ -250,7 +250,7 @@ public class Runnables {
 						}
 					}
 					
-					if (game.getBorderShrinkTime() == Border.START) {
+					if (game.getBorderShrink() == Border.START) {
 						world.getWorldBorder().setSize(300, meetup * 60);
 					}
 				}
@@ -320,7 +320,7 @@ public class Runnables {
 						
 						world.setPVP(true);
 						
-						if (game.getBorderShrinkTime() == Border.PVP) {
+						if (game.getBorderShrink() == Border.PVP) {
 							world.getWorldBorder().setSize(300, meetup * 60);
 						}
 					}
@@ -360,7 +360,7 @@ public class Runnables {
 					}
 				}
 				
-				if (meetup == -2 && game.getBorderShrinkTime() == Border.MEETUP) {
+				if (meetup == -2 && game.getBorderShrink() == Border.MEETUP) {
 					PlayerUtils.broadcast(Main.prefix() + "Border will now shrink to §6300x300 §7over §a10 §7minutes.");
 					
 					for (Player online : PlayerUtils.getPlayers()) {
@@ -376,7 +376,7 @@ public class Runnables {
 					}
 				}
 				
-				if (meetup == -12 && game.getBorderShrinkTime() == Border.MEETUP) {
+				if (meetup == -12 && game.getBorderShrink() == Border.MEETUP) {
 					PlayerUtils.broadcast(Main.prefix() + "Border has stopped shrinking.");
 					
 					for (Player online : PlayerUtils.getPlayers()) {
