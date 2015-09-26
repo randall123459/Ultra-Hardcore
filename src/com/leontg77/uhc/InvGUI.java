@@ -15,7 +15,6 @@ import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import com.leontg77.uhc.Main.Border;
 import com.leontg77.uhc.scenario.Scenario;
 import com.leontg77.uhc.scenario.ScenarioManager;
 import com.leontg77.uhc.utils.DateUtils;
@@ -56,9 +55,9 @@ public class InvGUI {
 			if (!Spectator.getManager().isSpectating(online) && !online.getWorld().getName().equals("lobby")) {
 				ItemStack item = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
 				SkullMeta meta = (SkullMeta) item.getItemMeta();
-				meta.setDisplayName(ChatColor.GOLD + online.getName());
+				meta.setDisplayName(ChatColor.GREEN + online.getName());
 				meta.setOwner(online.getName());
-				meta.setLore(Arrays.asList(ChatColor.GRAY + "Click to teleport to §a" + online.getName() + "§f."));
+				meta.setLore(Arrays.asList(ChatColor.GRAY + "Click to teleport to " + online.getName() + "."));
 				item.setItemMeta(meta);
 				inv.addItem(item);
 			}	
@@ -163,7 +162,7 @@ public class InvGUI {
 	public Inventory openGameInfo(final Player player) {
 		final Inventory inv = Bukkit.getServer().createInventory(null, 45, "§4ArcticUHC Game Information");
 		final ArrayList<String> lore = new ArrayList<String>();
-		Game game = Game.getInstance();
+		final Game game = Game.getInstance();
 		
 		ItemStack general = new ItemStack (Material.SIGN);
 		ItemMeta generalMeta = general.getItemMeta();
@@ -257,8 +256,8 @@ public class InvGUI {
 		ItemMeta miscMeta = misc.getItemMeta();
 		miscMeta.setDisplayName("§8» §6Misc. Rules §8«");
 		lore.add(" ");
-		lore.add("§8» §7TS in random team/captains/slavemarket games: §cRequired.");
 		lore.add("§8» §7Suiciding in random team games: §cNot Allowed.");
+		lore.add("§8» §7TS in random teams games: §cRequired.");
 		lore.add(" ");
 		lore.add("§8» §7Xray/Cavefinder: §cNot Allowed.");
 		lore.add("§8» §7Hacked Client: §cNot Allowed.");
@@ -417,7 +416,7 @@ public class InvGUI {
 		lore.add("§8» §7Enderpearl Damage: " + (game.pearlDamage() ? "§aEnabled." : "§cDisabled."));
 		lore.add("§8» §7Death Lightning: " + (game.deathLightning() ? "§aEnabled." : "§cDisabled."));
 		lore.add(" ");
-		lore.add("§8» §7Border shrinks: §6" + ((game.getBorderShrinkTime() == Border.NEVER ? "Never" : (game.getBorderShrinkTime() == Border.START ? "From " : "At ") + game.getBorderShrinkTime().name().toLowerCase())) + ".");
+		lore.add("§8» §7Border shrinks: §6" + game.getBorderShrink().getPreText() + game.getBorderShrink().name().toLowerCase() + ".");
 		lore.add("§8» §7Saturation Fix: §aEnabled.");
 		lore.add(" ");
 		miscIMeta.setLore(lore);
