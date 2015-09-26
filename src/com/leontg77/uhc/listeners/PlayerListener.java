@@ -64,22 +64,22 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Team;
 
 import com.leontg77.uhc.Arena;
-import com.leontg77.uhc.Fireworks;
 import com.leontg77.uhc.Game;
 import com.leontg77.uhc.InvGUI;
 import com.leontg77.uhc.Main;
-import com.leontg77.uhc.Parkour;
 import com.leontg77.uhc.Runnables;
 import com.leontg77.uhc.Scoreboards;
 import com.leontg77.uhc.Settings;
 import com.leontg77.uhc.Spectator;
 import com.leontg77.uhc.State;
 import com.leontg77.uhc.Teams;
-import com.leontg77.uhc.UBL;
 import com.leontg77.uhc.User;
 import com.leontg77.uhc.User.Rank;
 import com.leontg77.uhc.cmds.SpreadCommand;
 import com.leontg77.uhc.cmds.VoteCommand;
+import com.leontg77.uhc.managers.Fireworks;
+import com.leontg77.uhc.managers.Parkour;
+import com.leontg77.uhc.managers.UBL;
 import com.leontg77.uhc.scenario.ScenarioManager;
 import com.leontg77.uhc.utils.BlockUtils;
 import com.leontg77.uhc.utils.DateUtils;
@@ -136,16 +136,15 @@ public class PlayerListener implements Listener {
 				player.setExp(0);
 				
 				spec.enableSpecmode(player, true);
-				return;
-			}
-			
-			PlayerUtils.broadcast("§8[§a+§8] §7" + player.getName() + " has joined.");
-			
-			if (user.isNew()) {
-				PlayerUtils.broadcast(Main.prefix() + ChatColor.GOLD + player.getName() + " §7just joined for the first time.");
+			} else {
+				PlayerUtils.broadcast("§8[§a+§8] §7" + player.getName() + " has joined.");
 				
-				File f = new File(plugin.getDataFolder() + File.separator + "users" + File.separator);
-				PlayerUtils.broadcast(Main.prefix() + "The server has now §a" + f.listFiles().length + "§7 unique joins.");
+				if (user.isNew()) {
+					PlayerUtils.broadcast(Main.prefix() + ChatColor.GOLD + player.getName() + " §7just joined for the first time.");
+					
+					File f = new File(plugin.getDataFolder() + File.separator + "users" + File.separator);
+					PlayerUtils.broadcast(Main.prefix() + "The server has now §a" + f.listFiles().length + "§7 unique joins.");
+				}
 			}
 		}
 		
@@ -268,7 +267,7 @@ public class PlayerListener implements Listener {
 				Arena.getManager().killstreak.put(player, 0); 
 
 				if (Arena.getManager().killstreak.containsKey(player) && Arena.getManager().killstreak.get(player) > 4) {
-					PlayerUtils.broadcast(Main.prefix() + ChatColor.GREEN + player.getName() + "'s §7killstreak of " + Arena.getManager().killstreak.get(player) + " was shut down by PvE");
+					PlayerUtils.broadcast(Main.prefix() + "§6" + player.getName() + "'s §7killstreak of §a" + Arena.getManager().killstreak.get(player) + " §7was shut down by PvE");
 				}
 				
 				for (Player p : Arena.getManager().getPlayers()) {
@@ -281,7 +280,7 @@ public class PlayerListener implements Listener {
 			}
 			
 			if (Arena.getManager().killstreak.containsKey(player) && Arena.getManager().killstreak.get(player) > 4) {
-				PlayerUtils.broadcast(Main.prefix() + ChatColor.GREEN + player.getName() + "'s §7killstreak of " + Arena.getManager().killstreak.get(player) + " was shut down by §a" + player.getKiller().getName());
+				PlayerUtils.broadcast(Main.prefix() + "§6" + player.getName() + "'s §7killstreak of §a" + Arena.getManager().killstreak.get(player) + " §7was shut down by §6" + player.getKiller().getName());
 			}
 			
 			player.sendMessage(Main.prefix() + "You were killed by §a" + killer.getName() + "§7.");
@@ -312,7 +311,7 @@ public class PlayerListener implements Listener {
 				String killstreak = String.valueOf(Arena.getManager().killstreak.get(killer));
 				
 				if (killstreak.endsWith("0") || killstreak.endsWith("5")) {
-					PlayerUtils.broadcast(Main.prefix() + ChatColor.GREEN + killer.getName() + " §7is now on a §6" + killstreak + " §7killstreak");
+					PlayerUtils.broadcast(Main.prefix() + "§6" + killer.getName() + " §7is now on a §a" + killstreak + " §7killstreak!");
 				}
 			}
 		} else {
