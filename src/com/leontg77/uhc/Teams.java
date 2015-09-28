@@ -22,6 +22,7 @@ import org.bukkit.scoreboard.Team;
 public class Teams {
 	private Scoreboard sb = Bukkit.getScoreboardManager().getMainScoreboard();
 	private List<Team> teams = new ArrayList<Team>();
+	
 	private static Teams manager = new Teams();
 	
 	/**
