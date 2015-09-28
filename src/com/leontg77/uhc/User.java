@@ -4,6 +4,7 @@ import static com.leontg77.uhc.Main.plugin;
 
 import java.io.File;
 import java.util.Date;
+import java.util.TimeZone;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -22,10 +23,11 @@ import com.leontg77.uhc.utils.PlayerUtils;
  * @author LeonTG77
  */
 public class User {
+	private Player player;
+	private String uuid;
+	
 	private FileConfiguration config;
 	private File file;
-	
-	private Player player;
 	
 	/**
 	 * Gets the data of the given player.
@@ -64,6 +66,8 @@ public class User {
         	plugin.getDataFolder().mkdir();
         }
         
+        boolean creating = false;
+        
         File f = new File(plugin.getDataFolder() + File.separator + "users" + File.separator);
         
         if (!f.exists()) {
@@ -71,7 +75,6 @@ public class User {
         }
         
         file = new File(f, uuid + ".yml");
-        boolean creating = false;
         
         if (!file.exists()) {
         	try {
@@ -83,24 +86,33 @@ public class User {
         }
                
         config = YamlConfiguration.loadConfiguration(file);
+        
         this.player = player;
+        this.uuid = uuid;
         
         if (creating) {
         	if (player != null) {
             	config.set("username", player.getName());
             	config.set("uuid", player.getUniqueId().toString());
+            	config.set("ip", player.getUniqueId().toString());
         	}
+
+        	TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
         	
         	config.set("firstjoined", new Date().getTime());
+        	config.set("lastlogin", new Date().getTime());
+        	config.set("lastlogoff", -1);
         	config.set("isnew", true);
         	config.set("rank", Rank.USER.name());
-        	config.set("muted", false);
-        	config.set("stats.gamesplayed", 0);
-        	config.set("stats.wins", 0);
-        	config.set("stats.kills", 0);
-        	config.set("stats.deaths", 0);
-        	config.set("stats.arenakills", 0);
-        	config.set("stats.arenadeaths", 0);
+			config.set("muted.status", false);
+			config.set("muted.reason", "NOT_MUTED");
+			config.set("muted.time", -1);
+			config.set("muted.by", "NONE");
+			
+			for (Stat stats : Stat.values()) {
+	        	config.set("stats." + stats.name().toLowerCase(), 0);
+			}
+			
         	saveFile();
         }
 	}
@@ -124,12 +136,21 @@ public class User {
 	}
 	
 	/**
-	 * Get the player class for the data owner.
+	 * Get the player class for the user.
 	 * 
 	 * @return The player class.
 	 */
 	public Player getPlayer() {
 		return player;
+	}
+	
+	/**
+	 * Get the uuid for the user.
+	 * 
+	 * @return The uuid.
+	 */
+	public String getUUID() {
+		return uuid;
 	}
 	
 	/**
@@ -159,6 +180,11 @@ public class User {
         config = YamlConfiguration.loadConfiguration(file);
 	}
 	
+	/**
+	 * Set the rank for the player.
+	 * 
+	 * @param rank The new rank.
+	 */
 	public void setRank(Rank rank) {
 		config.set("rank", rank.name());
 		saveFile();
@@ -170,7 +196,7 @@ public class User {
 	}
 
 	/**
-	 * Get the players rank.
+	 * Get the rank of the player.
 	 * 
 	 * @return the rank.
 	 */
@@ -179,12 +205,27 @@ public class User {
 	}
 	
 	/**
-	 * Sets if the player is muted or not.
+	 * Set the muted status for the player.
 	 * 
-	 * @param mute <code>true</code> to mute the player, <code>false</code> to unmute.
+	 * @param mute <code>True</code> to mute, <code>false</code> to unmute.
+	 * @param reason The reason of the mute.
+	 * @param unmute The date of unmute, null if permanent.
+	 * @param source The one to mute the player.
 	 */
-	public void setMuted(boolean mute) {
-		config.set("muted", mute);
+	public void setMuted(boolean mute, String reason, Date unmute, String source) {
+		if (mute) {
+			config.set("muted.status", mute);
+			config.set("muted.reason", reason);
+			config.set("muted.by", source);
+			if (unmute != null) {
+				config.set("muted.time", unmute.getTime());
+			}
+		} else {
+			config.set("muted.status", mute);
+			config.set("muted.reason", "NOT_MUTED");
+			config.set("muted.time", -1);
+			config.set("muted.by", "NONE");
+		}
 		saveFile();
 	}
 	
@@ -194,31 +235,55 @@ public class User {
 	 * @return <code>true</code> if the player is muted, <code>false</code> otherwise.
 	 */
 	public boolean isMuted() {
-		return config.getBoolean("muted", false);
+		return config.getBoolean("muted.status", false);
 	}
 	
 	/**
-	 * Adds an amount from the stats.
+	 * Get the reason the player is muted.
 	 * 
-	 * @param stat the stat name.
+	 * @return The reason of the mute, null if not muted.
 	 */
-	public void increaseStat(String stat) {
+	public String getMutedReason() {
+		if (!isMuted()) {
+			return null;
+		}
+		
+		return config.getString("muted.reason", null);
+	}
+	
+	/**
+	 * Get the time in milliseconds for the unmute.
+	 * 
+	 * @return The unmute time.
+	 */
+	public long getUnmuteTime() {
+		return config.getLong("muted.time");
+	}
+	
+	/**
+	 * Increase the given stat by 1.
+	 * 
+	 * @param stat the stat increasing.
+	 */
+	public void increaseStat(Stat stat) {
 		if (Game.getInstance().isRR()) {
 			return;
 		}
 		
-		config.set("stats." + stat, config.getInt("stats." + stat, 0) + 1);
+		String statName = stat.name().toLowerCase();
+		
+		config.set("stats." + statName, config.getInt("stats." + statName, 0) + 1);
 		saveFile();
 	}
 	
 	/**
-	 * Gets the amount from a stat.
+	 * Get the amount from the given stat.
 	 * 
-	 * @param stat the stat name.
-	 * @return The amount in an integer.
+	 * @param stat the stat getting.
+	 * @return The amount in a int form.
 	 */
-	public int getStat(String stat) {
-		return config.getInt("stats." + stat, 0);
+	public int getStat(Stat stat) {
+		return config.getInt("stats." + stat.name().toLowerCase(), 0);
 	}
 	
 	/**
@@ -228,5 +293,14 @@ public class User {
 	 */
 	public enum Rank {
 		USER, VIP, STAFF, TRIAL, HOST;
+	}
+	
+	/**
+	 * The stats enum class.
+	 * 
+	 * @author LeonTG77
+	 */
+	public enum Stat {
+		DEATHS, KILLS, WINS, GAMESPLAYED, ARENAKILLS, ARENADEATHS, GOLDENAPPLESEATEN, GOLDENHEADSEATEN, HORSESTAMED, NETHER, END, DIAMONDS, GOLD, HOSTILEMOBKILLS, ANIMALKILLS, KILLSTREAK, DAMAGETAKEN;
 	}
 }
