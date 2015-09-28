@@ -37,7 +37,7 @@ public class SlaveMarket extends Scenario implements Listener, CommandExecutor {
 	private ArrayList<String> traders = new ArrayList<String>(); 
 	
 	public SlaveMarket() {
-		super("SlaveMarket", "8 slave owners are chosen and they get 30 diamonds to bid on players as they choose. Any spare diamonds will be cleared.");
+		super("SlaveMarket", "8 slave owners are chosen and they get 30 diamonds to bid on players as they choose. Any spare diamonds will be kept by the slaveowner.");
 		Main main = Main.plugin;
 		
 		main.getCommand("slavereset").setExecutor(this);
