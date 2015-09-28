@@ -1,5 +1,8 @@
 package com.leontg77.uhc.cmds;
 
+import java.util.Date;
+import java.util.TimeZone;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -10,6 +13,7 @@ import org.bukkit.entity.Player;
 import com.leontg77.uhc.Game;
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.User;
+import com.leontg77.uhc.utils.DateUtils;
 import com.leontg77.uhc.utils.PlayerUtils;
  
 public class MuteCommand implements CommandExecutor {
@@ -22,15 +26,21 @@ public class MuteCommand implements CommandExecutor {
 				if (args.length == 0) {
 					if (game.isMuted()) {
 						game.setMuted(false);
-						PlayerUtils.broadcast(Main.prefix() + "The chat has been enabled.");
+						PlayerUtils.broadcast(Main.prefix() + "Global chat has been enabled.");
 						return true;
 					} 
 					
-					PlayerUtils.broadcast(Main.prefix() + "The chat has been disabled.");
+					PlayerUtils.broadcast(Main.prefix() + "Global chat has been disabled.");
 					game.setMuted(true);
 					return true;
 				}
 				
+				if (args.length < 3) {
+					player.sendMessage(Main.prefix() + "Usage: /mute <player> <time> <reason>");
+					return true;
+				}
+
+				TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 				Player target = Bukkit.getServer().getPlayer(args[0]);
 				
 				if (target == null) {
@@ -41,17 +51,26 @@ public class MuteCommand implements CommandExecutor {
 				User user = User.get(target);
 	
 				if (user.isMuted()) {
-					user.setMuted(false);
-					player.sendMessage(Main.prefix() + target.getName() + " unmuted.");
+					user.setMuted(false, "NOT_MUTED", null, "NONE");
+					player.sendMessage(Main.prefix() + "§6" + target.getName() + " §7has been unmuted.");
 					target.sendMessage(Main.prefix() + "You are no longer muted.");
 					return true;
 				} 
 				
-				player.sendMessage(Main.prefix() + target.getName() + " muted");
+	    		StringBuilder reason = new StringBuilder("");
+	    		
+	        	for (int i = 2; i < args.length; i++) {
+	        		reason.append(args[i]).append(" ");
+	        	}
+
+				long time = DateUtils.parseDateDiff(args[1], true);
+	        	String msg = reason.toString().trim();
+				
+				PlayerUtils.broadcast(Main.prefix() + "§6" + target.getName() + " §7has been muted for §a" + msg);
 				target.sendMessage(Main.prefix() + "You have been muted.");
-				user.setMuted(true);
+				user.setMuted(true, msg, new Date(time), player.getName());
 			} else {
-				player.sendMessage(ChatColor.RED + "You do not have access to that command.");
+				player.sendMessage(Main.NO_PERMISSION_MESSAGE);
 			}
 		}
 		return true;
