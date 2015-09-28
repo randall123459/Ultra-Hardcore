@@ -122,7 +122,7 @@ public class GameUtils {
 		else if (host.equalsIgnoreCase("Itz_Isaac")) {
 			return "Isaac";
 		}
-		return "none";
+		return host;
 	}
 
 	/**
@@ -132,13 +132,13 @@ public class GameUtils {
 	 * @return The hof name.
 	 */
 	public static String getHost(String host) {
-		if (host.equalsIgnoreCase("LeonTG77") || host.equalsIgnoreCase("leon")) {
+		if (host.equalsIgnoreCase("LeonTG77") || host.equalsIgnoreCase("Leon")) {
 			return "Leon";
 		} 
-		else if (host.equalsIgnoreCase("polar") || host.equalsIgnoreCase("polarblunk")) {
+		else if (host.equalsIgnoreCase("Polar") || host.equalsIgnoreCase("PolarBlunk")) {
 			return "Polar";
 		} 
-		else if (host.equalsIgnoreCase("Itz_Isaac") || host.equalsIgnoreCase("isaac")) {
+		else if (host.equalsIgnoreCase("Itz_Isaac") || host.equalsIgnoreCase("Isaac")) {
 			return "Isaac";
 		}
 		return host;
