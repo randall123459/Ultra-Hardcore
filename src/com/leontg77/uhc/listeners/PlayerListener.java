@@ -75,6 +75,7 @@ import com.leontg77.uhc.State;
 import com.leontg77.uhc.Teams;
 import com.leontg77.uhc.User;
 import com.leontg77.uhc.User.Rank;
+import com.leontg77.uhc.User.Stat;
 import com.leontg77.uhc.cmds.SpreadCommand;
 import com.leontg77.uhc.cmds.VoteCommand;
 import com.leontg77.uhc.managers.Fireworks;
@@ -246,7 +247,7 @@ public class PlayerListener implements Listener {
 			Arena.getManager().removePlayer(player, true);
 			
 			if (!Bukkit.hasWhitelist()) {
-				user.increaseStat("arenadeaths");
+				user.increaseStat(Stat.ARENADEATHS);
 			}
 	    	
 			ItemStack skull = new ItemStack(Material.GOLDEN_APPLE);
@@ -291,7 +292,7 @@ public class PlayerListener implements Listener {
 			User uKiller = User.get(killer);
 			
 			if (!Bukkit.hasWhitelist()) {
-				uKiller.increaseStat("arenakills");
+				uKiller.increaseStat(Stat.ARENAKILLS);
 			}
 			
 			for (Player p : Arena.getManager().getPlayers()) {
@@ -319,7 +320,7 @@ public class PlayerListener implements Listener {
 			player.setWhitelisted(false);
 			
 			if (State.isState(State.INGAME) && !game.isRR()) {
-				user.increaseStat("deaths");
+				user.increaseStat(Stat.DEATHS);
 			}
 			
 			if (game.deathLightning()) {
@@ -343,7 +344,7 @@ public class PlayerListener implements Listener {
 						    Block b = player.getLocation().add(0, 1, 0).getBlock();
 						    b.setData((byte) 0x1, true);
 						} catch (Exception e) {
-							Bukkit.getLogger().warning(ChatColor.RED + "Could not place player skull.");
+							Bukkit.getLogger().warning("Could not place player skull.");
 						}
 					}
 				}, 1L);
@@ -402,7 +403,7 @@ public class PlayerListener implements Listener {
 			
 			if (State.isState(State.INGAME)) {
 				User killerData = User.get(killer);
-				killerData.increaseStat("kills");
+				killerData.increaseStat(Stat.KILLS);
 				
 				if (Main.kills.containsKey(killer.getName())) {
 					Main.kills.put(killer.getName(), Main.kills.get(killer.getName()) + 1);

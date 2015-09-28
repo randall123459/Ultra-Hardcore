@@ -13,21 +13,15 @@ import org.bukkit.entity.Player;
 import com.leontg77.uhc.Game;
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.User;
+import com.leontg77.uhc.User.Stat;
 import com.leontg77.uhc.utils.NumberUtils;
 
 public class StatsCommand implements CommandExecutor {
 	
 	public boolean onCommand(final CommandSender sender, Command cmd, String label, String[] args) {
 		if (cmd.getName().equalsIgnoreCase("stats")) {
-			boolean broken = true;
-			
-			if (broken) {
-				sender.sendMessage(Main.prefix() + "§cStats are broken, will be fixed shortly.");
-				return true;
-			}
-			
 			if (Game.getInstance().isRR()) {
-				sender.sendMessage(Main.prefix() + "No.");
+				sender.sendMessage(Main.prefix() + "Stats are disabled in RR's.");
 				return true;
 			}
 			
@@ -45,7 +39,7 @@ public class StatsCommand implements CommandExecutor {
 					player.sendMessage(" §8» §aWins: §7" + user.getStat("wins"));
 					player.sendMessage(" §8» §aKills: §7" + user.getStat("kills"));
 					player.sendMessage(" §8» §aDeaths: §7" + user.getStat("deaths"));
-					if (user.getStat("deaths") == 0) {
+					if (user.getStat(Stat.DEATHS) == 0) {
 						player.sendMessage(" §8» §aK/D: §7" + user.getStat("kills"));
 					} else {
 						player.sendMessage(" §8» §aK/D: §7" + NumberUtils.convertDouble((((double) user.getStat("kills")) / ((double) user.getStat("deaths")))));

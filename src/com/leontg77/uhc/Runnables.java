@@ -20,6 +20,7 @@ import org.bukkit.scoreboard.Team;
 
 import com.leontg77.uhc.Main.Border;
 import com.leontg77.uhc.Spectator.SpecInfo;
+import com.leontg77.uhc.User.Stat;
 import com.leontg77.uhc.cmds.TeamCommand;
 import com.leontg77.uhc.scenario.ScenarioManager;
 import com.leontg77.uhc.utils.PlayerUtils;
@@ -177,7 +178,7 @@ public class Runnables {
 					PlayerUtils.sendTitle(online, "§aGo!", "§7Good luck, have fun!", 1, 20, 1);
 					
 					User data = User.get(online);
-					data.increaseStat("gamesplayed");
+					data.increaseStat(Stat.GAMESPLAYED);
 				}
 				
 				for (Team team : Teams.getManager().getTeamsWithPlayers()) {
@@ -289,7 +290,7 @@ public class Runnables {
 				}
 				
 				if (heal == -1) {
-					PlayerUtils.broadcast(Main.prefix() + "The chat has been enabled.");
+					PlayerUtils.broadcast(Main.prefix() + "Global chat has been enabled.");
 					game.setMuted(false);
 				}
 				

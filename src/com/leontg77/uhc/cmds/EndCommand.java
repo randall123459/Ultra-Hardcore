@@ -29,6 +29,7 @@ import com.leontg77.uhc.Scoreboards;
 import com.leontg77.uhc.Settings;
 import com.leontg77.uhc.Spectator;
 import com.leontg77.uhc.Spectator.SpecInfo;
+import com.leontg77.uhc.User.Stat;
 import com.leontg77.uhc.State;
 import com.leontg77.uhc.Teams;
 import com.leontg77.uhc.User;
@@ -178,7 +179,7 @@ public class EndCommand implements CommandExecutor {
 					OfflinePlayer m9 = PlayerUtils.getOfflinePlayer(entry);
 					
 					User data = User.get(m9);
-					data.increaseStat("wins");
+					data.increaseStat(Stat.WINS);
 					PlayerUtils.broadcast("§8» §7" + entry);
 				}
 				
@@ -267,7 +268,7 @@ public class EndCommand implements CommandExecutor {
 				try {
 					Bukkit.getServer().getScheduler().cancelTask(Runnables.taskMinutes);;
 				} catch (Exception e) {
-					Bukkit.getLogger().warning("§cCould not cancel task " + Runnables.taskMinutes);
+					Bukkit.getLogger().warning("Could not cancel task " + Runnables.taskMinutes);
 				}
 				
 				File playerData = new File(Bukkit.getWorlds().get(0).getWorldFolder(), "playerdata");
