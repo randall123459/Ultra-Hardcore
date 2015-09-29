@@ -38,7 +38,7 @@ public class CutClean extends Scenario implements Listener {
 	private boolean enabled = false;
 	
 	public CutClean() {
-		super("CutClean", "No furnaces required! Items requiring cooking drop their cooked variety.");
+		super("CutClean", "No furnaces required, items requiring cooking drop their cooked variety.");
 	}
 	
 	public void setEnabled(boolean enable) {
