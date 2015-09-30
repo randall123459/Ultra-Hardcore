@@ -19,7 +19,7 @@ public class MeleeFun extends Scenario implements Listener {
 	private boolean enabled = false;
 	
 	public MeleeFun() {
-		super("MeleeFun", "The plugin cancels out the \"noDamageTicks\" so there is no delay between hits. However fast you click is how fast you hit someone.");
+		super("MeleeFun", "There is no delay between hits. However fast you click is how fast you hit someone.");
 	}
 
 	public void setEnabled(boolean enable) {
