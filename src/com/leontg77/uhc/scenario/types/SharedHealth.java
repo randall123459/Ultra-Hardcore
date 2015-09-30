@@ -30,7 +30,7 @@ public class SharedHealth extends Scenario implements Listener {
 	private boolean enabled = false;
 	
 	public SharedHealth() {
-		super("SharedHealth", "All teammates share their health");
+		super("SharedHealth", "All teammates share their health, does not apply for lava, fire or poison damage");
 		damageBalance = new HashMap<String, Double>();
         sharedDamage = new HashMap<String, Boolean>();
 	}
