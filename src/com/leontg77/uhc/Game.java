@@ -19,6 +19,16 @@ public class Game {
 	}
 	
 	/**
+	 * Change the FFA mode.
+	 * 
+	 * @param ffa True to enable, false to disable.
+	 */
+	public void setFFA(boolean ffa) {
+		settings.getConfig().set("game.ffa", ffa);
+		settings.saveConfig();
+	}
+	
+	/**
 	 * Check if the game is in FFA mode
 	 * 
 	 * @return True if it is, false otherwise.
@@ -28,12 +38,12 @@ public class Game {
 	}
 	
 	/**
-	 * Change the FFA mode.
+	 * Set the team size of the game.
 	 * 
-	 * @param ffa True to enable, false to disable.
+	 * @param teamSize the new teamsize.
 	 */
-	public void setFFA(boolean ffa) {
-		settings.getConfig().set("game.ffa", ffa);
+	public void setTeamSize(int teamSize) {
+		settings.getConfig().set("game.teamsize", teamSize);
 		settings.saveConfig();
 	}
 	
@@ -46,18 +56,13 @@ public class Game {
 		return settings.getConfig().getInt("game.teamsize", 0);
 	}
 	
-	public void setTeamSize(int teamSize) {
-		settings.getConfig().set("game.teamsize", teamSize);
+	public void setBorderShrink(Border border) {
+		settings.getConfig().set("feature.border.shrinkAt", border.name());
 		settings.saveConfig();
 	}
 	
 	public Border getBorderShrink() {
 		return Border.valueOf(settings.getConfig().getString("feature.border.shrinkAt", Border.MEETUP.name()));
-	}
-	
-	public void setBorderShrink(Border border) {
-		settings.getConfig().set("feature.border.shrinkAt", border.name());
-		settings.saveConfig();
 	}
 
 	public boolean absorption() {
