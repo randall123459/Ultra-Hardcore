@@ -784,7 +784,7 @@ public class PlayerListener implements Listener {
 	@EventHandler(priority = EventPriority.HIGHEST)
     public void onAsyncPlayerPreLogin(AsyncPlayerPreLoginEvent event) {
 		if (UBL.getManager().isBanned(event.getName(), event.getUniqueId())) {
-            UBL.BanEntry banEntry = UBL.getManager().banlistByIGN.get(event.getName().toLowerCase());
+            UBL.BanEntry banEntry = UBL.getManager().banlistByUUID.get(event.getUniqueId());
         	PlayerUtils.broadcast(Main.prefix() + ChatColor.RED + event.getName() + " §7tried to join while being UBL'ed for:§c " + banEntry.getData("Reason"), "uhc.staff");
         	
             event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_BANNED, UBL.getManager().getBanMessage(event.getUniqueId()));
@@ -801,10 +801,10 @@ public class PlayerListener implements Listener {
 	
 	@EventHandler
 	public void onServerListPing(ServerListPingEvent event) {
-		String state = GameUtils.getState();
-		String teamSize = GameUtils.getTeamSize();
 		String scenarios = ChatColor.translateAlternateColorCodes('&', settings.getConfig().getString("game.scenarios", "games scheduled"));
 		String host = Settings.getInstance().getConfig().getString("game.host", "None");
+		String teamSize = GameUtils.getTeamSize();
+		String state = GameUtils.getState();
 		
 		event.setMotd("§4§lArctic UHC §8- §71.8 §8- §a" + state + "§r \n" + 
 		ChatColor.GOLD + teamSize + scenarios + (teamSize.startsWith("Open") || teamSize.startsWith("No") ? "" : "§8 - §4Host: §7" + host));
@@ -816,15 +816,6 @@ public class PlayerListener implements Listener {
 	@EventHandler
 	public void onPlayerMove(PlayerMoveEvent event) {
 		Player player = event.getPlayer();
-		
-		World world = Bukkit.getServer().getWorld(settings.getData().getString("spawn.world"));
-		double x = settings.getData().getDouble("spawn.x");
-		double y = settings.getData().getDouble("spawn.y");
-		double z = settings.getData().getDouble("spawn.z");
-		float yaw = (float) settings.getData().getDouble("spawn.yaw");
-		float pitch = (float) settings.getData().getDouble("spawn.pitch");
-		
-		Location loc = new Location(world, x, y, z, yaw, pitch);
 		
 		if (event.getTo().getWorld().getName().equals("lobby") && event.getTo().getY() <= 20) {
 			Parkour parkour = Parkour.getManager();
@@ -840,7 +831,7 @@ public class PlayerListener implements Listener {
 				return;
 			}
 			
-			player.teleport(loc);
+			player.teleport(Main.getSpawn());
 		}
 	}
 	
