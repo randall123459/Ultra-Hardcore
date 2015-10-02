@@ -370,7 +370,7 @@ public class Main extends JavaPlugin {
 	public static Location getSpawn() {
 		World w = Bukkit.getServer().getWorld(settings.getData().getString("spawn.world", "lobby"));
 		double x = settings.getData().getDouble("spawn.x", 0.5);
-		double y = settings.getData().getDouble("spawn.y", 0.5);
+		double y = settings.getData().getDouble("spawn.y", 33.0);
 		double z = settings.getData().getDouble("spawn.z", 0.5);
 		float yaw = (float) settings.getData().getDouble("spawn.yaw", 0);
 		float pitch = (float) settings.getData().getDouble("spawn.pitch", 0);
