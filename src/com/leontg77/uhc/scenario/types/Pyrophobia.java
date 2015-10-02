@@ -176,7 +176,7 @@ public class Pyrophobia extends Scenario implements Listener, CommandExecutor {
 		this.generateTaskID = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(Main.plugin, new Runnable() {
 			public void run() {
 				if (locations.size() > 0) {
-					Location l = (Location) locations.remove(locations.size() - 1);
+					Location l = locations.remove(locations.size() - 1);
 					pyroChunk(w.getChunkAt(l));
 				} else {
 					completedPyro(w, radius);
