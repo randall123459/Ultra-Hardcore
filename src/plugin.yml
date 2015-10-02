@@ -173,6 +173,8 @@ commands:
     description: Start or stop the choosing.
   choose:
     description: Choose a player.
+  chunkapo:
+    description: Generate chunk apoclaypse.
   genie:
     description: Genie command, check usage.
   addking:
@@ -207,3 +209,5 @@ commands:
     description: View what effects people have.
   super:
     description: Add or remove effects.
+  void:
+    description: Voidscape generator.
