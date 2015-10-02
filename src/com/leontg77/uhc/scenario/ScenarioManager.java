@@ -19,6 +19,7 @@ import com.leontg77.uhc.scenario.types.BiomeParanoia;
 import com.leontg77.uhc.scenario.types.BlockRush;
 import com.leontg77.uhc.scenario.types.BloodDiamonds;
 import com.leontg77.uhc.scenario.types.Captains;
+import com.leontg77.uhc.scenario.types.ChunkApocalypse;
 import com.leontg77.uhc.scenario.types.Compensation;
 import com.leontg77.uhc.scenario.types.Cryophobia;
 import com.leontg77.uhc.scenario.types.CutClean;
@@ -64,6 +65,7 @@ import com.leontg77.uhc.scenario.types.Timebomb;
 import com.leontg77.uhc.scenario.types.TrainingRabbits;
 import com.leontg77.uhc.scenario.types.TripleOres;
 import com.leontg77.uhc.scenario.types.VengefulSpirits;
+import com.leontg77.uhc.scenario.types.Voidscape;
 
 /**
  * Scenario management class.
@@ -98,6 +100,7 @@ public class ScenarioManager {
 		scenarios.add(new BlockRush());
 		scenarios.add(new BloodDiamonds());
 		scenarios.add(new Captains());
+		scenarios.add(new ChunkApocalypse());
 		scenarios.add(new Compensation());
 		scenarios.add(new Cryophobia());
 		scenarios.add(new CutClean());
@@ -145,6 +148,7 @@ public class ScenarioManager {
 		scenarios.add(new TrainingRabbits());
 		scenarios.add(new TripleOres());
 		scenarios.add(new VengefulSpirits());
+		scenarios.add(new Voidscape());
 		
 		Main.plugin.getLogger().info("All scenarios has been setup.");
 	}
