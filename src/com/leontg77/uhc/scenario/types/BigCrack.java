@@ -124,7 +124,10 @@ public class BigCrack extends Scenario implements Listener, CommandExecutor {
                 new BukkitRunnable() {
                     public void run() {
                         populate(world, chunk, width, length);
-                        PlayerUtils.broadcast(Main.prefix().replaceAll("UHC", "Bigcrack") + "Populated chunk at x = §a" + chunk.getX() + "§7, z = §a" + chunk.getZ() + "§7.");
+						
+						for (Player online : PlayerUtils.getPlayers()) {
+							PlayerUtils.sendAction(online, Main.prefix().replaceAll("UHC", "Bigcrack") + "Populated chunk at x = §a" + chunk.getX() + "§7, z = §a" + chunk.getZ() + "§7.");
+						}
                     }
                 }.runTaskLater(Main.plugin, delayMultiplier * speed);
                 delayMultiplier++;
