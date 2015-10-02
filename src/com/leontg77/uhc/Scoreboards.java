@@ -54,7 +54,7 @@ public class Scoreboards {
 		
 		tabHealth.setDisplaySlot(DisplaySlot.PLAYER_LIST);
 		
-		Bukkit.getLogger().info("[UHC] Scoreboards has been setup.");
+		Main.plugin.getLogger().info("Scoreboards has been setup.");
 	}
 	
 	/**
