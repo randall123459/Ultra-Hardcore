@@ -193,6 +193,8 @@ commands:
     description: View your mole team.
   mt:
     description: Mystery teams command.
+  status:
+    description: Check the current resistance type.
   genpyro:
     description: Generate Pyrophobia.
   slavereset:
