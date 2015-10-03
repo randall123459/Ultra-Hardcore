@@ -48,6 +48,7 @@ import com.leontg77.uhc.scenario.types.NightmareMode;
 import com.leontg77.uhc.scenario.types.NoFall;
 import com.leontg77.uhc.scenario.types.NoSprint;
 import com.leontg77.uhc.scenario.types.Paranoia;
+import com.leontg77.uhc.scenario.types.PeriodOfResistance;
 import com.leontg77.uhc.scenario.types.Permakill;
 import com.leontg77.uhc.scenario.types.PotentialHearts;
 import com.leontg77.uhc.scenario.types.PotentialPermanent;
@@ -130,7 +131,7 @@ public class ScenarioManager {
 		scenarios.add(new NoFall());
 		scenarios.add(new NoSprint());
 		scenarios.add(new Paranoia());
-		// TODO: Finish scenarios.add(new PeriodOfResistance());
+		scenarios.add(new PeriodOfResistance());
 		scenarios.add(new Permakill());
 		scenarios.add(new PotentialHearts());
 		scenarios.add(new PotentialPermanent());
