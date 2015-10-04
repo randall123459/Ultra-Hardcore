@@ -35,7 +35,7 @@ public class SpreadCommand implements CommandExecutor {
 		if (cmd.getName().equalsIgnoreCase("spread")) {
 			if (sender.hasPermission("uhc.spread")) {
 				if (args.length < 3) {
-					sender.sendMessage(ChatColor.RED + "Usage: /spread <radius> <teamspread> <player|*>");
+					sender.sendMessage(Main.prefix() + "Usage: /spread <radius> <teamspread> <player|*>");
 					return true;
 				}
 				
@@ -62,7 +62,8 @@ public class SpreadCommand implements CommandExecutor {
 				
 				if (args[2].equalsIgnoreCase("*")) {
 					State.setState(State.SCATTER);
-					isReady = false;
+					Parkour.getManager().shutdown();
+					
 					int t = 0;
 					int s = 0;
 					
@@ -72,8 +73,8 @@ public class SpreadCommand implements CommandExecutor {
 						}
 					}
 					
-					for (OfflinePlayer online : Bukkit.getServer().getWhitelistedPlayers()) {
-						if (Scoreboards.getManager().board.getEntryTeam(online.getName()) == null) {
+					for (OfflinePlayer whitelisted : Bukkit.getServer().getWhitelistedPlayers()) {
+						if (Scoreboards.getManager().board.getEntryTeam(whitelisted.getName()) == null) {
 							s++;
 						}
 					}
@@ -91,9 +92,6 @@ public class SpreadCommand implements CommandExecutor {
 						online.playSound(online.getLocation(), Sound.FIREWORK_LAUNCH, 1, 1);
 					}
 					
-					Parkour.getManager().shutdown();
-					Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer cancel");
-					Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer -1 §aScatter is currently going.");
 					
 					Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Main.plugin, new Runnable() {
 						public void run() {
@@ -198,12 +196,9 @@ public class SpreadCommand implements CommandExecutor {
 													}
 													i++;
 												} else {
-													cancel();
 													PlayerUtils.broadcast(Main.prefix() + "The scatter has finished.");
 													b.clear();
-													
-													Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer cancel");
-													Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer -1 §aScatter has finished, the game will start in just a bit.");
+													cancel();
 													
 													for (Player online : PlayerUtils.getPlayers()) {
 														online.playSound(online.getLocation(), Sound.FIREWORK_TWINKLE, 1, 1);
