@@ -25,17 +25,18 @@ public class ScatterUtils {
 	 * @param world the world to scatter in.
 	 * @param radius the maximum radius to scatter.
 	 * @param count the amount of scatter locations needed.
-	 * @return A list of scatter locations.
+	 * 
+	 * @return A list of vaild scatter locations.
 	 */
 	public static List<Location> getScatterLocations(World world, int radius, int count) {
-		List<Location> locs = new ArrayList<>();
+		ArrayList<Location> locs = new ArrayList<Location>();
 		
 		for (int i = 0; i < count; i++) {
 			double min = 150;
 			
 			for (int j = 0; j < 4004; j++) {
 				if (j == 4003) {
-					PlayerUtils.broadcast(ChatColor.RED + "Could not scatter " + i, "uhc.admin");
+					PlayerUtils.broadcast(ChatColor.RED + "Could not scatter a player", "uhc.admin");
 					break;
 				}
 				
@@ -52,7 +53,9 @@ public class ScatterUtils {
 					}
 				}
 				
-				if (!close && isVaildLocation(loc.clone())) {
+				if (!close && isVaild(loc.clone())) {
+					double y = BlockUtils.highestBlock(loc).getY();
+					loc.setY(y + 2);
 					locs.add(loc);
 					break;
 				} else {
@@ -60,23 +63,17 @@ public class ScatterUtils {
 				}
 			}
 		}
-
-		for (Location loc : locs) {
-			loc.getChunk().load(true);
-			double y = BlockUtils.highestBlock(loc).getY();
-			loc.setY(y + 2);
-		}
 		
 		return locs;
 	}
 
 	/**
-	 * Check if a location is a vaild scatter point.
+	 * Check if the given location is a vaild scatter location.
 	 * 
 	 * @param loc the location.
 	 * @return True if its vaild, false otherwise.
 	 */
-	private static boolean isVaildLocation(Location loc) {
+	private static boolean isVaild(Location loc) {
 		loc.setY(loc.getWorld().getHighestBlockYAt(loc));
 		
 		Material m = loc.add(0, -1, 0).getBlock().getType();
