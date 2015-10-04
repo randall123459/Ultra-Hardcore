@@ -215,6 +215,10 @@ public class EntityListener implements Listener {
 		if (ScenarioManager.getInstance().getScenario("Paranoia").isEnabled()) {
 			return;
 		}
+		
+		if (ScenarioManager.getInstance().getScenario("TeamHealth").isEnabled()) {
+			return;
+		}
 	
 		final Player player = (Player) event.getEntity();
 		final Projectile damager = (Projectile) event.getDamager();

@@ -20,6 +20,11 @@ public class HealthCommand implements CommandExecutor {
 				return true;
 			}
 			
+			if (ScenarioManager.getInstance().getScenario("TeamHealth").isEnabled()) {
+				sender.sendMessage(ChatColor.RED + "You cannot view peoples health in TeamHealth.");
+				return true;
+			}
+			
 			if (args.length == 0) {
 				if (sender instanceof Player) {
 					Player player = (Player) sender;
