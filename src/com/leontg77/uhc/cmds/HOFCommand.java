@@ -59,6 +59,7 @@ public class HOFCommand implements CommandExecutor, TabCompleter {
 			Inventory inv = Bukkit.getServer().createInventory(null, 54, ChatColor.DARK_RED + host + "'s Hall of Fame");
 			Inventory inv2 = Bukkit.getServer().createInventory(null, 54, ChatColor.DARK_RED + host + "'s Hall of Fame");
 			Inventory inv3 = Bukkit.getServer().createInventory(null, 54, ChatColor.DARK_RED + host + "'s Hall of Fame");
+			Inventory inv4 = Bukkit.getServer().createInventory(null, 54, ChatColor.DARK_RED + host + "'s Hall of Fame");
 
 			HashMap<Integer, Inventory> invs = new HashMap<Integer, Inventory>();
 			pages.put(player, invs);
@@ -66,6 +67,7 @@ public class HOFCommand implements CommandExecutor, TabCompleter {
 			pages.get(player).put(1, inv);
 			pages.get(player).put(2, inv2);
 			pages.get(player).put(3, inv3);
+			pages.get(player).put(4, inv4);
 			
 			page.put(player, 1);
 			
@@ -74,6 +76,7 @@ public class HOFCommand implements CommandExecutor, TabCompleter {
 			inv.clear();
 			inv2.clear();
 			inv3.clear();
+			inv4.clear();
 			
 			for (String section : Settings.getInstance().getHOF().getConfigurationSection(host).getKeys(false)) {
 				ItemStack game = new ItemStack (Material.GOLDEN_APPLE);
@@ -107,8 +110,10 @@ public class HOFCommand implements CommandExecutor, TabCompleter {
 					inv.addItem(game);
 				} else if (i < 90) {
 					inv2.addItem(game);
-				} else {
+				} else if (i < 135) {
 					inv3.addItem(game);
+				} else {
+					inv4.addItem(game);
 				}
 				i++;
 			}
@@ -129,17 +134,22 @@ public class HOFCommand implements CommandExecutor, TabCompleter {
 			inv2.setItem(47, prevpage);
 			inv2.setItem(51, nextpage);
 			inv3.setItem(47, prevpage);
+			inv3.setItem(51, nextpage);
+			inv4.setItem(47, prevpage);
 			
 			String name = GameUtils.getHostName(host);
 			
 			ItemStack head = new ItemStack (Material.SKULL_ITEM, 1, (short) 3);
 			SkullMeta headMeta = (SkullMeta) head.getItemMeta();
-			headMeta.setDisplayName("§8» §6" + name + " §8«");
+			headMeta.setDisplayName("§8» §6Host Info §8«");
 			headMeta.setOwner(name);
 			ArrayList<String> hlore = new ArrayList<String>();
 			hlore.add(" ");
 			hlore.add("§8» §7Total games hosted: §6" + Settings.getInstance().getHOF().getConfigurationSection(host).getKeys(false).size());
 			hlore.add("§8» §7Rank: §6" + NameUtils.fixString(User.get(PlayerUtils.getOfflinePlayer(name)).getRank().name(), false));
+			hlore.add(" ");
+			hlore.add("§8» §7Host name: §6" + host);
+			hlore.add("§8» §7IGN: §6" + name);
 			hlore.add(" ");
 			headMeta.setLore(hlore);
 			head.setItemMeta(headMeta);
@@ -147,6 +157,7 @@ public class HOFCommand implements CommandExecutor, TabCompleter {
 			inv.setItem(49, head);
 			inv2.setItem(49, head);
 			inv3.setItem(49, head);
+			inv4.setItem(49, head);
 			
 			player.openInventory(inv);
 		}
@@ -157,20 +168,16 @@ public class HOFCommand implements CommandExecutor, TabCompleter {
 		if (cmd.getName().equalsIgnoreCase("hof")) {
 			if (args.length == 1) {
 	        	ArrayList<String> arg = new ArrayList<String>();
-	        	ArrayList<String> types = new ArrayList<String>();
-	        	types.add("Leon");
-	        	types.add("Polar");
-	        	types.add("Isaac");
 	        	
 	        	if (!args[0].equals("")) {
-	        		for (String type : types) {
+	        		for (String type : Settings.getInstance().getHOF().getKeys(false)) {
 	        			if (type.toLowerCase().startsWith(args[0].toLowerCase())) {
 	        				arg.add(type);
 	        			}
 	        		}
 	        	}
 	        	else {
-	        		for (String type : types) {
+	        		for (String type : Settings.getInstance().getHOF().getKeys(false)) {
         				arg.add(type);
 	        		}
 	        	}
