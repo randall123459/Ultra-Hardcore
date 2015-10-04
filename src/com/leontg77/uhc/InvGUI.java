@@ -1,11 +1,16 @@
 package com.leontg77.uhc;
 
+import static com.leontg77.uhc.Main.plugin;
+
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
@@ -15,6 +20,7 @@ import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import com.leontg77.uhc.User.Rank;
 import com.leontg77.uhc.scenario.Scenario;
 import com.leontg77.uhc.scenario.ScenarioManager;
 import com.leontg77.uhc.utils.DateUtils;
@@ -279,21 +285,6 @@ public class InvGUI {
 		ItemStack staff = new ItemStack (Material.SKULL_ITEM, 1, (short) 3);
 		SkullMeta staffMeta = (SkullMeta) staff.getItemMeta();
 		staffMeta.setDisplayName("§8» §6Staff §8«");
-		lore.add(" ");
-		lore.add("§8» §4Owner/Dev:");
-		lore.add("§8» §7LeonTG77");
-		lore.add(" ");
-		lore.add("§8» §4Hosts:");
-		lore.add("§8» §7LeonTG77, PolarBlunk and Itz_Isaac");
-		lore.add(" ");
-		lore.add("§8» §cStaff:");
-		lore.add("§8» §7D4mnX, Vael, TitanUHC, BLA2K14 and Zephey");
-		lore.add(" ");
-		staffMeta.setLore(lore);
-		staffMeta.setOwner("LeonTG77");
-		staff.setItemMeta(staffMeta);
-		inv.setItem(19, staff);
-		lore.clear();
 		
 		ItemStack commands = new ItemStack (Material.BANNER, 1, (short) 1);
 		ItemMeta commandsMeta = commands.getItemMeta();
@@ -456,6 +447,61 @@ public class InvGUI {
 		
 		Main.rules.get(inv).runTaskTimer(Main.plugin, 1, 1);
 		player.openInventory(inv);
+		
+		StringBuilder hosts = new StringBuilder();
+		StringBuilder staffs = new StringBuilder();
+		
+		File folder = new File(plugin.getDataFolder() + File.separator + "users" + File.separator);
+		
+		for (File file : folder.listFiles()) {
+			FileConfiguration config = YamlConfiguration.loadConfiguration(file);
+
+			if (config.getString("rank").equals(Rank.HOST.name())) {
+				if (hosts.length() > 0) {
+					hosts.append(", ");
+				}
+				
+				hosts.append(config.getString("username"));
+			}
+			
+			if (config.getString("rank").equals(Rank.TRIAL.name())) {
+				if (hosts.length() > 0) {
+					hosts.append(", ");
+				}
+				
+				hosts.append(config.getString("username"));
+			}
+			
+			if (config.getString("rank").equals(Rank.STAFF.name())) {
+				if (staffs.length() > 0) {
+					staffs.append(", ");
+				}
+				
+				staffs.append(config.getString("username"));
+			}
+		}
+		
+		int hl = hosts.toString().lastIndexOf(",");
+		String h = hosts.toString().substring(0, hl) + " and" + hosts.toString().substring(hl + 1);
+		
+		int sl = staffs.toString().lastIndexOf(",");
+		String s = staffs.toString().substring(0, sl) + " and" + staffs.toString().substring(sl + 1);
+		
+		lore.add(" ");
+		lore.add("§8» §4Owner/Dev:");
+		lore.add("§8» §7LeonTG77");
+		lore.add(" ");
+		lore.add("§8» §4Hosts:");
+		lore.add("§8» §7" + h);
+		lore.add(" ");
+		lore.add("§8» §cStaff:");
+		lore.add("§8» §7" + s);
+		lore.add(" ");
+		staffMeta.setLore(lore);
+		staffMeta.setOwner("LeonTG77");
+		staff.setItemMeta(staffMeta);
+		inv.setItem(19, staff);
+		lore.clear();
 		
 		return inv;
 	}
