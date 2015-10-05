@@ -23,6 +23,8 @@ import com.leontg77.uhc.Spectator.SpecInfo;
 import com.leontg77.uhc.User.Stat;
 import com.leontg77.uhc.cmds.TeamCommand;
 import com.leontg77.uhc.scenario.ScenarioManager;
+import com.leontg77.uhc.utils.EntityUtils;
+import com.leontg77.uhc.utils.GameUtils;
 import com.leontg77.uhc.utils.PlayerUtils;
 
 /**
@@ -187,9 +189,11 @@ public class Runnables {
 					ArrayList<String> players = new ArrayList<String>(team.getEntries());
 					TeamCommand.sTeam.put(team.getName(), players);
 				}
+
+				Scoreboards sb = Scoreboards.getManager();
 				
-				for (String e : Scoreboards.getManager().kills.getScoreboard().getEntries()) {
-					Scoreboards.getManager().resetScore(e);
+				for (String entry : sb.board.getEntries()) {
+					sb.setScore(entry, sb.getScore(entry) + 50);
 				}
 
 				game.setPregameBoard(false);
@@ -213,11 +217,7 @@ public class Runnables {
 				
 				timer();
 				
-				for (World world : Bukkit.getWorlds()) {
-					if (world.getName().equals("lobby") || world.getName().equals("arena")) {
-						continue;
-					}
-					
+				for (World world : GameUtils.getGameWorlds()) {
 					world.setTime(0);
 					world.setDifficulty(Difficulty.HARD);
 					world.setPVP(false);
@@ -227,27 +227,9 @@ public class Runnables {
 					world.setThundering(false);
 					world.setStorm(false);
 					
-					for (Entity mobs : world.getEntities()) {
-						if (mobs.getType() == EntityType.BLAZE ||
-							mobs.getType() == EntityType.CAVE_SPIDER ||
-							mobs.getType() == EntityType.CREEPER ||
-							mobs.getType() == EntityType.ENDERMAN ||
-							mobs.getType() == EntityType.ZOMBIE ||
-							mobs.getType() == EntityType.WITCH ||
-							mobs.getType() == EntityType.WITHER ||
-							mobs.getType() == EntityType.DROPPED_ITEM ||
-							mobs.getType() == EntityType.GHAST ||
-							mobs.getType() == EntityType.GIANT ||
-							mobs.getType() == EntityType.MAGMA_CUBE ||
-							mobs.getType() == EntityType.DROPPED_ITEM ||
-							mobs.getType() == EntityType.SKELETON ||
-							mobs.getType() == EntityType.SPIDER ||
-							mobs.getType() == EntityType.SLIME ||
-							mobs.getType() == EntityType.SILVERFISH ||
-							mobs.getType() == EntityType.SKELETON || 
-							mobs.getType() == EntityType.EXPERIENCE_ORB) {
-							
-							mobs.remove();
+					for (Entity mob : world.getEntities()) {
+						if (EntityUtils.isClearable(mob.getType())) {
+							mob.remove();
 						}
 					}
 					
@@ -267,8 +249,14 @@ public class Runnables {
 			Bukkit.getScheduler().cancelTask(taskMinutes);
 		}
 		
+		if (Bukkit.getScheduler().isQueued(taskSeconds) || Bukkit.getScheduler().isCurrentlyRunning(taskSeconds)) {
+			Bukkit.getScheduler().cancelTask(taskSeconds);
+		}
+		
 		taskMinutes = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(Main.plugin, new Runnable() {
 			public void run() {
+				Scoreboards sb = Scoreboards.getManager();
+				
 				heal--;
 				pvp--;
 				meetup--;
@@ -295,15 +283,11 @@ public class Runnables {
 				}
 				
 				if (heal == -2) {
-					for (World world : Bukkit.getWorlds()) {
-						if (world.getName().equals("lobby") || world.getName().equals("arena")) {
-							continue;
-						}
-						
+					for (World world : GameUtils.getGameWorlds()) {
 						world.setGameRuleValue("doMobSpawning", "true");
 					}
 					
-					PlayerUtils.broadcast(Main.prefix() + "Mobs can now spawn.");
+					PlayerUtils.broadcast(Main.prefix() + "Hostile mobs can now spawn.");
 				}
 
 				if (pvp == 0) {
@@ -314,11 +298,7 @@ public class Runnables {
 						online.playSound(online.getLocation(), Sound.ENDERDRAGON_GROWL, 1, 1);
 					}
 					
-					for (World world : Bukkit.getWorlds()) {
-						if (world.getName().equals("lobby") || world.getName().equals("arena")) {
-							continue;
-						}
-						
+					for (World world : GameUtils.getGameWorlds()) {
 						world.setPVP(true);
 						
 						if (game.getBorderShrink() == BorderShrink.PVP) {
@@ -326,8 +306,15 @@ public class Runnables {
 						}
 					}
 					
+					for (String entry : sb.board.getEntries()) {
+						if (!entry.equals("§8» §a§lPvE")) {
+							sb.resetScore(entry);
+						}
+					}
+					
 					Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer cancel");
 					Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer " + (meetup * 60) + " &7Meetup is in &8»&a");
+					return;
 				}
 				
 				if (meetup == 0) {
@@ -335,30 +322,25 @@ public class Runnables {
 					Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer -1 &6Meetup is now!");
 					
 					PlayerUtils.broadcast(ChatColor.DARK_GRAY + "»»»»»»»»»»»»»»»«««««««««««««««");
-					PlayerUtils.broadcast(ChatColor.RED + " ");
-					PlayerUtils.broadcast(ChatColor.RED + " Meetup is now, head to 0,0!");
-					PlayerUtils.broadcast(ChatColor.RED + " ");
+					PlayerUtils.broadcast(" ");
+					PlayerUtils.broadcast(ChatColor.GREEN + " Meetup is now, head to 0,0!");
+					PlayerUtils.broadcast(" ");
 					PlayerUtils.broadcast(ChatColor.DARK_GRAY + "»»»»»»»»»»»»»»»«««««««««««««««");
 					
 					for (Player online : PlayerUtils.getPlayers()) {
 						online.playSound(online.getLocation(), Sound.WITHER_DEATH, 1, 1);
 					}
 
-					for (World world : Bukkit.getWorlds()) {
-						if (world.getName().equals("lobby") || world.getName().equals("arena")) {
-							continue;
-						}
-						
+					for (World world : GameUtils.getGameWorlds()) {
 						world.setThundering(false);
 						world.setStorm(false);
 
-						if (ScenarioManager.getInstance().getScenario("Astrophobia").isEnabled()) {
-							continue;
+						if (!ScenarioManager.getInstance().getScenario("Astrophobia").isEnabled()) {
+							world.setGameRuleValue("doDaylightCycle", "false");
+							world.setTime(6000);
 						}
-						
-						world.setGameRuleValue("doDaylightCycle", "false");
-						world.setTime(6000);
 					}
+					return;
 				}
 				
 				if (meetup == -2 && game.getBorderShrink() == BorderShrink.MEETUP) {
@@ -368,11 +350,7 @@ public class Runnables {
 						online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
 					}
 
-					for (World world : Bukkit.getWorlds()) {
-						if (world.getName().equals("lobby") || world.getName().equals("arena")) {
-							continue;
-						}
-
+					for (World world : GameUtils.getGameWorlds()) {
 						world.getWorldBorder().setSize(300, 600);
 					}
 				}
@@ -383,38 +361,47 @@ public class Runnables {
 					for (Player online : PlayerUtils.getPlayers()) {
 						online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
 					}
-
-					for (World world : Bukkit.getWorlds()) {
-						if (world.getName().equals("lobby") || world.getName().equals("arena")) {
-							continue;
-						}
-
-						world.getWorldBorder().setDamageBuffer(0);
-					}
 				}
 				
 				if (pvp == 45) {
 					PlayerUtils.broadcast(Main.prefix() + "PvP will be enabled in §a45 §7minutes.");
+					
+					for (Player online : PlayerUtils.getPlayers()) {
+						online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
+					}
 					return;
 				}
 				
 				if (pvp == 30) {
 					PlayerUtils.broadcast(Main.prefix() + "PvP will be enabled in §a30 §7minutes.");
+					
+					for (Player online : PlayerUtils.getPlayers()) {
+						online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
+					}
 					return;
 				}
 				
 				if (pvp == 15) {
 					PlayerUtils.broadcast(Main.prefix() + "PvP will be enabled in §a15 §7minutes.");
+					
+					for (Player online : PlayerUtils.getPlayers()) {
+						online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
+					}
 					return;
 				}
 				
 				if (pvp == 10) {
 					PlayerUtils.broadcast(Main.prefix() + "PvP will be enabled in §a10 §7minutes.");
+					
+					for (Player online : PlayerUtils.getPlayers()) {
+						online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
+					}
 					return;
 				}
 				
 				if (pvp == 5) {
 					PlayerUtils.broadcast(Main.prefix() + "PvP will be enabled in §a5 §7minutes.");
+					
 					for (Player online : PlayerUtils.getPlayers()) {
 						online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
 					}
@@ -423,6 +410,7 @@ public class Runnables {
 				
 				if (pvp == 1) {
 					PlayerUtils.broadcast(Main.prefix() + "PvP will be enabled in §a1 §7minute.");
+					
 					for (Player online : PlayerUtils.getPlayers()) {
 						online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
 					}
@@ -431,6 +419,7 @@ public class Runnables {
 				
 				if (meetup == 120) {
 					PlayerUtils.broadcast(Main.prefix() + "Meetup is in §a2 §hours.");
+					
 					for (Player online : PlayerUtils.getPlayers()) {
 						online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
 					}
@@ -439,21 +428,34 @@ public class Runnables {
 				
 				if (meetup == 105) {
 					PlayerUtils.broadcast(Main.prefix() + "Meetup is in §a1 §7hour and §a45 §7minutes.");
+					
+					for (Player online : PlayerUtils.getPlayers()) {
+						online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
+					}
 					return;
 				}
 				
 				if (meetup == 90) {
 					PlayerUtils.broadcast(Main.prefix() + "Meetup is in §a1 §7hour and §a30 §7minutes.");
+					
+					for (Player online : PlayerUtils.getPlayers()) {
+						online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
+					}
 					return;
 				}
 				
 				if (meetup == 75) {
 					PlayerUtils.broadcast(Main.prefix() + "Meetup is in §a1 §7hour and §a15 §7minutes.");
+					
+					for (Player online : PlayerUtils.getPlayers()) {
+						online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
+					}
 					return;
 				}
 				
 				if (meetup == 60) {
 					PlayerUtils.broadcast(Main.prefix() + "Meetup is in §a1 §7hour.");
+					
 					for (Player online : PlayerUtils.getPlayers()) {
 						online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
 					}
@@ -462,26 +464,43 @@ public class Runnables {
 				
 				if (meetup == 45) {
 					PlayerUtils.broadcast(Main.prefix() + "Meetup is in §a45 §7minutes.");
+					
+					for (Player online : PlayerUtils.getPlayers()) {
+						online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
+					}
 					return;
 				}
 				
 				if (meetup == 30) {
 					PlayerUtils.broadcast(Main.prefix() + "Meetup is in §a30 §7minutes.");
+					
+					for (Player online : PlayerUtils.getPlayers()) {
+						online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
+					}
 					return;
 				}
 				
 				if (meetup == 15) {
 					PlayerUtils.broadcast(Main.prefix() + "Meetup is in §a15 §7minutes.");
+					
+					for (Player online : PlayerUtils.getPlayers()) {
+						online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
+					}
 					return;
 				}
 				
 				if (meetup == 10) {
 					PlayerUtils.broadcast(Main.prefix() + "Meetup is in §a10 §7minutes.");
+					
+					for (Player online : PlayerUtils.getPlayers()) {
+						online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
+					}
 					return;
 				}
 				
 				if (meetup == 5) {
 					PlayerUtils.broadcast(Main.prefix() + "Meetup is in §a5 §7minutes.");
+					
 					for (Player online : PlayerUtils.getPlayers()) {
 						online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
 					}
@@ -490,6 +509,7 @@ public class Runnables {
 				
 				if (meetup == 1) {
 					PlayerUtils.broadcast(Main.prefix() + "Meetup is in §a1 §7minute.");
+					
 					for (Player online : PlayerUtils.getPlayers()) {
 						online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
 					}
@@ -631,11 +651,7 @@ public class Runnables {
 				pvp = 0;
 				meetup = 1;
 				
-				for (World world : Bukkit.getWorlds()) {
-					if (world.getName().equals("lobby") || world.getName().equals("arena")) {
-						continue;
-					}
-					
+				for (World world : GameUtils.getGameWorlds()) {
 					world.setTime(0);
 					world.setDifficulty(Difficulty.HARD);
 					world.setPVP(false);
@@ -695,11 +711,7 @@ public class Runnables {
 						online.playSound(online.getLocation(), Sound.FIREWORK_TWINKLE, 1, 1);
 					}
 					
-					for (World world : Bukkit.getWorlds()) {
-						if (world.getName().equals("lobby") || world.getName().equals("arena")) {
-							continue;
-						}
-						
+					for (World world : GameUtils.getGameWorlds()) {
 						world.setPVP(true);
 					}
 					heal = 20;
