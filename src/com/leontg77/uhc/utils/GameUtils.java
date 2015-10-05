@@ -1,8 +1,10 @@
 package com.leontg77.uhc.utils;
 
-import net.minecraft.server.v1_8_R3.MinecraftServer;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.bukkit.Bukkit;
+import org.bukkit.World;
 
 import com.leontg77.uhc.Game;
 import com.leontg77.uhc.Settings;
@@ -18,12 +20,33 @@ import com.leontg77.uhc.State;
 public class GameUtils {
 	
 	/**
-	 * Gets the servers tps.
+	 * Get all the worlds being used by the game.
 	 * 
-	 * @return The servers tps.
+	 * @return A list of game worlds.
 	 */
-	public static double getTps() {
-		return MinecraftServer.getServer().recentTps[0];
+	public static List<World> getGameWorlds() {
+		ArrayList<World> worlds = new ArrayList<World>();
+		Settings settings = Settings.getInstance();
+		
+		World main = Bukkit.getWorld(settings.getConfig().getString("game.world"));
+		
+		if (main != null) {
+			worlds.add(main);
+			
+			World nether = Bukkit.getWorld(main.getName() + "_nether");
+			
+			if (nether != null) {
+				worlds.add(nether);
+			}
+			
+			World end = Bukkit.getWorld(main.getName() + "_end");
+			
+			if (end != null) {
+				worlds.add(end);
+			}
+		}
+		
+		return worlds;
 	}
 	
 	/**
@@ -122,6 +145,9 @@ public class GameUtils {
 		else if (host.equalsIgnoreCase("Itz_Isaac")) {
 			return "Isaac";
 		}
+		else if (host.equalsIgnoreCase("BLA2K14")) {
+			return "BLA2K14";
+		}
 		return host;
 	}
 
@@ -140,6 +166,9 @@ public class GameUtils {
 		} 
 		else if (host.equalsIgnoreCase("Itz_Isaac") || host.equalsIgnoreCase("Isaac")) {
 			return "Isaac";
+		}
+		else if (host.equalsIgnoreCase("BLA2K14")) {
+			return "BLA2K14";
 		}
 		return host;
 	}
@@ -162,6 +191,9 @@ public class GameUtils {
 		}
 		else if (host.equalsIgnoreCase("Axlur")) {
 			return "AxlurUHC";
+		}
+		else if (host.equalsIgnoreCase("BLA2K14")) {
+			return "BLA2K14";
 		}
 		return host;
 	}
