@@ -1,8 +1,6 @@
 package com.leontg77.uhc.cmds;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -14,23 +12,28 @@ import com.leontg77.uhc.utils.PlayerUtils;
 
 public class ArenaCommand implements CommandExecutor {
 
+	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+		final Arena arena = Arena.getInstance();
+		
 		if (cmd.getName().equalsIgnoreCase("arena")) {
-			final Arena a = Arena.getManager();
 			if (args.length == 0) {
 				if (sender instanceof Player) {
 					Player player = (Player) sender;
-					if (a.isEnabled()) {
-						if (a.hasPlayer(player)) {
+					if (arena.isEnabled()) {
+						if (arena.hasPlayer(player)) {
 							player.sendMessage(Main.prefix() + "You are already in the arena.");
 							return true;
 						}
-						a.addPlayer(player);
+						
+						arena.addPlayer(player);
 						player.sendMessage(Main.prefix() + "You joined the arena.");
-					} else {
-						player.sendMessage(ChatColor.RED + "The arena is currently disabled.");
+					} 
+					else {
+						player.sendMessage(Main.prefix() + "The arena is currently disabled.");
 					}
-				} else {
+				} 
+				else {
 					sender.sendMessage(ChatColor.RED + "Only players can join arenas.");
 				}
 				return true;
@@ -38,79 +41,53 @@ public class ArenaCommand implements CommandExecutor {
 			
 			if (sender.hasPermission("uhc.arenaadmin")) {
 				if (args[0].equalsIgnoreCase("enable")) {
-					if (a.isEnabled()) {
+					if (arena.isEnabled()) {
 						sender.sendMessage(Main.prefix() + "Arena is already enabled.");
 						return true;
 					}
-					a.setEnabled(true);
+					arena.enable();
 					PlayerUtils.broadcast(Main.prefix() + "The arena has been enabled.");
-				} else if (args[0].equalsIgnoreCase("disable")) {
-					if (!a.isEnabled()) {
+				} 
+				else if (args[0].equalsIgnoreCase("disable")) {
+					if (!arena.isEnabled()) {
 						sender.sendMessage(Main.prefix() + "Arena is not enabled.");
 						return true;
 					}
-					a.setEnabled(false);
+					arena.disable();
 					PlayerUtils.broadcast(Main.prefix() + "The arena has been disabled.");
-				} else if (args[0].equalsIgnoreCase("reset")) {
-					a.setEnabled(false);
-					PlayerUtils.broadcast(Main.prefix() + "The arena is resetting, lag incoming.");
-					Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "mv regen arena");
-					Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "mvconfirm");
-					
-					Bukkit.getScheduler().runTaskLater(Main.plugin, new Runnable() {
-						public void run() {
-							PlayerUtils.broadcast(Main.prefix() + "World reset done, setting up borders.");
-							
-							World world = Bukkit.getServer().getWorld("arena");
-							
-							world.getWorldBorder().setSize(400);
-							world.getWorldBorder().setCenter(0.0, 0.0);
-							world.getWorldBorder().setWarningDistance(0);
-							world.getWorldBorder().setWarningTime(60);
-							world.getWorldBorder().setDamageAmount(0.1);
-							world.getWorldBorder().setDamageBuffer(50);
-							world.setGameRuleValue("doDaylightCycle", "false");
-							world.setTime(6000);
-							
-							PlayerUtils.broadcast(Main.prefix() + "Borders setup, pregenning arena world.");
-							
-							Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "wb arena fill 420");
-							Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "wb fill confirm");
-						}
-					}, 200);
-					
-					Bukkit.getScheduler().runTaskLater(Main.plugin, new Runnable() {
-						public void run() {
-							PlayerUtils.broadcast(Main.prefix() + "Arena reset complete.");
-						}
-					}, 620);
+				} 
+				else if (args[0].equalsIgnoreCase("reset")) {
+					arena.reset();
 				} else {
 					if (sender instanceof Player) {
 						Player player = (Player) sender;
 
 						if (args[0].equalsIgnoreCase("leave")) {
-							if (a.isEnabled()) {
-								if (!a.hasPlayer(player)) {
+							if (arena.isEnabled()) {
+								if (!arena.hasPlayer(player)) {
 									player.sendMessage(Main.prefix() + "You are not in the arena.");
 									return true;
 								}
-								a.removePlayer(player, false);
+								
+								arena.removePlayer(player, false);
 								player.sendMessage(Main.prefix() + "You left the arena.");
-							} else {
-								player.sendMessage(ChatColor.RED + "The arena is currently disabled.");
+							}
+							else {
+								player.sendMessage(Main.prefix() + "The arena is currently disabled.");
 							}
 							return true;
 						}
 						
-						if (a.isEnabled()) {
-							if (a.hasPlayer(player)) {
+						if (arena.isEnabled()) {
+							if (arena.hasPlayer(player)) {
 								player.sendMessage(Main.prefix() + "You are already in the arena.");
 								return true;
 							}
-							a.addPlayer(player);
+							
+							arena.addPlayer(player);
 							player.sendMessage(Main.prefix() + "You joined the arena.");
 						} else {
-							player.sendMessage(ChatColor.RED + "The arena is currently disabled.");
+							player.sendMessage(Main.prefix() + "The arena is currently disabled.");
 						}
 					} else {
 						sender.sendMessage(ChatColor.RED + "Only players can join arenas.");
@@ -122,28 +99,32 @@ public class ArenaCommand implements CommandExecutor {
 					Player player = (Player) sender;
 					
 					if (args[0].equalsIgnoreCase("leave")) {
-						if (a.isEnabled()) {
-							if (!a.hasPlayer(player)) {
+						if (arena.isEnabled()) {
+							if (!arena.hasPlayer(player)) {
 								player.sendMessage(Main.prefix() + "You are not in the arena.");
 								return true;
 							}
-							a.removePlayer(player, false);
+							
+							arena.removePlayer(player, false);
 							player.sendMessage(Main.prefix() + "You left the arena.");
-						} else {
-							player.sendMessage(ChatColor.RED + "The arena is currently disabled.");
+						} 
+						else {
+							player.sendMessage(Main.prefix() + "The arena is currently disabled.");
 						}
 						return true;
 					}
 					
-					if (a.isEnabled()) {
-						if (a.hasPlayer(player)) {
+					if (arena.isEnabled()) {
+						if (arena.hasPlayer(player)) {
 							player.sendMessage(Main.prefix() + "You are already in the arena.");
 							return true;
 						}
-						a.addPlayer(player);
+						
+						arena.addPlayer(player);
 						player.sendMessage(Main.prefix() + "You joined the arena.");
-					} else {
-						player.sendMessage(ChatColor.RED + "The arena is currently disabled.");
+					} 
+					else {
+						player.sendMessage(Main.prefix() + "The arena is currently disabled.");
 					}
 				} else {
 					sender.sendMessage(ChatColor.RED + "Only players can join arenas.");

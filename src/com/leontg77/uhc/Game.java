@@ -2,7 +2,7 @@ package com.leontg77.uhc;
 
 import org.bukkit.entity.Player;
 
-import com.leontg77.uhc.Main.Border;
+import com.leontg77.uhc.Main.BorderShrink;
 import com.leontg77.uhc.utils.PlayerUtils;
 
 public class Game {
@@ -56,13 +56,13 @@ public class Game {
 		return settings.getConfig().getInt("game.teamsize", 0);
 	}
 	
-	public void setBorderShrink(Border border) {
+	public void setBorderShrink(BorderShrink border) {
 		settings.getConfig().set("feature.border.shrinkAt", border.name());
 		settings.saveConfig();
 	}
 	
-	public Border getBorderShrink() {
-		return Border.valueOf(settings.getConfig().getString("feature.border.shrinkAt", Border.MEETUP.name()));
+	public BorderShrink getBorderShrink() {
+		return BorderShrink.valueOf(settings.getConfig().getString("feature.border.shrinkAt", BorderShrink.MEETUP.name()));
 	}
 
 	public boolean absorption() {

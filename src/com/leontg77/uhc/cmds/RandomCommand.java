@@ -70,6 +70,7 @@ public class RandomCommand implements CommandExecutor {
 						sender.sendMessage(Main.prefix() + "Created a rTo" + size + " using team " + t.getName() + ".");
 						Teams.getManager().sendMessage(t, Main.prefix() + "You were added to §a" + t.getName() + "§7.");
 						Teams.getManager().sendMessage(t, Main.prefix() + "Your teammates:");
+						
 						for (String entry : t.getEntries()) {
 							Teams.getManager().sendMessage(t, Main.prefix() + "§a" + entry);
 						}

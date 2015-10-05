@@ -165,7 +165,7 @@ public class Main extends JavaPlugin {
 		Scoreboards.getManager().setup();
 		BiomeSwap.getManager().setup();
 		Parkour.getManager().setup();
-		Arena.getManager().setup();
+		Arena.getInstance().setup();
 		Teams.getManager().setup();
 		UBL.getManager().setup();
 		
@@ -358,8 +358,8 @@ public class Main extends JavaPlugin {
 	}
 	
 	/**
-	 * Get the UHC prefix with an ending color.
-	 * @param endcolor the ending color.
+	 * Get the UHC prefix.
+	 * 
 	 * @return The UHC prefix.
 	 */
 	public static String prefix() {
@@ -390,17 +390,17 @@ public class Main extends JavaPlugin {
         meta.setLore(Arrays.asList(ChatColor.DARK_PURPLE + "Some say consuming the head of a", ChatColor.DARK_PURPLE + "fallen foe strengthens the blood."));
         head.setItemMeta(meta); 
 
-        ShapedRecipe goldenhead = new ShapedRecipe(head).shape("@@@", "@*@", "@@@").setIngredient('@', Material.GOLD_INGOT).setIngredient('*', new MaterialData(Material.SKULL_ITEM, (byte) 3));
         ShapedRecipe goldenmelon = new ShapedRecipe(new ItemStack(Material.SPECKLED_MELON)).shape("@@@", "@*@", "@@@").setIngredient('@', Material.GOLD_INGOT).setIngredient('*', Material.MELON);
-        
-        Bukkit.getServer().addRecipe(goldenhead);
-        Bukkit.getServer().addRecipe(goldenmelon);
+        ShapedRecipe goldenhead = new ShapedRecipe(head).shape("@@@", "@*@", "@@@").setIngredient('@', Material.GOLD_INGOT).setIngredient('*', new MaterialData(Material.SKULL_ITEM, (byte) 3));
+
+        getServer().addRecipe(goldenmelon);
+        getServer().addRecipe(goldenhead);
 
         melonRecipe = goldenmelon;
         headRecipe = goldenhead;
 
-        plugin.getLogger().info("Golden Head recipe added.");
-        plugin.getLogger().info("Golden Melon recipe added.");
+        getLogger().info("Golden Melon recipe added.");
+        getLogger().info("Golden Head recipe added.");
 	}
 	
 	/**
@@ -535,12 +535,12 @@ public class Main extends JavaPlugin {
 	 * 
 	 * @author LeonTG77
 	 */
-	public enum Border {
+	public enum BorderShrink {
 		NEVER(""), START("from "), PVP("at "), MEETUP("at ");
 		
 		private String preText;
 		
-		private Border(String preText) {
+		private BorderShrink(String preText) {
 			this.preText = preText;
 		}
 		

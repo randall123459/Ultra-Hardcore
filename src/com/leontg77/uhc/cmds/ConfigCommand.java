@@ -14,7 +14,7 @@ import org.bukkit.entity.Player;
 
 import com.leontg77.uhc.Game;
 import com.leontg77.uhc.Main;
-import com.leontg77.uhc.Main.Border;
+import com.leontg77.uhc.Main.BorderShrink;
 import com.leontg77.uhc.Runnables;
 import com.leontg77.uhc.Scoreboards;
 import com.leontg77.uhc.Settings;
@@ -63,16 +63,16 @@ public class ConfigCommand implements CommandExecutor, TabCompleter {
 					}
 					break;
 				case BORDER:
-					Border border;
+					BorderShrink border;
 					
 					try {
-						border = Border.valueOf(args[1].toUpperCase());
+						border = BorderShrink.valueOf(args[1].toUpperCase());
 					} catch (Exception e) {
 						sender.sendMessage(ChatColor.RED + "Invaild border type.");
 						return true;
 					}
 					
-					PlayerUtils.broadcast(Main.prefix() + "Border will now shrink " + (border == Border.START ? "from" : "at") + " " + border.name().toLowerCase());
+					PlayerUtils.broadcast(Main.prefix() + "Border will now shrink " + (border == BorderShrink.START ? "from" : "at") + " " + border.name().toLowerCase());
 					game.setBorderShrink(border);
 					break;
 				case DEATHLIGHTNING:
@@ -446,7 +446,7 @@ public class ConfigCommand implements CommandExecutor, TabCompleter {
 						arg.add("false");
 						break;
 					case BORDER:
-						for (Border border : Border.values()) {
+						for (BorderShrink border : BorderShrink.values()) {
 							arg.add(border.name().toLowerCase());
 						}
 						break;

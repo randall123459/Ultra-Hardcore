@@ -34,11 +34,6 @@ public class MuteCommand implements CommandExecutor {
 					game.setMuted(true);
 					return true;
 				}
-				
-				if (args.length < 3) {
-					player.sendMessage(Main.prefix() + "Usage: /mute <player> <time> <reason>");
-					return true;
-				}
 
 				TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 				Player target = Bukkit.getServer().getPlayer(args[0]);
@@ -57,6 +52,11 @@ public class MuteCommand implements CommandExecutor {
 					return true;
 				} 
 				
+				if (args.length < 3) {
+					player.sendMessage(Main.prefix() + "Usage: /mute <player> <time> <reason>");
+					return true;
+				}
+				
 	    		StringBuilder reason = new StringBuilder("");
 	    		
 	        	for (int i = 2; i < args.length; i++) {
@@ -68,7 +68,7 @@ public class MuteCommand implements CommandExecutor {
 				
 				PlayerUtils.broadcast(Main.prefix() + "§6" + target.getName() + " §7has been muted for §a" + msg);
 				target.sendMessage(Main.prefix() + "You have been muted.");
-				user.setMuted(true, msg, new Date(time), player.getName());
+				user.setMuted(true, msg, (args[1].equals("-") ? null : new Date(time)), player.getName());
 			} else {
 				player.sendMessage(Main.NO_PERMISSION_MESSAGE);
 			}

@@ -63,19 +63,24 @@ public class SpreadCommand implements CommandExecutor {
 				if (args[2].equalsIgnoreCase("*")) {
 					State.setState(State.SCATTER);
 					Parkour.getManager().shutdown();
+					isReady = false;
 					
 					int t = 0;
 					int s = 0;
-					
-					for (Team te : Teams.getManager().getTeams()) {
-						if (te.getSize() > 0) {
-							t++;
+
+					for (OfflinePlayer whitelisted : Bukkit.getServer().getWhitelistedPlayers()) {
+						if (Scoreboards.getManager().board.getEntryTeam(whitelisted.getName()) == null) {
+							Teams.getManager().findAvailableTeam().addEntry(whitelisted.getName());
 						}
 					}
 					
-					for (OfflinePlayer whitelisted : Bukkit.getServer().getWhitelistedPlayers()) {
-						if (Scoreboards.getManager().board.getEntryTeam(whitelisted.getName()) == null) {
-							s++;
+					for (Team te : Teams.getManager().getTeams()) {
+						if (te.getSize() > 0) {
+							if (te.getSize() > 1) {
+								t++;
+							} else {
+								s++;
+							}
 						}
 					}
 					
@@ -142,24 +147,24 @@ public class SpreadCommand implements CommandExecutor {
 								online.playSound(online.getLocation(), Sound.NOTE_BASS, 1, 1);
 							}
 							
-							final ArrayList<Location> a = new ArrayList<Location>(scatterLocs.values());
-							final ArrayList<String> b = new ArrayList<String>(scatterLocs.keySet());
+							final ArrayList<Location> locs = new ArrayList<Location>(scatterLocs.values());
+							final ArrayList<String> names = new ArrayList<String>(scatterLocs.keySet());
 							
 							new BukkitRunnable() {
 								int i = 0;
 								
 								public void run() {
-									if (i < a.size()) {
+									if (i < locs.size()) {
 										if (sender instanceof Player) {
 											Player player = (Player) sender;
-											player.teleport(a.get(i));
+											player.teleport(locs.get(i));
 										} else {
-											a.get(i).getChunk().load(true);
+											locs.get(i).getChunk().load(true);
 										}
 										i++;
 									} else {
 										cancel();
-										a.clear();
+										locs.clear();
 										PlayerUtils.broadcast(Main.prefix() + "All chunks loaded, starting scatter...");
 
 										for (Player online : PlayerUtils.getPlayers()) {
@@ -170,12 +175,11 @@ public class SpreadCommand implements CommandExecutor {
 											int i = 0;
 											
 											public void run() {
-												if (i < b.size()) {
-													Player scatter = Bukkit.getServer().getPlayer(b.get(i));
-													isReady = true;
+												if (i < names.size()) {
+													Player scatter = Bukkit.getServer().getPlayer(names.get(i));
 													
 													if (scatter == null) {
-														PlayerUtils.broadcast(Main.prefix() + "- §c" + b.get(i) + " §7offline, scheduled.");
+														PlayerUtils.broadcast(Main.prefix() + "- §c" + names.get(i) + " §7offline, scheduled.");
 														
 														for (Player online : PlayerUtils.getPlayers()) {
 															online.playSound(online.getLocation(), "random.pop", 1, 0);
@@ -186,9 +190,9 @@ public class SpreadCommand implements CommandExecutor {
 														scatter.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 1000000, 6));
 														scatter.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 1000000, 10));
 														scatter.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 1000000, 6));
-														scatter.teleport(scatterLocs.get(b.get(i)));
-														PlayerUtils.broadcast(Main.prefix() + "- §a" + b.get(i) + " §7has been scattered.");
-														scatterLocs.remove(b.get(i));
+														scatter.teleport(scatterLocs.get(names.get(i)));
+														PlayerUtils.broadcast(Main.prefix() + "- §a" + names.get(i) + " §7has been scattered.");
+														scatterLocs.remove(names.get(i));
 														
 														for (Player online : PlayerUtils.getPlayers()) {
 															online.playSound(online.getLocation(), "random.pop", 1, 0);
@@ -197,7 +201,8 @@ public class SpreadCommand implements CommandExecutor {
 													i++;
 												} else {
 													PlayerUtils.broadcast(Main.prefix() + "The scatter has finished.");
-													b.clear();
+													isReady = true;
+													names.clear();
 													cancel();
 													
 													for (Player online : PlayerUtils.getPlayers()) {

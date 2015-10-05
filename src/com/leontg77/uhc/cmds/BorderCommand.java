@@ -40,7 +40,7 @@ public class BorderCommand implements CommandExecutor {
 				player.getWorld().getWorldBorder().setWarningDistance(0);
 				player.getWorld().getWorldBorder().setDamageAmount(0.1);
 				player.getWorld().getWorldBorder().setSize(radius);
-				player.getWorld().getWorldBorder().setDamageBuffer(30);
+				player.getWorld().getWorldBorder().setDamageBuffer(0);
 				player.getWorld().getWorldBorder().setWarningTime(60);
 				
 				if (player.getWorld().getEnvironment() == Environment.NETHER) {

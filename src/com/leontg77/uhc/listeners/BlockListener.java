@@ -107,7 +107,7 @@ public class BlockListener implements Listener {
 
 	@EventHandler
 	public void onBlockBurn(BlockBurnEvent event) {
-		if (!Arena.getManager().isEnabled()) {
+		if (!Arena.getInstance().isEnabled()) {
 			return;
 		}
 		

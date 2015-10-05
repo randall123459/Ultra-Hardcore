@@ -47,7 +47,10 @@ public class Scoreboards {
 		}
 		
 		kills.setDisplayName("§4UHC §8- §7" + Settings.getInstance().getConfig().getString("game.host"));
-		kills.setDisplaySlot(DisplaySlot.SIDEBAR);
+		
+		if (!Game.getInstance().arenaBoard()) {
+			kills.setDisplaySlot(DisplaySlot.SIDEBAR);
+		}
 		
 		nameHealth.setDisplaySlot(DisplaySlot.BELOW_NAME);
 		nameHealth.setDisplayName("§4♥");

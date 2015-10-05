@@ -226,7 +226,7 @@ public class Pyrophobia extends Scenario implements Listener, CommandExecutor {
 						chunkAt.getBlock(x, y, z).setType(Material.OBSIDIAN);
 					}
 					if (b.getType() == Material.WATER) {
-						chunkAt.getBlock(x, y, z).setType(Material.AIR);
+						chunkAt.getBlock(x, y, z).setType(Material.OBSIDIAN);
 					}
 				}
 			}

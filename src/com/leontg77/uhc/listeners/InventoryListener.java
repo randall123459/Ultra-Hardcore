@@ -47,7 +47,7 @@ public class InventoryListener implements Listener {
 		Player player = (Player) event.getWhoClicked();
 		ItemStack item = event.getCurrentItem();
 		
-		if (Arena.getManager().isEnabled() && event.getClickedInventory() instanceof EnchantingInventory) {
+		if (Arena.getInstance().isEnabled() && event.getClickedInventory() instanceof EnchantingInventory) {
 			if (event.getSlot() == 1) {
 				event.setCancelled(true);
 			}
@@ -207,21 +207,21 @@ public class InventoryListener implements Listener {
 			Main.rules.remove(inv);
 		}
 
-		if (Arena.getManager().isEnabled() && event.getInventory() instanceof EnchantingInventory) {
+		if (Arena.getInstance().isEnabled() && event.getInventory() instanceof EnchantingInventory) {
 			event.getInventory().setItem(1, null);
 		}
 	}
 	
 	@EventHandler
 	public void onInventoryOpen(InventoryOpenEvent event) {
-		if (Arena.getManager().isEnabled() && event.getInventory() instanceof EnchantingInventory) {
+		if (Arena.getInstance().isEnabled() && event.getInventory() instanceof EnchantingInventory) {
 			event.getInventory().setItem(1, new ItemStack (Material.INK_SACK, 3, (short) 4));
 		}
 	}
 
 	@EventHandler
 	public void onEnchantItem(EnchantItemEvent event) {
-		if (Arena.getManager().isEnabled()) {
+		if (Arena.getInstance().isEnabled()) {
 			event.getInventory().setItem(1, new ItemStack (Material.INK_SACK, 3, (short) 4));
 		}
 	}

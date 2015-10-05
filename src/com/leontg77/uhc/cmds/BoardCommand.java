@@ -41,7 +41,7 @@ public class BoardCommand implements CommandExecutor {
 						Scoreboards.getManager().setScore("§8» §cTeam:", 12);
 						Scoreboards.getManager().setScore("§8» §7/team", 11);
 					}
-					if (Arena.getManager().isEnabled()) {
+					if (Arena.getInstance().isEnabled()) {
 						Scoreboards.getManager().setScore("§a ", 10);
 						Scoreboards.getManager().setScore("§8» §cArena:", 9);
 						Scoreboards.getManager().setScore("§8» §7/a ", 8);

@@ -19,20 +19,20 @@ public class AboardCommand implements CommandExecutor {
 		if (cmd.getName().equalsIgnoreCase("aboard")) {
 			if (sender.hasPermission("uhc.aboard")) {
 				if (game.arenaBoard()) {
-					for (String e : Arena.getManager().arenaKills.getScoreboard().getEntries()) {
-						Arena.getManager().resetScore(e);
+					for (String e : Arena.getInstance().arenaKills.getScoreboard().getEntries()) {
+						Arena.getInstance().resetScore(e);
 					}
 					PlayerUtils.broadcast(Main.prefix() + "Arena board has been disabled.");
 					Scoreboards.getManager().kills.setDisplaySlot(DisplaySlot.SIDEBAR);
 					game.setArenaBoard(false);
 				} else {
 					PlayerUtils.broadcast(Main.prefix() + "Arena board has been enabled.");
-					Arena.getManager().arenaKills.setDisplaySlot(DisplaySlot.SIDEBAR);
+					Arena.getInstance().arenaKills.setDisplaySlot(DisplaySlot.SIDEBAR);
 					game.setPregameBoard(false);
 					game.setArenaBoard(true);
 
-					Arena.getManager().setScore("§8» §a§lPvE", 1);
-					Arena.getManager().setScore("§8» §a§lPvE", 0);
+					Arena.getInstance().setScore("§8» §a§lPvE", 1);
+					Arena.getInstance().setScore("§8» §a§lPvE", 0);
 				}
 			} else {
 				sender.sendMessage(Main.prefix() + "You can't use that command.");

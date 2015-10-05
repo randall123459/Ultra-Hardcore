@@ -18,7 +18,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scoreboard.Team;
 
-import com.leontg77.uhc.Main.Border;
+import com.leontg77.uhc.Main.BorderShrink;
 import com.leontg77.uhc.Spectator.SpecInfo;
 import com.leontg77.uhc.User.Stat;
 import com.leontg77.uhc.cmds.TeamCommand;
@@ -251,7 +251,7 @@ public class Runnables {
 						}
 					}
 					
-					if (game.getBorderShrink() == Border.START) {
+					if (game.getBorderShrink() == BorderShrink.START) {
 						world.getWorldBorder().setSize(300, meetup * 60);
 					}
 				}
@@ -321,7 +321,7 @@ public class Runnables {
 						
 						world.setPVP(true);
 						
-						if (game.getBorderShrink() == Border.PVP) {
+						if (game.getBorderShrink() == BorderShrink.PVP) {
 							world.getWorldBorder().setSize(300, meetup * 60);
 						}
 					}
@@ -361,7 +361,7 @@ public class Runnables {
 					}
 				}
 				
-				if (meetup == -2 && game.getBorderShrink() == Border.MEETUP) {
+				if (meetup == -2 && game.getBorderShrink() == BorderShrink.MEETUP) {
 					PlayerUtils.broadcast(Main.prefix() + "Border will now shrink to §6300x300 §7over §a10 §7minutes.");
 					
 					for (Player online : PlayerUtils.getPlayers()) {
@@ -377,7 +377,7 @@ public class Runnables {
 					}
 				}
 				
-				if (meetup == -12 && game.getBorderShrink() == Border.MEETUP) {
+				if (meetup == -12 && game.getBorderShrink() == BorderShrink.MEETUP) {
 					PlayerUtils.broadcast(Main.prefix() + "Border has stopped shrinking.");
 					
 					for (Player online : PlayerUtils.getPlayers()) {
