@@ -11,7 +11,6 @@ import org.bukkit.command.CommandSender;
 
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.utils.DateUtils;
-import com.leontg77.uhc.utils.GameUtils;
 import com.leontg77.uhc.utils.NumberUtils;
 import com.leontg77.uhc.utils.PlayerUtils;
 
@@ -19,8 +18,9 @@ public class TpsCommand implements CommandExecutor {
 	
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (cmd.getName().equalsIgnoreCase("tps")) {
-			double tps = GameUtils.getTps();
+			double tps = Main.getTps();
 			ChatColor color;
+			
 			if (tps >= 18.0) {
 				color = ChatColor.GREEN;
 			}
@@ -32,7 +32,7 @@ public class TpsCommand implements CommandExecutor {
 			}
 			
 			sender.sendMessage(Main.prefix() + "Server status:");
-			sender.sendMessage("§8§l» §7Current TPS: " + color + NumberUtils.convertDouble(GameUtils.getTps()));
+			sender.sendMessage("§8§l» §7Current TPS: " + color + NumberUtils.convertDouble(tps));
 			sender.sendMessage("§8§l» §7Uptime: §a" + DateUtils.formatDateDiff(ManagementFactory.getRuntimeMXBean().getStartTime()));
 			sender.sendMessage("§8§l» §7RAM Usage: §a" + (Runtime.getRuntime().totalMemory() / 1024 / 1024) + " MB");
 			sender.sendMessage("§8§l» §7Max Memory: §a4096 MB");

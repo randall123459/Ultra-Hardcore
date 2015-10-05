@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.logging.Logger;
 
+import net.minecraft.server.v1_8_R3.MinecraftServer;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
@@ -367,6 +369,11 @@ public class Main extends JavaPlugin {
 		return prefix;
 	}
 	
+	/**
+	 * Get the spawnpoint of the lobby.
+	 * 
+	 * @return The lobby spawnpoint.
+	 */
 	public static Location getSpawn() {
 		World w = Bukkit.getServer().getWorld(settings.getData().getString("spawn.world", "lobby"));
 		double x = settings.getData().getDouble("spawn.x", 0.5);
@@ -377,6 +384,15 @@ public class Main extends JavaPlugin {
 		
 		Location loc = new Location(w, x, y, z, yaw, pitch);
 		return loc;
+	}
+	
+	/**
+	 * Gets the servers tps.
+	 * 
+	 * @return The servers tps.
+	 */
+	public static double getTps() {
+		return MinecraftServer.getServer().recentTps[0];
 	}
 	
 	/**
