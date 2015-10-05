@@ -6,12 +6,15 @@ import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Difficulty;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Sound;
+import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -24,6 +27,8 @@ import com.leontg77.uhc.Settings;
 import com.leontg77.uhc.State;
 import com.leontg77.uhc.Teams;
 import com.leontg77.uhc.managers.Parkour;
+import com.leontg77.uhc.utils.EntityUtils;
+import com.leontg77.uhc.utils.GameUtils;
 import com.leontg77.uhc.utils.PlayerUtils;
 import com.leontg77.uhc.utils.ScatterUtils;
 
@@ -32,10 +37,19 @@ public class SpreadCommand implements CommandExecutor {
 	public static boolean isReady = true;
 
 	public boolean onCommand(final CommandSender sender, Command cmd, String label, final String[] args) {
+		Settings settings = Settings.getInstance();
+		
 		if (cmd.getName().equalsIgnoreCase("spread")) {
 			if (sender.hasPermission("uhc.spread")) {
 				if (args.length < 3) {
 					sender.sendMessage(Main.prefix() + "Usage: /spread <radius> <teamspread> <player|*>");
+					return true;
+				}
+				
+				final String name = settings.getConfig().getString("game.world");
+				
+				if (Bukkit.getWorld(name) == null) {
+					sender.sendMessage(ChatColor.RED + "There are no worlds called " + name + ".");
 					return true;
 				}
 				
@@ -84,6 +98,23 @@ public class SpreadCommand implements CommandExecutor {
 						}
 					}
 					
+					for (World world : GameUtils.getGameWorlds()) {
+						world.setTime(0);
+						world.setDifficulty(Difficulty.HARD);
+						world.setPVP(false);
+						
+						world.setGameRuleValue("doMobSpawning", "false");
+						world.setGameRuleValue("doDaylightCycle", "true");
+						world.setThundering(false);
+						world.setStorm(false);
+						
+						for (Entity mob : world.getEntities()) {
+							if (EntityUtils.isClearable(mob.getType())) {
+								mob.remove();
+							}
+						}
+					}
+					
 					final int te = t;
 					final int so = s;
 					
@@ -107,7 +138,7 @@ public class SpreadCommand implements CommandExecutor {
 							}
 							
 							if (teams) {
-								List<Location> loc = ScatterUtils.getScatterLocations(Bukkit.getWorld(Settings.getInstance().getConfig().getString("game.world")), radius, te + so);
+								List<Location> loc = ScatterUtils.getScatterLocations(Bukkit.getWorld(name), radius, te + so);
 								
 								int index = 0;
 								
@@ -127,7 +158,7 @@ public class SpreadCommand implements CommandExecutor {
 									}
 								}
 							} else {
-								List<Location> loc = ScatterUtils.getScatterLocations(Bukkit.getWorld(Settings.getInstance().getConfig().getString("game.world")), radius, Bukkit.getServer().getWhitelistedPlayers().size());
+								List<Location> loc = ScatterUtils.getScatterLocations(Bukkit.getWorld(name), radius, Bukkit.getServer().getWhitelistedPlayers().size());
 							
 								int index = 0;
 								
@@ -232,7 +263,7 @@ public class SpreadCommand implements CommandExecutor {
 							
 							if (teams) {
 								if (target.getScoreboard().getEntryTeam(target.getName()) == null) {
-									List<Location> loc = ScatterUtils.getScatterLocations(Bukkit.getWorld(Settings.getInstance().getConfig().getString("game.world")), radius, 1);
+									List<Location> loc = ScatterUtils.getScatterLocations(Bukkit.getWorld(name), radius, 1);
 									scatterLocs.put(target.getName(), loc.get(0));
 									return;
 								}
@@ -248,7 +279,7 @@ public class SpreadCommand implements CommandExecutor {
 									}
 								}
 							} else {
-								List<Location> loc = ScatterUtils.getScatterLocations(Bukkit.getWorld(Settings.getInstance().getConfig().getString("game.world")), radius, 1);
+								List<Location> loc = ScatterUtils.getScatterLocations(Bukkit.getWorld(name), radius, 1);
 								scatterLocs.put(target.getName(), loc.get(0));
 							}
 						}
@@ -276,7 +307,7 @@ public class SpreadCommand implements CommandExecutor {
 					}, 60);
 				}
 			} else {
-				sender.sendMessage(ChatColor.RED + "You do not have access to that command.");
+				sender.sendMessage(Main.NO_PERMISSION_MESSAGE);
 			}
 		}
 		return true;
