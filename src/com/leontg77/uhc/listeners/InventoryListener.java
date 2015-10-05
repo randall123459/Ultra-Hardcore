@@ -144,7 +144,7 @@ public class InventoryListener implements Listener {
 			
 			StringBuilder nether = new StringBuilder();
 			int i = 1;
-			int j = 1;
+			int j = 0;
 			
 			for (Player online : PlayerUtils.getPlayers()) {
 				if (online.getWorld().getEnvironment() == Environment.NETHER) {
