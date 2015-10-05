@@ -9,6 +9,7 @@ import java.util.Arrays;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -407,7 +408,7 @@ public class InvGUI {
 		lore.add("§8» §7Enderpearl Damage: " + (game.pearlDamage() ? "§aEnabled." : "§cDisabled."));
 		lore.add("§8» §7Death Lightning: " + (game.deathLightning() ? "§aEnabled." : "§cDisabled."));
 		lore.add(" ");
-		lore.add("§8» §7Border shrinks: §6" + game.getBorderShrink().getPreText() + game.getBorderShrink().name().toLowerCase() + ".");
+		lore.add("§8» §7Border shrinks: §6" + NameUtils.fixString(game.getBorderShrink().getPreText(), false) + game.getBorderShrink().name().toLowerCase() + ".");
 		lore.add("§8» §7Saturation Fix: §aEnabled.");
 		lore.add(" ");
 		miscIMeta.setLore(lore);
@@ -448,8 +449,9 @@ public class InvGUI {
 		Main.rules.get(inv).runTaskTimer(Main.plugin, 1, 1);
 		player.openInventory(inv);
 		
-		StringBuilder hosts = new StringBuilder();
 		StringBuilder staffs = new StringBuilder();
+		StringBuilder owners = new StringBuilder();
+		StringBuilder hosts = new StringBuilder();
 		
 		File folder = new File(plugin.getDataFolder() + File.separator + "users" + File.separator);
 		
@@ -481,6 +483,17 @@ public class InvGUI {
 			}
 		}
 		
+		for (OfflinePlayer ops : Bukkit.getServer().getOperators()) {
+			if (owners.length() > 0) {
+				owners.append(", ");
+			}
+			
+			owners.append(ops.getName());
+		}
+		
+		int ol = owners.toString().lastIndexOf(",");
+		String o = owners.toString().substring(0, ol) + " and" + owners.toString().substring(ol + 1);
+		
 		int hl = hosts.toString().lastIndexOf(",");
 		String h = hosts.toString().substring(0, hl) + " and" + hosts.toString().substring(hl + 1);
 		
@@ -488,8 +501,8 @@ public class InvGUI {
 		String s = staffs.toString().substring(0, sl) + " and" + staffs.toString().substring(sl + 1);
 		
 		lore.add(" ");
-		lore.add("§8» §4Owner/Dev:");
-		lore.add("§8» §7LeonTG77");
+		lore.add("§8» §4Owners:");
+		lore.add("§8» §7" + o);
 		lore.add(" ");
 		lore.add("§8» §4Hosts:");
 		lore.add("§8» §7" + h);
