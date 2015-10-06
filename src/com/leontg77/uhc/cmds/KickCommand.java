@@ -10,13 +10,19 @@ import org.bukkit.entity.Player;
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.utils.PlayerUtils;
 
+/**
+ * Kick command class.
+ * 
+ * @author LeonTG77
+ */
 public class KickCommand implements CommandExecutor {	
 
+	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (cmd.getName().equalsIgnoreCase("kick")) {
 			if (sender.hasPermission("uhc.kick")) {
 				if (args.length < 2) {
-					sender.sendMessage(ChatColor.RED + "Usage: /kick <player> <reason>");
+					sender.sendMessage(Main.prefix() + "Usage: /kick <player> <reason>");
 					return true;
 				}
 							
@@ -31,9 +37,10 @@ public class KickCommand implements CommandExecutor {
 				if (args[0].equals("*")) {
 					for (Player online : PlayerUtils.getPlayers()) {
 						if (!online.hasPermission("uhc.prelist")) {
-					    	online.kickPlayer(msg);
+					    	online.kickPlayer("§8» §7" + msg + " §8«");
 						}
 					}
+					
 			    	PlayerUtils.broadcast(Main.prefix() + "§7All players has been kicked for §6" + msg, "uhc.admin");
 					return true;
 				}
@@ -45,10 +52,10 @@ public class KickCommand implements CommandExecutor {
 		            return true;
 				}
 		    	
-		    	PlayerUtils.broadcast(Main.prefix() + "§6" + args[0] + " §7has been kicked for §6" + msg, "uhc.admin");
-		    	target.kickPlayer(msg);
+		    	PlayerUtils.broadcast(Main.prefix() + "§6" + args[0] + " §7has been kicked for §a" + msg, "uhc.admin");
+		    	target.kickPlayer("§8» §7" + msg + " §8«");
 			} else {
-				sender.sendMessage(ChatColor.RED + "You do not have access to that command.");
+				sender.sendMessage(Main.NO_PERMISSION_MESSAGE);
 			}
 		}
 		return true;
