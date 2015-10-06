@@ -21,6 +21,7 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Team;
 
+import com.leontg77.uhc.Game;
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.Scoreboards;
 import com.leontg77.uhc.Settings;
@@ -82,9 +83,17 @@ public class SpreadCommand implements CommandExecutor {
 					int t = 0;
 					int s = 0;
 
-					for (OfflinePlayer whitelisted : Bukkit.getServer().getWhitelistedPlayers()) {
-						if (Scoreboards.getManager().board.getEntryTeam(whitelisted.getName()) == null) {
-							Teams.getManager().findAvailableTeam().addEntry(whitelisted.getName());
+					Game game = Game.getInstance();
+					
+					if (!game.isFFA() && game.getTeamSize() > 1) {
+						for (OfflinePlayer whitelisted : Bukkit.getServer().getWhitelistedPlayers()) {
+							if (Scoreboards.getManager().board.getEntryTeam(whitelisted.getName()) == null) {
+								Team team = Teams.getManager().findAvailableTeam();
+								
+								if (team != null) {
+									team.addEntry(whitelisted.getName());
+								}
+							}
 						}
 					}
 					
@@ -221,6 +230,7 @@ public class SpreadCommand implements CommandExecutor {
 														scatter.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 1000000, 6));
 														scatter.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 1000000, 10));
 														scatter.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 1000000, 6));
+														scatter.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 1000000, 2));
 														scatter.teleport(scatterLocs.get(names.get(i)));
 														PlayerUtils.broadcast(Main.prefix() + "- §a" + names.get(i) + " §7has been scattered.");
 														scatterLocs.remove(names.get(i));
@@ -298,6 +308,7 @@ public class SpreadCommand implements CommandExecutor {
 									target.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 1000000, 6));
 									target.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 1000000, 10));
 									target.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 1000000, 6));
+									target.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 1000000, 2));
 								}
 								target.teleport(scatterLocs.get(target.getName()));
 								PlayerUtils.broadcast(Main.prefix() + "- §a" + target.getName() + " §7has been scattered.");
