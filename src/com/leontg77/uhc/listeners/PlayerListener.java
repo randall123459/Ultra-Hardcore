@@ -1,33 +1,26 @@
 package com.leontg77.uhc.listeners;
 
-import static com.leontg77.uhc.Main.plugin;
-
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
+import java.util.TimeZone;
 
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 
-import org.bukkit.BanEntry;
-import org.bukkit.BanList.Type;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.SkullType;
-import org.bukkit.TravelAgent;
 import org.bukkit.World;
-import org.bukkit.World.Environment;
 import org.bukkit.block.Block;
 import org.bukkit.block.Skull;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -39,19 +32,13 @@ import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerAchievementAwardedEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
-import org.bukkit.event.player.PlayerLoginEvent;
-import org.bukkit.event.player.PlayerLoginEvent.Result;
 import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerPortalEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.server.ServerListPingEvent;
 import org.bukkit.inventory.ItemStack;
@@ -76,11 +63,9 @@ import com.leontg77.uhc.Teams;
 import com.leontg77.uhc.User;
 import com.leontg77.uhc.User.Rank;
 import com.leontg77.uhc.User.Stat;
-import com.leontg77.uhc.cmds.SpreadCommand;
 import com.leontg77.uhc.cmds.VoteCommand;
 import com.leontg77.uhc.managers.Fireworks;
 import com.leontg77.uhc.managers.Parkour;
-import com.leontg77.uhc.managers.UBL;
 import com.leontg77.uhc.scenario.ScenarioManager;
 import com.leontg77.uhc.utils.BlockUtils;
 import com.leontg77.uhc.utils.DateUtils;
@@ -99,133 +84,6 @@ import com.leontg77.uhc.utils.RecipeUtils;
 public class PlayerListener implements Listener {
 	private Settings settings = Settings.getInstance();
 	private Game game = Game.getInstance();
-	
-	@EventHandler
-	public void onPlayerJoin(PlayerJoinEvent event) {
-		Spectator spec = Spectator.getManager();
-		Player player = event.getPlayer();
-		
-		User user = User.get(player);
-		user.getFile().set("username", player.getName());
-		user.getFile().set("uuid", player.getUniqueId().toString());
-		user.saveFile();
-		
-		if (player.isDead()) {
-			player.spigot().respawn();
-		}
-		
-		Spectator.getManager().hideSpectators(player);
-		PlayerUtils.setTabList(player);
-		
-		player.setNoDamageTicks(0);
-		event.setJoinMessage(null);
-		
-		if (spec.isSpectating(player)) {
-			player.getInventory().setArmorContents(null);
-			player.getInventory().clear();
-			player.setLevel(0);
-			player.setExp(0);
-			
-			spec.enableSpecmode(player, true);
-		} else {
-			if (State.isState(State.INGAME) && !player.isWhitelisted() && !spec.isSpectating(player)) {
-				player.sendMessage(Main.prefix() + "You joined a game that you didn't play from the start.");
-
-				player.getInventory().setArmorContents(null);
-				player.getInventory().clear();
-				player.setLevel(0);
-				player.setExp(0);
-				
-				spec.enableSpecmode(player, true);
-			} else {
-				PlayerUtils.broadcast("§8[§a+§8] §7" + player.getName() + " has joined.");
-				
-				if (user.isNew()) {
-					PlayerUtils.broadcast(Main.prefix() + ChatColor.GOLD + player.getName() + " §7just joined for the first time.");
-					
-					File f = new File(plugin.getDataFolder() + File.separator + "users" + File.separator);
-					PlayerUtils.broadcast(Main.prefix() + "The server has now §a" + f.listFiles().length + "§7 unique joins.");
-				}
-			}
-		}
-		
-		if (SpreadCommand.scatterLocs.containsKey(player.getName()) && SpreadCommand.isReady) {
-			if (State.isState(State.SCATTER)) {
-				player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 1000000, 128));
-				player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 1000000, 6));
-				player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 1000000, 6));
-				player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 1000000, 10));
-				player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 1000000, 6));
-			}
-			
-			PlayerUtils.broadcast(Main.prefix() + "- §a" + player.getName() + " §7scheduled scatter.");
-			player.teleport(SpreadCommand.scatterLocs.get(player.getName()));
-			SpreadCommand.scatterLocs.remove(player.getName());
-		}
-		
-		if (!State.isState(State.SCATTER) && player.hasPotionEffect(PotionEffectType.JUMP) && player.hasPotionEffect(PotionEffectType.BLINDNESS) && player.hasPotionEffect(PotionEffectType.DAMAGE_RESISTANCE) && player.hasPotionEffect(PotionEffectType.SLOW_DIGGING) && player.hasPotionEffect(PotionEffectType.SLOW)) {
-			player.removePotionEffect(PotionEffectType.JUMP);
-			player.removePotionEffect(PotionEffectType.BLINDNESS);
-			player.removePotionEffect(PotionEffectType.DAMAGE_RESISTANCE);
-			player.removePotionEffect(PotionEffectType.SLOW_DIGGING);
-			player.removePotionEffect(PotionEffectType.SLOW);	
-		}
-		
-		if (State.isState(State.LOBBY)) {
-			player.teleport(Main.getSpawn());
-		}
-		
-		if (!game.isRR()) {
-			player.sendMessage("§8» ----------[ §4§lArctic UHC §8]---------- «");
-			
-			if (GameUtils.getTeamSize().startsWith("No")) {
-				player.sendMessage("§8» §c No games running");
-			} 
-			else if (GameUtils.getTeamSize().startsWith("Open")) {
-				player.sendMessage("§8» §7 Open PvP, use §a/a §7to join.");
-			} 
-			else {
-				player.sendMessage("§8» §7 Host: §a" + Settings.getInstance().getConfig().getString("game.host"));
-				player.sendMessage("§8» §7 Gamemode: §a" + GameUtils.getTeamSize() + Settings.getInstance().getConfig().getString("game.scenarios"));
-			}
-			
-			player.sendMessage("§8» --------------------------------- «");
-		}
-	}
-	
-	@EventHandler
-	public void onPlayerQuit(PlayerQuitEvent event) {
-		Player player = event.getPlayer();
-		event.setQuitMessage(null);
-		
-		PlayerUtils.handleLeavePermissions(player);
-		
-		if (Arena.getInstance().isEnabled() && Arena.getInstance().hasPlayer(player)) {
-			Arena.getInstance().removePlayer(player, false);
-			player.getInventory().clear();
-			player.getInventory().setArmorContents(null);
-		}
-		
-		if (!Spectator.getManager().isSpectating(player)) {
-			PlayerUtils.broadcast("§8[§c-§8] §7" + player.getName() + " has left.");
-		}
-		
-		if (Main.msg.containsKey(player)) {
-			Main.msg.remove(player);
-		}
-		
-		HashSet<CommandSender> temp = new HashSet<CommandSender>();
-		
-		for (CommandSender key : Main.msg.keySet()) {
-			temp.add(key);
-		}
-		
-		for (CommandSender key : temp) {
-			if (Main.msg.get(key).equals(player)) {
-				Main.msg.remove(key);
-			}
-		}
-	}
 	
 	@EventHandler
 	public void onPlayerDeath(final PlayerDeathEvent event) {
@@ -521,6 +379,25 @@ public class PlayerListener implements Listener {
 			return;
 		}
     	
+		if (user.isMuted()) {
+			TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+			Date date = new Date();
+			
+			if (user.getUnmuteTime() == -1 || user.getUnmuteTime() > date.getTime()) {
+				player.sendMessage(Main.prefix() + "You have been muted for: §a" + user.getMutedReason());
+				
+				if (user.getUnmuteTime() < 0) {
+					player.sendMessage(Main.prefix() + "Your mute is permanent.");
+				} else {
+					player.sendMessage(Main.prefix() + "Your mute expires in: §a" + DateUtils.formatDateDiff(user.getUnmuteTime()));
+				}
+				return;
+			} 
+			else {
+				user.setMuted(false, "N", null, "N");
+			}
+		}
+		
 		if (user.getRank() == Rank.HOST) {
 			Team team = player.getScoreboard().getEntryTeam(player.getName());
 			
@@ -546,22 +423,12 @@ public class PlayerListener implements Listener {
 			PlayerUtils.broadcast("§4§lTrial Host §8| §f" + (team != null ? (team.getName().equals("spec") ? player.getName() : team.getPrefix() + player.getName()) : player.getName()) + "§8 » §f" + ChatColor.translateAlternateColorCodes('&', event.getMessage()));
 		}
 		else if (user.getRank() == Rank.STAFF) {
-			if (user.isMuted()) {
-				player.sendMessage(Main.prefix() + "You have been muted.");
-				return;
-			}
-
 			Team team = player.getScoreboard().getEntryTeam(player.getName());
 			PlayerUtils.broadcast("§c§lStaff §8| §f" + (team != null ? (team.getName().equals("spec") ? player.getName() : team.getPrefix() + player.getName()) : player.getName()) + "§8 » §f" + event.getMessage());
 		}
 		else if (user.getRank() == Rank.VIP) {
 			if (game.isMuted()) {
 				player.sendMessage(Main.prefix() + "The chat is currently muted.");
-				return;
-			}
-			
-			if (user.isMuted()) {
-				player.sendMessage(Main.prefix() + "You have been muted.");
 				return;
 			}
 
@@ -571,11 +438,6 @@ public class PlayerListener implements Listener {
 		else {
 			if (game.isMuted()) {
 				player.sendMessage(Main.prefix() + "The chat is currently muted.");
-				return;
-			}
-			
-			if (user.isMuted()) {
-				player.sendMessage(Main.prefix() + "You have been muted.");
 				return;
 			}
 			
@@ -664,142 +526,6 @@ public class PlayerListener implements Listener {
 	}
 	
 	@EventHandler
-	public void onPlayerLogin(PlayerLoginEvent event) {
-		Player player = event.getPlayer();
-		PlayerUtils.handlePermissions(player);
-		
-		if (player.getUniqueId().toString().equals("3be33527-be7e-4eb2-8b66-5b76d3d7ecdc")) {
-			if (game.isRR()) {
-				return;
-			}
-			
-			if (Settings.getInstance().getConfig().getString("game.host").equalsIgnoreCase("PolarBlunk")) {
-				event.disallow(Result.KICK_OTHER, "Connection timed out");
-				return;
-			}
-		}
-		
-		if (event.getResult() == Result.KICK_BANNED) {
-			if (Bukkit.getBanList(Type.NAME).getBanEntry(player.getName()) != null) {
-				if (player.hasPermission("uhc.staff")) {
-					Bukkit.getBanList(Type.NAME).pardon(player.getName());
-					event.allow();
-					return;
-				}
-
-				BanEntry ban = Bukkit.getBanList(Type.NAME).getBanEntry(player.getName());
-				PlayerUtils.broadcast(Main.prefix() + ChatColor.RED + player.getName() + " §7tried to join while being " + (ban.getExpiration() == null ? "banned" : "temp-banned") + " for:§c " + ban.getReason(), "uhc.staff");
-				
-				event.setKickMessage(
-				"§8» §7You have been §4" + (ban.getExpiration() == null ? "banned" : "temp-banned") + " §7from §6Arctic UHC §8«" +
-				"\n" + 
-				"\n§cReason §8» §7" + ban.getReason() +
-				"\n§cBanned by §8» §7" + ban.getSource() + (ban.getExpiration() == null ? "" : "" +
-				"\n§cExpires in §8» §7" + DateUtils.formatDateDiff(ban.getExpiration().getTime())) +
-				"\n" +
-				"\n§8» §7If you would like to appeal, DM our twitter §a@ArcticUHC §8«"
-				);
-			}
-			else if (Bukkit.getBanList(Type.IP).getBanEntry(player.getAddress().getAddress().getHostAddress()) != null) {
-				if (player.hasPermission("uhc.staff")) {
-					Bukkit.getBanList(Type.IP).pardon(player.getAddress().getAddress().getHostAddress());
-					event.allow();
-					return;
-				}
-
-				BanEntry ban = Bukkit.getBanList(Type.IP).getBanEntry(player.getAddress().getAddress().getHostAddress());
-				PlayerUtils.broadcast(Main.prefix() + ChatColor.RED + player.getName() + " §7tried to join while being IP-banned for:§c " + ban.getReason(), "uhc.staff");
-				
-				event.setKickMessage(
-				"§8» §7You have been §4IP " + (ban.getExpiration() == null ? "banned" : "temp-banned") + " §7from §6Arctic UHC §8«" +
-				"\n" + 
-				"\n§cReason §8» §7" + ban.getReason() +
-				"\n§cBanned by §8» §7" + ban.getSource() + (ban.getExpiration() == null ? "" : "" +
-				"\n§cExpires in §8» §7" + DateUtils.formatDateDiff(ban.getExpiration().getTime())) +
-				"\n" +
-				"\n§8» §7If you would like to appeal, DM our twitter §a@ArcticUHC §8«"
-				);
-			}
-			else {
-				event.allow();
-			}
-			return;
-		}
-		
-		if (event.getResult() == Result.KICK_WHITELIST) {
-			if (game.isRR()) {
-				event.setKickMessage("§8» §7You are not whitelisted §8«\n\n§cThere are no games running");
-				return;
-			}
-			
-			if (player.hasPermission("uhc.prelist")) {
-				event.allow();
-				return;
-			}
-			
-			if (GameUtils.getTeamSize().startsWith("No")) {
-				event.setKickMessage("§8» §7You are not whitelisted §8«\n\n§cThere are no games running");
-			}
-			else if (GameUtils.getTeamSize().startsWith("Open")) {
-				Bukkit.setWhitelist(false);
-				event.allow();
-				return;
-			} 
-			else {
-				if (State.isState(State.LOBBY)) {
-					event.setKickMessage("§8» §7You are not whitelisted §8«\n\n§cThe game has not opened yet,\n§ccheck the post for open time.\n\n§7Match post: §a" + settings.getConfig().getString("matchpost", "redd.it"));
-				}
-				else {
-					event.setKickMessage("§8» §7You are not whitelisted §8«\n\n§cThe game has already started");
-				}
-			}
-			return;
-		}
-		
-		if (PlayerUtils.getPlayers().size() >= settings.getConfig().getInt("maxplayers", 80)) {
-			if (game.isRR()) {
-				return;
-			}
-			
-			if (player.isWhitelisted()) {
-				event.allow();
-				return;
-			}
-			
-			if (player.hasPermission("uhc.staff")) {
-				if (State.isState(State.INGAME)) {
-					event.allow();
-				} else {
-					event.disallow(Result.KICK_FULL, "§8» §7The server is currently full, try again later §8«");
-				}
-				return;
-			} 
-
-			event.disallow(Result.KICK_FULL, "§8» §7The server is currently full, try again later §8«");
-		} else {
-			event.allow();
-		}
-	}
-	
-	@EventHandler(priority = EventPriority.HIGHEST)
-    public void onAsyncPlayerPreLogin(AsyncPlayerPreLoginEvent event) {
-		if (UBL.getManager().isBanned(event.getName(), event.getUniqueId())) {
-            UBL.BanEntry banEntry = UBL.getManager().banlistByUUID.get(event.getUniqueId());
-        	PlayerUtils.broadcast(Main.prefix() + ChatColor.RED + event.getName() + " §7tried to join while being UBL'ed for:§c " + banEntry.getData("Reason"), "uhc.staff");
-        	
-            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_BANNED, UBL.getManager().getBanMessage(event.getUniqueId()));
-            return;
-        }
-		
-        if (UBL.getManager().isBanned(event.getName())) {
-            UBL.BanEntry banEntry = UBL.getManager().banlistByIGN.get(event.getName().toLowerCase());
-        	PlayerUtils.broadcast(Main.prefix() + ChatColor.RED + event.getName() + " §7tried to join while being UBL'ed for:§c " + banEntry.getData("Reason"), "uhc.staff");
-        	
-			event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_BANNED, UBL.getManager().getBanMessage(event.getName()));
-        }
-    }
-	
-	@EventHandler
 	public void onServerListPing(ServerListPingEvent event) {
 		String scenarios = ChatColor.translateAlternateColorCodes('&', settings.getConfig().getString("game.scenarios", "games scheduled"));
 		String host = Settings.getInstance().getConfig().getString("game.host", "None");
@@ -838,7 +564,7 @@ public class PlayerListener implements Listener {
 	@EventHandler
 	public void onPlayerKick(PlayerKickEvent event) {
 		if (event.getReason().equals("disconnect.spam")) {
-			event.setReason("§cStop spamming, please.");
+			event.setReason("§8» §7Kicked for spamming §8«");
 		}
 	}
 	
@@ -919,111 +645,6 @@ public class PlayerListener implements Listener {
 			}
 		}
     }
-
-	@EventHandler
-    public void onPlayerPortal(PlayerPortalEvent event) {
-		TravelAgent travel = event.getPortalTravelAgent();
-		Player player = event.getPlayer();
-		Location from = event.getFrom();
-		
-		if (game.nether() && BlockUtils.hasBlockNearby(Material.PORTAL, event.getFrom())) {
-			String fromName = event.getFrom().getWorld().getName();
-	        String targetName;
-	        
-	        if (event.getFrom().getWorld().getEnvironment().equals(Environment.NETHER)) {
-	            if (!fromName.endsWith("_nether")) {
-	            	player.sendMessage(Main.prefix() + "Could not teleport you to the overworld, contact the staff now.");
-	                return;
-	            }
-
-	            targetName = fromName.substring(0, fromName.length() - 7);
-	        } else if (event.getFrom().getWorld().getEnvironment().equals(Environment.NORMAL)) {
-	            if (!BlockUtils.hasBlockNearby(Material.PORTAL, from)) {
-	            	player.sendMessage(Main.prefix() + "Could not teleport you to the nether, contact the staff now.");
-	                return;
-	            }
-
-	            targetName = fromName + "_nether";
-	        } else {
-	            return;
-	        }
-
-	        World world = Bukkit.getServer().getWorld(targetName);
-	        
-	        if (world == null) {
-            	player.sendMessage(Main.prefix() + "The nether has not been created.");
-	            return;
-	        }
-
-	        Location to = (world.getName().endsWith("_nether") ? new Location(world, (from.getX() / 8), (from.getY() / 8), (from.getZ() / 8), from.getYaw(), from.getPitch()) : new Location(world, (from.getX() * 8), (from.getY() * 8), (from.getZ() * 8), from.getYaw(), from.getPitch()));
-	        to = travel.findOrCreate(to);
-
-	        if (to != null) {
-	            event.setTo(to);
-	        } else {
-            	player.sendMessage(Main.prefix() + "Could not teleport you, contact the staff now.");
-	        }
-		} else {
-            if (BlockUtils.hasBlockNearby(Material.PORTAL, event.getFrom())) {
-            	player.sendMessage(Main.prefix() + "The nether is disabled.");
-            }
-		}
-		
-		if (game.theEnd() && BlockUtils.hasBlockNearby(Material.ENDER_PORTAL, event.getFrom())) {
-			String fromName = event.getFrom().getWorld().getName();
-	        String targetName;
-	        
-	        if (event.getFrom().getWorld().getEnvironment().equals(Environment.THE_END)) {
-	        	World world = Bukkit.getServer().getWorld(settings.getData().getString("spawn.world"));
-	    		double x = settings.getData().getDouble("spawn.x");
-	    		double y = settings.getData().getDouble("spawn.y");
-	    		double z = settings.getData().getDouble("spawn.z");
-	    		float yaw = (float) settings.getData().getDouble("spawn.yaw");
-	    		float pitch = (float) settings.getData().getDouble("spawn.pitch");
-	    		
-	            event.setTo(new Location(world, x, y, z, yaw, pitch));
-	            return;
-	        } else if (event.getFrom().getWorld().getEnvironment().equals(Environment.NORMAL)) {
-	            if (!BlockUtils.hasBlockNearby(Material.ENDER_PORTAL, event.getFrom())) {
-	            	player.sendMessage(Main.prefix() + "Could not teleport you to the end, contact the staff now.");
-	                return;
-	            }
-	            
-	            targetName = fromName + "_end";
-	        } else {
-	            return;
-	        }
-
-	        World world = Bukkit.getServer().getWorld(targetName);
-	        
-	        if (world == null) {
-            	player.sendMessage(Main.prefix() + "The end has not been created.");
-	            return;
-	        }
-
-	        Location to = new Location(world, 100.0, 49, 0, 90f, 0f);
-
-			for (int y = to.getBlockY() - 1; y <= to.getBlockY() + 2; y++) {
-				for (int x = to.getBlockX() - 2; x <= to.getBlockX() + 2; x++) {
-					for (int z = to.getBlockZ() - 2; z <= to.getBlockZ() + 2; z++) {
-						if (y == 48) {
-							to.getWorld().getBlockAt(x, y, z).setType(Material.OBSIDIAN);
-							to.getWorld().getBlockAt(x, y, z).getState().update();
-						} else {
-							to.getWorld().getBlockAt(x, y, z).setType(Material.AIR);
-							to.getWorld().getBlockAt(x, y, z).getState().update();
-						}
-					}
-				}
-			}
-			
-			event.setTo(to);
-		} else {
-            if (BlockUtils.hasBlockNearby(Material.ENDER_PORTAL, event.getFrom())) {
-            	player.sendMessage(Main.prefix() + "The end is disabled.");
-            }
-		}
-    }
 	
 	@EventHandler
 	public void onPrepareItemCraft(PrepareItemCraftEvent event) {
@@ -1040,6 +661,7 @@ public class PlayerListener implements Listener {
                 if (items.getType() == Material.SKULL_ITEM) {
                     SkullMeta skullMeta = (SkullMeta) items.getItemMeta();
                     name = skullMeta.getOwner();
+                    break;
                 }
             }
 
