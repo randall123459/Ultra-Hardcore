@@ -5,6 +5,8 @@ import static com.leontg77.uhc.Main.plugin;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.TimeZone;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -33,12 +35,16 @@ import com.leontg77.uhc.utils.PlayerUtils;
 /**
  * The inventory managing class.
  * <p>
- * This class contains methods for opening the selector inventory, rules inventory and player inventories.
+ * This class contains methods for opening the selector inventory, game info inventory, hall of fame inventory and player inventories.
  * 
  * @author LeonTG77
  */
 public class InvGUI {
+	private Settings settings = Settings.getInstance();
 	private static InvGUI manager = new InvGUI();
+	
+	public HashMap<Player, HashMap<Integer, Inventory>> pagesForPlayer = new HashMap<Player, HashMap<Integer, Inventory>>();
+	public HashMap<Player, Integer> currentPage = new HashMap<Player, Integer>();
 	
 	/**
 	 * Gets the instance of this class
@@ -56,7 +62,7 @@ public class InvGUI {
 	 * @return The opened inventory.
 	 */
 	public Inventory openSelector(Player player) {
-		Inventory inv = Bukkit.createInventory(null, PlayerUtils.playerInvSize(), "Player Selector");
+		Inventory inv = Bukkit.createInventory(null, PlayerUtils.playerInvSize(), "§8» §cPlayer Selector §8«");
 	
 		for (Player online : PlayerUtils.getPlayers()) {
 			if (!Spectator.getManager().isSpectating(online) && !online.getWorld().getName().equals("lobby")) {
@@ -82,7 +88,7 @@ public class InvGUI {
 	 * @return The opened inventory.
 	 */
 	public Inventory openInv(final Player player, final Player target) {
-		final Inventory inv = Bukkit.getServer().createInventory(target, 54, target.getName().substring(0, target.getName().length() > 52 ? 52 : target.getName().length()) + "'s Inventory");
+		final Inventory inv = Bukkit.getServer().createInventory(target, 54, "§8» §c" + target.getName().substring(0, target.getName().length() > 42 ? 42 : target.getName().length()) + "'s Inventory §8«");
 	
 		Main.invsee.put(inv, new BukkitRunnable() {
 			public void run() {
@@ -166,8 +172,140 @@ public class InvGUI {
 		return inv;
 	}
 	
+	/**
+	 * Opens an inventory the given hosts hall of fame.
+	 * 
+	 * @param player the player opening for.
+	 * @param host The owner of the hall of fame.
+	 * @return The opened inventory.
+	 */
+	public Inventory openHOF(Player player, String host) {
+		TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+		
+		Inventory inv = Bukkit.getServer().createInventory(null, 54, "§8» §c" + host + "'s Hall of Fame §8«");
+		Inventory inv2 = Bukkit.getServer().createInventory(null, 54, "§8» §c" + host + "'s Hall of Fame §8«");
+		Inventory inv3 = Bukkit.getServer().createInventory(null, 54, "§8» §c" + host + "'s Hall of Fame §8«");
+		Inventory inv4 = Bukkit.getServer().createInventory(null, 54, "§8» §c" + host + "'s Hall of Fame §8«");
+
+		HashMap<Integer, Inventory> invs = new HashMap<Integer, Inventory>();
+		pagesForPlayer.put(player, invs);
+		
+		pagesForPlayer.get(player).put(1, inv);
+		pagesForPlayer.get(player).put(2, inv2);
+		pagesForPlayer.get(player).put(3, inv3);
+		pagesForPlayer.get(player).put(4, inv4);
+		
+		currentPage.put(player, 1);
+		
+		int i = 0;
+		
+		inv.clear();
+		inv2.clear();
+		inv3.clear();
+		inv4.clear();
+		
+		for (String section : Settings.getInstance().getHOF().getConfigurationSection(host).getKeys(false)) {
+			ItemStack game = new ItemStack (Material.GOLDEN_APPLE);
+			ItemMeta meta = game.getItemMeta();
+			meta.setDisplayName("§8» §6" + host + "'s #" + section + " §8«");
+			
+			ArrayList<String> lore = new ArrayList<String>();
+			lore.add("§7" + settings.getHOF().getString(host + "." + section + ".date", "N/A"));
+			lore.add(" ");
+			lore.add("§8» §cWinners:");
+			
+			for (String winners : settings.getHOF().getStringList(host + "." + section + ".winners")) {
+				lore.add("§8» §7" + winners);
+			}
+			
+			lore.add(" ");
+			lore.add("§8» §cKills:");
+			lore.add("§8» §7" + settings.getHOF().getString(host + "." + section + ".kills", "-1"));
+			
+			if (!settings.getHOF().getString(host + "." + section + ".teamsize", "FFA").isEmpty()) {
+				lore.add(" ");
+				lore.add("§8» §cTeamsize:");
+				lore.add("§8» §7" + settings.getHOF().getString(host + "." + section + ".teamsize", "FFA"));
+			}
+			
+			lore.add(" ");
+			lore.add("§8» §cScenario:");
+			
+			for (String scenario : settings.getHOF().getString(host + "." + section + ".scenarios", "Vanilla+").split(" ")) {
+				lore.add("§8» §7" + scenario);
+			}
+			
+			lore.add(" ");
+			meta.setLore(lore);
+			game.setItemMeta(meta);
+
+			if (i < 45) {
+				inv.addItem(game);
+			} else if (i < 90) {
+				inv2.addItem(game);
+			} else if (i < 135) {
+				inv3.addItem(game);
+			} else {
+				inv4.addItem(game);
+			}
+			i++;
+		}
+
+		ItemStack nextpage = new ItemStack (Material.ARROW);
+		ItemMeta pagemeta = nextpage.getItemMeta();
+		pagemeta.setDisplayName(ChatColor.GREEN + "Next page");
+		pagemeta.setLore(Arrays.asList("§7Switch to the next page."));
+		nextpage.setItemMeta(pagemeta);
+		
+		ItemStack prevpage = new ItemStack (Material.ARROW);
+		ItemMeta prevmeta = prevpage.getItemMeta();
+		prevmeta.setDisplayName(ChatColor.GREEN + "Previous page");
+		prevmeta.setLore(Arrays.asList("§7Switch to the previous page."));
+		prevpage.setItemMeta(prevmeta);
+		
+		inv.setItem(51, nextpage);
+		inv4.setItem(47, prevpage);
+		
+		inv2.setItem(47, prevpage);
+		inv2.setItem(51, nextpage);
+		
+		inv3.setItem(47, prevpage);
+		inv3.setItem(51, nextpage);
+		
+		String name = GameUtils.getHostName(host);
+		
+		ItemStack head = new ItemStack (Material.SKULL_ITEM, 1, (short) 3);
+		SkullMeta headMeta = (SkullMeta) head.getItemMeta();
+		headMeta.setDisplayName("§8» §6Host Info §8«");
+		headMeta.setOwner(name);
+		ArrayList<String> hlore = new ArrayList<String>();
+		hlore.add(" ");
+		hlore.add("§8» §7Total games hosted: §6" + Settings.getInstance().getHOF().getConfigurationSection(host).getKeys(false).size());
+		hlore.add("§8» §7Rank: §6" + NameUtils.fixString(User.get(PlayerUtils.getOfflinePlayer(name)).getRank().name(), false));
+		hlore.add(" ");
+		hlore.add("§8» §7Host name: §6" + host);
+		hlore.add("§8» §7IGN: §6" + name);
+		hlore.add(" ");
+		headMeta.setLore(hlore);
+		head.setItemMeta(headMeta);
+		
+		inv.setItem(49, head);
+		inv2.setItem(49, head);
+		inv3.setItem(49, head);
+		inv4.setItem(49, head);
+		
+		player.openInventory(inv);
+		return inv;
+	}
+	
+	/**
+	 * Opens the game information inventory.
+	 * 
+	 * @param player player to open for.
+	 * @return The opened inventory.
+	 */
 	public Inventory openGameInfo(final Player player) {
-		final Inventory inv = Bukkit.getServer().createInventory(null, 45, "§4ArcticUHC Game Information");
+		final Inventory inv = Bukkit.getServer().createInventory(null, 45, "§8» §cGame Information §8«");
 		final ArrayList<String> lore = new ArrayList<String>();
 		final Game game = Game.getInstance();
 		
@@ -407,13 +545,100 @@ public class InvGUI {
 		lore.add(" ");
 		lore.add("§8» §7Enderpearl Damage: " + (game.pearlDamage() ? "§aEnabled." : "§cDisabled."));
 		lore.add("§8» §7Death Lightning: " + (game.deathLightning() ? "§aEnabled." : "§cDisabled."));
+		lore.add("§8» §7Saturation Fix: §aEnabled.");
 		lore.add(" ");
 		lore.add("§8» §7Border shrinks: §6" + NameUtils.fixString(game.getBorderShrink().getPreText(), false) + game.getBorderShrink().name().toLowerCase() + ".");
-		lore.add("§8» §7Saturation Fix: §aEnabled.");
+		lore.add("§8» §7The border will kill you if you go outside!");
 		lore.add(" ");
 		miscIMeta.setLore(lore);
 		miscI.setItemMeta(miscIMeta);
 		inv.setItem(44, miscI);
+		lore.clear();
+		
+		File folder = new File(plugin.getDataFolder() + File.separator + "users" + File.separator);
+		
+		StringBuilder staffs = new StringBuilder();
+		StringBuilder owners = new StringBuilder();
+		StringBuilder hosts = new StringBuilder();
+		
+		ArrayList<String> hostL = new ArrayList<String>();
+		ArrayList<String> staffL = new ArrayList<String>();
+		
+		int i = 1;
+		
+		for (File file : folder.listFiles()) {
+			FileConfiguration config = YamlConfiguration.loadConfiguration(file);
+
+			if (config.getString("rank").equals(Rank.HOST.name())) {
+				hostL.add(config.getString("username"));
+			}
+			
+			if (config.getString("rank").equals(Rank.TRIAL.name())) {
+				hostL.add(config.getString("username"));
+			}
+			
+			if (config.getString("rank").equals(Rank.STAFF.name())) {
+				staffL.add(config.getString("username"));
+			}
+		}
+		
+		for (String sL : hostL) {
+			if (hosts.length() > 0) {
+				if (hostL.size() == i) {
+					hosts.append(" and ");
+				} else {
+					hosts.append(", ");
+				}
+			}
+			
+			hosts.append(sL);
+			i++;
+		}
+		
+		i = 1;
+		
+		for (String sL : staffL) {
+			if (staffs.length() > 0) {
+				if (staffL.size() == i) {
+					staffs.append(" and ");
+				} else {
+					staffs.append(", ");
+				}
+			}
+			
+			staffs.append(sL);
+			i++;
+		}
+		
+		i = 1;
+		
+		for (OfflinePlayer ops : Bukkit.getServer().getOperators()) {
+			if (owners.length() > 0) {
+				if (Bukkit.getOperators().size() == i) {
+					owners.append(" and ");
+				} else {
+					owners.append(", ");
+				}
+			}
+			
+			owners.append(ops.getName());
+			i++;
+		}
+		
+		lore.add(" ");
+		lore.add("§8» §4Owners:");
+		lore.add("§8» §7" + owners.toString());
+		lore.add(" ");
+		lore.add("§8» §4Hosts:");
+		lore.add("§8» §7" + hosts.toString());
+		lore.add(" ");
+		lore.add("§8» §cStaff:");
+		lore.add("§8» §7" + staffs.toString());
+		lore.add(" ");
+		staffMeta.setLore(lore);
+		staffMeta.setOwner("LeonTG77");
+		staff.setItemMeta(staffMeta);
+		inv.setItem(19, staff);
 		lore.clear();
 		
 		Main.rules.put(inv, new BukkitRunnable() {
@@ -422,6 +647,7 @@ public class InvGUI {
 				ItemMeta timerMeta = timer.getItemMeta();
 				timerMeta.setDisplayName("§8» §6Timers §8«");
 				lore.add(" ");
+				
 				if (Game.getInstance().isRR()) {
 					lore.add("§8» §7Current Episode: §a" + Runnables.meetup + " mins");
 					lore.add("§8» §7Time to next episode: §a" + Runnables.heal + " mins");
@@ -437,6 +663,7 @@ public class InvGUI {
 					lore.add(Runnables.pvpSeconds <= 0 ? "§8» §aPvP is enabled." : "§8» §7PvP in: §a" + DateUtils.ticksToString(Runnables.pvpSeconds));
 					lore.add(Runnables.meetupSeconds <= 0 ? "§8» §cMeetup is now!" : "§8» §7Meetup in: §a" + DateUtils.ticksToString(Runnables.meetupSeconds));
 				}
+				
 				lore.add(" ");
 				timerMeta.setLore(lore);
 				timer.setItemMeta(timerMeta);
@@ -448,73 +675,6 @@ public class InvGUI {
 		
 		Main.rules.get(inv).runTaskTimer(Main.plugin, 1, 1);
 		player.openInventory(inv);
-		
-		StringBuilder staffs = new StringBuilder();
-		StringBuilder owners = new StringBuilder();
-		StringBuilder hosts = new StringBuilder();
-		
-		File folder = new File(plugin.getDataFolder() + File.separator + "users" + File.separator);
-		
-		for (File file : folder.listFiles()) {
-			FileConfiguration config = YamlConfiguration.loadConfiguration(file);
-
-			if (config.getString("rank").equals(Rank.HOST.name())) {
-				if (hosts.length() > 0) {
-					hosts.append(", ");
-				}
-				
-				hosts.append(config.getString("username"));
-			}
-			
-			if (config.getString("rank").equals(Rank.TRIAL.name())) {
-				if (hosts.length() > 0) {
-					hosts.append(", ");
-				}
-				
-				hosts.append(config.getString("username"));
-			}
-			
-			if (config.getString("rank").equals(Rank.STAFF.name())) {
-				if (staffs.length() > 0) {
-					staffs.append(", ");
-				}
-				
-				staffs.append(config.getString("username"));
-			}
-		}
-		
-		for (OfflinePlayer ops : Bukkit.getServer().getOperators()) {
-			if (owners.length() > 0) {
-				owners.append(", ");
-			}
-			
-			owners.append(ops.getName());
-		}
-		
-		int ol = owners.toString().lastIndexOf(",");
-		String o = owners.toString().substring(0, ol) + " and" + owners.toString().substring(ol + 1);
-		
-		int hl = hosts.toString().lastIndexOf(",");
-		String h = hosts.toString().substring(0, hl) + " and" + hosts.toString().substring(hl + 1);
-		
-		int sl = staffs.toString().lastIndexOf(",");
-		String s = staffs.toString().substring(0, sl) + " and" + staffs.toString().substring(sl + 1);
-		
-		lore.add(" ");
-		lore.add("§8» §4Owners:");
-		lore.add("§8» §7" + o);
-		lore.add(" ");
-		lore.add("§8» §4Hosts:");
-		lore.add("§8» §7" + h);
-		lore.add(" ");
-		lore.add("§8» §cStaff:");
-		lore.add("§8» §7" + s);
-		lore.add(" ");
-		staffMeta.setLore(lore);
-		staffMeta.setOwner("LeonTG77");
-		staff.setItemMeta(staffMeta);
-		inv.setItem(19, staff);
-		lore.clear();
 		
 		return inv;
 	}
