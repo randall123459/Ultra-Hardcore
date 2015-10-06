@@ -193,7 +193,9 @@ public class Runnables {
 				Scoreboards sb = Scoreboards.getManager();
 				
 				for (String entry : sb.board.getEntries()) {
-					sb.setScore(entry, sb.getScore(entry) + 50);
+					if (sb.getScore(entry) > 0) {
+						sb.setScore(entry, sb.getScore(entry) + 50);
+					}
 				}
 
 				game.setPregameBoard(false);
