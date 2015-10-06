@@ -217,7 +217,9 @@ public class User {
 			config.set("muted.status", mute);
 			config.set("muted.reason", reason);
 			config.set("muted.by", source);
-			if (unmute != null) {
+			if (unmute == null) {
+				config.set("muted.time", -1);
+			} else {
 				config.set("muted.time", unmute.getTime());
 			}
 		} else {
