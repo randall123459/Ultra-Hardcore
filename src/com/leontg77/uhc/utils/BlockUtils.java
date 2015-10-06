@@ -3,7 +3,6 @@ package com.leontg77.uhc.utils;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -26,7 +25,7 @@ public class BlockUtils {
 	 * @param type the type of the block.
 	 */
 	public static void blockCrack(Player player, Location loc, Material type) {
-		for (Entity e : PlayerUtils.getNearby(player.getLocation(), 20)) {
+		for (Entity e : PlayerUtils.getNearby(player.getLocation(), 112)) {
 			if (e instanceof Player) {
 				Player p = (Player) e;
 				
@@ -47,7 +46,7 @@ public class BlockUtils {
 	 * @param id the id of the block.
 	 */
 	public static void blockCrack(Player player, Location loc, int id) {
-		for (Entity e : PlayerUtils.getNearby(player.getLocation(), 20)) {
+		for (Entity e : PlayerUtils.getNearby(player.getLocation(), 112)) {
 			if (e instanceof Player) {
 				Player p = (Player) e;
 				
@@ -61,41 +60,6 @@ public class BlockUtils {
 	}
 	
 	/**
-	 * Check if the given block is nearby the given location.
-	 * 
-	 * @param material the type of the block
-	 * @param location the location.
-	 * @return <code>True</code> if blocks nearby has the checked type, <code>false</code> otherwise.
-	 */
-    public static boolean hasBlockNearby(Material material, Location location) {
-        Block block = location.getBlock();
-        BlockFace[] faces = new BlockFace[] { BlockFace.SELF, BlockFace.EAST, BlockFace.NORTH, BlockFace.SOUTH, BlockFace.WEST, BlockFace.NORTH_EAST, BlockFace.SOUTH_EAST, BlockFace.SOUTH_WEST, BlockFace.NORTH_WEST};
-        
-        for (BlockFace face : faces) {
-            if (block.getRelative(face).getType() == material) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-	/**
-	 * Get the highest block at the given location.
-	 * 
-	 * @param loc the location.
-	 * @return The highest block.
-	 */
-	public static Location highestBlock(Location loc) {
-		for (int i = 255; i >= 0; i--) {
-			if (loc.getWorld().getBlockAt(loc.getBlockX(), i, loc.getBlockZ()).getType() != Material.AIR) {
-				return loc.getWorld().getBlockAt(loc.getBlockX(), i, loc.getBlockZ()).getLocation();
-			}
-		}
-		return loc;
-	}
-	
-	/**
 	 * Get the block face direction bases on the given locations yaw.
 	 * 
 	 * @author ghowden
@@ -105,6 +69,7 @@ public class BlockUtils {
 	 */
 	public static BlockFace getBlockDirection(Location loc) {
         double rotation = (loc.getYaw()+180) % 360;
+        
         if (rotation < 0) {
             rotation += 360.0;
         }
