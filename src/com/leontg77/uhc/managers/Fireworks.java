@@ -12,7 +12,7 @@ import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.leontg77.uhc.Main;
-import com.leontg77.uhc.utils.BlockUtils;
+import com.leontg77.uhc.utils.LocationUtils;
 
 /**
  * Firework randomizer class.
@@ -65,7 +65,7 @@ public class Fireworks {
 				int z = ran.nextInt(50 * 2) - 50;
 
 				Location loc = new Location(Bukkit.getWorld("lobby"), x + 0.5, 34, z + 0.5);
-				loc.setY(BlockUtils.highestBlock(loc).getY());
+				loc.setY(LocationUtils.getHighestBlock(loc).getY());
 				
 				launchRandomFirework(loc.add(0, 1, 0));
 				
