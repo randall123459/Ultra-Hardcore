@@ -14,6 +14,9 @@ commands:
   ban:
     description: Ban a player.
     aliases: [dq]
+  banip:
+    description: Ban a ip adress.
+    aliases: [ipban]
   board:
     description: Toggle the pregame board.
   border:
@@ -137,6 +140,9 @@ commands:
     description: Makes you able to teleport as a spectator.
   unban:
     description: Unban a player.
+  unbanip:
+    description: Unban a ip adress.
+    aliases: [ipunban]
   vote:
     description: Start or end a vote.
   whitelist:
