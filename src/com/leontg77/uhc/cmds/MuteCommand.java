@@ -15,9 +15,15 @@ import com.leontg77.uhc.Main;
 import com.leontg77.uhc.User;
 import com.leontg77.uhc.utils.DateUtils;
 import com.leontg77.uhc.utils.PlayerUtils;
- 
+
+/**
+ * Mute command class
+ * 
+ * @author LeonTG77
+ */
 public class MuteCommand implements CommandExecutor {
 
+	@Override
 	public boolean onCommand(CommandSender player, Command cmd, String label, String[] args) {
 		Game game = Game.getInstance();
 		
@@ -47,7 +53,8 @@ public class MuteCommand implements CommandExecutor {
 	
 				if (user.isMuted()) {
 					user.setMuted(false, "NOT_MUTED", null, "NONE");
-					player.sendMessage(Main.prefix() + "§6" + target.getName() + " §7has been unmuted.");
+					
+					PlayerUtils.broadcast(Main.prefix() + "§6" + target.getName() + " §7has been unmuted.");
 					target.sendMessage(Main.prefix() + "You are no longer muted.");
 					return true;
 				} 
@@ -66,7 +73,7 @@ public class MuteCommand implements CommandExecutor {
 				long time = DateUtils.parseDateDiff(args[1], true);
 	        	String msg = reason.toString().trim();
 				
-				PlayerUtils.broadcast(Main.prefix() + "§6" + target.getName() + " §7has been muted for §a" + msg);
+				PlayerUtils.broadcast(Main.prefix() + "§6" + target.getName() + " §7has been " + (args[1].equals("-") ? "muted" : "temp-muted") + " for §a" + msg);
 				target.sendMessage(Main.prefix() + "You have been muted.");
 				user.setMuted(true, msg, (args[1].equals("-") ? null : new Date(time)), player.getName());
 			} else {
