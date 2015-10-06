@@ -47,6 +47,7 @@ import com.leontg77.uhc.Spectator.SpecInfo;
 import com.leontg77.uhc.cmds.AboardCommand;
 import com.leontg77.uhc.cmds.ArenaCommand;
 import com.leontg77.uhc.cmds.BanCommand;
+import com.leontg77.uhc.cmds.BanIPCommand;
 import com.leontg77.uhc.cmds.BoardCommand;
 import com.leontg77.uhc.cmds.BorderCommand;
 import com.leontg77.uhc.cmds.BroadcastCommand;
@@ -99,12 +100,15 @@ import com.leontg77.uhc.cmds.TlCommand;
 import com.leontg77.uhc.cmds.TpCommand;
 import com.leontg77.uhc.cmds.TpsCommand;
 import com.leontg77.uhc.cmds.UnbanCommand;
+import com.leontg77.uhc.cmds.UnbanIPCommand;
 import com.leontg77.uhc.cmds.VoteCommand;
 import com.leontg77.uhc.cmds.WhitelistCommand;
 import com.leontg77.uhc.listeners.BlockListener;
 import com.leontg77.uhc.listeners.EntityListener;
 import com.leontg77.uhc.listeners.InventoryListener;
+import com.leontg77.uhc.listeners.LoginListener;
 import com.leontg77.uhc.listeners.PlayerListener;
+import com.leontg77.uhc.listeners.PortalListener;
 import com.leontg77.uhc.listeners.WorldListener;
 import com.leontg77.uhc.managers.AntiStripmine;
 import com.leontg77.uhc.managers.BiomeSwap;
@@ -180,12 +184,15 @@ public class Main extends JavaPlugin {
 		Bukkit.getServer().getPluginManager().registerEvents(new BlockListener(), this);
 		Bukkit.getServer().getPluginManager().registerEvents(new EntityListener(), this);
 		Bukkit.getServer().getPluginManager().registerEvents(new InventoryListener(), this);
+		Bukkit.getServer().getPluginManager().registerEvents(new LoginListener(), this);
 		Bukkit.getServer().getPluginManager().registerEvents(new PlayerListener(), this);
+		Bukkit.getServer().getPluginManager().registerEvents(new PortalListener(), this);
 		Bukkit.getServer().getPluginManager().registerEvents(new WorldListener(), this);
 
 		getCommand("aboard").setExecutor(new AboardCommand());
 		getCommand("arena").setExecutor(new ArenaCommand());
 		getCommand("ban").setExecutor(new BanCommand());
+		getCommand("banip").setExecutor(new BanIPCommand());
 		getCommand("board").setExecutor(new BoardCommand());
 		getCommand("border").setExecutor(new BorderCommand());
 		getCommand("broadcast").setExecutor(new BroadcastCommand());
@@ -238,6 +245,7 @@ public class Main extends JavaPlugin {
 		getCommand("tp").setExecutor(new TpCommand());
 		getCommand("tps").setExecutor(new TpsCommand());
 		getCommand("unban").setExecutor(new UnbanCommand());
+		getCommand("unbanip").setExecutor(new UnbanIPCommand());
 		getCommand("vote").setExecutor(new VoteCommand());
 		getCommand("whitelist").setExecutor(new WhitelistCommand());
 		
@@ -370,6 +378,15 @@ public class Main extends JavaPlugin {
 	}
 	
 	/**
+	 * Gets the servers tps.
+	 * 
+	 * @return The servers tps.
+	 */
+	public static double getTps() {
+		return MinecraftServer.getServer().recentTps[0];
+	}
+	
+	/**
 	 * Get the spawnpoint of the lobby.
 	 * 
 	 * @return The lobby spawnpoint.
@@ -384,15 +401,6 @@ public class Main extends JavaPlugin {
 		
 		Location loc = new Location(w, x, y, z, yaw, pitch);
 		return loc;
-	}
-	
-	/**
-	 * Gets the servers tps.
-	 * 
-	 * @return The servers tps.
-	 */
-	public static double getTps() {
-		return MinecraftServer.getServer().recentTps[0];
 	}
 	
 	/**
@@ -417,64 +425,6 @@ public class Main extends JavaPlugin {
 
         getLogger().info("Golden Melon recipe added.");
         getLogger().info("Golden Head recipe added.");
-	}
-	
-	/**
-	 * Change the color of the given type to a rainbow color.
-	 *  
-	 * @param player the players armor.
-	 * @param type the type.
-	 * @return The new colored leather armor.
-	 */
-	public ItemStack rainbowArmor(Player player, ItemStack item) {
-		if (!rainbow.containsKey(player)) {
-			rainbow.put(player, new int[] { 0, 0, 255 });
-		}
-		
-		int[] rain = rainbow.get(player);
-			
-		int blue = rain[0];
-		int green = rain[1];
-		int red = rain[2];		
-
-		if (red == 255 && blue == 0) {
-			green++;
-		}
-			
-		if (green == 255 && blue == 0) {
-			red--;
-		}
-		
-		if (green == 255 && red == 0) {
-			blue++;
-		}
-			
-		if (blue == 255 && red == 0) {
-			green--;
-		}
-			
-		if (green == 0 && blue == 255) {
-			red++;
-		}
-			
-		if (green == 0 && red == 255) {
-			blue--;
-		}
-			
-		rainbow.put(player, new int[] { blue, green, red });
-
-    	ItemStack armor = new ItemStack (item.getType(), item.getAmount(), item.getDurability());
-		LeatherArmorMeta meta = (LeatherArmorMeta) armor.getItemMeta();
-		meta.setColor(Color.fromBGR(blue, green, red));
-		meta.setDisplayName(item.hasItemMeta() && item.getItemMeta().hasDisplayName() ? item.getItemMeta().getDisplayName() : null);
-		meta.setLore(item.hasItemMeta() && item.getItemMeta().hasLore() ? item.getItemMeta().getLore() : new ArrayList<String>());
-		
-		for (Entry<Enchantment, Integer> ench : item.getEnchantments().entrySet()) {
-			meta.addEnchant(ench.getKey(), ench.getValue(), true);
-		}
-		
-		armor.setItemMeta(meta);
-		return armor;
 	}
 	
 	/**
@@ -547,6 +497,64 @@ public class Main extends JavaPlugin {
 	}
 	
 	/**
+	 * Change the color of the given type to a rainbow color.
+	 *  
+	 * @param player the players armor.
+	 * @param type the type.
+	 * @return The new colored leather armor.
+	 */
+	public ItemStack rainbowArmor(Player player, ItemStack item) {
+		if (!rainbow.containsKey(player)) {
+			rainbow.put(player, new int[] { 0, 0, 255 });
+		}
+		
+		int[] rain = rainbow.get(player);
+			
+		int blue = rain[0];
+		int green = rain[1];
+		int red = rain[2];		
+
+		if (red == 255 && blue == 0) {
+			green++;
+		}
+			
+		if (green == 255 && blue == 0) {
+			red--;
+		}
+		
+		if (green == 255 && red == 0) {
+			blue++;
+		}
+			
+		if (blue == 255 && red == 0) {
+			green--;
+		}
+			
+		if (green == 0 && blue == 255) {
+			red++;
+		}
+			
+		if (green == 0 && red == 255) {
+			blue--;
+		}
+			
+		rainbow.put(player, new int[] { blue, green, red });
+
+    	ItemStack armor = new ItemStack (item.getType(), item.getAmount(), item.getDurability());
+		LeatherArmorMeta meta = (LeatherArmorMeta) armor.getItemMeta();
+		meta.setColor(Color.fromBGR(blue, green, red));
+		meta.setDisplayName(item.hasItemMeta() && item.getItemMeta().hasDisplayName() ? item.getItemMeta().getDisplayName() : null);
+		meta.setLore(item.hasItemMeta() && item.getItemMeta().hasLore() ? item.getItemMeta().getLore() : new ArrayList<String>());
+		
+		for (Entry<Enchantment, Integer> ench : item.getEnchantments().entrySet()) {
+			meta.addEnchant(ench.getKey(), ench.getValue(), true);
+		}
+		
+		armor.setItemMeta(meta);
+		return armor;
+	}
+	
+	/**
 	 * Border types enum class.
 	 * 
 	 * @author LeonTG77
@@ -556,10 +564,20 @@ public class Main extends JavaPlugin {
 		
 		private String preText;
 		
+		/**
+		 * Constructor for BorderShrink.
+		 * 
+		 * @param preText The text that fits before the shink name.
+		 */
 		private BorderShrink(String preText) {
 			this.preText = preText;
 		}
 		
+		/**
+		 * Get the border pre text.
+		 * 
+		 * @return Pre text.
+		 */
 		public String getPreText() {
 			return preText;
 		}
@@ -574,6 +592,11 @@ public class Main extends JavaPlugin {
 	 */
 	public class HardcoreHearts extends PacketAdapter {
 
+		/**
+		 * Constructor for HardcoreHearts.
+		 * 
+		 * @param plugin The main class of the plugin.
+		 */
 		public HardcoreHearts(Plugin plugin) {
 			super(plugin, ListenerPriority.NORMAL, Server.LOGIN);
 		}
