@@ -59,8 +59,6 @@ public class EntityUtils {
 			return true;
 		case PIG_ZOMBIE:
 			return true;
-		case PLAYER:
-			return true;
 		case PRIMED_TNT:
 			return true;
 		case SILVERFISH:
