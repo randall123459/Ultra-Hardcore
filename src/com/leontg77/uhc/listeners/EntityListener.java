@@ -1,22 +1,22 @@
 package com.leontg77.uhc.listeners;
 
+import java.util.List;
 import java.util.Random;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.TravelAgent;
 import org.bukkit.World;
-import org.bukkit.World.Environment;
 import org.bukkit.block.Biome;
+import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Creeper;
-import org.bukkit.entity.Damageable;
 import org.bukkit.entity.EnderPearl;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Ghast;
+import org.bukkit.entity.ItemFrame;
+import org.bukkit.entity.Minecart;
+import org.bukkit.entity.Painting;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
 import org.bukkit.entity.Rabbit;
 import org.bukkit.entity.Sheep;
 import org.bukkit.entity.Witch;
@@ -24,24 +24,23 @@ import org.bukkit.entity.Wolf;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
-import org.bukkit.event.entity.EntityPortalEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent.RegainReason;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import com.leontg77.uhc.Game;
 import com.leontg77.uhc.Main;
-import com.leontg77.uhc.Settings;
-import com.leontg77.uhc.Spectator;
 import com.leontg77.uhc.State;
 import com.leontg77.uhc.scenario.ScenarioManager;
-import com.leontg77.uhc.utils.BlockUtils;
 import com.leontg77.uhc.utils.NumberUtils;
+import com.leontg77.uhc.utils.PlayerUtils;
 
 /**
  * Entity listener class.
@@ -51,68 +50,48 @@ import com.leontg77.uhc.utils.NumberUtils;
  * @author LeonTG77
  */
 public class EntityListener implements Listener {
-	private Settings settings = Settings.getInstance();
 	private Game game = Game.getInstance();
-	
-	@EventHandler
-	public void onEntityDamage(EntityDamageEvent event) {		
-		if (State.isState(State.SCATTER)) {
-			event.setCancelled(true);
-			return;
-		}
-    	
-		if (event.getEntity() instanceof Player) {
-			Player player = (Player) event.getEntity();
-			
-	    	if (player.getWorld() == Bukkit.getWorld("lobby")) {
-	    		event.setCancelled(true);
-	    	}
-		}
-	}
-	
-	@EventHandler
-	public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
-		if (!game.pearlDamage() && event.getDamager() instanceof EnderPearl) {
-			event.setCancelled(true);
-		}
-	}
 
 	@EventHandler
 	public void onCreatureSpawn(CreatureSpawnEvent event) {
+		SpawnReason reason = event.getSpawnReason();
+		Entity entity = event.getEntity();
+		
 		Location loc = event.getLocation();
+		World world = loc.getWorld();
 		
-		if (loc.getWorld().getName().equals("lobby") || loc.getWorld().getName().equals("arena")) {
-			if (event.getEntityType() != EntityType.ARMOR_STAND) {
-				event.setCancelled(true);
-			}
-			return;
-		}
-		
-		if (loc.getWorld().getGameRuleValue("doMobSpawning") != null && loc.getWorld().getGameRuleValue("doMobSpawning").equals("false")) {
+		if (reason == SpawnReason.NETHER_PORTAL || (State.isState(State.INGAME) && reason == SpawnReason.SPAWNER_EGG)) {
 			event.setCancelled(true);
 			return;
 		}
 		
-		if (event.getEntity() instanceof Wolf) {
-			event.getEntity().setCustomName("Wolf");
+		if (world.getName().equals("lobby") || world.getName().equals("arena")) {
+			if (reason != SpawnReason.CUSTOM) {
+				event.setCancelled(true);
+			}
+			return;
 		}
 		
-		if (event.getEntity() instanceof Sheep) {
-			if (loc.getBlock().getBiome().equals(Biome.FOREST) || loc.getBlock().getBiome().equals(Biome.FOREST_HILLS)) {
-				event.setCancelled(true);
-				
-				Wolf wolf = loc.getWorld().spawn(loc, Wolf.class);
-				wolf.setCustomName("Wolf");
-			}
+		if (world.getGameRuleValue("doMobSpawning").equals("false")) {
+			event.setCancelled(true);
+			return;
 		}
 		
-		if (event.getEntity() instanceof Rabbit) {
-			if (loc.getBlock().getBiome().equals(Biome.FOREST) || loc.getBlock().getBiome().equals(Biome.FOREST_HILLS)) {
-				event.setCancelled(true);
-				
+		if (entity instanceof Wolf) {
+			entity.setCustomName("Wolf");
+			return;
+		}
+		
+		if (entity instanceof Rabbit || entity instanceof Sheep) {
+			Biome biome = loc.getBlock().getBiome();
+			
+			if (biome.equals(Biome.FOREST) || biome.equals(Biome.FOREST_HILLS)) {
 				Wolf wolf = loc.getWorld().spawn(loc, Wolf.class);
 				wolf.setCustomName("Wolf");
+				
+				event.setCancelled(true);
 			}
+			return;
 		}
 	}
 	
@@ -120,259 +99,174 @@ public class EntityListener implements Listener {
     public void onEntityDeath(EntityDeathEvent event) {
     	Entity entity = event.getEntity();
     	
-    	if (game.ghastDropGold()) {
-        	if (entity instanceof Ghast) {
-        		event.getDrops().remove(new ItemStack (Material.GHAST_TEAR));
-        		event.getDrops().add(new ItemStack (Material.GOLD_INGOT));
-        		return;
-            }
-    	}
+    	if (entity instanceof Ghast && game.ghastDropGold()) {
+    		for (ItemStack drop : event.getDrops()) {
+    			if (drop.getType() == Material.GHAST_TEAR) {
+    				drop.setType(Material.GOLD_INGOT);
+    			}
+    		}
+    		return;
+        }
     	
     	if (entity instanceof Creeper) {
-    		if (((Creeper) entity).isPowered()) {
+    		Creeper creeper = (Creeper) entity;
+    		
+    		if (creeper.isPowered()) {
     			event.setDroppedExp(0);
     		}
-    	}
-    	
-    	if (game.isRR()) {
     		return;
     	}
     	
-    	ItemStack potion = new ItemStack (Material.POTION, 1, (short) 8261);
-    	
-    	if (entity instanceof Witch) {
-			Player killer = ((Witch) entity).getKiller();
-			
-    		if (killer != null) {
-        		event.getDrops().remove(new ItemStack (Material.POTION, 1, (short) 8261));
-        		
-    			if (killer.hasPotionEffect(PotionEffectType.POISON)) {
-		    		event.getDrops().add(potion);
-    			} else {
-    				if ((new Random().nextInt(99) + 1) <= 30) {
-    		    		event.getDrops().add(potion);
-    				}
-    			}
-    		}
-        }
+    	if (!game.isRR()) {
+        	ItemStack potion = new ItemStack (Material.POTION, 1, (short) 8261);
+        	List<ItemStack> drops = event.getDrops();
+        	
+        	if (entity instanceof Witch) {
+        		Witch witch = (Witch) entity;
+    			Player killer = witch.getKiller();
+    			
+        		if (killer != null) {
+        			drops.remove(potion);
+            		
+        			if (killer.hasPotionEffect(PotionEffectType.POISON)) {
+        				drops.add(potion);
+        			} 
+        			else {
+        				Random rand = new Random();
+        				
+        				if (rand.nextInt(99) < 30) {
+        					drops.add(potion);
+        				}
+        			}
+        		}
+            }
+    	}
 	}
 	
-	/**
-	 * @author Ghowden
-	 */
 	@EventHandler
     public void onHeal(EntityRegainHealthEvent event) {
-        if (!(event.getEntity() instanceof Player)) {
-            return;
-        }
-
-        if (event.getRegainReason() == RegainReason.REGEN || event.getRegainReason() == RegainReason.SATIATED) {
-            event.setCancelled(true);
+		RegainReason reason = event.getRegainReason();
+		Entity entity = event.getEntity();
+		
+        if (entity instanceof Player) {
+            if (reason == RegainReason.REGEN || reason == RegainReason.SATIATED) {
+                event.setCancelled(true);
+            }
         }
     }
+	
+	@EventHandler
+	public void onEntityDamage(EntityDamageEvent event) {
+		Entity entity = event.getEntity();
+		
+		if (State.isState(State.SCATTER)) {
+			event.setCancelled(true);
+			return;
+		}
+    	
+		if (entity instanceof Player || entity instanceof Minecart || entity instanceof ArmorStand || entity instanceof Painting || entity instanceof ItemFrame) {
+			if (entity.getWorld().getName().equals("lobby")) {
+	    		event.setCancelled(true);
+	    	}
+		}
+	}
+	
+	@EventHandler
+	public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
+		Entity attacker = event.getDamager();
+		
+		if (attacker instanceof EnderPearl) {
+			if (!game.pearlDamage()) {
+				event.setCancelled(true);
+			}
+		}
+	}
 	
 	/**
 	 * @author D4mnX
 	 */
 	@EventHandler
     public void onStrengthDamage(EntityDamageByEntityEvent event) {
-		if (game.nerfedStrength()) {
-	        if (!(event.getDamager() instanceof Player)) {
-	            return;
+		Entity attacker = event.getDamager();
+		
+        if (attacker instanceof Player) {
+        	Player damager = (Player) attacker;
+        	
+        	if (game.nerfedStrength()) {
+		        if (damager.hasPotionEffect(PotionEffectType.INCREASE_DAMAGE)) {
+			        int amplifier = 0;
+			        
+		        	for (PotionEffect effect : damager.getActivePotionEffects()) {
+			            if (effect.getType().equals(PotionEffectType.INCREASE_DAMAGE)) {
+			                amplifier = effect.getAmplifier() + 1;
+			                break;
+			            }
+			        }
+
+			        double damageWOS = event.getDamage() / (1 + (amplifier * 1.3));
+			        double damageWNS = damageWOS + amplifier * 3;
+
+			        event.setDamage(damageWNS);
+		        }
 	        }
-
-	        Player attacker = (Player) event.getDamager();
-	        int strengthAmplifier = 0;
-
-	        if (!attacker.hasPotionEffect(PotionEffectType.INCREASE_DAMAGE)) {
-	            return;
-	        }
-	        
-	        for (PotionEffect potionEffect : attacker.getActivePotionEffects()) {
-	            if (potionEffect.getType().equals(PotionEffectType.INCREASE_DAMAGE)) {
-	                strengthAmplifier = potionEffect.getAmplifier() + 1;
-	                break;
-	            }
-	        }
-
-	        double damageWithoutStrength = event.getDamage() / (1 + (strengthAmplifier * 1.3));
-	        double damageWithNerfedStrength = damageWithoutStrength + strengthAmplifier * 3;
-
-	        event.setDamage(damageWithNerfedStrength);
 		}
     }
 	
-	@EventHandler
+	@EventHandler(ignoreCancelled = true)
 	public void onShot(EntityDamageByEntityEvent event) {
-		if (!(event.getDamager() instanceof Projectile) || !(event.getEntity() instanceof Player)) {
+		Entity attacked = event.getEntity();
+		Entity attacker = event.getDamager();
+		
+		ScenarioManager scen = ScenarioManager.getInstance();
+		
+    	if (game.isRR() || scen.getScenario("TeamHealth").isEnabled() || scen.getScenario("Paranoia").isEnabled()) {
 			return;
 		}
     	
-    	if (game.isRR()) {
-    		return;
-    	}
-		
-		if (ScenarioManager.getInstance().getScenario("Paranoia").isEnabled()) {
-			return;
-		}
-		
-		if (ScenarioManager.getInstance().getScenario("TeamHealth").isEnabled()) {
-			return;
-		}
-	
-		final Player player = (Player) event.getEntity();
-		final Projectile damager = (Projectile) event.getDamager();
-
-		if (Spectator.getManager().isSpectating(player)) {
-			return;
-		}
-		
-		if (damager instanceof EnderPearl) {
-			return;
-		}
-		
-		if (!(damager.getShooter() instanceof Player)) {
-			return;
-		}
-		
-		Bukkit.getServer().getScheduler().runTaskLater(Main.plugin, new Runnable() {
-			public void run() {
-				Player killer = (Player) damager.getShooter();
-				Damageable damage = player;
-				double health = damage.getHealth();
-				double hearts = health / 2;
-				double precent = hearts * 10;
-				
-				if (health > 0.0000) {
-					killer.sendMessage(Main.prefix() + "§6" + player.getName() + " §7is now at §a" + ((int) precent) + "%");
-				}
-			}
-		}, 1);
-	}
-	
-	@EventHandler
-	public void onLongshot(EntityDamageByEntityEvent event) {
-		if (!(event.getDamager() instanceof Projectile) || !(event.getEntity() instanceof Player)) {
-			return;
-		}
-    	
-    	if (game.isRR()) {
-    		return;
-    	}
-		
-		if (ScenarioManager.getInstance().getScenario("RewardingLongshots").isEnabled()) {
-			return;
-		}
-	
-		Player player = (Player) event.getEntity();
-		Projectile damager = (Projectile) event.getDamager();
-
-		if (Spectator.getManager().isSpectating(player)) {
-			return;
-		}
-		
-		if (!(damager.getShooter() instanceof Player)) {
-			return;
-		}
-		
-		Player killer = (Player) damager.getShooter();
-		double distance = killer.getLocation().distance(player.getLocation());
-		
-		if (distance < 50) {
-			return;
-		}
-		
-		for (Player online : Bukkit.getServer().getOnlinePlayers()) {
-			online.sendMessage(Main.prefix() + "§6" + killer.getName() + " §7got a longshot of §a" + NumberUtils.convertDouble(distance) + " §7blocks.");
-		}
-	}
-
-    @EventHandler
-    public void onEntityPortal(EntityPortalEvent event) {
-		TravelAgent travel = event.getPortalTravelAgent();
-		Location from = event.getFrom();
-		
-		if (game.nether()) {
-			String fromName = event.getFrom().getWorld().getName();
-	        String targetName;
-	        
-	        if (event.getFrom().getWorld().getEnvironment().equals(Environment.NETHER)) {
-	            if (!fromName.endsWith("_nether")) {
-	                return;
-	            }
-
-	            targetName = fromName.substring(0, fromName.length() - 7);
-	        } else if (event.getFrom().getWorld().getEnvironment().equals(Environment.NORMAL)) {
-	            if (!BlockUtils.hasBlockNearby(Material.PORTAL, from)) {
-	                return;
-	            }
-
-	            targetName = fromName + "_nether";
-	        } else {
-	            return;
-	        }
-
-	        World world = Bukkit.getServer().getWorld(targetName);
-	        
-	        if (world == null) {
-	            return;
-	        }
-
-	        Location to = (world.getName().endsWith("_nether") ? new Location(world, (from.getX() / 8), (from.getY() / 8), (from.getZ() / 8), from.getYaw(), from.getPitch()) : new Location(world, (from.getX() * 8), (from.getY() * 8), (from.getZ() * 8), from.getYaw(), from.getPitch()));
-	        to = travel.findOrCreate(to);
-
-	        if (to != null) {
-	            event.setTo(to);
-	        }
-		}
-		
-		if (game.theEnd()) {
-			String fromName = event.getFrom().getWorld().getName();
-	        String targetName;
-	        
-	        if (event.getFrom().getWorld().getEnvironment().equals(Environment.THE_END)) {
-	        	World world = Bukkit.getServer().getWorld(settings.getData().getString("spawn.world"));
-	    		double x = settings.getData().getDouble("spawn.x");
-	    		double y = settings.getData().getDouble("spawn.y");
-	    		double z = settings.getData().getDouble("spawn.z");
-	    		float yaw = (float) settings.getData().getDouble("spawn.yaw");
-	    		float pitch = (float) settings.getData().getDouble("spawn.pitch");
-	    		
-	            event.setTo(new Location(world, x, y, z, yaw, pitch));
-	            return;
-	        } else if (event.getFrom().getWorld().getEnvironment().equals(Environment.NORMAL)) {
-	            if (!BlockUtils.hasBlockNearby(Material.ENDER_PORTAL, event.getFrom())) {
-	                return;
-	            }
-	            
-	            targetName = fromName + "_end";
-	        } else {
-	            return;
-	        }
-
-	        World world = Bukkit.getServer().getWorld(targetName);
-	        
-	        if (world == null) {
-	            return;
-	        }
-
-	        Location to = new Location(world, 100.0, 49, 0, 90f, 0f);
-
-			for (int y = to.getBlockY() - 1; y <= to.getBlockY() + 2; y++) {
-				for (int x = to.getBlockX() - 2; x <= to.getBlockX() + 2; x++) {
-					for (int z = to.getBlockZ() - 2; z <= to.getBlockZ() + 2; z++) {
-						if (y == 48) {
-							to.getWorld().getBlockAt(x, y, z).setType(Material.OBSIDIAN);
-							to.getWorld().getBlockAt(x, y, z).getState().update();
-						} else {
-							to.getWorld().getBlockAt(x, y, z).setType(Material.AIR);
-							to.getWorld().getBlockAt(x, y, z).getState().update();
+		if (attacked instanceof Player && attacker instanceof Arrow) {
+			final Player player = (Player) attacked;
+			final Arrow arrow = (Arrow) attacker;
+			
+			if (arrow.getShooter() instanceof Player) {
+				new BukkitRunnable() {
+					public void run() {
+						Player killer = (Player) arrow.getShooter();
+						
+						double health = killer.getHealth();
+						int percent = NumberUtils.makePercent(health);
+						
+						if (health > 0.0000) {
+							killer.sendMessage(Main.prefix() + "§6" + player.getName() + " §7is now at §a" + ((int) percent) + "%");
 						}
 					}
+				}.runTaskLater(Main.plugin, 1);
+			}
+		}
+	}
+	
+	@EventHandler(ignoreCancelled = true)
+	public void onLongshot(EntityDamageByEntityEvent event) {
+		Entity attacked = event.getEntity();
+		Entity attacker = event.getDamager();
+		
+		ScenarioManager scen = ScenarioManager.getInstance();
+		
+    	if (game.isRR() || scen.getScenario("RewardingLongshots").isEnabled()) {
+			return;
+		}
+    	
+		if (attacked instanceof Player && attacker instanceof Arrow) {
+			Player player = (Player) attacked;
+			Arrow arrow = (Arrow) attacker;
+			
+			if (arrow.getShooter() instanceof Player) {
+				Player killer = (Player) arrow.getShooter();
+				double distance = killer.getLocation().distance(player.getLocation());
+				
+				if (distance >= 50) {
+					PlayerUtils.broadcast(Main.prefix() + "§6" + killer.getName() + " §7got a longshot of §6" + NumberUtils.convertDouble(distance) + " §7blocks.");
 				}
 			}
-			
-			event.setTo(to);
 		}
-    }
+	}
 }
