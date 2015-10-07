@@ -37,7 +37,7 @@ public class TlCommand implements CommandExecutor {
 				Player teammate = Bukkit.getServer().getPlayer(entry);
 				
 				if (teammate != null) {
-					teammate.sendMessage("§9§lTeam §8§l» §7" + player.getName() + "'s coords: §fx:" + player.getLocation().getBlockX() + " y:" + player.getLocation().getBlockY() + " z:" + player.getLocation().getBlockZ() + " (" + player.getWorld().getEnvironment().name().replaceAll("_", " ").replaceAll("NORMAL", "overworld").toLowerCase().replaceAll("normal", "overworld") + ")");
+					teammate.sendMessage("§9§lTeam §8» §7" + player.getName() + "'s coords: §fx:" + player.getLocation().getBlockX() + " y:" + player.getLocation().getBlockY() + " z:" + player.getLocation().getBlockZ() + " (" + player.getWorld().getEnvironment().name().replaceAll("_", " ").replaceAll("NORMAL", "overworld").toLowerCase().replaceAll("normal", "overworld") + ")");
 				}
 			}
 		}

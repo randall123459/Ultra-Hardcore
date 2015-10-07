@@ -45,7 +45,7 @@ public class PmCommand implements CommandExecutor {
 				Player teammate = Bukkit.getServer().getPlayer(entry);
 				
 				if (teammate != null) {
-					teammate.sendMessage(Spectator.getManager().isSpectating(player) ? "§5§lSpecChat §8§l» §7" + player.getName() + ": §f" + msg : "§9§lTeam §8§l» §7" + player.getName() + ": §f" + msg);
+					teammate.sendMessage(Spectator.getManager().isSpectating(player) ? "§5§lSpecChat §8» §7" + player.getName() + ": §f" + msg : "§9§lTeam §8» §7" + player.getName() + ": §f" + msg);
 				}
 			}
 		}
