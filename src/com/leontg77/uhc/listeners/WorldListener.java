@@ -1,5 +1,6 @@
 package com.leontg77.uhc.listeners;
 
+import org.bukkit.World;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -8,12 +9,12 @@ import org.bukkit.event.weather.WeatherChangeEvent;
 import org.bukkit.event.world.ChunkPopulateEvent;
 import org.bukkit.event.world.WorldInitEvent;
 
-import com.leontg77.uhc.managers.AntiStripmine;
-import com.leontg77.uhc.managers.AntiStripmine.ChunkOreRemover;
-import com.leontg77.uhc.managers.AntiStripmine.WorldData;
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.Runnables;
 import com.leontg77.uhc.State;
+import com.leontg77.uhc.managers.AntiStripmine;
+import com.leontg77.uhc.managers.AntiStripmine.ChunkOreRemover;
+import com.leontg77.uhc.managers.AntiStripmine.WorldData;
 
 /**
  * Weather listener class.
@@ -57,7 +58,10 @@ public class WorldListener implements Listener {
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onChunkPopulate(ChunkPopulateEvent event) {
-		WorldData worldData = AntiStripmine.getManager().getWorldData(event.getWorld());
+		AntiStripmine strip = AntiStripmine.getManager();
+		World world = event.getWorld();
+		
+		WorldData worldData = strip.getWorldData(world);
 		
 		if (!worldData.isEnabled()) {
 			return;
@@ -76,6 +80,9 @@ public class WorldListener implements Listener {
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onWorldInit(WorldInitEvent event) {
-		AntiStripmine.getManager().registerWorld(event.getWorld());
+		AntiStripmine strip = AntiStripmine.getManager();
+		World world = event.getWorld();
+		
+		strip.registerWorld(world);
 	}
 }
