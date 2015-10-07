@@ -189,6 +189,6 @@ public class PeriodOfResistance extends Scenario implements Listener, CommandExe
 	}
 	
 	public enum DamageType {
-		FALLING, SPIDERS, ZOMBIES, SKELETONS, CREEPERS, LAVA_AND_FIRE, SUFFOCATION, POISON;
+		ZOMBIES, SPIDERS, FALLING, SKELETONS, CREEPERS, LAVA_AND_FIRE, SUFFOCATION, POISON;
 	}
 }
