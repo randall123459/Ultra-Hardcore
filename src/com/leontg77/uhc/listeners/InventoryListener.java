@@ -94,7 +94,7 @@ public class InventoryListener implements Listener {
 			}
 		}
 		
-		if (inv.getTitle().endsWith("'s Inventory §8«")) {
+		if (inv.getTitle().endsWith("'s Inventory")) {
 			event.setCancelled(true);
 			return;
 		}

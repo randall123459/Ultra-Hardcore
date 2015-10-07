@@ -88,7 +88,7 @@ public class InvGUI {
 	 * @return The opened inventory.
 	 */
 	public Inventory openInv(final Player player, final Player target) {
-		final Inventory inv = Bukkit.getServer().createInventory(target, 54, "§8» §c" + target.getName().substring(0, target.getName().length() > 42 ? 42 : target.getName().length()) + "'s Inventory §8«");
+		final Inventory inv = Bukkit.getServer().createInventory(target, 54, target.getName().substring(0, target.getName().length() > 18 ? 18 : target.getName().length()) + "'s Inventory");
 	
 		Main.invsee.put(inv, new BukkitRunnable() {
 			public void run() {
