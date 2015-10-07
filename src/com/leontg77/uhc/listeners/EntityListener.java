@@ -232,7 +232,7 @@ public class EntityListener implements Listener {
 					public void run() {
 						Player killer = (Player) arrow.getShooter();
 						
-						double health = killer.getHealth();
+						double health = player.getHealth();
 						int percent = NumberUtils.makePercent(health);
 						
 						if (health > 0.0000) {
