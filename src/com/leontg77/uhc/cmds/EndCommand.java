@@ -266,9 +266,15 @@ public class EndCommand implements CommandExecutor {
        			}
 				
 				try {
-					Bukkit.getServer().getScheduler().cancelTask(Runnables.taskMinutes);;
+					Bukkit.getServer().getScheduler().cancelTask(Runnables.taskMinutes);
 				} catch (Exception e) {
 					Bukkit.getLogger().warning("Could not cancel task " + Runnables.taskMinutes);
+				}
+				
+				try {
+					Bukkit.getServer().getScheduler().cancelTask(Runnables.taskSeconds);
+				} catch (Exception e) {
+					Bukkit.getLogger().warning("Could not cancel task " + Runnables.taskSeconds);
 				}
 				
 				File playerData = new File(Bukkit.getWorlds().get(0).getWorldFolder(), "playerdata");
