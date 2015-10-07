@@ -112,8 +112,8 @@ public class SpreadCommand implements CommandExecutor {
 						world.setDifficulty(Difficulty.HARD);
 						world.setPVP(false);
 						
-						world.setGameRuleValue("doMobSpawning", "false");
 						world.setGameRuleValue("doDaylightCycle", "true");
+						world.setSpawnFlags(false, true);
 						world.setThundering(false);
 						world.setStorm(false);
 						
