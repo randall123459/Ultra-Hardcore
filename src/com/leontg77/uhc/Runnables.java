@@ -23,6 +23,7 @@ import com.leontg77.uhc.Spectator.SpecInfo;
 import com.leontg77.uhc.User.Stat;
 import com.leontg77.uhc.cmds.TeamCommand;
 import com.leontg77.uhc.scenario.ScenarioManager;
+import com.leontg77.uhc.utils.DateUtils;
 import com.leontg77.uhc.utils.EntityUtils;
 import com.leontg77.uhc.utils.GameUtils;
 import com.leontg77.uhc.utils.PlayerUtils;
@@ -213,9 +214,10 @@ public class Runnables {
 				healSeconds = 60;
 				pvpSeconds = (settings.getConfig().getInt("time.pvp") * 60);
 				meetupSeconds = (settings.getConfig().getInt("time.meetup") * 60);
-				
-				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer cancel");
-				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer 60 &7Final heal is given in &8»&a");
+
+				for (Player online : PlayerUtils.getPlayers()) {
+					PlayerUtils.sendAction(online, "§7Final heal is given in §8» §a" + DateUtils.ticksToString(healSeconds));
+				}
 				
 				timer();
 				
@@ -224,10 +226,11 @@ public class Runnables {
 					world.setDifficulty(Difficulty.HARD);
 					world.setPVP(false);
 					
-					world.setGameRuleValue("doMobSpawning", "false");
 					world.setGameRuleValue("doDaylightCycle", "true");
+					world.setSpawnFlags(false, true);
 					world.setThundering(false);
 					world.setStorm(false);
+					
 					
 					for (Entity mob : world.getEntities()) {
 						if (EntityUtils.isClearable(mob.getType())) {
@@ -274,9 +277,6 @@ public class Runnables {
 						online.setFoodLevel(20);
 						online.setFireTicks(0);
 					}
-
-					Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer cancel");
-					Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer " + (pvp * 60) + " &7PvP is enabled in &8»&a");
 				}
 				
 				if (heal == -1) {
@@ -286,7 +286,7 @@ public class Runnables {
 				
 				if (heal == -2) {
 					for (World world : GameUtils.getGameWorlds()) {
-						world.setGameRuleValue("doMobSpawning", "true");
+						world.setSpawnFlags(true, true);
 					}
 					
 					PlayerUtils.broadcast(Main.prefix() + "Hostile mobs can now spawn.");
@@ -313,19 +313,14 @@ public class Runnables {
 							sb.resetScore(entry);
 						}
 					}
-					
-					Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer cancel");
-					Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer " + (meetup * 60) + " &7Meetup is in &8»&a");
 					return;
 				}
 				
 				if (meetup == 0) {
-					Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer cancel");
-					Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer -1 &6Meetup is now!");
 					
 					PlayerUtils.broadcast(ChatColor.DARK_GRAY + "»»»»»»»»»»»»»»»«««««««««««««««");
 					PlayerUtils.broadcast(" ");
-					PlayerUtils.broadcast(ChatColor.GREEN + " Meetup is now, head to 0,0!");
+					PlayerUtils.broadcast(ChatColor.RED + " Meetup is now, head to 0,0!");
 					PlayerUtils.broadcast(" ");
 					PlayerUtils.broadcast(ChatColor.DARK_GRAY + "»»»»»»»»»»»»»»»«««««««««««««««");
 					
@@ -524,6 +519,27 @@ public class Runnables {
 				healSeconds--;
 				pvpSeconds--;
 				meetupSeconds--;
+				
+				if (healSeconds > 0) {
+					for (Player online : PlayerUtils.getPlayers()) {
+						PlayerUtils.sendAction(online, "§7Final heal is given in §8» §a" + DateUtils.ticksToString(healSeconds));
+					}
+				}
+				else if (pvpSeconds > 0) {
+					for (Player online : PlayerUtils.getPlayers()) {
+						PlayerUtils.sendAction(online, "§7PvP is enabled in §8» §a" + DateUtils.ticksToString(pvpSeconds));
+						}
+				}
+				else if (meetupSeconds > 0) {
+					for (Player online : PlayerUtils.getPlayers()) {
+						PlayerUtils.sendAction(online, "§7Meetup is in §8» §a" + DateUtils.ticksToString(meetupSeconds));
+						}
+				}
+				else {
+					for (Player online : PlayerUtils.getPlayers()) {
+						PlayerUtils.sendAction(online, "§8» §6Meetup is now! §8«");
+					}
+				}
 			}
 		}, 20, 20);
 	}
