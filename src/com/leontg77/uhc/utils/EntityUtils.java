@@ -51,8 +51,6 @@ public class EntityUtils {
 			return true;
 		case MAGMA_CUBE:
 			return true;
-		case MINECART_CHEST:
-			return true;
 		case MUSHROOM_COW:
 			return true;
 		case OCELOT:
