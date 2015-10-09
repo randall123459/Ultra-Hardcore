@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.BanEntry;
+import org.bukkit.BanList;
 import org.bukkit.BanList.Type;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -20,7 +20,7 @@ import com.leontg77.uhc.utils.PlayerUtils;
  * 
  * @author LeonTG77
  */
-public class UnbanCommand implements CommandExecutor, TabCompleter {	
+public class UnbanCommand implements CommandExecutor, TabCompleter {
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
@@ -30,9 +30,16 @@ public class UnbanCommand implements CommandExecutor, TabCompleter {
 					sender.sendMessage(Main.prefix() + "Usage: /unban <player>");
 					return true;
 				}
+
+				BanList list = Bukkit.getBanList(Type.NAME);
+				String target = args[0];
 		    	
-				PlayerUtils.broadcast(Main.prefix() + ChatColor.GOLD + args[0] + " §7has been unbanned.");
-		   		Bukkit.getBanList(Type.NAME).pardon(args[0]);
+				if (list.isBanned(target)) {
+					PlayerUtils.broadcast(Main.prefix() + "§6" + target + " §7has been unbanned.");
+					list.pardon(target);
+				} else {
+					sender.sendMessage(Main.prefix() + "§6" + target + " §7is not banned.");
+				}
 			} else {
 				sender.sendMessage(Main.NO_PERMISSION_MESSAGE);
 			}
@@ -43,26 +50,27 @@ public class UnbanCommand implements CommandExecutor, TabCompleter {
 	@Override
 	public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {
 		if (cmd.getName().equalsIgnoreCase("unban")) {
-			if (sender.hasPermission("uhc.unban")) {
-				if (args.length == 1) {
-		        	ArrayList<String> arg = new ArrayList<String>();
-		        	
-		        	if (!args[0].equals("")) {
-		        		for (BanEntry banned : Bukkit.getBanList(Type.NAME).getBanEntries()) {
-		        			if (banned.getTarget().toLowerCase().startsWith(args[0].toLowerCase())) {
-		        				arg.add(banned.getTarget());
-		        			}
-		        		}
-		        	}
-		        	else {
-		        		for (BanEntry banned : Bukkit.getBanList(Type.NAME).getBanEntries()) {
-		        			arg.add(banned.getTarget());
-		        		}
-		        	}
-		        	return arg;
-		        }
-			}
-		}
+        	ArrayList<String> returnList = new ArrayList<String>();
+        	BanList list = Bukkit.getBanList(Type.NAME);
+        	
+        	if (args[0].isEmpty()) {
+        		for (BanEntry entry : list.getBanEntries()) {
+        			String name = entry.getTarget();
+        			
+        			returnList.add(name);
+        		}
+        	}
+        	else {
+        		for (BanEntry entry : list.getBanEntries()) {
+        			String name = entry.getTarget();
+        			
+        			if (name.toLowerCase().startsWith(args[0].toLowerCase())) {
+        				returnList.add(name);
+        			}
+        		}
+        	}
+        	return returnList;
+        }
 		return null;
 	}
 }
