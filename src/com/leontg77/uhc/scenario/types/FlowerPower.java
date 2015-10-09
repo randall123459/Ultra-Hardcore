@@ -65,7 +65,7 @@ public class FlowerPower extends Scenario implements Listener {
 		Random r = new Random();
 		
 		Material m = Material.values()[r.nextInt(Material.values().length)];
-		int a = 1 + r.nextInt(15);
+		int a = r.nextInt(m.getMaxStackSize());
 		
 		return new ItemStack(m, a);
 	}
