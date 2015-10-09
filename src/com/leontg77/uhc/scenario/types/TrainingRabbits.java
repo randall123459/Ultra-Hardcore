@@ -54,10 +54,13 @@ public class TrainingRabbits extends Scenario implements Listener {
 	
 	@EventHandler
 	public void onPlayerItemConsume(PlayerItemConsumeEvent event) {
-		if (event.getItem().getType() == Material.MILK_BUCKET) {
-			event.getPlayer().sendMessage(Main.prefix() + "You cannot drink milk in TrainingRabbits.");
-			event.setCancelled(true);
+		Player player = event.getPlayer();
+		ItemStack item = event.getItem();
+		
+		if (item.getType() == Material.MILK_BUCKET) {
+			player.sendMessage(Main.prefix() + "You cannot drink milk in TrainingRabbits.");
 			event.setItem(new ItemStack (Material.AIR));
+			event.setCancelled(true);
 		}
 	}
 	
@@ -65,15 +68,13 @@ public class TrainingRabbits extends Scenario implements Listener {
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		Player player = event.getPlayer();
 
-		if (jump.containsKey(player.getName())) {
-			jump.put(player.getName(), jump.get(player.getName()) + 1);
-		} else {
+		if (!jump.containsKey(player.getName())) {
 			jump.put(player.getName(), 1);
 		}
 		
-		int level = jump.get(player.getName());
-		
 		if (!player.hasPotionEffect(PotionEffectType.JUMP)) {
+			int level = jump.get(player.getName());
+			
 			player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 1726272000, level));
 		}
 	}
