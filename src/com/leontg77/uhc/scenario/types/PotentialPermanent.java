@@ -1,6 +1,7 @@
 package com.leontg77.uhc.scenario.types;
 
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -11,6 +12,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import com.leontg77.uhc.Game;
+import com.leontg77.uhc.Main;
 import com.leontg77.uhc.scenario.Scenario;
 import com.leontg77.uhc.utils.PlayerUtils;
 
@@ -52,14 +54,23 @@ public class PotentialPermanent extends Scenario implements Listener {
 	@EventHandler
 	public void onPlayerItemConsume(PlayerItemConsumeEvent event) {
 		if (event.getItem().getType() != Material.GOLDEN_APPLE) {
+			if (event.getItem().getType() == Material.MILK_BUCKET) {
+				event.getPlayer().sendMessage(Main.prefix() + "You cannot drink milk in PotentialPermanent.");
+				event.setItem(new ItemStack (Material.AIR));
+				event.setCancelled(true);
+			}
 			return;
 		}
 		
 		Player player = event.getPlayer();
 		CraftPlayer cplayer = (CraftPlayer) player;
 		
-		event.setCancelled(true);
+		float absHearts = cplayer.getHandle().getAbsorptionHearts();
+		
         player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 100, 1));
+        player.getWorld().playSound(player.getLocation(), Sound.BURP, 1, 1);
+        player.setFoodLevel(player.getFoodLevel() + 4);
+		event.setCancelled(true);
         
 		if (player.getItemInHand().getAmount() == 1) {
 			player.setItemInHand(new ItemStack (Material.AIR));
@@ -69,10 +80,9 @@ public class PotentialPermanent extends Scenario implements Listener {
 			player.setItemInHand(item);
 		}
 		
-		if (cplayer.getHandle().getAbsorptionHearts() != 0) {
-			player.setMaxHealth(cplayer.getHandle().getAbsorptionHearts() >= 4 ? player.getMaxHealth() + 4 : player.getMaxHealth() + cplayer.getHandle().getAbsorptionHearts());
-			player.damage(cplayer.getHandle().getAbsorptionHearts() >= 4 ? 4 : cplayer.getHandle().getAbsorptionHearts());
-			return;
+		if (absHearts != 0) {
+			player.setMaxHealth(absHearts >= 4 ? player.getMaxHealth() + 4 : player.getMaxHealth() + absHearts);
+			cplayer.getHandle().setAbsorptionHearts(absHearts >= 4 ? absHearts - 4 : 0);
 		}
 	}
 }
