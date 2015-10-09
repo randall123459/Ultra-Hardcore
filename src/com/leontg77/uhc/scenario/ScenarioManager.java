@@ -35,6 +35,7 @@ import com.leontg77.uhc.scenario.types.GoToHell;
 import com.leontg77.uhc.scenario.types.GoldRush;
 import com.leontg77.uhc.scenario.types.Goldless;
 import com.leontg77.uhc.scenario.types.GoneFishing;
+import com.leontg77.uhc.scenario.types.HundredHearts;
 import com.leontg77.uhc.scenario.types.InfiniteEnchanter;
 import com.leontg77.uhc.scenario.types.Inventors;
 import com.leontg77.uhc.scenario.types.Kings;
@@ -118,6 +119,7 @@ public class ScenarioManager {
 		scenarios.add(new GoldRush());
 		scenarios.add(new GoneFishing());
 		scenarios.add(new GoToHell());
+		scenarios.add(new HundredHearts());
 		scenarios.add(new InfiniteEnchanter());
 		scenarios.add(new Inventors());
 		scenarios.add(new Kings());
