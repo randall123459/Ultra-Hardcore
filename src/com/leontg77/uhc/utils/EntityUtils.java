@@ -1,6 +1,10 @@
 package com.leontg77.uhc.utils;
 
+import java.util.Set;
+
 import org.bukkit.entity.EntityType;
+
+import com.google.common.collect.ImmutableSet;
 
 /**
  * Block utilities class.
@@ -11,80 +15,18 @@ import org.bukkit.entity.EntityType;
  */
 public class EntityUtils {
 	
+	protected static final Set<EntityType> clearable = ImmutableSet.of(
+		EntityType.ARROW, EntityType.BAT, EntityType.BLAZE, EntityType.BOAT, EntityType.CAVE_SPIDER,
+		EntityType.CREEPER, EntityType.DROPPED_ITEM, EntityType.EGG, EntityType.ENDERMAN, EntityType.ENDERMITE,
+		EntityType.ENDER_PEARL, EntityType.EXPERIENCE_ORB, EntityType.FIREBALL, EntityType.FISHING_HOOK,
+		EntityType.GHAST, EntityType.GIANT, EntityType.GUARDIAN, EntityType.IRON_GOLEM, EntityType.MAGMA_CUBE,
+		EntityType.MUSHROOM_COW, EntityType.OCELOT, EntityType.PIG_ZOMBIE, EntityType.PRIMED_TNT,
+		EntityType.SILVERFISH, EntityType.SKELETON, EntityType.SLIME, EntityType.SMALL_FIREBALL,
+		EntityType.SNOWBALL, EntityType.SNOWMAN, EntityType.SPIDER, EntityType.VILLAGER, EntityType.WITCH,
+		EntityType.WITHER, EntityType.WITHER_SKULL, EntityType.ZOMBIE
+	);
+	
 	public static boolean isClearable(EntityType type) {
-		switch (type) {
-		case ARROW:
-			return true;
-		case BAT:
-			return true;
-		case BLAZE:
-			return true;
-		case BOAT:
-			return true;
-		case CAVE_SPIDER:
-			return true;
-		case CREEPER:
-			return true;
-		case DROPPED_ITEM:
-			return true;
-		case EGG:
-			return true;
-		case ENDERMAN:
-			return true;
-		case ENDERMITE:
-			return true;
-		case ENDER_PEARL:
-			return true;
-		case EXPERIENCE_ORB:
-			return true;
-		case FIREBALL:
-			return true;
-		case FISHING_HOOK:
-			return true;
-		case GHAST:
-			return true;
-		case GIANT:
-			return true;
-		case GUARDIAN:
-			return true;
-		case IRON_GOLEM:
-			return true;
-		case MAGMA_CUBE:
-			return true;
-		case MUSHROOM_COW:
-			return true;
-		case OCELOT:
-			return true;
-		case PIG_ZOMBIE:
-			return true;
-		case PRIMED_TNT:
-			return true;
-		case SILVERFISH:
-			return true;
-		case SKELETON:
-			return true;
-		case SLIME:
-			return true;
-		case SMALL_FIREBALL:
-			return true;
-		case SNOWBALL:
-			return true;
-		case SNOWMAN:
-			return true;
-		case SPIDER:
-			return true;
-		case VILLAGER:
-			return true;
-		case WITCH:
-			return true;
-		case WITHER:
-			return true;
-		case WITHER_SKULL:
-			return true;
-		case ZOMBIE:
-			return true;
-		default:
-			return false;
-		}
+		return clearable.contains(type);
 	}
 }
