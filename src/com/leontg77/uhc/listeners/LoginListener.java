@@ -248,7 +248,7 @@ public class LoginListener implements Listener {
 				return;
 			}
 			
-			if (player.hasPermission("uhc.prelist")) {
+			if (player.isOp()) {
 				event.allow();
 				return;
 			}
@@ -271,10 +271,31 @@ public class LoginListener implements Listener {
 					event.setKickMessage("§8» §7You are not whitelisted §8«\n\n§cThe game has already started");
 				}
 			}
+			
+			if (player.hasPermission("uhc.prelist")) {
+				String scenario = game.getScenarios();
+				
+				boolean moles = false;
+				
+				for (String scen : scenario.split(" ")) {
+					if (scen.equalsIgnoreCase("moles")) {
+						moles = true;
+					}
+				}
+				
+				if (moles && State.isState(State.LOBBY)) {
+					String kickMsg = event.getKickMessage();
+					
+					event.disallow(Result.KICK_WHITELIST, "§4§lVIP's are not pre-whitelisted for Mole games\n\n" + kickMsg);
+					return;
+				}
+				
+				event.allow();
+			}
 			return;
 		}
 		
-		if (PlayerUtils.getPlayers().size() >= settings.getConfig().getInt("maxplayers", 80)) {
+		if (PlayerUtils.getPlayers().size() >= settings.getConfig().getInt("maxplayers", 150)) {
 			if (game.isRR()) {
 				return;
 			}
