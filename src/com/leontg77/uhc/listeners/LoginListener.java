@@ -34,6 +34,8 @@ import com.leontg77.uhc.cmds.SpreadCommand;
 import com.leontg77.uhc.managers.UBL;
 import com.leontg77.uhc.utils.DateUtils;
 import com.leontg77.uhc.utils.GameUtils;
+import com.leontg77.uhc.utils.PacketUtils;
+import com.leontg77.uhc.utils.PermsUtils;
 import com.leontg77.uhc.utils.PlayerUtils;
 
 /**
@@ -57,7 +59,7 @@ public class LoginListener implements Listener {
 		user.getFile().set("uuid", player.getUniqueId().toString());
 		user.saveFile();
 		
-		PlayerUtils.setTabList(player);
+		PacketUtils.setTabList(player);
 		player.setNoDamageTicks(0);
 
 		spec.hideSpectators(player);
@@ -87,7 +89,7 @@ public class LoginListener implements Listener {
 			} else {
 				PlayerUtils.broadcast("§8[§a+§8] §7" + player.getName() + " has joined.");
 				
-				if (user.isNew()) {
+				if (user.hasntBeenWelcomed()) {
 					PlayerUtils.broadcast(Main.prefix() + ChatColor.GOLD + player.getName() + " §7just joined for the first time.");
 					
 					File f = new File(plugin.getDataFolder() + File.separator + "users" + File.separator);
@@ -130,7 +132,7 @@ public class LoginListener implements Listener {
 			player.teleport(Main.getSpawn());
 		}
 		
-		if (!game.isRR()) {
+		if (!game.isRecordedRound()) {
 			player.sendMessage("§8» ----------[ §4§lArctic UHC §8]---------- «");
 			
 			if (GameUtils.getTeamSize().startsWith("No")) {
@@ -155,7 +157,7 @@ public class LoginListener implements Listener {
 		Spectator spec = Spectator.getManager();
 		Arena arena = Arena.getInstance();
 		
-		PlayerUtils.handleLeavePermissions(player);
+		PermsUtils.removePermissions(player);
 		event.setQuitMessage(null);
 		
 		if (!spec.isSpectating(player)) {
@@ -189,7 +191,7 @@ public class LoginListener implements Listener {
 	@EventHandler
 	public void onPlayerLogin(PlayerLoginEvent event) {
 		Player player = event.getPlayer();
-		PlayerUtils.handlePermissions(player);
+		PermsUtils.addPermissions(player);
 		
 		if (event.getResult() == Result.KICK_BANNED) {
 			BanList name = Bukkit.getBanList(Type.NAME);
@@ -243,7 +245,7 @@ public class LoginListener implements Listener {
 		}
 		
 		if (event.getResult() == Result.KICK_WHITELIST) {
-			if (game.isRR()) {
+			if (game.isRecordedRound()) {
 				event.setKickMessage("§8» §7You are not whitelisted §8«\n\n§cThere are no games running");
 				return;
 			}
@@ -296,7 +298,7 @@ public class LoginListener implements Listener {
 		}
 		
 		if (PlayerUtils.getPlayers().size() >= settings.getConfig().getInt("maxplayers", 150)) {
-			if (game.isRR()) {
+			if (game.isRecordedRound()) {
 				return;
 			}
 			
