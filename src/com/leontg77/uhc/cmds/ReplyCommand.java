@@ -14,70 +14,69 @@ import com.leontg77.uhc.Spectator;
 import com.leontg77.uhc.User;
 import com.leontg77.uhc.utils.DateUtils;
 
+/**
+ * Reply command class
+ * 
+ * @author LeonTG77
+ */
 public class ReplyCommand implements CommandExecutor {
 
-	public boolean onCommand(CommandSender sender, Command cmd, String label, final String[] args) {
-		if (cmd.getName().equalsIgnoreCase("reply")) {
-			if (args.length == 0) {
-	    		sender.sendMessage(Main.prefix() + "Usage: /reply <message>");
-	        	return true;
-	        }   
-			
-			if (sender instanceof Player) {
-				User user = User.get((Player) sender);
-		    	
-				if (user.isMuted()) {
-					TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
-					Date date = new Date();
+	@Override
+	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+    	if (args.length < 2) {
+    		sender.sendMessage(ChatColor.RED + "Usage: /msg <player> <message>");
+        	return true;
+        }
+		
+		if (sender instanceof Player) {
+			Player player = (Player) sender;
+			User user = User.get(player);
+	    	
+			if (user.isMuted()) {
+				TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+				Date date = new Date();
+				
+				if (user.getUnmuteTime() == -1 || user.getUnmuteTime() > date.getTime()) {
+					sender.sendMessage(Main.prefix() + "You have been muted for: §a" + user.getMutedReason());
 					
-					if (user.getUnmuteTime() == -1 || user.getUnmuteTime() > date.getTime()) {
-						sender.sendMessage(Main.prefix() + "You have been muted for: §a" + user.getMutedReason());
-						
-						if (user.getUnmuteTime() < 0) {
-							sender.sendMessage(Main.prefix() + "Your mute is permanent.");
-						} else {
-							sender.sendMessage(Main.prefix() + "Your mute expires in: §a" + DateUtils.formatDateDiff(user.getUnmuteTime()));
-						}
-						return true;
-					} 
-					else {
-						user.setMuted(false, "N", null, "N");
+					if (user.getUnmuteTime() < 0) {
+						sender.sendMessage(Main.prefix() + "Your mute is permanent.");
+					} else {
+						sender.sendMessage(Main.prefix() + "Your mute expires in: §a" + DateUtils.formatDateDiff(user.getUnmuteTime()));
 					}
+					return true;
+				} else {
+					user.unmute();
 				}
 			}
-	    	
-	    	if (!Main.msg.containsKey(sender)) {
-				sender.sendMessage(ChatColor.RED + "You have no one to reply to.");
-				return true;
-			}
-	        
-	        CommandSender target = Main.msg.get(sender);
-					
-			if (target == null) {
-				sender.sendMessage(ChatColor.RED + "You have no one to reply to.");
-				return true;
-			}
-			
-	        StringBuilder message = new StringBuilder();
-	               
-	        for (int i = 0; i < args.length; i++) {
-	        	message.append(args[i]).append(" ");
-	        }
-            
-	        String msg = message.toString().trim();			
-	        
-	        if (Spectator.getManager().isSpectating(sender.getName()) && !sender.hasPermission("uhc.seemsg") && !Spectator.getManager().isSpectating(target.getName())) {
-	        	if (!target.hasPermission("uhc.seemsg")) {
-	        		sender.sendMessage(ChatColor.RED + "You cannot message players that's not spectating.");
-		        	return true;
-	        	}
-	        }
-	 
-	    	sender.sendMessage("§6me §8-> §6" + target.getName() + " §8» §f" + msg);
-	    	target.sendMessage("§6" + sender.getName() + " §8-> §6me §8» §f" + msg);
-	    	Main.msg.put(target, sender);
-	    	Main.msg.put(sender, target);
-	    }
+		}
+
+    	if (!Main.msg.containsKey(sender)) {
+    		sender.sendMessage(ChatColor.RED + "You have no one to reply to.");
+    		return true;
+    	}
+    	
+        CommandSender target = Main.msg.get(sender);
+        Spectator spec = Spectator.getManager();
+        
+        if (spec.isSpectating(sender.getName()) && !spec.isSpectating(target.getName()) && !sender.hasPermission("uhc.seemsg") && !target.hasPermission("uhc.seemsg")) {
+    		sender.sendMessage(Main.prefix() + "You are not allowed to msg players as a spectator.");
+        	return true;
+    	}
+               
+        StringBuilder message = new StringBuilder();
+               
+        for (int i = 1; i < args.length; i++) {
+        	message.append(args[i]).append(" ");
+        }
+        
+        String msg = message.toString().trim();
+               
+        sender.sendMessage("§6me §8-> §6" + target.getName() + " §8» §f" + msg);
+    	target.sendMessage("§6" + sender.getName() + " §8-> §6me §8» §f" + msg);
+    	
+    	Main.msg.put(target, sender);
+		Main.msg.put(sender, target);
 		return true;
-	}
+    }
 }
