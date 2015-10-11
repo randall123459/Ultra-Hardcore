@@ -3,6 +3,7 @@ package com.leontg77.uhc;
 import org.bukkit.entity.Player;
 
 import com.leontg77.uhc.Main.BorderShrink;
+import com.leontg77.uhc.utils.PacketUtils;
 import com.leontg77.uhc.utils.PlayerUtils;
 
 public class Game {
@@ -245,7 +246,7 @@ public class Game {
 		settings.saveData();
 	}
 
-	public boolean isRR() {
+	public boolean isRecordedRound() {
 		return settings.getConfig().getBoolean("rr.state", false);
 	}
 	
@@ -254,7 +255,7 @@ public class Game {
 		settings.saveData();
 		
 		for (Player online : PlayerUtils.getPlayers()) {
-			PlayerUtils.setTabList(online);
+			PacketUtils.setTabList(online);
 		}
 	}
 
