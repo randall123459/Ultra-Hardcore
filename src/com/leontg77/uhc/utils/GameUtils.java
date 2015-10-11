@@ -59,7 +59,7 @@ public class GameUtils {
 		
 		switch (current) {
 		case INGAME:
-			if (getTeamSize().startsWith("No") || Game.getInstance().isRR()) {
+			if (getTeamSize().startsWith("No") || Game.getInstance().isRecordedRound()) {
 				return "No games running.";
 			} 
 			else if (getTeamSize().startsWith("Open")) {
@@ -70,7 +70,7 @@ public class GameUtils {
 			}
 		case LOBBY:
 			if (Bukkit.getServer().hasWhitelist()) {
-				if (getTeamSize().startsWith("No") || Game.getInstance().isRR()) {
+				if (getTeamSize().startsWith("No") || Game.getInstance().isRecordedRound()) {
 					return "No games running.";
 				} 
 				else if (getTeamSize().startsWith("Open")) {
@@ -84,7 +84,7 @@ public class GameUtils {
 				return "Waiting for players...";
 			}
 		case SCATTER:
-			if (getTeamSize().startsWith("No") || Game.getInstance().isRR()) {
+			if (getTeamSize().startsWith("No") || Game.getInstance().isRecordedRound()) {
 				return "No games running.";
 			} 
 			else if (getTeamSize().startsWith("Open")) {
