@@ -18,6 +18,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.scenario.Scenario;
+import com.leontg77.uhc.utils.PacketUtils;
 import com.leontg77.uhc.utils.PlayerUtils;
 
 /**
@@ -123,7 +124,7 @@ public class ChunkApocalypse extends Scenario implements Listener, CommandExecut
 						int one = ((chunks.size() - finished.size())*100 / chunks.size());
 						
 						for (Player online : PlayerUtils.getPlayers()) {
-							PlayerUtils.sendAction(online, Main.prefix() + "Removed chunk at x:" + chunk.getX() + " z:" + chunk.getZ() + ", §6" + one + "% §7finished");
+							PacketUtils.sendAction(online, Main.prefix() + "Removed chunk at x:" + chunk.getX() + " z:" + chunk.getZ() + ", §6" + one + "% §7finished");
 						}
 						
 						i++;

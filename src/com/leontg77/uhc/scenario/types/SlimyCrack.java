@@ -17,6 +17,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.scenario.Scenario;
+import com.leontg77.uhc.utils.PacketUtils;
 import com.leontg77.uhc.utils.PlayerUtils;
 
 /**
@@ -147,7 +148,7 @@ public class SlimyCrack extends Scenario implements Listener, CommandExecutor {
                             populate(world, chunk, width, length, z2);
     						
     						for (Player online : PlayerUtils.getPlayers()) {
-    							PlayerUtils.sendAction(online, Main.prefix().replaceAll("UHC", "SlimyCrack") + "Populated chunk at x = §a" + chunk.getX() + "§7, z = §a" + chunk.getZ() + "§7.");
+    							PacketUtils.sendAction(online, Main.prefix().replaceAll("UHC", "SlimyCrack") + "Populated chunk at x = §a" + chunk.getX() + "§7, z = §a" + chunk.getZ() + "§7.");
     						}
                         }
                     }.runTaskLater(Main.plugin, delayMultiplier * speed);
@@ -163,7 +164,7 @@ public class SlimyCrack extends Scenario implements Listener, CommandExecutor {
                             populate(world, chunk, width, length, z2);
     						
     						for (Player online : PlayerUtils.getPlayers()) {
-    							PlayerUtils.sendAction(online, Main.prefix().replaceAll("UHC", "SlimyCrack") + "Populated chunk at x = §a" + chunk.getX() + "§7, z = §a" + chunk.getZ() + "§7.");
+    							PacketUtils.sendAction(online, Main.prefix().replaceAll("UHC", "SlimyCrack") + "Populated chunk at x = §a" + chunk.getX() + "§7, z = §a" + chunk.getZ() + "§7.");
     						}
                         }
                     }.runTaskLater(Main.plugin, delayMultiplier * speed);
