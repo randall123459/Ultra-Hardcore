@@ -8,19 +8,22 @@ import org.bukkit.entity.Player;
 
 import com.leontg77.uhc.InvGUI;
 
-public class RulesCommand implements CommandExecutor {	
+/**
+ * UHC command class.
+ * 
+ * @author LeonTG77
+ */
+public class UHCCommand implements CommandExecutor {	
 
+	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (!(sender instanceof Player)) {
-			sender.sendMessage(ChatColor.RED + "Only players can view the rules.");
+			sender.sendMessage(ChatColor.RED + "Only players can view the game info inventory.");
 			return true;
 		}
 		
 		Player player = (Player) sender;
-		
-		if (cmd.getName().equalsIgnoreCase("rules")) {
-			InvGUI.getManager().openGameInfo(player);
-		}
+		InvGUI.getManager().openGameInfo(player);
 		return true;
 	}
 }
