@@ -6,14 +6,13 @@ import java.io.File;
 import java.util.Date;
 import java.util.TimeZone;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
-import com.leontg77.uhc.utils.PlayerUtils;
+import com.leontg77.uhc.utils.PermsUtils;
 
 /**
  * User class.
@@ -68,20 +67,20 @@ public class User {
         
         boolean creating = false;
         
-        File f = new File(plugin.getDataFolder() + File.separator + "users" + File.separator);
+        File folder = new File(plugin.getDataFolder() + File.separator + "users" + File.separator);
         
-        if (!f.exists()) {
-        	f.mkdir(); 
+        if (!folder.exists()) {
+        	folder.mkdir(); 
         }
         
-        file = new File(f, uuid + ".yml");
+        file = new File(folder, uuid + ".yml");
         
         if (!file.exists()) {
         	try {
         		file.createNewFile();
         		creating = true;
         	} catch (Exception e) {
-        		Bukkit.getServer().getLogger().severe(ChatColor.RED + "Could not create " + uuid + ".yml!");
+        		plugin.getLogger().severe(ChatColor.RED + "Could not create " + uuid + ".yml!");
         	}
         }
                
@@ -94,7 +93,7 @@ public class User {
         	if (player != null) {
             	config.set("username", player.getName());
             	config.set("uuid", player.getUniqueId().toString());
-            	config.set("ip", player.getUniqueId().toString());
+            	config.set("ip", player.getAddress().getAddress().getHostAddress());
         	}
 
         	TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
@@ -102,12 +101,14 @@ public class User {
         	config.set("firstjoined", new Date().getTime());
         	config.set("lastlogin", new Date().getTime());
         	config.set("lastlogoff", -1);
-        	config.set("isnew", true);
         	config.set("rank", Rank.USER.name());
+        	
+        	config.set("new.unique", folder.listFiles());
+        	config.set("new.hasbeenwelcomed", false);
+        	
 			config.set("muted.status", false);
 			config.set("muted.reason", "NOT_MUTED");
 			config.set("muted.time", -1);
-			config.set("muted.by", "NONE");
 			
 			for (Stat stats : Stat.values()) {
 	        	config.set("stats." + stats.name().toLowerCase(), 0);
@@ -118,20 +119,19 @@ public class User {
 	}
 	
 	/**
-	 * Check if the user just joined for the first time.
+	 * Check if the user hasn't been welcomed to the server.
 	 * 
-	 * @return <code>True</code> if it's the first time, <code>false</code> otherwise
+	 * @return True if he hasn't, false otherwise.
 	 */
-	public boolean isNew() {
-		boolean joined = config.getBoolean("isnew", false);
+	public boolean hasntBeenWelcomed() {
+		boolean joined = config.getBoolean("new.hasbeenwelcomed", true);
 		
 		if (joined) {
-        	config.set("isnew", false);
+            return false;
+        } else {
+        	config.set("new.hasbeenwelcomed", true);
         	saveFile();
-            return true;
-        } 
-		else {
-			return false;
+			return true;
         }
 	}
 	
@@ -169,7 +169,7 @@ public class User {
 		try {
 			config.save(file);
 		} catch (Exception e) {
-    		Bukkit.getServer().getLogger().severe(ChatColor.RED + "Could not save " + file.getName() + "!");
+    		plugin.getLogger().severe(ChatColor.RED + "Could not save " + file.getName() + "!");
 		}
 	}
 	
@@ -190,8 +190,8 @@ public class User {
 		saveFile();
 		
 		if (player != null) {
-			PlayerUtils.handleLeavePermissions(player);
-			PlayerUtils.handlePermissions(player);
+			PermsUtils.removePermissions(player);
+			PermsUtils.addPermissions(player);
 		}
 	}
 
@@ -205,29 +205,31 @@ public class User {
 	}
 	
 	/**
-	 * Set the muted status for the player.
+	 * Mute the user.
 	 * 
-	 * @param mute <code>True</code> to mute, <code>false</code> to unmute.
 	 * @param reason The reason of the mute.
 	 * @param unmute The date of unmute, null if permanent.
-	 * @param source The one to mute the player.
 	 */
-	public void setMuted(boolean mute, String reason, Date unmute, String source) {
-		if (mute) {
-			config.set("muted.status", mute);
-			config.set("muted.reason", reason);
-			config.set("muted.by", source);
-			if (unmute == null) {
-				config.set("muted.time", -1);
-			} else {
-				config.set("muted.time", unmute.getTime());
-			}
-		} else {
-			config.set("muted.status", mute);
-			config.set("muted.reason", "NOT_MUTED");
+	public void mute(String reason, Date unmute) {
+		config.set("muted.status", true);
+		config.set("muted.reason", reason);
+		
+		if (unmute == null) {
 			config.set("muted.time", -1);
-			config.set("muted.by", "NONE");
+		} else {
+			config.set("muted.time", unmute.getTime());
 		}
+		
+		saveFile();
+	}
+	
+	/**
+	 * Unmute the user.
+	 */
+	public void unmute() {
+		config.set("muted.status", false);
+		config.set("muted.reason", "NOT_MUTED");
+		config.set("muted.time", -1);
 		saveFile();
 	}
 	
@@ -247,10 +249,10 @@ public class User {
 	 */
 	public String getMutedReason() {
 		if (!isMuted()) {
-			return null;
+			return "NOT_MUTED";
 		}
 		
-		return config.getString("muted.reason", null);
+		return config.getString("muted.reason", "NOT_MUTED");
 	}
 	
 	/**
@@ -259,7 +261,11 @@ public class User {
 	 * @return The unmute time.
 	 */
 	public long getUnmuteTime() {
-		return config.getLong("muted.time");
+		if (!isMuted()) {
+			return -1;
+		}
+	
+		return config.getLong("muted.time", -1);
 	}
 	
 	/**
@@ -268,13 +274,16 @@ public class User {
 	 * @param stat the stat increasing.
 	 */
 	public void increaseStat(Stat stat) {
-		if (Game.getInstance().isRR()) {
+		Game game = Game.getInstance();
+		
+		if (game.isRecordedRound()) {
 			return;
 		}
 		
 		String statName = stat.name().toLowerCase();
+		int current = config.getInt("stats." + statName, 0);
 		
-		config.set("stats." + statName, config.getInt("stats." + statName, 0) + 1);
+		config.set("stats." + statName, current + 1);
 		saveFile();
 	}
 	

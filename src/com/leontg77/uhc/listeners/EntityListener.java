@@ -117,7 +117,7 @@ public class EntityListener implements Listener {
     		return;
     	}
     	
-    	if (!game.isRR()) {
+    	if (!game.isRecordedRound()) {
         	ItemStack potion = new ItemStack (Material.POTION, 1, (short) 8261);
         	List<ItemStack> drops = event.getDrops();
         	
@@ -219,7 +219,7 @@ public class EntityListener implements Listener {
 		
 		ScenarioManager scen = ScenarioManager.getInstance();
 		
-    	if (game.isRR() || scen.getScenario("TeamHealth").isEnabled() || scen.getScenario("Paranoia").isEnabled()) {
+    	if (game.isRecordedRound() || scen.getScenario("TeamHealth").isEnabled() || scen.getScenario("Paranoia").isEnabled()) {
 			return;
 		}
     	
@@ -251,7 +251,7 @@ public class EntityListener implements Listener {
 		
 		ScenarioManager scen = ScenarioManager.getInstance();
 		
-    	if (game.isRR() || scen.getScenario("RewardingLongshots").isEnabled()) {
+    	if (game.isRecordedRound() || scen.getScenario("RewardingLongshots").isEnabled()) {
 			return;
 		}
     	

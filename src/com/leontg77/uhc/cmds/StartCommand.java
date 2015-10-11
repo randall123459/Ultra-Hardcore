@@ -23,7 +23,7 @@ public class StartCommand implements CommandExecutor {
 				else if (State.isState(State.SCATTER)) {
 					PlayerUtils.broadcast(Main.prefix() + "The game is starting.");
 					
-					if (Game.getInstance().isRR()) {
+					if (Game.getInstance().isRecordedRound()) {
 						Runnables.startRR();
 					} else {
 						PlayerUtils.broadcast(Main.prefix() + "Remember to read the match post: " + Settings.getInstance().getConfig().getString("matchpost"));
@@ -70,7 +70,7 @@ public class StartCommand implements CommandExecutor {
 					Runnables.pvpSeconds = (pvp > 0 ? (pvp * 60) : 0);
 					Runnables.meetupSeconds = (meetup > 0 ? (meetup * 60) : 0);
 
-					if (Game.getInstance().isRR()) {
+					if (Game.getInstance().isRecordedRound()) {
 						Runnables.timerRR();
 					} else {
 						Runnables.timer();

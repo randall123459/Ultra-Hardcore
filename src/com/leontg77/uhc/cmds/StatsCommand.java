@@ -25,7 +25,7 @@ public class StatsCommand implements CommandExecutor {
 				return true;
 			}
 			
-			if (Game.getInstance().isRR()) {
+			if (Game.getInstance().isRecordedRound()) {
 				sender.sendMessage(Main.prefix() + "Stats are disabled in RR's.");
 				return true;
 			}

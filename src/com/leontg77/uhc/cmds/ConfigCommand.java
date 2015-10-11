@@ -20,6 +20,7 @@ import com.leontg77.uhc.Scoreboards;
 import com.leontg77.uhc.Settings;
 import com.leontg77.uhc.State;
 import com.leontg77.uhc.utils.GameUtils;
+import com.leontg77.uhc.utils.PacketUtils;
 import com.leontg77.uhc.utils.PlayerUtils;
 
 public class ConfigCommand implements CommandExecutor, TabCompleter {
@@ -92,14 +93,14 @@ public class ConfigCommand implements CommandExecutor, TabCompleter {
 						PlayerUtils.broadcast(Main.prefix() + "The teamsize is now §a" + GameUtils.getTeamSize().trim() + "§7.");
 						
 						for (Player online : PlayerUtils.getPlayers()) {
-							PlayerUtils.setTabList(online);
+							PacketUtils.setTabList(online);
 						}
 					} else if (args[1].equalsIgnoreCase("false")) {
 						game.setFFA(false);
 						PlayerUtils.broadcast(Main.prefix() + "The teamsize is now §a" + GameUtils.getTeamSize().trim() + "§7.");
 						
 						for (Player online : PlayerUtils.getPlayers()) {
-							PlayerUtils.setTabList(online);
+							PacketUtils.setTabList(online);
 						}
 					} else {
 						sender.sendMessage(ChatColor.RED + "FFA can only be true or false.");
@@ -161,7 +162,7 @@ public class ConfigCommand implements CommandExecutor, TabCompleter {
 					sender.sendMessage(Main.prefix() + "You set the host to §a" + args[1] + "§7.");
 
 					for (Player online : PlayerUtils.getPlayers()) {
-						PlayerUtils.setTabList(online);
+						PacketUtils.setTabList(online);
 					}
 					break;
 				case MATCHPOST:
@@ -274,7 +275,7 @@ public class ConfigCommand implements CommandExecutor, TabCompleter {
 					sender.sendMessage(Main.prefix() + "You set the scenarios to §a" + ChatColor.translateAlternateColorCodes('&', bu.toString().trim()) + "§7.");
 
 					for (Player online : PlayerUtils.getPlayers()) {
-						PlayerUtils.setTabList(online);
+						PacketUtils.setTabList(online);
 					}
 					break;
 				case SHEARRATE:
@@ -328,7 +329,7 @@ public class ConfigCommand implements CommandExecutor, TabCompleter {
 					PlayerUtils.broadcast(Main.prefix() + "The teamsize is now §a" + GameUtils.getTeamSize().trim() + "§7.");
 					
 					for (Player online : PlayerUtils.getPlayers()) {
-						PlayerUtils.setTabList(online);
+						PacketUtils.setTabList(online);
 					}
 					break;
 				case TABCOLORS:
@@ -393,7 +394,7 @@ public class ConfigCommand implements CommandExecutor, TabCompleter {
 					sender.sendMessage(Main.prefix() + "You set the RR name to §a" + args[1].replaceAll("_", " ") + "§7.");
 					game.setRRName(args[1].replaceAll("_", " "));
 					
-					if (game.isRR()) {
+					if (game.isRecordedRound()) {
 						Scoreboards.getManager().kills.setDisplayName("§6" + game.getRRName());
 					}
 					break;

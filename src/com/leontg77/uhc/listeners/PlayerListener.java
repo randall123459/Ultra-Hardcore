@@ -177,7 +177,7 @@ public class PlayerListener implements Listener {
 			User user = User.get(player);
 			player.setWhitelisted(false);
 			
-			if (State.isState(State.INGAME) && !game.isRR()) {
+			if (State.isState(State.INGAME) && !game.isRecordedRound()) {
 				user.increaseStat(Stat.DEATHS);
 			}
 			
@@ -211,7 +211,7 @@ public class PlayerListener implements Listener {
 			final Player killer = player.getKiller();
 
 			if (killer == null) {
-				if (!game.isRR() && State.isState(State.INGAME)) {
+				if (!game.isRecordedRound() && State.isState(State.INGAME)) {
 			        Scoreboards.getManager().setScore("§8» §a§lPvE", Scoreboards.getManager().getScore("§8» §a§lPvE") + 1);
 					Scoreboards.getManager().resetScore(player.getName());
 				}
@@ -255,7 +255,7 @@ public class PlayerListener implements Listener {
 				event.setDeathMessage("§8» §f" + event.getDeathMessage());
 			}
 			
-			if (game.isRR()) {
+			if (game.isRecordedRound()) {
 				return;
 			}
 			
@@ -301,7 +301,7 @@ public class PlayerListener implements Listener {
 		Scoreboards.getManager().resetScore(player.getName());
 		player.setMaxHealth(20);
 		
-		if (!Arena.getInstance().isEnabled() && !State.isState(State.LOBBY) && !game.isRR()) {
+		if (!Arena.getInstance().isEnabled() && !State.isState(State.LOBBY) && !game.isRecordedRound()) {
 			player.sendMessage(Main.prefix() + "Thanks for playing our game, it really means a lot :)");
 			player.sendMessage(Main.prefix() + "Follow us on twtter to know when our next games are: §a@ArcticUHC");
 			
@@ -342,7 +342,7 @@ public class PlayerListener implements Listener {
 
 		event.setCancelled(true);
     	
-    	if (game.isRR()) {
+    	if (game.isRecordedRound()) {
     		Team team = player.getScoreboard().getEntryTeam(player.getName());
 			PlayerUtils.broadcast((team != null ? team.getPrefix() + player.getName() : player.getName()) + "§8 » §f" + event.getMessage());
     		return;
@@ -394,7 +394,7 @@ public class PlayerListener implements Listener {
 				return;
 			} 
 			else {
-				user.setMuted(false, "N", null, "N");
+				user.unmute();
 			}
 		}
 		
@@ -576,7 +576,7 @@ public class PlayerListener implements Listener {
         	event.setCancelled(true);
         }
         
-        if (event.getAction() == Action.RIGHT_CLICK_BLOCK && State.isState(State.INGAME) && Runnables.pvp > 0 && !game.isRR()) {
+        if (event.getAction() == Action.RIGHT_CLICK_BLOCK && State.isState(State.INGAME) && Runnables.pvp > 0 && !game.isRecordedRound()) {
         	if (event.getItem() != null && (event.getItem().getType() == Material.LAVA_BUCKET || event.getItem().getType() == Material.FLINT_AND_STEEL || event.getItem().getType() == Material.CACTUS || event.getItem().getType() == Material.SAND || event.getItem().getType() == Material.GRAVEL)) {
         		for (Entity nearby : PlayerUtils.getNearby(event.getClickedBlock().getLocation(), 5)) {
         			if (nearby instanceof Player) {
@@ -641,7 +641,7 @@ public class PlayerListener implements Listener {
 					return;
 				}
 				
-				InvGUI.getManager().openInv(player, clicked);
+				InvGUI.getManager().openPlayerInventory(player, clicked);
 			}
 		}
     }

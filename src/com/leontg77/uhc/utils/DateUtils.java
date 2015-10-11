@@ -15,10 +15,6 @@ import java.util.regex.Pattern;
 public class DateUtils {
 	private static Pattern timePattern = Pattern.compile("(?:([0-9]+)\\s*y[a-z]*[,\\s]*)?" + "(?:([0-9]+)\\s*mo[a-z]*[,\\s]*)?" + "(?:([0-9]+)\\s*w[a-z]*[,\\s]*)?" + "(?:([0-9]+)\\s*d[a-z]*[,\\s]*)?" + "(?:([0-9]+)\\s*h[a-z]*[,\\s]*)?" + "(?:([0-9]+)\\s*m[a-z]*[,\\s]*)?" + "(?:([0-9]+)\\s*(?:s[a-z]*)?)?", Pattern.CASE_INSENSITIVE);
 
-	private static final long SECONDS_PER_YEAR = 31556926;
-	private static final long SECONDS_PER_MONTH = 2629744;
-	private static final long SECONDS_PER_WEEK = 604800;
-	private static final long SECONDS_PER_DAY = 86400;
 	private static final long SECONDS_PER_HOUR = 3600;
 	private static final long SECONDS_PER_MINUTE = 60;
 
@@ -38,114 +34,27 @@ public class DateUtils {
      * @return The converted version.
      */
     public static String ticksToString(long ticks) {
-        int year = (int) Math.floor(ticks / (double) SECONDS_PER_YEAR);
-        ticks -= year * SECONDS_PER_HOUR;
-        int month = (int) Math.floor(ticks / (double) SECONDS_PER_MONTH);
-        ticks -= month * SECONDS_PER_HOUR;
-        int week = (int) Math.floor(ticks / (double) SECONDS_PER_WEEK);
-        ticks -= week * SECONDS_PER_HOUR;
-        int day = (int) Math.floor(ticks / (double) SECONDS_PER_DAY);
-        ticks -= day * SECONDS_PER_HOUR;
-        int hours = (int) Math.floor(ticks / (double) SECONDS_PER_HOUR);
+    	int hours = (int) Math.floor(ticks / (double) SECONDS_PER_HOUR);
         ticks -= hours * SECONDS_PER_HOUR;
         int minutes = (int) Math.floor(ticks / (double)SECONDS_PER_MINUTE);
         ticks -= minutes * SECONDS_PER_MINUTE;
         int seconds = (int) ticks;
 
         StringBuilder output = new StringBuilder();
-        if (year > 0) {
-            output.append(year).append('y');
-            if (month == 0) {
-            	output.append(month).append('m');
-            }
-            if (week == 0) {
-            	output.append(week).append('w');
-            }
-            if (day == 0) {
-            	output.append(day).append('d');
-            }
-            if (hours == 0) {
-            	output.append(hours).append('h');
-            }
-            if (minutes == 0) {
-            	output.append(minutes).append('m');
-            }
-        }
-        if (month > 0) {
-            output.append(month).append('m');
-            if (week == 0) {
-            	output.append(week).append('w');
-            }
-            if (day == 0) {
-            	output.append(day).append('d');
-            }
-            if (hours == 0) {
-            	output.append(hours).append('h');
-            }
-            if (minutes == 0) {
-            	output.append(minutes).append('m');
-            }
-        }
-        if (week > 0) {
-            output.append(week).append('h');
-            if (day == 0) {
-            	output.append(day).append('d');
-            }
-            if (hours == 0) {
-            	output.append(hours).append('h');
-            }
-            if (minutes == 0) {
-            	output.append(minutes).append('m');
-            }
-        }
-        if (day > 0) {
-            output.append(day).append('d');
-            if (hours == 0) {
-            	output.append(hours).append('h');
-            }
-            if (minutes == 0) {
-            	output.append(minutes).append('m');
-            }
-        }
+        
         if (hours > 0) {
             output.append(hours).append('h');
+            
             if (minutes == 0) {
             	output.append(minutes).append('m');
-            }
-        }
-        if (minutes > 0) {
-            output.append(minutes).append('m');
-        }
-        output.append(seconds).append('s');
-
-        return output.toString();
-    }
-
-    /**
-     * Converts the seconds to digital hours, minutes and seconds.
-     * 
-     * @author ghowden, modified by LeonTG77
-     * 
-     * @param ticks the number of seconds
-     * @return The digital converted version.
-     */
-    public static String ticksToDigitalString(long ticks) {
-        int hours = (int) Math.floor(ticks / (double) SECONDS_PER_HOUR);
-        ticks -= hours * SECONDS_PER_HOUR;
-        int minutes = (int) Math.floor(ticks / (double)SECONDS_PER_MINUTE);
-        ticks -= minutes * SECONDS_PER_MINUTE;
-        int seconds = (int) ticks;
-
-        StringBuilder output = new StringBuilder();
-        if (hours > 0) {
-            output.append(hours).append(':');
-            if (minutes == 0) {
-            	output.append(minutes).append(':');
             }
         }
         
-        output.append(minutes).append(':');
-        output.append(seconds);
+        if (minutes > 0) {
+            output.append(minutes).append('m');
+        }
+        
+        output.append(seconds).append('s');
 
         return output.toString();
     }
@@ -155,6 +64,7 @@ public class DateUtils {
      */
 	public static long parseDateDiff(String time, boolean future) {
 		Matcher m = timePattern.matcher(time);
+		
 		int years = 0;
 		int months = 0;
 		int weeks = 0;
@@ -162,72 +72,94 @@ public class DateUtils {
 		int hours = 0;
 		int minutes = 0;
 		int seconds = 0;
+		
 		boolean found = false;
+		
 		while (m.find()) {
 			if (m.group() == null || m.group().isEmpty()) {
 				continue;
 			}
+			
 			for (int i = 0; i < m.groupCount(); i++) {
 				if (m.group(i) != null && !m.group(i).isEmpty()) {
 					found = true;
 					break;
 				}
 			}
+			
 			if (found) {
 				if (m.group(1) != null && !m.group(1).isEmpty()) {
 					years = Integer.parseInt(m.group(1));
 				}
+				
 				if (m.group(2) != null && !m.group(2).isEmpty()) {
 					months = Integer.parseInt(m.group(2));
 				}
+				
 				if (m.group(3) != null && !m.group(3).isEmpty()) {
 					weeks = Integer.parseInt(m.group(3));
 				}
+				
 				if (m.group(4) != null && !m.group(4).isEmpty()) {
 					days = Integer.parseInt(m.group(4));
 				}
+				
 				if (m.group(5) != null && !m.group(5).isEmpty()) {
 					hours = Integer.parseInt(m.group(5));
 				}
+				
 				if (m.group(6) != null && !m.group(6).isEmpty()) {
 					minutes = Integer.parseInt(m.group(6));
 				}
+				
 				if (m.group(7) != null && !m.group(7).isEmpty()) {
 					seconds = Integer.parseInt(m.group(7));
 				}
 				break;
 			}
 		}
+		
 		if (!found) {
 			return 0;
 		}
+		
 		Calendar c = new GregorianCalendar();
+		
 		if (years > 0) {
 			c.add(Calendar.YEAR, years * (future ? 1 : -1));
 		}
+		
 		if (months > 0) {
 			c.add(Calendar.MONTH, months * (future ? 1 : -1));
 		}
+		
 		if (weeks > 0) {
 			c.add(Calendar.WEEK_OF_YEAR, weeks * (future ? 1 : -1));
 		}
+		
 		if (days > 0) {
 			c.add(Calendar.DAY_OF_MONTH, days * (future ? 1 : -1));
 		}
+		
 		if (hours > 0) {
 			c.add(Calendar.HOUR_OF_DAY, hours * (future ? 1 : -1));
 		}
+		
 		if (minutes > 0) {
 			c.add(Calendar.MINUTE, minutes * (future ? 1 : -1));
 		}
+		
 		if (seconds > 0) {
 			c.add(Calendar.SECOND, seconds * (future ? 1 : -1));
 		}
+		
 		Calendar max = new GregorianCalendar();
 		max.add(Calendar.YEAR, 10);
+		
 		if (c.after(max)) {
 			return max.getTimeInMillis();
 		}
+		
 		return c.getTimeInMillis();
 	}
 	

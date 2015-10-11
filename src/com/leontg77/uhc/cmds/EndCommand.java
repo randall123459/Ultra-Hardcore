@@ -48,7 +48,7 @@ public class EndCommand implements CommandExecutor {
 		
 		if (cmd.getName().equalsIgnoreCase("end")) {
 			if (sender.hasPermission("uhc.end")) {
-				if (game.isRR()) {
+				if (game.isRecordedRound()) {
 					HandlerList.unregisterAll(new SpecInfo());
 					Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer cancel");
 					Spectator.getManager().spectators.clear();

@@ -79,7 +79,6 @@ import com.leontg77.uhc.cmds.PvPCommand;
 import com.leontg77.uhc.cmds.RandomCommand;
 import com.leontg77.uhc.cmds.RankCommand;
 import com.leontg77.uhc.cmds.ReplyCommand;
-import com.leontg77.uhc.cmds.RulesCommand;
 import com.leontg77.uhc.cmds.ScenarioCommand;
 import com.leontg77.uhc.cmds.SethealthCommand;
 import com.leontg77.uhc.cmds.SetmaxhealthCommand;
@@ -99,6 +98,7 @@ import com.leontg77.uhc.cmds.TimerCommand;
 import com.leontg77.uhc.cmds.TlCommand;
 import com.leontg77.uhc.cmds.TpCommand;
 import com.leontg77.uhc.cmds.TpsCommand;
+import com.leontg77.uhc.cmds.UHCCommand;
 import com.leontg77.uhc.cmds.UnbanCommand;
 import com.leontg77.uhc.cmds.UnbanIPCommand;
 import com.leontg77.uhc.cmds.VoteCommand;
@@ -117,6 +117,7 @@ import com.leontg77.uhc.managers.UBL;
 import com.leontg77.uhc.scenario.Scenario;
 import com.leontg77.uhc.scenario.ScenarioManager;
 import com.leontg77.uhc.utils.NumberUtils;
+import com.leontg77.uhc.utils.PermsUtils;
 import com.leontg77.uhc.utils.PlayerUtils;
 
 /**
@@ -224,7 +225,7 @@ public class Main extends JavaPlugin {
 		getCommand("random").setExecutor(new RandomCommand());
 		getCommand("rank").setExecutor(new RankCommand());
 		getCommand("reply").setExecutor(new ReplyCommand());
-		getCommand("rules").setExecutor(new RulesCommand());
+		getCommand("rules").setExecutor(new UHCCommand());
 		getCommand("scenario").setExecutor(new ScenarioCommand());
 		getCommand("sethealth").setExecutor(new SethealthCommand());
 		getCommand("setmaxhealth").setExecutor(new SetmaxhealthCommand());
@@ -277,7 +278,7 @@ public class Main extends JavaPlugin {
 		}
 		
 		for (Player online : PlayerUtils.getPlayers()) {	
-			PlayerUtils.handlePermissions(online);
+			PermsUtils.addPermissions(online);
 		}
 		
 		Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {

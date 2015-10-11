@@ -81,40 +81,24 @@ public class InvGUI {
 	}
 	
 	/**
-	 * Opens the inventory of a target player.
+	 * Opens the inventory of the given target for the given player.
 	 * 
 	 * @param player player to open for.
 	 * @param target the players inv to use.
+	 * 
 	 * @return The opened inventory.
 	 */
-	public Inventory openInv(final Player player, final Player target) {
-		final Inventory inv = Bukkit.getServer().createInventory(target, 54, target.getName().substring(0, target.getName().length() > 18 ? 18 : target.getName().length()) + "'s Inventory");
+	public Inventory openPlayerInventory(final Player player, final Player target) {
+		final Inventory inv = Bukkit.getServer().createInventory(target, 54, target.getName() + "'s Inventory");
 	
 		Main.invsee.put(inv, new BukkitRunnable() {
 			public void run() {
-				if (inv.getItem(0) != target.getInventory().getHelmet()) {
-					inv.setItem(0, target.getInventory().getHelmet());
-				}
-
-				if (inv.getItem(1) != target.getInventory().getChestplate()) {
-					inv.setItem(1, target.getInventory().getChestplate());
-				}
-
-				if (inv.getItem(2) != target.getInventory().getLeggings()) {
-					inv.setItem(2, target.getInventory().getLeggings());
-				}
-
-				if (inv.getItem(3) != target.getInventory().getBoots()) {
-					inv.setItem(3, target.getInventory().getBoots());
-				}
-
-				if (inv.getItem(5) != target.getItemInHand()) {
-					inv.setItem(5, target.getItemInHand());
-				}
-
-				if (inv.getItem(6) != target.getItemOnCursor()) {
-					inv.setItem(6, target.getItemOnCursor());
-				}
+				inv.setItem(0, target.getInventory().getHelmet());
+				inv.setItem(1, target.getInventory().getChestplate());
+				inv.setItem(2, target.getInventory().getLeggings());
+				inv.setItem(3, target.getInventory().getBoots());
+				inv.setItem(5, target.getItemInHand());
+				inv.setItem(6, target.getItemOnCursor());
 				
 				ItemStack info = new ItemStack (Material.BOOK);
 				ItemMeta infoMeta = info.getItemMeta();
@@ -130,14 +114,15 @@ public class InvGUI {
 				lore.add("§8» §7Location: §6x:" + target.getLocation().getBlockX() + ", y:" + target.getLocation().getBlockY() + ", z:" + target.getLocation().getBlockZ() + " (" + target.getWorld().getEnvironment().name().replaceAll("_", "").toLowerCase().replaceAll("normal", "overworld") + ")");
 				lore.add(" ");
 				lore.add("§8» §cPotion effects:");
+				
 				if (target.getActivePotionEffects().size() == 0) {
 					lore.add("§8» §7None");
 				}
+				
 				for (PotionEffect effects : target.getActivePotionEffects()) {
-					if ((effects.getDuration() / 20) > 0) {
-						lore.add("§8» §7P:§6" + NameUtils.getPotionName(effects.getType()) + " §7T:§6" + (effects.getAmplifier() + 1) + " §7D:§6" + DateUtils.ticksToString(effects.getDuration() / 20));
-					}
+					lore.add("§8» §7P:§6" + NameUtils.getPotionName(effects.getType()) + " §7T:§6" + (effects.getAmplifier() + 1) + " §7D:§6" + DateUtils.ticksToString(effects.getDuration() / 20));
 				}
+				
 				infoMeta.setLore(lore);
 				info.setItemMeta(infoMeta);
 				inv.setItem(8, info);
@@ -149,26 +134,23 @@ public class InvGUI {
 					glassMeta.setDisplayName("§0:>");
 					glass.setItemMeta(glassMeta);
 					inv.setItem(8, info);
-					
-					if (inv.getItem(i) != glass) {
-						inv.setItem(i, glass);
-					}
+					inv.setItem(i, glass);
 				}
 				
 				int i = 18;
+				
 				for (ItemStack item : target.getInventory().getContents()) {
-					if (inv.getItem(i) != item) {
-						inv.setItem(i, item);
-					}
+					inv.setItem(i, item);
 					i++;
 				}
 				
 				player.updateInventory();
 			}
 		});
-		Main.invsee.get(inv).runTaskTimer(Main.plugin, 1, 1);
 		
+		Main.invsee.get(inv).runTaskTimer(Main.plugin, 1, 1);
 		player.openInventory(inv);
+		
 		return inv;
 	}
 	
@@ -648,7 +630,7 @@ public class InvGUI {
 				timerMeta.setDisplayName("§8» §6Timers §8«");
 				lore.add(" ");
 				
-				if (Game.getInstance().isRR()) {
+				if (Game.getInstance().isRecordedRound()) {
 					lore.add("§8» §7Current Episode: §a" + Runnables.meetup + " mins");
 					lore.add("§8» §7Time to next episode: §a" + Runnables.heal + " mins");
 				}

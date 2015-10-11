@@ -15,7 +15,7 @@ public class TimeLeftCommand implements CommandExecutor {
 
 	public boolean onCommand(CommandSender sender, Command cmd,	String label, String[] args) {
 		if (cmd.getName().equalsIgnoreCase("timeleft")) {
-			if (Game.getInstance().isRR()) {
+			if (Game.getInstance().isRecordedRound()) {
 				sender.sendMessage(Main.prefix() + "Current Episode: §a" + Runnables.meetup + " mins");
 				sender.sendMessage(Main.prefix() + "Time to next episode: §a" + Runnables.heal + " mins");
 				return true;

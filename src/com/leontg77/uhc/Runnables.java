@@ -26,6 +26,7 @@ import com.leontg77.uhc.scenario.ScenarioManager;
 import com.leontg77.uhc.utils.DateUtils;
 import com.leontg77.uhc.utils.EntityUtils;
 import com.leontg77.uhc.utils.GameUtils;
+import com.leontg77.uhc.utils.PacketUtils;
 import com.leontg77.uhc.utils.PlayerUtils;
 
 /**
@@ -55,14 +56,14 @@ public class Runnables {
 	 */
 	public static void start() {
 		for (Player online : PlayerUtils.getPlayers()) {
-			PlayerUtils.sendTitle(online, "§c3", "", 1, 20, 1);
+			PacketUtils.sendTitle(online, "§c3", "", 1, 20, 1);
 			online.playSound(online.getLocation(), Sound.SUCCESSFUL_HIT, 1, 0);
 		}
 		
 		Bukkit.getServer().getScheduler().runTaskLater(Main.plugin, new Runnable() {
 			public void run() {
 				for (Player online : PlayerUtils.getPlayers()) {
-					PlayerUtils.sendTitle(online, "§e2", "", 1, 20, 1);
+					PacketUtils.sendTitle(online, "§e2", "", 1, 20, 1);
 					online.playSound(online.getLocation(), Sound.SUCCESSFUL_HIT, 1, 0);
 				}
 			}
@@ -71,7 +72,7 @@ public class Runnables {
 		Bukkit.getServer().getScheduler().runTaskLater(Main.plugin, new Runnable() {
 			public void run() {
 				for (Player online : PlayerUtils.getPlayers()) {
-					PlayerUtils.sendTitle(online, "§a1", "", 1, 20, 1);
+					PacketUtils.sendTitle(online, "§a1", "", 1, 20, 1);
 					online.playSound(online.getLocation(), Sound.SUCCESSFUL_HIT, 1, 0);
 				}
 			}
@@ -104,7 +105,7 @@ public class Runnables {
 						online.setFireTicks(0);
 						online.setLevel(0);
 						online.setExp(0);
-						PlayerUtils.sendTitle(online, "§aGo!", "§7Have fun spectating!", 1, 20, 1);
+						PacketUtils.sendTitle(online, "§aGo!", "§7Have fun spectating!", 1, 20, 1);
 						continue;
 					}
 					
@@ -178,7 +179,7 @@ public class Runnables {
 					SpecInfo.totalDiamonds.clear();
 					SpecInfo.totalGold.clear();
 					
-					PlayerUtils.sendTitle(online, "§aGo!", "§7Good luck, have fun!", 1, 20, 1);
+					PacketUtils.sendTitle(online, "§aGo!", "§7Good luck, have fun!", 1, 20, 1);
 					
 					User data = User.get(online);
 					data.increaseStat(Stat.GAMESPLAYED);
@@ -216,7 +217,7 @@ public class Runnables {
 				meetupSeconds = (settings.getConfig().getInt("time.meetup") * 60);
 
 				for (Player online : PlayerUtils.getPlayers()) {
-					PlayerUtils.sendAction(online, "§7Final heal is given in §8» §a" + DateUtils.ticksToString(healSeconds));
+					PacketUtils.sendAction(online, "§7Final heal is given in §8» §a" + DateUtils.ticksToString(healSeconds));
 				}
 				
 				timer();
@@ -270,7 +271,7 @@ public class Runnables {
 					PlayerUtils.broadcast(Main.prefix() + "Final heal has been given, do not ask for another one.");
 					
 					for (Player online : PlayerUtils.getPlayers()) {
-						PlayerUtils.sendTitle(online, "§6Final heal!", "§aDo not ask for another one.", 5, 10, 5);
+						PacketUtils.sendTitle(online, "§6Final heal!", "§aDo not ask for another one.", 5, 10, 5);
 						online.playSound(online.getLocation(), Sound.NOTE_BASS, 1, 1);
 						online.setHealth(online.getMaxHealth());
 						online.setSaturation(20);
@@ -280,7 +281,7 @@ public class Runnables {
 				}
 				
 				if (heal == -1) {
-					PlayerUtils.broadcast(Main.prefix() + "Global chat has been enabled.");
+					PlayerUtils.broadcast(Main.prefix() + "The chat has been enabled.");
 					game.setMuted(false);
 				}
 				
@@ -296,7 +297,7 @@ public class Runnables {
 					PlayerUtils.broadcast(Main.prefix() + "PvP/iPvP has been enabled.");
 					
 					for (Player online : PlayerUtils.getPlayers()) {
-						PlayerUtils.sendTitle(online, "", "§4PvP has been enabled!", 5, 10, 5);
+						PacketUtils.sendTitle(online, "", "§4PvP has been enabled!", 5, 10, 5);
 						online.playSound(online.getLocation(), Sound.ENDERDRAGON_GROWL, 1, 1);
 					}
 					
@@ -522,22 +523,22 @@ public class Runnables {
 				
 				if (healSeconds > 0) {
 					for (Player online : PlayerUtils.getPlayers()) {
-						PlayerUtils.sendAction(online, "§7Final heal is given in §8» §a" + DateUtils.ticksToString(healSeconds));
+						PacketUtils.sendAction(online, "§7Final heal is given in §8» §a" + DateUtils.ticksToString(healSeconds));
 					}
 				}
 				else if (pvpSeconds > 0) {
 					for (Player online : PlayerUtils.getPlayers()) {
-						PlayerUtils.sendAction(online, "§7PvP is enabled in §8» §a" + DateUtils.ticksToString(pvpSeconds));
-						}
+						PacketUtils.sendAction(online, "§7PvP is enabled in §8» §a" + DateUtils.ticksToString(pvpSeconds));
+					}
 				}
 				else if (meetupSeconds > 0) {
 					for (Player online : PlayerUtils.getPlayers()) {
-						PlayerUtils.sendAction(online, "§7Meetup is in §8» §a" + DateUtils.ticksToString(meetupSeconds));
-						}
+						PacketUtils.sendAction(online, "§7Meetup is in §8» §a" + DateUtils.ticksToString(meetupSeconds));
+					}
 				}
 				else {
 					for (Player online : PlayerUtils.getPlayers()) {
-						PlayerUtils.sendAction(online, "§8» §6Meetup is now! §8«");
+						PacketUtils.sendAction(online, "§8» §6Meetup is now! §8«");
 					}
 				}
 			}
@@ -549,14 +550,14 @@ public class Runnables {
 	 */
 	public static void startRR() {
 		for (Player online : PlayerUtils.getPlayers()) {
-			PlayerUtils.sendTitle(online, "§c3", "", 1, 20, 1);
+			PacketUtils.sendTitle(online, "§c3", "", 1, 20, 1);
 			online.playSound(online.getLocation(), Sound.SUCCESSFUL_HIT, 1, 0);
 		}
 		
 		Bukkit.getServer().getScheduler().runTaskLater(Main.plugin, new Runnable() {
 			public void run() {
 				for (Player online : PlayerUtils.getPlayers()) {
-					PlayerUtils.sendTitle(online, "§e2", "", 1, 20, 1);
+					PacketUtils.sendTitle(online, "§e2", "", 1, 20, 1);
 					online.playSound(online.getLocation(), Sound.SUCCESSFUL_HIT, 1, 0);
 				}
 			}
@@ -565,7 +566,7 @@ public class Runnables {
 		Bukkit.getServer().getScheduler().runTaskLater(Main.plugin, new Runnable() {
 			public void run() {
 				for (Player online : PlayerUtils.getPlayers()) {
-					PlayerUtils.sendTitle(online, "§a1", "", 1, 20, 1);
+					PacketUtils.sendTitle(online, "§a1", "", 1, 20, 1);
 					online.playSound(online.getLocation(), Sound.SUCCESSFUL_HIT, 1, 0);
 				}
 			}
@@ -598,7 +599,7 @@ public class Runnables {
 						online.setFireTicks(0);
 						online.setLevel(0);
 						online.setExp(0);
-						PlayerUtils.sendTitle(online, "§aGo!", "§7Have fun spectating!", 1, 20, 1);
+						PacketUtils.sendTitle(online, "§aGo!", "§7Have fun spectating!", 1, 20, 1);
 						continue;
 					}
 					
@@ -651,7 +652,7 @@ public class Runnables {
 					SpecInfo.totalDiamonds.clear();
 					SpecInfo.totalGold.clear();
 					
-					PlayerUtils.sendTitle(online, "§aGo!", "§7Good luck, have fun!", 1, 20, 1);
+					PacketUtils.sendTitle(online, "§aGo!", "§7Good luck, have fun!", 1, 20, 1);
 				}
 				
 				for (String e : Scoreboards.getManager().kills.getScoreboard().getEntries()) {

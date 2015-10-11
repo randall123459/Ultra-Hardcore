@@ -184,7 +184,7 @@ public class PortalListener implements Listener {
 	        
 	        switch (from.getWorld().getEnvironment()) {
 			case THE_END:
-	        	event.setTo(Main.getSpawn());
+	        	event.getEntity().remove();
 	        	return;
 			case NORMAL:
 	            targetName = fromName + "_end";
