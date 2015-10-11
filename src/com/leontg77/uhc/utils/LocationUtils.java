@@ -110,7 +110,12 @@ public class LocationUtils {
         }
 
         pos.setY(highestTeleportableYAtLocation(pos.add(centre)));
-        pos = travel.findOrCreate(pos);
+        
+        Location to = travel.findOrCreate(pos);
+        
+        if (!isOutsideOfBorder(to)) {
+        	pos = to;
+        }
         
         return pos;
     }
