@@ -4,7 +4,6 @@ import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 /**
@@ -25,16 +24,12 @@ public class BlockUtils {
 	 * @param type the type of the block.
 	 */
 	public static void blockCrack(Player player, Location loc, Material type) {
-		for (Entity e : PlayerUtils.getNearby(player.getLocation(), 112)) {
-			if (e instanceof Player) {
-				Player p = (Player) e;
-				
-				if (p == player) {
-					continue;
-				}
-				
-				p.playEffect(loc, Effect.STEP_SOUND, type.getId());
+		for (Player online : PlayerUtils.getPlayers()) {
+			if (online == player) {
+				continue;
 			}
+				
+			online.playEffect(loc, Effect.STEP_SOUND, type.getId());
 		}
 	}
 	
@@ -46,16 +41,12 @@ public class BlockUtils {
 	 * @param id the id of the block.
 	 */
 	public static void blockCrack(Player player, Location loc, int id) {
-		for (Entity e : PlayerUtils.getNearby(player.getLocation(), 112)) {
-			if (e instanceof Player) {
-				Player p = (Player) e;
-				
-				if (p == player) {
-					continue;
-				}
-				
-				p.playEffect(loc, Effect.STEP_SOUND, id);
+		for (Player online : PlayerUtils.getPlayers()) {
+			if (online == player) {
+				continue;
 			}
+				
+			online.playEffect(loc, Effect.STEP_SOUND, id);
 		}
 	}
 	
