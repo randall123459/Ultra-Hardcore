@@ -322,19 +322,19 @@ public class MysteryTeams extends Scenario implements Listener, CommandExecutor 
 	}
 
 	public enum MysteryTeam {
-		WHITE(ChatColor.WHITE, DyeColor.WHITE, "White"), 
+		GREEN(ChatColor.DARK_GREEN, DyeColor.GREEN, "Green"), 
 		ORANGE(ChatColor.GOLD, DyeColor.ORANGE, "Orange"), 
+		RED(ChatColor.RED, DyeColor.RED, "Red"), 
 		LIGHT_BLUE(ChatColor.AQUA, DyeColor.LIGHT_BLUE, "Light blue"), 
 		YELLOW(ChatColor.YELLOW, DyeColor.YELLOW, "Yellow"), 
 		LIME(ChatColor.GREEN, DyeColor.LIME, "Light Green"), 
 		PINK(ChatColor.LIGHT_PURPLE, DyeColor.PINK, "Pink"), 
 		GRAY(ChatColor.DARK_GRAY, DyeColor.GRAY, "Gray"), 
 		SILVER(ChatColor.GRAY, DyeColor.SILVER, "Light Gray"), 
-		CYAN(ChatColor.DARK_AQUA, DyeColor.CYAN, "Cyan"), 
 		PURPLE(ChatColor.DARK_PURPLE, DyeColor.PURPLE, "Purple"), 
 		BLUE(ChatColor.BLUE, DyeColor.BLUE, "Blue"), 
-		GREEN(ChatColor.DARK_GREEN, DyeColor.GREEN, "Green"), 
-		RED(ChatColor.RED, DyeColor.RED, "Red"), 
+		CYAN(ChatColor.DARK_AQUA, DyeColor.CYAN, "Cyan"), 
+		WHITE(ChatColor.WHITE, DyeColor.WHITE, "White"), 
 		BLACK(ChatColor.BLACK, DyeColor.BLACK, "Black");
 
 		private ChatColor cColor;
