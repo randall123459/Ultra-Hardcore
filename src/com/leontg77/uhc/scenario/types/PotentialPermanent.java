@@ -1,5 +1,7 @@
 package com.leontg77.uhc.scenario.types;
 
+import net.minecraft.server.v1_8_R3.EntityPlayer;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -13,6 +15,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import com.leontg77.uhc.Game;
+import com.leontg77.uhc.Main;
 import com.leontg77.uhc.scenario.Scenario;
 import com.leontg77.uhc.utils.PlayerUtils;
 
@@ -32,17 +35,21 @@ public class PotentialPermanent extends Scenario implements Listener {
 		enabled = enable;
 		
 		if (enable) {
+			PotionEffect effect = new PotionEffect(PotionEffectType.ABSORPTION, Short.MAX_VALUE, 4);
+			
 			for (Player online : PlayerUtils.getPlayers()) {
-				online.addPotionEffect(new PotionEffect(PotionEffectType.ABSORPTION, 1726272000, 4));
-				online.setMaxHealth(20.0);
+				online.addPotionEffect(effect);
+				online.setMaxHealth(20);
 			}
 	
-			Game.getInstance().setAbsorption(true);
-			Game.getInstance().setGoldenHeadsHeal(2);
+			Game game = Game.getInstance();
+
+			game.setGoldenHeadsHeal(2);
+			game.setAbsorption(true);
 		} else {
 			for (Player online : PlayerUtils.getPlayers()) {
 				online.removePotionEffect(PotionEffectType.ABSORPTION);
-				online.setMaxHealth(20.0);
+				online.setMaxHealth(20);
 			}
 		}
 	}
@@ -60,18 +67,21 @@ public class PotentialPermanent extends Scenario implements Listener {
 			return;
 		}
 		
-		if (item.getType() != Material.GOLDEN_APPLE) {
-			if (item.getType() == Material.MILK_BUCKET) {
-				player.sendMessage(ChatColor.RED + "You cannot drink milk in PotentialPermanent.");
-				event.setItem(new ItemStack (Material.AIR));
-				event.setCancelled(true);
-			}
+		if (item.getType() == Material.MILK_BUCKET) {
+			player.sendMessage(Main.PREFIX + ChatColor.RED + "You cannot drink milk in PotentialPermanent.");
+			event.setItem(new ItemStack (Material.AIR));
+			event.setCancelled(true);
 			return;
 		}
 		
-		CraftPlayer cplayer = (CraftPlayer) player;
+		if (item.getType() != Material.GOLDEN_APPLE) {
+			return;
+		}
 		
-		float absHearts = cplayer.getHandle().getAbsorptionHearts();
+		CraftPlayer craft = (CraftPlayer) player;
+		EntityPlayer handle = craft.getHandle();
+		
+		float absHearts = craft.getHandle().getAbsorptionHearts();
 		
         player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 100, 1));
         player.getWorld().playSound(player.getLocation(), Sound.BURP, 1, 1);
@@ -79,17 +89,14 @@ public class PotentialPermanent extends Scenario implements Listener {
         player.setFoodLevel(player.getFoodLevel() + 4);
 		event.setCancelled(true);
         
-		if (player.getItemInHand().getAmount() == 1) {
-			player.setItemInHand(new ItemStack (Material.AIR));
-		} else {
-			ItemStack itemInHand = player.getItemInHand();
-			itemInHand.setAmount(itemInHand.getAmount() - 1);
-			player.setItemInHand(itemInHand);
-		}
+		item.setAmount(1);
+		player.getInventory().removeItem(item);
 		
 		if (absHearts != 0) {
-			player.setMaxHealth(absHearts >= 4 ? player.getMaxHealth() + 4 : player.getMaxHealth() + absHearts);
-			cplayer.getHandle().setAbsorptionHearts(absHearts >= 4 ? absHearts - 4 : 0);
+			float toTake = Math.min(4, absHearts);
+			
+			player.setMaxHealth(player.getMaxHealth() + toTake);
+			handle.setAbsorptionHearts(absHearts - toTake);
 		}
 	}
 }
