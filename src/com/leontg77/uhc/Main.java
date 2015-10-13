@@ -23,6 +23,7 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -144,8 +145,10 @@ public class Main extends JavaPlugin {
 	public static HashMap<String, Integer> kills = new HashMap<String, Integer>();
 	
 	public static HashMap<Player, int[]> rainbow = new HashMap<Player, int[]>();
+
+	public static final String PREFIX = "§4§lUHC §8» §7";
+	public static final String NO_PERMISSION_MESSAGE = PREFIX + ChatColor.RED + "You can't use that command.";
 	
-	public static final String NO_PERMISSION_MESSAGE = Main.prefix() + ChatColor.RED + "You can't use that command.";
 	private static Settings settings = Settings.getInstance();
 	
 	@Override
@@ -283,25 +286,34 @@ public class Main extends JavaPlugin {
 		
 		Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
 			public void run() {
-				for (Player online : PlayerUtils.getPlayers()) {	
-					if (Spectator.getManager().isSpectating(online) && online.getGameMode() != GameMode.SPECTATOR) {
+				for (Player online : PlayerUtils.getPlayers()) {
+					Spectator spec = Spectator.getManager();
+					
+					if (spec.isSpectating(online) && online.getGameMode() != GameMode.SPECTATOR) {
 						online.setGameMode(GameMode.SPECTATOR);
 					}
 					
-					if (online.getInventory().getHelmet() != null && online.getInventory().getHelmet().getType() == Material.LEATHER_HELMET) {
-						online.getInventory().setHelmet(rainbowArmor(online, online.getInventory().getHelmet()));
+					PlayerInventory inv = online.getInventory();
+					
+					ItemStack hemlet = inv.getHelmet();
+					ItemStack chestplate = inv.getChestplate();
+					ItemStack leggings = inv.getLeggings();
+					ItemStack boots = inv.getBoots();
+					
+					if (hemlet != null && hemlet.getType() == Material.LEATHER_HELMET) {
+						inv.setHelmet(rainbowArmor(online, hemlet));
 					}
-               
-					if (online.getInventory().getChestplate() != null && online.getInventory().getChestplate().getType() == Material.LEATHER_CHESTPLATE) {
-						online.getInventory().setChestplate(rainbowArmor(online, online.getInventory().getChestplate()));
+					
+					if (chestplate != null && chestplate.getType() == Material.LEATHER_HELMET) {
+						inv.setHelmet(rainbowArmor(online, chestplate));
 					}
-               
-					if (online.getInventory().getLeggings() != null && online.getInventory().getLeggings().getType() == Material.LEATHER_LEGGINGS) {
-						online.getInventory().setLeggings(rainbowArmor(online, online.getInventory().getLeggings()));
+					
+					if (leggings != null && leggings.getType() == Material.LEATHER_HELMET) {
+						inv.setHelmet(rainbowArmor(online, leggings));
 					}
-               
-					if (online.getInventory().getBoots() != null && online.getInventory().getBoots().getType() == Material.LEATHER_BOOTS) {
-						online.getInventory().setBoots(rainbowArmor(online, online.getInventory().getBoots()));
+					
+					if (boots != null && boots.getType() == Material.LEATHER_HELMET) {
+						inv.setHelmet(rainbowArmor(online, boots));
 					}
 					
 					if (Game.getInstance().tabShowsHealthColor()) {
@@ -323,7 +335,7 @@ public class Main extends JavaPlugin {
 					String uuid = online.getUniqueId().toString();
 					
 					if (online.isOp() && !(uuid.equals("02dc5178-f7ec-4254-8401-1a57a7442a2f") || uuid.equals("8b2b2e07-b694-4bd0-8f1b-ba99a267be41") || uuid.equals("31e89a33-a22c-4151-92e4-caa78586af31"))) {
-						online.sendMessage(prefix() + "§cYou are not allowed to have OP.");
+						online.sendMessage(PREFIX + "§cYou are not allowed to have OP.");
 						online.setOp(false);
 					}
 
@@ -331,13 +343,12 @@ public class Main extends JavaPlugin {
 					int percent = NumberUtils.makePercent(online.getHealth());
 					
 					Objective tabList = sb.getObjective("tabHealth");
+					Objective bellowName = sb.getObjective("nameHealth");
 					
 					if (tabList != null) {
 						Score score = tabList.getScore(online.getName());
 						score.setScore(percent);
 					}
-					
-					Objective bellowName = sb.getObjective("nameHealth");
 					
 					if (bellowName != null) {
 						Score score = bellowName.getScore(online.getName());
@@ -366,16 +377,6 @@ public class Main extends JavaPlugin {
 				}
 			}
 		}, 1, 1);
-	}
-	
-	/**
-	 * Get the UHC prefix.
-	 * 
-	 * @return The UHC prefix.
-	 */
-	public static String prefix() {
-		String prefix = "§4§lUHC §8» §7";
-		return prefix;
 	}
 	
 	/**
@@ -415,8 +416,10 @@ public class Main extends JavaPlugin {
         meta.setLore(Arrays.asList(ChatColor.DARK_PURPLE + "Some say consuming the head of a", ChatColor.DARK_PURPLE + "fallen foe strengthens the blood."));
         head.setItemMeta(meta); 
 
+        MaterialData data = new MaterialData(Material.SKULL_ITEM, (byte) 3);
+        
         ShapedRecipe goldenmelon = new ShapedRecipe(new ItemStack(Material.SPECKLED_MELON)).shape("@@@", "@*@", "@@@").setIngredient('@', Material.GOLD_INGOT).setIngredient('*', Material.MELON);
-        ShapedRecipe goldenhead = new ShapedRecipe(head).shape("@@@", "@*@", "@@@").setIngredient('@', Material.GOLD_INGOT).setIngredient('*', new MaterialData(Material.SKULL_ITEM, (byte) 3));
+        ShapedRecipe goldenhead = new ShapedRecipe(head).shape("@@@", "@*@", "@@@").setIngredient('@', Material.GOLD_INGOT).setIngredient('*', data);
 
         getServer().addRecipe(goldenmelon);
         getServer().addRecipe(goldenhead);
