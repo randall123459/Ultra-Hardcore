@@ -171,6 +171,7 @@ public class Arena {
 		if (wasEnabled) {
 			disable();
 		}
+		
 		PlayerUtils.broadcast(Main.prefix() + "The arena is resetting, lag incoming.");
 		
 		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "mv delete arena");
