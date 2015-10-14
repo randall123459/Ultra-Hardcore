@@ -30,7 +30,7 @@ public class WhitelistCommand implements CommandExecutor, TabCompleter {
 		}
 
        	if (args.length == 0) {
-    		sender.sendMessage(Main.prefix() + "Usage: /whitelist <on|off|add|remove|all|clear|list> [player]");
+    		sender.sendMessage(Main.PREFIX + "Usage: /whitelist <on|off|add|remove|all|clear|list> [player]");
     		return true;
        	}
 		
@@ -41,12 +41,12 @@ public class WhitelistCommand implements CommandExecutor, TabCompleter {
            		if (target == null) {
                    	OfflinePlayer offline = PlayerUtils.getOfflinePlayer(args[1]);
                    	
-           			PlayerUtils.broadcast(Main.prefix() + ChatColor.GREEN + offline.getName() + " §7has been whitelisted.");
+           			PlayerUtils.broadcast(Main.PREFIX + ChatColor.GREEN + offline.getName() + " §7has been whitelisted.");
            			offline.setWhitelisted(true);
            			return true;
            		}
            		
-       			PlayerUtils.broadcast(Main.prefix() + ChatColor.GREEN + target.getName() + " §7has been whitelisted.");
+       			PlayerUtils.broadcast(Main.PREFIX + ChatColor.GREEN + target.getName() + " §7has been whitelisted.");
        			target.setWhitelisted(true);
     			return true;
            	} 
@@ -57,24 +57,24 @@ public class WhitelistCommand implements CommandExecutor, TabCompleter {
            		if (target == null) {
                    	OfflinePlayer offline = PlayerUtils.getOfflinePlayer(args[1]);
                    	
-           			PlayerUtils.broadcast(Main.prefix() + ChatColor.GREEN + offline.getName() + " §7is no longer whitelisted.");
+           			PlayerUtils.broadcast(Main.PREFIX + ChatColor.GREEN + offline.getName() + " §7is no longer whitelisted.");
            			offline.setWhitelisted(false);
            			return true;
            		}
            		
-       			PlayerUtils.broadcast(Main.prefix() + ChatColor.GREEN + target.getName() + " §7is no longer whitelisted.");
+       			PlayerUtils.broadcast(Main.PREFIX + ChatColor.GREEN + target.getName() + " §7is no longer whitelisted.");
            		target.setWhitelisted(false);
     			return true;
            	}  
        	}
 		
        	if (args[0].equalsIgnoreCase("on")) {
-   			PlayerUtils.broadcast(Main.prefix() + "The whitelist is now on");
+   			PlayerUtils.broadcast(Main.PREFIX + "The whitelist is now on");
    			
    			Bukkit.getServer().setWhitelist(true);
    		} 
    		else if (args[0].equalsIgnoreCase("off")) {
-   			PlayerUtils.broadcast(Main.prefix() + "The whitelist is now off");
+   			PlayerUtils.broadcast(Main.PREFIX + "The whitelist is now off");
    			
    			Bukkit.getServer().setWhitelist(false);
    		} 
@@ -83,18 +83,18 @@ public class WhitelistCommand implements CommandExecutor, TabCompleter {
    				online.setWhitelisted(true);
    			}
    			
-   			PlayerUtils.broadcast(Main.prefix() + "All players has been whitelisted.");
+   			PlayerUtils.broadcast(Main.PREFIX + "All players has been whitelisted.");
    		} 
    		else if (args[0].equalsIgnoreCase("clear")) {
    			for (OfflinePlayer whitelisted : Bukkit.getWhitelistedPlayers()) {
    				whitelisted.setWhitelisted(false);
    			}
    			
-   			PlayerUtils.broadcast(Main.prefix() + "The whitelist has been cleared.");
+   			PlayerUtils.broadcast(Main.PREFIX + "The whitelist has been cleared.");
    		}
    		else if (args[0].equalsIgnoreCase("list")) {
    			if (Bukkit.getWhitelistedPlayers().size() <= 0) {
-		    	sender.sendMessage(Main.prefix() + "There are no whitelisted players.");
+		    	sender.sendMessage(Main.PREFIX + "There are no whitelisted players.");
 				return true;
 			}
    			
@@ -114,11 +114,11 @@ public class WhitelistCommand implements CommandExecutor, TabCompleter {
 				i++;
 			}
 	    			
-	    	sender.sendMessage(Main.prefix() + "There are §6" + (i - 1) + " §7whitelisted players");
+	    	sender.sendMessage(Main.PREFIX + "There are §6" + (i - 1) + " §7whitelisted players");
 	    	sender.sendMessage("§8» §7Wl'd players: §f" + list.toString() + ".");
    		} 
    		else {
-       		sender.sendMessage(Main.prefix() + "Usage: /whitelist <on|off|add|remove|all|clear|list> [player]");
+       		sender.sendMessage(Main.PREFIX + "Usage: /whitelist <on|off|add|remove|all|clear|list> [player]");
    		}
        	return true;
 	}
@@ -128,10 +128,12 @@ public class WhitelistCommand implements CommandExecutor, TabCompleter {
 		if (!sender.hasPermission("uhc.whitelist")) {
 			return null;
 		}
+
+    	ArrayList<String> arg = new ArrayList<String>();
 		
 		if (args.length == 1) {
-        	ArrayList<String> arg = new ArrayList<String>();
-        	ArrayList<String> types = new ArrayList<String>();
+	    	ArrayList<String> types = new ArrayList<String>();
+	    	
         	types.add("on");
         	types.add("off");
         	types.add("add");
@@ -151,13 +153,9 @@ public class WhitelistCommand implements CommandExecutor, TabCompleter {
         			}
         		}
         	}
-        	
-        	return arg;
         }
 		
 		if (args.length == 2) {
-        	ArrayList<String> arg = new ArrayList<String>();
-        	
         	if (args[0].equalsIgnoreCase("add")) {
 	        	if (args[1].equals("")) {
 	        		for (Player online : PlayerUtils.getPlayers()) {
@@ -187,8 +185,8 @@ public class WhitelistCommand implements CommandExecutor, TabCompleter {
 	        		}
 	        	}
         	}
-        	return arg;
         }
-		return null;
+    	
+    	return arg;
 	}
 }
