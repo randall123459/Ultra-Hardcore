@@ -17,6 +17,7 @@ import org.bukkit.Difficulty;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.enchantments.Enchantment;
@@ -32,13 +33,14 @@ import org.bukkit.material.MaterialData;
 import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Score;
 import org.bukkit.scoreboard.Scoreboard;
 
-import com.comphenix.protocol.PacketType.Play.Server;
+import com.comphenix.protocol.PacketType.Play;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.ListenerPriority;
@@ -111,10 +113,6 @@ import com.leontg77.uhc.listeners.LoginListener;
 import com.leontg77.uhc.listeners.PlayerListener;
 import com.leontg77.uhc.listeners.PortalListener;
 import com.leontg77.uhc.listeners.WorldListener;
-import com.leontg77.uhc.managers.AntiStripmine;
-import com.leontg77.uhc.managers.BiomeSwap;
-import com.leontg77.uhc.managers.Parkour;
-import com.leontg77.uhc.managers.UBL;
 import com.leontg77.uhc.scenario.Scenario;
 import com.leontg77.uhc.scenario.ScenarioManager;
 import com.leontg77.uhc.utils.NumberUtils;
@@ -185,13 +183,16 @@ public class Main extends JavaPlugin {
 		recoverData();
 		addRecipes();
 		
-		Bukkit.getServer().getPluginManager().registerEvents(new BlockListener(), this);
-		Bukkit.getServer().getPluginManager().registerEvents(new EntityListener(), this);
-		Bukkit.getServer().getPluginManager().registerEvents(new InventoryListener(), this);
-		Bukkit.getServer().getPluginManager().registerEvents(new LoginListener(), this);
-		Bukkit.getServer().getPluginManager().registerEvents(new PlayerListener(), this);
-		Bukkit.getServer().getPluginManager().registerEvents(new PortalListener(), this);
-		Bukkit.getServer().getPluginManager().registerEvents(new WorldListener(), this);
+		Server server = Bukkit.getServer();
+		PluginManager pmanager = server.getPluginManager();
+		
+		pmanager.registerEvents(new BlockListener(), this);
+		pmanager.registerEvents(new EntityListener(), this);
+		pmanager.registerEvents(new InventoryListener(), this);
+		pmanager.registerEvents(new LoginListener(), this);
+		pmanager.registerEvents(new PlayerListener(), this);
+		pmanager.registerEvents(new PortalListener(), this);
+		pmanager.registerEvents(new WorldListener(), this);
 
 		getCommand("aboard").setExecutor(new AboardCommand());
 		getCommand("arena").setExecutor(new ArenaCommand());
@@ -602,12 +603,12 @@ public class Main extends JavaPlugin {
 		 * @param plugin The main class of the plugin.
 		 */
 		public HardcoreHearts(Plugin plugin) {
-			super(plugin, ListenerPriority.NORMAL, Server.LOGIN);
+			super(plugin, ListenerPriority.NORMAL, Play.Server.LOGIN);
 		}
 
 	    @Override
 	    public void onPacketSending(PacketEvent event) {
-	        if (event.getPacketType().equals(Server.LOGIN)) {
+	        if (event.getPacketType().equals(Play.Server.LOGIN)) {
 	            event.getPacket().getBooleans().write(0, true);
 	        }
 	    }
