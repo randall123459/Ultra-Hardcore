@@ -7,7 +7,7 @@ import org.bukkit.command.CommandSender;
 
 import com.leontg77.uhc.Game;
 import com.leontg77.uhc.Main;
-import com.leontg77.uhc.Runnables;
+import com.leontg77.uhc.Timers;
 import com.leontg77.uhc.Settings;
 import com.leontg77.uhc.State;
 import com.leontg77.uhc.utils.PlayerUtils;
@@ -24,11 +24,11 @@ public class StartCommand implements CommandExecutor {
 					PlayerUtils.broadcast(Main.prefix() + "The game is starting.");
 					
 					if (Game.getInstance().isRecordedRound()) {
-						Runnables.startRR();
+						Timers.startRR();
 					} else {
 						PlayerUtils.broadcast(Main.prefix() + "Remember to read the match post: " + Settings.getInstance().getConfig().getString("matchpost"));
 						PlayerUtils.broadcast(Main.prefix() + "If you have any questions, use /helpop.");
-						Runnables.start();
+						Timers.start();
 					}
 				}
 				else if (State.isState(State.INGAME)) {
@@ -62,18 +62,18 @@ public class StartCommand implements CommandExecutor {
 						return true;
 					}
 					
-					Runnables.heal = heal;
-					Runnables.pvp = pvp;
-					Runnables.meetup = meetup;
+					Timers.heal = heal;
+					Timers.pvp = pvp;
+					Timers.meetup = meetup;
 					
-					Runnables.healSeconds = (heal > 0 ? (heal * 60) : 0);
-					Runnables.pvpSeconds = (pvp > 0 ? (pvp * 60) : 0);
-					Runnables.meetupSeconds = (meetup > 0 ? (meetup * 60) : 0);
+					Timers.healSeconds = (heal > 0 ? (heal * 60) : 0);
+					Timers.pvpSeconds = (pvp > 0 ? (pvp * 60) : 0);
+					Timers.meetupSeconds = (meetup > 0 ? (meetup * 60) : 0);
 
 					if (Game.getInstance().isRecordedRound()) {
-						Runnables.timerRR();
+						Timers.timerRR();
 					} else {
-						Runnables.timer();
+						Timers.timer();
 					}
 				}
 			} else {

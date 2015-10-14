@@ -15,7 +15,7 @@ import org.bukkit.entity.Player;
 import com.leontg77.uhc.Game;
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.Main.BorderShrink;
-import com.leontg77.uhc.Runnables;
+import com.leontg77.uhc.Timers;
 import com.leontg77.uhc.Scoreboards;
 import com.leontg77.uhc.Settings;
 import com.leontg77.uhc.State;
@@ -199,7 +199,7 @@ public class ConfigCommand implements CommandExecutor, TabCompleter {
 					Settings.getInstance().getConfig().set("time.meetup", meetup);
 					Settings.getInstance().saveConfig();
 
-					Runnables.meetup = meetup;
+					Timers.meetup = meetup;
 					PlayerUtils.broadcast(Main.prefix() + "Meetup is now §a" + meetup + "§7 minutes in.");
 					break;
 				case NERFEDSTRENGTH:
@@ -259,7 +259,7 @@ public class ConfigCommand implements CommandExecutor, TabCompleter {
 					Settings.getInstance().getConfig().set("time.pvp", pvp);
 					Settings.getInstance().saveConfig();
 
-					Runnables.pvp = pvp;
+					Timers.pvp = pvp;
 					PlayerUtils.broadcast(Main.prefix() + "PvP is now §a" + pvp + "§7 minutes in.");
 					break;
 				case SCENARIOS:

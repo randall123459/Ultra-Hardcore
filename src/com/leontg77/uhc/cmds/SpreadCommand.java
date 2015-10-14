@@ -23,11 +23,11 @@ import org.bukkit.scoreboard.Team;
 
 import com.leontg77.uhc.Game;
 import com.leontg77.uhc.Main;
+import com.leontg77.uhc.Parkour;
 import com.leontg77.uhc.Scoreboards;
 import com.leontg77.uhc.Settings;
 import com.leontg77.uhc.State;
 import com.leontg77.uhc.Teams;
-import com.leontg77.uhc.managers.Parkour;
 import com.leontg77.uhc.utils.EntityUtils;
 import com.leontg77.uhc.utils.GameUtils;
 import com.leontg77.uhc.utils.PlayerUtils;

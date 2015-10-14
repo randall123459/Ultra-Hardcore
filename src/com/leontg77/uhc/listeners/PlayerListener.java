@@ -51,10 +51,12 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Team;
 
 import com.leontg77.uhc.Arena;
+import com.leontg77.uhc.Fireworks;
 import com.leontg77.uhc.Game;
 import com.leontg77.uhc.InvGUI;
 import com.leontg77.uhc.Main;
-import com.leontg77.uhc.Runnables;
+import com.leontg77.uhc.Parkour;
+import com.leontg77.uhc.Timers;
 import com.leontg77.uhc.Scoreboards;
 import com.leontg77.uhc.Settings;
 import com.leontg77.uhc.Spectator;
@@ -64,8 +66,6 @@ import com.leontg77.uhc.User;
 import com.leontg77.uhc.User.Rank;
 import com.leontg77.uhc.User.Stat;
 import com.leontg77.uhc.cmds.VoteCommand;
-import com.leontg77.uhc.managers.Fireworks;
-import com.leontg77.uhc.managers.Parkour;
 import com.leontg77.uhc.scenario.ScenarioManager;
 import com.leontg77.uhc.utils.BlockUtils;
 import com.leontg77.uhc.utils.DateUtils;
@@ -576,7 +576,7 @@ public class PlayerListener implements Listener {
         	event.setCancelled(true);
         }
         
-        if (event.getAction() == Action.RIGHT_CLICK_BLOCK && State.isState(State.INGAME) && Runnables.pvp > 0 && !game.isRecordedRound()) {
+        if (event.getAction() == Action.RIGHT_CLICK_BLOCK && State.isState(State.INGAME) && Timers.pvp > 0 && !game.isRecordedRound()) {
         	if (event.getItem() != null && (event.getItem().getType() == Material.LAVA_BUCKET || event.getItem().getType() == Material.FLINT_AND_STEEL || event.getItem().getType() == Material.CACTUS || event.getItem().getType() == Material.SAND || event.getItem().getType() == Material.GRAVEL)) {
         		for (Entity nearby : PlayerUtils.getNearby(event.getClickedBlock().getLocation(), 5)) {
         			if (nearby instanceof Player) {

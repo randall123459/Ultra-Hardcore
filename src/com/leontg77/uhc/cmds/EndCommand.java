@@ -22,9 +22,11 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 
+import com.leontg77.uhc.Fireworks;
 import com.leontg77.uhc.Game;
 import com.leontg77.uhc.Main;
-import com.leontg77.uhc.Runnables;
+import com.leontg77.uhc.Parkour;
+import com.leontg77.uhc.Timers;
 import com.leontg77.uhc.Scoreboards;
 import com.leontg77.uhc.Settings;
 import com.leontg77.uhc.Spectator;
@@ -33,8 +35,6 @@ import com.leontg77.uhc.User.Stat;
 import com.leontg77.uhc.State;
 import com.leontg77.uhc.Teams;
 import com.leontg77.uhc.User;
-import com.leontg77.uhc.managers.Fireworks;
-import com.leontg77.uhc.managers.Parkour;
 import com.leontg77.uhc.scenario.Scenario;
 import com.leontg77.uhc.scenario.ScenarioManager;
 import com.leontg77.uhc.utils.GameUtils;
@@ -111,9 +111,9 @@ public class EndCommand implements CommandExecutor {
 	       			}
 					
 					try {
-						Bukkit.getServer().getScheduler().cancelTask(Runnables.taskMinutes);;
+						Bukkit.getServer().getScheduler().cancelTask(Timers.taskMinutes);;
 					} catch (Exception e) {
-						Bukkit.getLogger().warning("Could not cancel task " + Runnables.taskMinutes);
+						Bukkit.getLogger().warning("Could not cancel task " + Timers.taskMinutes);
 					}
 					
 					File playerData = new File(Bukkit.getWorlds().get(0).getWorldFolder(), "playerdata");
@@ -266,15 +266,15 @@ public class EndCommand implements CommandExecutor {
        			}
 				
 				try {
-					Bukkit.getServer().getScheduler().cancelTask(Runnables.taskMinutes);
+					Bukkit.getServer().getScheduler().cancelTask(Timers.taskMinutes);
 				} catch (Exception e) {
-					Bukkit.getLogger().warning("Could not cancel task " + Runnables.taskMinutes);
+					Bukkit.getLogger().warning("Could not cancel task " + Timers.taskMinutes);
 				}
 				
 				try {
-					Bukkit.getServer().getScheduler().cancelTask(Runnables.taskSeconds);
+					Bukkit.getServer().getScheduler().cancelTask(Timers.taskSeconds);
 				} catch (Exception e) {
-					Bukkit.getLogger().warning("Could not cancel task " + Runnables.taskSeconds);
+					Bukkit.getLogger().warning("Could not cancel task " + Timers.taskSeconds);
 				}
 				
 				File playerData = new File(Bukkit.getWorlds().get(0).getWorldFolder(), "playerdata");
