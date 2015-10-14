@@ -1,4 +1,4 @@
-package com.leontg77.uhc.managers;
+package com.leontg77.uhc;
 
 import static com.leontg77.uhc.Main.plugin;
 

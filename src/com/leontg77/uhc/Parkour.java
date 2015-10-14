@@ -1,4 +1,4 @@
-package com.leontg77.uhc.managers;
+package com.leontg77.uhc;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -16,7 +16,6 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import com.leontg77.uhc.Main;
 import com.leontg77.uhc.utils.DateUtils;
 import com.leontg77.uhc.utils.PlayerUtils;
 
@@ -43,12 +42,12 @@ public class Parkour implements Listener {
 	 * 
 	 * @return The instance.
 	 */
-	public static Parkour getManager() {
+	public static Parkour getInstance() {
 		return manager;
 	}
 	
 	/**
-	 * Set up the parkour class.
+	 * Set up the parkour system.
 	 */
 	public void setup() {
 		Bukkit.getServer().getPluginManager().registerEvents(this, Main.plugin);
@@ -65,13 +64,11 @@ public class Parkour implements Listener {
 	}
 	
 	/**
-	 * Set up the parkour class.
+	 * Reset the parkour data.
 	 */
-	public void shutdown() {
-		HandlerList.unregisterAll(this);
+	public void reset() {
 		checkpoint.clear();
 		players.clear();
-		task.cancel();
 		time.clear();
 	}
 	
