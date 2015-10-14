@@ -36,7 +36,7 @@ import com.leontg77.uhc.utils.PlayerUtils;
  * 
  * @author LeonTG77
  */
-public class Runnables {
+public class Timers {
 	private static Settings settings = Settings.getInstance();
 	private static Game game = Game.getInstance();
 
