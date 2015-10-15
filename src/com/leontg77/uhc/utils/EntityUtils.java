@@ -1,8 +1,10 @@
 package com.leontg77.uhc.utils;
 
+import java.util.Random;
 import java.util.Set;
 
 import org.bukkit.entity.EntityType;
+import org.bukkit.util.Vector;
 
 import com.google.common.collect.ImmutableSet;
 
@@ -26,7 +28,30 @@ public class EntityUtils {
 		EntityType.WITHER, EntityType.WITHER_SKULL, EntityType.ZOMBIE
 	);
 	
-	public static boolean isClearable(EntityType type) {
+	/**
+	 * Check if the given entity type can be butchered.
+	 * 
+	 * @param type The type checking.
+	 * @return True if it is butcherable, false otherwise.
+	 */
+	public static boolean isButcherable(EntityType type) {
 		return clearable.contains(type);
+	}
+
+	/**
+	 * Get a random offset for item dropping.
+	 * 
+	 * @return A vector with a random offset.
+	 */
+	public static Vector randomOffset() {
+		Random rand = new Random();
+		
+		double offsetX = rand.nextDouble() / 16;
+		double offsetZ = rand.nextDouble() / 16;
+
+		offsetX = offsetX - (rand.nextDouble() / 16);
+		offsetZ = offsetZ - (rand.nextDouble() / 16);
+		
+		return new Vector(offsetX, 0.2, offsetZ);
 	}
 }
