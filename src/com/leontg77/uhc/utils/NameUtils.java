@@ -1,8 +1,6 @@
 package com.leontg77.uhc.utils;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
@@ -31,11 +29,13 @@ public class NameUtils {
 			return "VIP";
 		}
 		
+		String toReturn = text.substring(0, 1).toUpperCase() + text.substring(1).toLowerCase();
+		
 		if (replaceUnderscore) {
-			return text.substring(0, 1).toUpperCase() + text.substring(1).toLowerCase().replaceAll("_", " ");
-		} else {
-			return text.substring(0, 1).toUpperCase() + text.substring(1).toLowerCase();
-		}
+			toReturn = toReturn.replace("_", " ");
+		} 
+		
+		return toReturn;
 	}
 
 	/**
@@ -238,54 +238,26 @@ public class NameUtils {
 	* @return the Json string representation of the item
 	*/
 	public static String convertItemStackToJson(ItemStack itemStack) {
-	    Class<?> craftItemStackClazz = ReflectionUtils.getOBCClass("inventory.CraftItemStack");
-	    Method asNMSCopyMethod = ReflectionUtils.getMethod(craftItemStackClazz, "asNMSCopy", ItemStack.class);
+	    Class<?> craftitemstack = ReflectionUtils.getOBCClass("inventory.CraftItemStack");
+	    Method method = ReflectionUtils.getMethod(craftitemstack, "asNMSCopy", ItemStack.class);
 
-	    Class<?> nmsItemStackClazz = ReflectionUtils.getNMSClass("ItemStack");
-	    Class<?> nbtTagCompoundClazz = ReflectionUtils.getNMSClass("NBTTagCompound");
-	    Method saveNmsItemStackMethod = ReflectionUtils.getMethod(nmsItemStackClazz, "save", nbtTagCompoundClazz);
+	    Class<?> itemstack = ReflectionUtils.getNMSClass("ItemStack");
+	    Class<?> nbt = ReflectionUtils.getNMSClass("NBTTagCompound");
+	    Method save = ReflectionUtils.getMethod(itemstack, "save", nbt);
 
-	    Object nmsNbtTagCompoundObj; 
-	    Object nmsItemStackObj; 
-	    Object itemAsJsonObject; 
+	    Object nbtInstance; 
+	    Object nsmcopy; 
+	    Object toReturn; 
 
 	    try {
-	        nmsNbtTagCompoundObj = nbtTagCompoundClazz.newInstance();
-	        nmsItemStackObj = asNMSCopyMethod.invoke(null, itemStack);
-	        itemAsJsonObject = saveNmsItemStackMethod.invoke(nmsItemStackObj, nmsNbtTagCompoundObj);
+	        nbtInstance = nbt.newInstance();
+	        nsmcopy = method.invoke(null, itemStack);
+	        toReturn = save.invoke(nsmcopy, nbtInstance);
 	    } catch (Throwable t) {
 	        Bukkit.getLogger().log(Level.SEVERE, "failed to serialize itemstack to nms item", t);
 	        return null;
 	    }
 
-	    return itemAsJsonObject.toString();
-	}
-	
-	public static String[] parseLine(String line) {
-	    List<String> fields = new ArrayList<String>();
-	    StringBuilder sb = new StringBuilder();
-	    
-	    for (int i = 0; i < line.length(); i++) {
-	    	char c = line.charAt(i);
-	    	if (c == ',') {
-	    		fields.add(sb.toString());
-	    		sb = new StringBuilder();
-	    	}
-	    	else if (c == '"') {
-	    		int ends = line.indexOf('"', i + 1);
-	    		
-	    		if (ends == -1) {
-	    			throw new IllegalArgumentException("Expected double-quote to terminate (" + i + "): " + line);
-	    		}
-	        
-	    		sb.append(line.substring(i + 1, ends - 1));
-	    		i = ends;
-	    	} 
-	    	else {
-	    		sb.append(c);
-	    	}
-	    }
-	    fields.add(sb.toString());
-	    return fields.toArray(new String[fields.size()]);
+	    return toReturn.toString();
 	}
 }
