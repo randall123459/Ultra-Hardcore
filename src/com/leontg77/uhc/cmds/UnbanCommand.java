@@ -24,53 +24,56 @@ public class UnbanCommand implements CommandExecutor, TabCompleter {
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-		if (cmd.getName().equalsIgnoreCase("unban")) {
-			if (sender.hasPermission("uhc.unban")) {
-				if (args.length == 0) {
-					sender.sendMessage(Main.prefix() + "Usage: /unban <player>");
-					return true;
-				}
+		if (!sender.hasPermission("uhc.unban")) {
+			sender.sendMessage(Main.NO_PERM_MSG);
+			return true;
+		}
+		
+		if (args.length == 0) {
+			sender.sendMessage(Main.PREFIX + "Usage: /unban <player>");
+			return true;
+		}
 
-				BanList list = Bukkit.getBanList(Type.NAME);
-				String target = args[0];
-		    	
-				if (list.isBanned(target)) {
-					PlayerUtils.broadcast(Main.prefix() + "§6" + target + " §7has been unbanned.");
-					list.pardon(target);
-				} else {
-					sender.sendMessage(Main.prefix() + "§6" + target + " §7is not banned.");
-				}
-			} else {
-				sender.sendMessage(Main.NO_PERMISSION_MESSAGE);
-			}
+		BanList list = Bukkit.getBanList(Type.NAME);
+		String target = args[0];
+    	
+		if (list.isBanned(target)) {
+			PlayerUtils.broadcast(Main.PREFIX + "§6" + target + " §7has been unbanned.");
+			list.pardon(target);
+		} else {
+			sender.sendMessage(Main.PREFIX + "§6" + target + " §7is not banned.");
 		}
 		return true;
 	}
 	
 	@Override
 	public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {
-		if (cmd.getName().equalsIgnoreCase("unban")) {
-        	ArrayList<String> returnList = new ArrayList<String>();
+		if (!sender.hasPermission("uhc.unban")) {
+			return null;
+		}
+		
+    	ArrayList<String> toReturn = new ArrayList<String>();
+    	
+		if (args.length == 1) {
         	BanList list = Bukkit.getBanList(Type.NAME);
         	
         	if (args[0].isEmpty()) {
         		for (BanEntry entry : list.getBanEntries()) {
-        			String name = entry.getTarget();
+        			String ip = entry.getTarget();
         			
-        			returnList.add(name);
+        			toReturn.add(ip);
         		}
         	}
         	else {
         		for (BanEntry entry : list.getBanEntries()) {
-        			String name = entry.getTarget();
+        			String ip = entry.getTarget();
         			
-        			if (name.toLowerCase().startsWith(args[0].toLowerCase())) {
-        				returnList.add(name);
+        			if (ip.toLowerCase().startsWith(args[0].toLowerCase())) {
+        				toReturn.add(ip);
         			}
         		}
         	}
-        	return returnList;
         }
-		return null;
+		return toReturn;
 	}
 }

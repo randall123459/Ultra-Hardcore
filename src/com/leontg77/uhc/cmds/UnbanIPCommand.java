@@ -24,57 +24,56 @@ public class UnbanIPCommand implements CommandExecutor, TabCompleter {
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-		if (cmd.getName().equalsIgnoreCase("unbanip")) {
-			if (sender.hasPermission("uhc.unbanip")) {
-				if (args.length == 0) {
-					sender.sendMessage(Main.prefix() + "Usage: /unbanip <player>");
-					return true;
-				}
+		if (!sender.hasPermission("uhc.unbanip")) {
+			sender.sendMessage(Main.NO_PERM_MSG);
+			return true;
+		}
+		
+		if (args.length == 0) {
+			sender.sendMessage(Main.PREFIX + "Usage: /unbanip <player>");
+			return true;
+		}
 
-				BanList list = Bukkit.getBanList(Type.IP);
-				String ip = args[0];
-		    	
-				if (list.isBanned(ip)) {
-					PlayerUtils.broadcast(Main.prefix() + "An IP has been unbanned.");
-					list.pardon(ip);
-				} else {
-					sender.sendMessage(Main.prefix() + "That IP is not banned.");
-				}
-			} else {
-				sender.sendMessage(Main.NO_PERMISSION_MESSAGE);
-			}
+		BanList list = Bukkit.getBanList(Type.IP);
+		String ip = args[0];
+    	
+		if (list.isBanned(ip)) {
+			PlayerUtils.broadcast(Main.PREFIX + "An IP has been unbanned.");
+			list.pardon(ip);
+		} else {
+			sender.sendMessage(Main.PREFIX + "That IP is not banned.");
 		}
 		return true;
 	}
 	
 	@Override
 	public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {
-		if (cmd.getName().equalsIgnoreCase("unbanip")) {
-			if (sender.hasPermission("uhc.unbanip")) {
-				if (args.length == 1) {
-		        	ArrayList<String> returnList = new ArrayList<String>();
-		        	BanList list = Bukkit.getBanList(Type.IP);
-		        	
-		        	if (args[0].isEmpty()) {
-		        		for (BanEntry entry : list.getBanEntries()) {
-		        			String ip = entry.getTarget();
-		        			
-		        			returnList.add(ip);
-		        		}
-		        	}
-		        	else {
-		        		for (BanEntry entry : list.getBanEntries()) {
-		        			String ip = entry.getTarget();
-		        			
-		        			if (ip.toLowerCase().startsWith(args[0].toLowerCase())) {
-		        				returnList.add(ip);
-		        			}
-		        		}
-		        	}
-		        	return returnList;
-		        }
-			}
+		if (!sender.hasPermission("uhc.unbanip")) {
+			return null;
 		}
-		return null;
+		
+    	ArrayList<String> toReturn = new ArrayList<String>();
+    	
+		if (args.length == 1) {
+        	BanList list = Bukkit.getBanList(Type.IP);
+        	
+        	if (args[0].isEmpty()) {
+        		for (BanEntry entry : list.getBanEntries()) {
+        			String ip = entry.getTarget();
+        			
+        			toReturn.add(ip);
+        		}
+        	}
+        	else {
+        		for (BanEntry entry : list.getBanEntries()) {
+        			String ip = entry.getTarget();
+        			
+        			if (ip.toLowerCase().startsWith(args[0].toLowerCase())) {
+        				toReturn.add(ip);
+        			}
+        		}
+        	}
+        }
+		return toReturn;
 	}
 }

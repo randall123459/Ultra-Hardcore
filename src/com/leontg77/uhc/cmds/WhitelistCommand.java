@@ -25,7 +25,7 @@ public class WhitelistCommand implements CommandExecutor, TabCompleter {
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (!sender.hasPermission("uhc.whitelist")) {
-			sender.sendMessage(Main.NO_PERMISSION_MESSAGE);
+			sender.sendMessage(Main.NO_PERM_MSG);
 			return true;
 		}
 
@@ -129,7 +129,7 @@ public class WhitelistCommand implements CommandExecutor, TabCompleter {
 			return null;
 		}
 
-    	ArrayList<String> arg = new ArrayList<String>();
+    	ArrayList<String> toReturn = new ArrayList<String>();
 		
 		if (args.length == 1) {
 	    	ArrayList<String> types = new ArrayList<String>();
@@ -144,12 +144,12 @@ public class WhitelistCommand implements CommandExecutor, TabCompleter {
         	
         	if (args[0].equals("")) {
         		for (String type : types) {
-        			arg.add(type);
+        			toReturn.add(type);
         		}
         	} else {
         		for (String type : types) {
         			if (type.startsWith(args[0].toLowerCase())) {
-        				arg.add(type);
+        				toReturn.add(type);
         			}
         		}
         	}
@@ -160,14 +160,14 @@ public class WhitelistCommand implements CommandExecutor, TabCompleter {
 	        	if (args[1].equals("")) {
 	        		for (Player online : PlayerUtils.getPlayers()) {
 	        			if (!online.isWhitelisted()) {
-		        			arg.add(online.getName());
+		        			toReturn.add(online.getName());
 	        			}
 	        		}
 	        	} else {
 	        		for (Player online : PlayerUtils.getPlayers()) {
 	        			if (online.getName().toLowerCase().startsWith(args[1].toLowerCase())) {
 	        				if (!online.isWhitelisted()) {
-		        				arg.add(online.getName());
+		        				toReturn.add(online.getName());
 	        				}
 	        			}
 	        		}
@@ -175,18 +175,18 @@ public class WhitelistCommand implements CommandExecutor, TabCompleter {
         	} else if (args[0].equalsIgnoreCase("remove")) {
 	        	if (args[1].equals("")) {
 	        		for (OfflinePlayer whitelisted : Bukkit.getServer().getWhitelistedPlayers()) {
-	        			arg.add(whitelisted.getName());
+	        			toReturn.add(whitelisted.getName());
 	        		}
 	        	} else {
 	        		for (OfflinePlayer whitelisted : Bukkit.getServer().getWhitelistedPlayers()) {
 	        			if (whitelisted.getName().toLowerCase().startsWith(args[1].toLowerCase())) {
-	        				arg.add(whitelisted.getName());
+	        				toReturn.add(whitelisted.getName());
 	        			}
 	        		}
 	        	}
         	}
         }
     	
-    	return arg;
+    	return toReturn;
 	}
 }
