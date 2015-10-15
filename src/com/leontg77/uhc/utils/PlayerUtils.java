@@ -1,22 +1,22 @@
 package com.leontg77.uhc.utils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.Sound;
+import org.bukkit.World;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.util.Vector;
+import org.bukkit.inventory.PlayerInventory;
 
 import com.leontg77.uhc.Main;
-import com.leontg77.uhc.Spectator;
 
 /**
  * Player utilities class.
@@ -44,6 +44,17 @@ public class PlayerUtils {
 	}
 	
 	/**
+	 * Get the given player's ping.
+	 * 
+	 * @param player the player
+	 * @return the players ping
+	 */
+	public static int getPing(Player player) {
+		CraftPlayer craft = (CraftPlayer) player;
+		return craft.getHandle().ping;
+	} 
+	
+	/**
 	 * Gets an offline player by a name.
 	 * <p>
 	 * This is just because of the deprecation on <code>Bukkit.getOfflinePlayer(String)</code> 
@@ -53,6 +64,19 @@ public class PlayerUtils {
 	 */
 	public static OfflinePlayer getOfflinePlayer(String name) {
 		return Bukkit.getServer().getOfflinePlayer(name);
+	}
+	
+	/**
+	 * Broadcasts a message to everyone online.
+	 * 
+	 * @param message the message.
+	 */
+	public static void broadcast(String message) {
+		for (Player online : getPlayers()) {
+			online.sendMessage(message);
+		}
+		
+		Bukkit.getLogger().info(message.replaceAll("§l", "").replaceAll("§o", "").replaceAll("§r", "").replaceAll("§m", "").replaceAll("§n", ""));
 	}
 	
 	/**
@@ -69,56 +93,6 @@ public class PlayerUtils {
 		}
 		
 		Bukkit.getLogger().info(message.replaceAll("§l", "").replaceAll("§o", "").replaceAll("§r", "").replaceAll("§m", "").replaceAll("§n", ""));
-	}
-	
-	/**
-	 * Broadcasts a message to everyone online.
-	 * 
-	 * @param message the message.
-	 */
-	public static void broadcast(String message) {
-		for (Player online : getPlayers()) {
-			online.sendMessage(message);
-		}
-		
-		Bukkit.getLogger().info(message.replaceAll("§l", "").replaceAll("§o", "").replaceAll("§r", "").replaceAll("§m", "").replaceAll("§n", ""));
-	}
-
-	/**
-	 * Get the inv size of # players online.
-	 * 
-	 * @return the inv size.
-	 */
-	public static int playerInvSize() {
-		int length = 0;
-		
-		for (Player online : PlayerUtils.getPlayers()) {
-			if (online.getWorld().getName().equals("lobby")) {
-				continue;
-			}
-			
-			if (Spectator.getManager().isSpectating(online)) {
-				continue;
-			}
-			
-			length++;
-		}
-		
-		if (length <= 9) {
-			return 9;
-		} else if (length > 9 && length <= 18) {
-			return 18;
-		} else if (length > 18 && length <= 27) {
-			return 27;
-		} else if (length > 27 && length <= 36) {
-			return 36;
-		} else if (length > 36 && length <= 45) {
-			return 45;
-		} else if (length > 45 && length <= 54) {
-			return 54;
-		}
-		
-		return 54;
 	}
 	
 	/**
@@ -162,39 +136,26 @@ public class PlayerUtils {
 	 * Method is made so if the inventory is full it drops the item to the ground.
 	 * 
 	 * @param player the player giving to.
-	 * @param item the item giving.
+	 * @param stack the item giving.
 	 */
-	public static void giveItem(Player player, ItemStack item) {
-		if (player != null) {
-			if (hasSpaceFor(player, item)) {
-				player.getInventory().addItem(item);
-			} else {
-				player.sendMessage(Main.prefix() + "A item was dropped on the ground since your inventory is full!");
-				player.playSound(player.getLocation(), Sound.ITEM_PICKUP, 1, 1);
-				
-				Item i = player.getWorld().dropItem(player.getLocation().add(0, 0.7, 0), item);
-				i.setVelocity(new Vector(0, 0.2, 0));
-			}
+	public static void giveItem(Player player, ItemStack stack) {
+		PlayerInventory inv = player.getInventory();
+		
+		HashMap<Integer, ItemStack> leftOvers = inv.addItem(stack);
+		
+		if (leftOvers.isEmpty()) {
+			return;
 		}
-	}
-	
-	public static boolean hasSpaceFor(Player player, ItemStack item) {
-		if (player.getInventory().firstEmpty() == -1) {
-			for (int i = 0; i < 35; i++) {
-				if (player.getInventory().getItem(i).equals(item)) {
-					if ((player.getInventory().getItem(i).getAmount() + item.getAmount()) <= item.getMaxStackSize()) {
-						return true;
-					}
-				}
-				
-				if (i == 34) {
-					return false;
-				}
-			}
-		} else {
-			return true;
+		
+		player.sendMessage(Main.PREFIX + "Your inventory was full, item was dropped on the ground.");
+		
+		Location loc = player.getLocation();
+		World world = player.getWorld();
+		
+		for (ItemStack leftOver : leftOvers.values()) {
+			Item item = world.dropItem(loc, leftOver);
+			item.setVelocity(EntityUtils.randomOffset());
 		}
-		return false;
 	}
 
 	/**
@@ -219,21 +180,6 @@ public class PlayerUtils {
 			}
 		}
 		
-		if (total < entered) {
-			return false;
-		} else {
-			return true;
-		}
-	}
-	
-	/**
-	 * Get the given player's ping.
-	 * 
-	 * @param player the player
-	 * @return the players ping
-	 */
-	public static int getPing(Player player) {
-		CraftPlayer craft = (CraftPlayer) player;
-		return craft.getHandle().ping;
+		return total >= entered;
 	}
 }
