@@ -69,7 +69,7 @@ public class GiveallCommand implements CommandExecutor {
 					PlayerUtils.giveItem(online, item);
 				}
 			} else {
-				sender.sendMessage(Main.NO_PERMISSION_MESSAGE);
+				sender.sendMessage(Main.NO_PERM_MSG);
 			}
 		}
 		return true;

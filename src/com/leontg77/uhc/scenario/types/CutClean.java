@@ -27,6 +27,7 @@ import com.leontg77.uhc.Spectator.SpecInfo;
 import com.leontg77.uhc.scenario.Scenario;
 import com.leontg77.uhc.scenario.ScenarioManager;
 import com.leontg77.uhc.utils.BlockUtils;
+import com.leontg77.uhc.utils.EntityUtils;
 import com.leontg77.uhc.utils.PlayerUtils;
 
 /**
@@ -79,6 +80,7 @@ public class CutClean extends Scenario implements Listener {
 	
 	@EventHandler(priority = EventPriority.LOW)
 	public void onBlockBreak(BlockBreakEvent event) {
+		Vector offset = EntityUtils.randomOffset();
 		Block block = event.getBlock();
 		
 		if (block.getType() == Material.IRON_ORE) {
@@ -93,7 +95,7 @@ public class CutClean extends Scenario implements Listener {
 			ExperienceOrb exp = (ExperienceOrb) event.getBlock().getWorld().spawn(event.getBlock().getLocation().add(0.5, 0.3, 0.5), ExperienceOrb.class);
 			exp.setExperience(3);
 			Item item = block.getWorld().dropItem(block.getLocation().add(0.5, 0.7, 0.5), new ItemStack (Material.IRON_INGOT));
-			item.setVelocity(new Vector(0, 0.2, 0));
+			item.setVelocity(offset);
 		}
 		
 		if (block.getType() == Material.POTATO) {
@@ -102,7 +104,7 @@ public class CutClean extends Scenario implements Listener {
 			block.setType(Material.AIR);
 			block.getState().update();
 			Item item = block.getWorld().dropItem(block.getLocation().add(0.5, 0.7, 0.5), new ItemStack (Material.BAKED_POTATO, 1 + new Random().nextInt(2)));
-			item.setVelocity(new Vector(0, 0.2, 0));
+			item.setVelocity(offset);
 		}
 		
 		if (block.getType() == Material.GOLD_ORE) {
@@ -155,7 +157,7 @@ public class CutClean extends Scenario implements Listener {
 			ExperienceOrb exp = (ExperienceOrb) event.getBlock().getWorld().spawn(event.getBlock().getLocation().add(0.5, 0.3, 0.5), ExperienceOrb.class);
 			exp.setExperience(7);
 			Item item = block.getWorld().dropItem(block.getLocation().add(0.5, 0.7, 0.5), new ItemStack (Material.GOLD_INGOT));
-			item.setVelocity(new Vector(0, 0.2, 0));
+			item.setVelocity(offset);
 		}
 	}
 }

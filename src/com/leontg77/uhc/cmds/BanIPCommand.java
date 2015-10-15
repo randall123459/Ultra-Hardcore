@@ -45,8 +45,8 @@ public class BanIPCommand implements CommandExecutor {
 				
 		    	for (Player online : PlayerUtils.getPlayers()) {
 		    		if (online.getAddress().getAddress().getHostAddress().equals(args[0])) {
-		    			Scoreboards.getManager().resetScore(args[0]);
-				    	Scoreboards.getManager().resetScore(online.getName());
+		    			Scoreboards.getInstance().resetScore(args[0]);
+				    	Scoreboards.getInstance().resetScore(online.getName());
 				    	
 				    	PlayerDeathEvent event = new PlayerDeathEvent(online, new ArrayList<ItemStack>(), 0, null);
 						Bukkit.getServer().getPluginManager().callEvent(event);
@@ -62,7 +62,7 @@ public class BanIPCommand implements CommandExecutor {
 		    		}
 		    	}
 			} else {
-				sender.sendMessage(Main.NO_PERMISSION_MESSAGE);
+				sender.sendMessage(Main.NO_PERM_MSG);
 			}
 		}
 		return true;

@@ -20,11 +20,11 @@ public class ScenarioCommand implements CommandExecutor, TabCompleter {
 		if (cmd.getName().equalsIgnoreCase("scenario")) {
 			if (args.length == 0) {
 				if (ScenarioManager.getInstance().getEnabledScenarios().size() <= 0) {
-	           		sender.sendMessage(Main.prefix() + "No scenarios are enabled.");
+	           		sender.sendMessage(Main.PREFIX + "No scenarios are enabled.");
 					return true;
 				}
 				
-	           	sender.sendMessage(Main.prefix() + "Enabled scenarios:");
+	           	sender.sendMessage(Main.PREFIX + "Enabled scenarios:");
 	           	for (Scenario s : ScenarioManager.getInstance().getEnabledScenarios()) {
 	           		sender.sendMessage("§6" + s.getName() + ": §f" + s.getDescription());
 	           	}
@@ -41,7 +41,7 @@ public class ScenarioCommand implements CommandExecutor, TabCompleter {
 						}
 						list.append(s.getName());
 					}
-					sender.sendMessage(Main.prefix() + "All available scenarios:");
+					sender.sendMessage(Main.PREFIX + "All available scenarios:");
 					sender.sendMessage(list.toString().trim());
 					return true;
 				}
@@ -50,11 +50,11 @@ public class ScenarioCommand implements CommandExecutor, TabCompleter {
 					sender.sendMessage(ChatColor.RED + "Usage: /scenario <enable|disable> <scenario>");
 				} else {
 					if (ScenarioManager.getInstance().getEnabledScenarios().size() <= 0) {
-		           		sender.sendMessage(Main.prefix() + "No scenarios are enabled.");
+		           		sender.sendMessage(Main.PREFIX + "No scenarios are enabled.");
 						return true;
 					}
 					
-		           	sender.sendMessage(Main.prefix() + "Enabled scenarios:");
+		           	sender.sendMessage(Main.PREFIX + "Enabled scenarios:");
 		           	for (Scenario s : ScenarioManager.getInstance().getEnabledScenarios()) {
 		           		sender.sendMessage("§6" + s.getName() + ": §f" + s.getDescription());
 		           	}
@@ -65,11 +65,11 @@ public class ScenarioCommand implements CommandExecutor, TabCompleter {
 			if (args[0].equalsIgnoreCase("enable")) {
 				if (!sender.hasPermission("uhc.scenario")) {
 					if (ScenarioManager.getInstance().getEnabledScenarios().size() <= 0) {
-		           		sender.sendMessage(Main.prefix() + "No scenarios are enabled.");
+		           		sender.sendMessage(Main.PREFIX + "No scenarios are enabled.");
 						return true;
 					}
 					
-		           	sender.sendMessage(Main.prefix() + "Enabled scenarios:");
+		           	sender.sendMessage(Main.PREFIX + "Enabled scenarios:");
 		           	for (Scenario s : ScenarioManager.getInstance().getEnabledScenarios()) {
 		           		sender.sendMessage("§6" + s.getName() + ": §f" + s.getDescription());
 		           	}
@@ -84,20 +84,20 @@ public class ScenarioCommand implements CommandExecutor, TabCompleter {
 				}
 				
 				if (s.isEnabled()) {
-					sender.sendMessage(Main.prefix() + ChatColor.GOLD + s.getName() + " §7is already enabled.");
+					sender.sendMessage(Main.PREFIX + ChatColor.GOLD + s.getName() + " §7is already enabled.");
 					return true;
 				}
 
-				PlayerUtils.broadcast(Main.prefix() + ChatColor.GOLD + s.getName() + " §7has been enabled.");
+				PlayerUtils.broadcast(Main.PREFIX + ChatColor.GOLD + s.getName() + " §7has been enabled.");
 				s.enableScenario();
 			} else if (args[0].equalsIgnoreCase("disable")) {
 				if (!sender.hasPermission("uhc.scenario")) {
 					if (ScenarioManager.getInstance().getEnabledScenarios().size() <= 0) {
-		           		sender.sendMessage(Main.prefix() + "No scenarios are enabled.");
+		           		sender.sendMessage(Main.PREFIX + "No scenarios are enabled.");
 						return true;
 					}
 					
-		           	sender.sendMessage(Main.prefix() + "Enabled scenarios:");
+		           	sender.sendMessage(Main.PREFIX + "Enabled scenarios:");
 		           	for (Scenario s : ScenarioManager.getInstance().getEnabledScenarios()) {
 		           		sender.sendMessage("§6" + s.getName() + ": §f" + s.getDescription());
 		           	}
@@ -112,11 +112,11 @@ public class ScenarioCommand implements CommandExecutor, TabCompleter {
 				}
 				
 				if (!s.isEnabled()) {
-					sender.sendMessage(Main.prefix() + ChatColor.GOLD + s.getName() + " §7is not enabled.");
+					sender.sendMessage(Main.PREFIX + ChatColor.GOLD + s.getName() + " §7is not enabled.");
 					return true;
 				}
 
-				PlayerUtils.broadcast(Main.prefix() + ChatColor.GOLD + s.getName() + " §7has been disabled.");
+				PlayerUtils.broadcast(Main.PREFIX + ChatColor.GOLD + s.getName() + " §7has been disabled.");
 				s.disableScenario();
 			} else if (args[0].equalsIgnoreCase("list")) {
 				Scenario s = ScenarioManager.getInstance().getScenario(args[1]);
@@ -126,15 +126,15 @@ public class ScenarioCommand implements CommandExecutor, TabCompleter {
 					return true;
 				}
 				
-				sender.sendMessage(Main.prefix() + "Info about " + s.getName());
+				sender.sendMessage(Main.PREFIX + "Info about " + s.getName());
 				sender.sendMessage(s.getDescription());
 			} else {
 				if (ScenarioManager.getInstance().getEnabledScenarios().size() <= 0) {
-	           		sender.sendMessage(Main.prefix() + "No scenarios are enabled.");
+	           		sender.sendMessage(Main.PREFIX + "No scenarios are enabled.");
 					return true;
 				}
 				
-				sender.sendMessage(Main.prefix() + "Enabled scenarios:");
+				sender.sendMessage(Main.PREFIX + "Enabled scenarios:");
 	           	for (Scenario s : ScenarioManager.getInstance().getEnabledScenarios()) {
 	           		sender.sendMessage("§6" + s.getName() + ": §f" + s.getDescription());
 	           	}

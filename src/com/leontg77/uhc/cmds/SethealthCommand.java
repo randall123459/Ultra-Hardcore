@@ -78,7 +78,7 @@ public class SethealthCommand implements CommandExecutor {
 					sender.sendMessage(Main.prefix() + "You set §6" + target.getName() + "'s §7health to §6" + hp);
 				}
 			} else {
-				sender.sendMessage(Main.NO_PERMISSION_MESSAGE);
+				sender.sendMessage(Main.NO_PERM_MSG);
 			}
 		}
 		return true;

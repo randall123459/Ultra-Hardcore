@@ -97,9 +97,9 @@ public class Arena {
 		this.enabled = true;
 		
 		if (game.pregameBoard()) {
-			Scoreboards.getManager().setScore("§a ", 10);
-			Scoreboards.getManager().setScore("§8» §cArena:", 9);
-			Scoreboards.getManager().setScore("§8» §7/a ", 8);
+			Scoreboards.getInstance().setScore("§a ", 10);
+			Scoreboards.getInstance().setScore("§8» §cArena:", 9);
+			Scoreboards.getInstance().setScore("§8» §7/a ", 8);
 		}
 
 		/*resetwarner = new BukkitRunnable() {
@@ -148,9 +148,9 @@ public class Arena {
 		}
 		
 		if (game.pregameBoard()) {
-			Scoreboards.getManager().resetScore("§a ");
-			Scoreboards.getManager().resetScore("§8» §cArena:");
-			Scoreboards.getManager().resetScore("§8» §7/a ");
+			Scoreboards.getInstance().resetScore("§a ");
+			Scoreboards.getInstance().resetScore("§8» §cArena:");
+			Scoreboards.getInstance().resetScore("§8» §7/a ");
 		}
 		
 		killstreak.clear();
@@ -305,7 +305,7 @@ public class Arena {
 		players.remove(player);
 		
 		if (!death) {
-			Team team = Teams.getManager().getTeam(player);
+			Team team = Teams.getInstance().getTeam(player);
 
 			if (Arena.getInstance().killstreak.containsKey(player) && Arena.getInstance().killstreak.get(player) > 4) {
 				PlayerUtils.broadcast(Main.prefix() + "§6" + player.getName() + "'s §7killstreak of §a" + Arena.getInstance().killstreak.get(player) + " §7was shut down from leaving");

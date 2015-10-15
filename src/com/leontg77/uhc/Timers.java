@@ -185,14 +185,14 @@ public class Timers {
 					data.increaseStat(Stat.GAMESPLAYED);
 				}
 				
-				for (Team team : Teams.getManager().getTeamsWithPlayers()) {
+				for (Team team : Teams.getInstance().getTeamsWithPlayers()) {
 					Main.teamKills.put(team.getName(), 0);
 					
-					ArrayList<String> players = new ArrayList<String>(team.getEntries());
-					TeamCommand.sTeam.put(team.getName(), players);
+					ArrayList<String> players = new ArrayList<String>();
+					TeamCommand.sTeam.put(team.getName(), team.getEntries());
 				}
 
-				Scoreboards sb = Scoreboards.getManager();
+				Scoreboards sb = Scoreboards.getInstance();
 				
 				for (String entry : sb.board.getEntries()) {
 					if (sb.getScore(entry) > 0) {
@@ -205,8 +205,8 @@ public class Timers {
 				
 				Bukkit.getServer().getPluginManager().registerEvents(new SpecInfo(), Main.plugin);
 				State.setState(State.INGAME);
-				Scoreboards.getManager().setScore("§8» §a§lPvE", 1);
-				Scoreboards.getManager().setScore("§8» §a§lPvE", 0);
+				Scoreboards.getInstance().setScore("§8» §a§lPvE", 1);
+				Scoreboards.getInstance().setScore("§8» §a§lPvE", 0);
 				
 				heal = 1;
 				pvp = settings.getConfig().getInt("time.pvp");
@@ -234,7 +234,7 @@ public class Timers {
 					
 					
 					for (Entity mob : world.getEntities()) {
-						if (EntityUtils.isClearable(mob.getType())) {
+						if (EntityUtils.isButcherable(mob.getType())) {
 							mob.remove();
 						}
 					}
@@ -261,7 +261,7 @@ public class Timers {
 		
 		taskMinutes = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(Main.plugin, new Runnable() {
 			public void run() {
-				Scoreboards sb = Scoreboards.getManager();
+				Scoreboards sb = Scoreboards.getInstance();
 				
 				heal--;
 				pvp--;
@@ -655,8 +655,8 @@ public class Timers {
 					PacketUtils.sendTitle(online, "§aGo!", "§7Good luck, have fun!", 1, 20, 1);
 				}
 				
-				for (String e : Scoreboards.getManager().kills.getScoreboard().getEntries()) {
-					Scoreboards.getManager().resetScore(e);
+				for (String e : Scoreboards.getInstance().kills.getScoreboard().getEntries()) {
+					Scoreboards.getInstance().resetScore(e);
 				}
 
 				game.setPregameBoard(false);
@@ -666,7 +666,7 @@ public class Timers {
 				Bukkit.getServer().getPluginManager().registerEvents(new SpecInfo(), Main.plugin);
 				PlayerUtils.broadcast(Main.prefix() + "Start of episode 1");
 				State.setState(State.INGAME);
-				Scoreboards.getManager().kills.setDisplayName("§6" + game.getRRName());
+				Scoreboards.getInstance().kills.setDisplayName("§6" + game.getRRName());
 				pvp = 0;
 				meetup = 1;
 				
@@ -682,25 +682,7 @@ public class Timers {
 					world.setStorm(false);
 					
 					for (Entity mobs : world.getEntities()) {
-						if (mobs.getType() == EntityType.BLAZE ||
-							mobs.getType() == EntityType.CAVE_SPIDER ||
-							mobs.getType() == EntityType.CREEPER ||
-							mobs.getType() == EntityType.ENDERMAN ||
-							mobs.getType() == EntityType.ZOMBIE ||
-							mobs.getType() == EntityType.WITCH ||
-							mobs.getType() == EntityType.WITHER ||
-							mobs.getType() == EntityType.DROPPED_ITEM ||
-							mobs.getType() == EntityType.GHAST ||
-							mobs.getType() == EntityType.GIANT ||
-							mobs.getType() == EntityType.MAGMA_CUBE ||
-							mobs.getType() == EntityType.DROPPED_ITEM ||
-							mobs.getType() == EntityType.SKELETON ||
-							mobs.getType() == EntityType.SPIDER ||
-							mobs.getType() == EntityType.SLIME ||
-							mobs.getType() == EntityType.SILVERFISH ||
-							mobs.getType() == EntityType.SKELETON || 
-							mobs.getType() == EntityType.EXPERIENCE_ORB) {
-							
+						if (EntityUtils.isButcherable(mobs.getType())) {
 							mobs.remove();
 						}
 					}

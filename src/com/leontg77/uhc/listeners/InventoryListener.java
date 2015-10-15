@@ -132,7 +132,7 @@ public class InventoryListener implements Listener {
 				Player target = Bukkit.getServer().getPlayer(event.getCurrentItem().getItemMeta().getDisplayName().substring(2, event.getCurrentItem().getItemMeta().getDisplayName().length()));
 				
 				if (target == null) {
-					player.sendMessage(Main.prefix() + "The player you clicked is not online.");
+					player.sendMessage(Main.PREFIX + "The player you clicked is not online.");
 				} 
 				else {
 					player.teleport(target);
@@ -155,10 +155,10 @@ public class InventoryListener implements Listener {
 					if (players.size() > 0) {
 						Player target = players.get(new Random().nextInt(players.size()));
 						player.teleport(target.getLocation());
-						player.sendMessage(Main.prefix() + "You teleported to §a" + target.getName() + "§7.");
+						player.sendMessage(Main.PREFIX + "You teleported to §a" + target.getName() + "§7.");
 					} 
 					else {
-						player.sendMessage(Main.prefix() + "No players to teleport to.");
+						player.sendMessage(Main.PREFIX + "No players to teleport to.");
 					}
 					
 					event.setCancelled(true);
@@ -184,7 +184,7 @@ public class InventoryListener implements Listener {
 			
 			if (item.getType() == Material.LAVA_BUCKET) {
 				if (!Game.getInstance().nether()) {
-					player.sendMessage(Main.prefix() + "Nether is disabled.");
+					player.sendMessage(Main.PREFIX + "Nether is disabled.");
 					event.setCancelled(true);
 					return;
 				}
@@ -203,7 +203,7 @@ public class InventoryListener implements Listener {
 				}
 				
 				if (netherL.size() == 0) {
-					player.sendMessage(Main.prefix() + "No players are in the nether.");
+					player.sendMessage(Main.PREFIX + "No players are in the nether.");
 					event.setCancelled(true);
 					return;
 				}
@@ -229,7 +229,7 @@ public class InventoryListener implements Listener {
 					}
 				}
 
-				player.sendMessage(Main.prefix() + "Players in the nether:");
+				player.sendMessage(Main.PREFIX + "Players in the nether:");
 				player.sendMessage("§8» §7" + nether.toString().trim());
 				
 				event.setCancelled(true);

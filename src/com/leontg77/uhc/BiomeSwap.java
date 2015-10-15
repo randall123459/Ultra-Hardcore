@@ -24,7 +24,7 @@ public class BiomeSwap {
 	 * 
 	 * @return The instance.
 	 */
-	public static BiomeSwap getManager() {
+	public static BiomeSwap getInstance() {
 		return manager;
 	}
 

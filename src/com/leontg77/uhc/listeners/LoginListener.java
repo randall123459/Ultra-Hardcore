@@ -3,13 +3,16 @@ package com.leontg77.uhc.listeners;
 import static com.leontg77.uhc.Main.plugin;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.UUID;
 
 import org.bukkit.BanEntry;
 import org.bukkit.BanList;
 import org.bukkit.BanList.Type;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -70,47 +73,44 @@ public class LoginListener implements Listener {
 		}
 		
 		if (spec.isSpectating(player)) {
-			player.getInventory().setArmorContents(null);
-			player.getInventory().clear();
-			player.setLevel(0);
-			player.setExp(0);
+			user.resetInventory();
+			user.resetExp();
 			
 			spec.enableSpecmode(player, true);
 		} else {
 			if (State.isState(State.INGAME) && !player.isWhitelisted() && !spec.isSpectating(player)) {
-				player.sendMessage(Main.prefix() + "You joined a game that you didn't play from the start.");
+				player.sendMessage(Main.PREFIX + "You joined a game without being whitelisted.");
 
-				player.getInventory().setArmorContents(null);
-				player.getInventory().clear();
-				player.setLevel(0);
-				player.setExp(0);
+				user.resetInventory();
+				user.resetExp();
 				
 				spec.enableSpecmode(player, true);
 			} else {
 				PlayerUtils.broadcast("§8[§a+§8] §7" + player.getName() + " has joined.");
 				
 				if (user.hasntBeenWelcomed()) {
-					PlayerUtils.broadcast(Main.prefix() + ChatColor.GOLD + player.getName() + " §7just joined for the first time.");
-					
 					File f = new File(plugin.getDataFolder() + File.separator + "users" + File.separator);
-					PlayerUtils.broadcast(Main.prefix() + "The server has now §a" + f.listFiles().length + "§7 unique joins.");
+					
+					PlayerUtils.broadcast(Main.PREFIX + "Welcome §6" + player.getName() + " §7to the server! [§a" + f.listFiles().length + "§7]");
 				}
 			}
 		}
 		
-		if (SpreadCommand.scatterLocs.containsKey(player.getName()) && SpreadCommand.isReady) {
+		HashMap<String, Location> scatter = SpreadCommand.scatterLocs;
+		
+		if (scatter.containsKey(player.getName()) && SpreadCommand.isReady) {
 			if (State.isState(State.SCATTER)) {
-				player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 1000000, 128));
-				player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 1000000, 6));
-				player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 1000000, 6));
-				player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 1000000, 10));
-				player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 1000000, 6));
-				player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 1000000, 2));
+				player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, Short.MAX_VALUE, 128));
+				player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, Short.MAX_VALUE, 6));
+				player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, Short.MAX_VALUE, 6));
+				player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, Short.MAX_VALUE, 10));
+				player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, Short.MAX_VALUE, 6));
+				player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Short.MAX_VALUE, 2));
 			}
 			
-			PlayerUtils.broadcast(Main.prefix() + "- §a" + player.getName() + " §7scheduled scatter.");
-			player.teleport(SpreadCommand.scatterLocs.get(player.getName()));
-			SpreadCommand.scatterLocs.remove(player.getName());
+			PlayerUtils.broadcast(Main.PREFIX + "- §a" + player.getName() + " §7scheduled scatter.");
+			player.teleport(scatter.get(player.getName()));
+			scatter.remove(player.getName());
 		}
 		
 		if (!State.isState(State.SCATTER) && player.hasPotionEffect(PotionEffectType.JUMP) && 
@@ -142,8 +142,8 @@ public class LoginListener implements Listener {
 				player.sendMessage("§8» §7 Open PvP, use §a/a §7to join.");
 			} 
 			else {
-				player.sendMessage("§8» §7 Host: §a" + Settings.getInstance().getConfig().getString("game.host"));
-				player.sendMessage("§8» §7 Gamemode: §a" + GameUtils.getTeamSize() + Settings.getInstance().getConfig().getString("game.scenarios"));
+				player.sendMessage("§8» §7 Host: §a" + game.getHost());
+				player.sendMessage("§8» §7 Gamemode: §a" + GameUtils.getTeamSize() + game.getScenarios());
 			}
 			
 			player.sendMessage("§8» --------------------------------- «");
@@ -207,7 +207,7 @@ public class LoginListener implements Listener {
 				}
 
 				BanEntry ban = name.getBanEntry(player.getName());
-				PlayerUtils.broadcast(Main.prefix() + ChatColor.RED + player.getName() + " §7tried to join while being " + (ban.getExpiration() == null ? "banned" : "temp-banned") + " for:§c " + ban.getReason(), "uhc.staff");
+				PlayerUtils.broadcast(Main.PREFIX + ChatColor.RED + player.getName() + " §7tried to join while being " + (ban.getExpiration() == null ? "banned" : "temp-banned") + " for:§c " + ban.getReason(), "uhc.staff");
 				
 				event.setKickMessage(
 				"§8» §7You have been §4" + (ban.getExpiration() == null ? "banned" : "temp-banned") + " §7from §6Arctic UHC §8«" +
@@ -227,7 +227,7 @@ public class LoginListener implements Listener {
 				}
 
 				BanEntry ban = ip.getBanEntry(adress);
-				PlayerUtils.broadcast(Main.prefix() + ChatColor.RED + player.getName() + " §7tried to join while being IP-banned for:§c " + ban.getReason(), "uhc.staff");
+				PlayerUtils.broadcast(Main.PREFIX + ChatColor.RED + player.getName() + " §7tried to join while being IP-banned for:§c " + ban.getReason(), "uhc.staff");
 				
 				event.setKickMessage(
 				"§8» §7You have been §4IP banned §7from §6Arctic UHC §8«" +
@@ -245,13 +245,13 @@ public class LoginListener implements Listener {
 		}
 		
 		if (event.getResult() == Result.KICK_WHITELIST) {
-			if (game.isRecordedRound()) {
-				event.setKickMessage("§8» §7You are not whitelisted §8«\n\n§cThere are no games running");
+			if (player.isOp()) {
+				event.allow();
 				return;
 			}
 			
-			if (player.isOp()) {
-				event.allow();
+			if (game.isRecordedRound()) {
+				event.setKickMessage("§8» §7You are not whitelisted §8«\n\n§cThere are no games running");
 				return;
 			}
 			
@@ -322,19 +322,15 @@ public class LoginListener implements Listener {
 	
 	@EventHandler(priority = EventPriority.HIGHEST)
     public void onAsyncPlayerPreLogin(AsyncPlayerPreLoginEvent event) {
-		if (UBL.getManager().isBanned(event.getName(), event.getUniqueId())) {
-            UBL.BanEntry banEntry = UBL.getManager().banlistByUUID.get(event.getUniqueId());
-        	PlayerUtils.broadcast(Main.prefix() + ChatColor.RED + event.getName() + " §7tried to join while being UBL'ed for:§c " + banEntry.getData("Reason"), "uhc.staff");
-        	
-            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_BANNED, UBL.getManager().getBanMessage(event.getUniqueId()));
-            return;
-        }
+		UBL ubl = UBL.getInstance();
 		
-        if (UBL.getManager().isBanned(event.getName())) {
-            UBL.BanEntry banEntry = UBL.getManager().banlistByIGN.get(event.getName().toLowerCase());
-        	PlayerUtils.broadcast(Main.prefix() + ChatColor.RED + event.getName() + " §7tried to join while being UBL'ed for:§c " + banEntry.getData("Reason"), "uhc.staff");
+		if (ubl.isBanned(event.getUniqueId())) {
+            UBL.BanEntry banEntry = ubl.banlistByUUID.get(event.getUniqueId());
+        	PlayerUtils.broadcast(Main.PREFIX + "§c" + event.getName() + " §7tried to join while being UBL'ed for:§c " + banEntry.getData("Reason"), "uhc.staff");
         	
-			event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_BANNED, UBL.getManager().getBanMessage(event.getName()));
+        	UUID uuid = event.getUniqueId();
+            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_BANNED, ubl.getBanMessage(uuid));
+            return;
         }
     }
 }

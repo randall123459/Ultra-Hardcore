@@ -14,10 +14,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.Difficulty;
-import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.enchantments.Enchantment;
@@ -129,9 +127,9 @@ import com.leontg77.uhc.utils.PlayerUtils;
 public class Main extends JavaPlugin {
 	private Logger logger = getLogger();
 	public static Main plugin;
-	
-	public static Recipe headRecipe;
-	public static Recipe melonRecipe;
+
+	public static final String PREFIX = "§4§lUHC §8» §7";
+	public static final String NO_PERM_MSG = PREFIX + "§cYou can't use that command.";
 	
 	public static HashMap<String, PermissionAttachment> permissions = new HashMap<String, PermissionAttachment>();
 	public static HashMap<CommandSender, CommandSender> msg = new HashMap<CommandSender, CommandSender>();
@@ -143,9 +141,9 @@ public class Main extends JavaPlugin {
 	public static HashMap<String, Integer> kills = new HashMap<String, Integer>();
 	
 	public static HashMap<Player, int[]> rainbow = new HashMap<Player, int[]>();
-
-	public static final String PREFIX = "§4§lUHC §8» §7";
-	public static final String NO_PERMISSION_MESSAGE = PREFIX + ChatColor.RED + "You can't use that command.";
+	
+	public static Recipe headRecipe;
+	public static Recipe melonRecipe;
 	
 	private static Settings settings = Settings.getInstance();
 	
@@ -154,7 +152,7 @@ public class Main extends JavaPlugin {
 		PluginDescriptionFile file = getDescription();
 		logger.info(file.getName() + " is now disabled.");
 		
-		BiomeSwap.getManager().resetBiomes();
+		BiomeSwap.getInstance().resetBiomes();
 		saveData();
 		
 		plugin = null;
@@ -169,30 +167,29 @@ public class Main extends JavaPlugin {
 		settings.setup();
 
 		ScenarioManager.getInstance().setup();
-		AntiStripmine.getManager().setup();
-		Scoreboards.getManager().setup();
-		BiomeSwap.getManager().setup();
-		Parkour.getManager().setup();
+		AntiStripmine.getInstance().setup();
+		Scoreboards.getInstance().setup();
+		BiomeSwap.getInstance().setup();
+		Parkour.getInstance().setup();
 		Arena.getInstance().setup();
-		Teams.getManager().setup();
-		UBL.getManager().setup();
-		
-		ProtocolManager manager = ProtocolLibrary.getProtocolManager();
-	    manager.addPacketListener(new HardcoreHearts(this));
+		Teams.getInstance().setup();
+		UBL.getInstance().reload();
 	    
 		recoverData();
 		addRecipes();
+
+		ProtocolManager protocol = ProtocolLibrary.getProtocolManager();
+		PluginManager manager = Bukkit.getServer().getPluginManager();
 		
-		Server server = Bukkit.getServer();
-		PluginManager pmanager = server.getPluginManager();
+	    protocol.addPacketListener(new HardcoreHearts(this));
 		
-		pmanager.registerEvents(new BlockListener(), this);
-		pmanager.registerEvents(new EntityListener(), this);
-		pmanager.registerEvents(new InventoryListener(), this);
-		pmanager.registerEvents(new LoginListener(), this);
-		pmanager.registerEvents(new PlayerListener(), this);
-		pmanager.registerEvents(new PortalListener(), this);
-		pmanager.registerEvents(new WorldListener(), this);
+		manager.registerEvents(new BlockListener(), this);
+		manager.registerEvents(new EntityListener(), this);
+		manager.registerEvents(new InventoryListener(), this);
+		manager.registerEvents(new LoginListener(), this);
+		manager.registerEvents(new PlayerListener(), this);
+		manager.registerEvents(new PortalListener(), this);
+		manager.registerEvents(new WorldListener(), this);
 
 		getCommand("aboard").setExecutor(new AboardCommand());
 		getCommand("arena").setExecutor(new ArenaCommand());
@@ -288,12 +285,6 @@ public class Main extends JavaPlugin {
 		Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
 			public void run() {
 				for (Player online : PlayerUtils.getPlayers()) {
-					Spectator spec = Spectator.getManager();
-					
-					if (spec.isSpectating(online) && online.getGameMode() != GameMode.SPECTATOR) {
-						online.setGameMode(GameMode.SPECTATOR);
-					}
-					
 					PlayerInventory inv = online.getInventory();
 					
 					ItemStack hemlet = inv.getHelmet();
@@ -317,7 +308,9 @@ public class Main extends JavaPlugin {
 						inv.setHelmet(rainbowArmor(online, boots));
 					}
 					
-					if (Game.getInstance().tabShowsHealthColor()) {
+					Game game = Game.getInstance();
+					
+					if (game.tabShowsHealthColor()) {
 						ChatColor color;
 
 						if (online.getHealth() < 6.66D) {

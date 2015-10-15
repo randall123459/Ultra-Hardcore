@@ -30,7 +30,7 @@ public class Teams {
 	 * 
 	 * @return The instance.
 	 */
-	public static Teams getManager() {
+	public static Teams getInstance() {
 		return manager;
 	}
 	

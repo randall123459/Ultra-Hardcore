@@ -38,7 +38,7 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
 		}
 		
 		Player player = (Player) sender;
-		Teams teams = Teams.getManager();
+		Teams teams = Teams.getInstance();
 		Game game = Game.getInstance();
 		
 		if (cmd.getName().equalsIgnoreCase("team")) {
@@ -134,7 +134,7 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
 				}
 				else if (args[0].equalsIgnoreCase("clear")) {
 					if (player.hasPermission("uhc.teamadmin")) {
-						for (Team team : Scoreboards.getManager().board.getTeams()) {
+						for (Team team : Scoreboards.getInstance().board.getTeams()) {
 							for (String p : team.getEntries()) {
 								team.removeEntry(p);
 							}
@@ -151,7 +151,7 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
 				}
 				else if (args[0].equalsIgnoreCase("color")) {
 					if (player.hasPermission("uhc.teamadmin")) {
-						Teams.getManager().setup();
+						Teams.getInstance().setup();
 						PlayerUtils.broadcast(Main.prefix() + "All teams has been re-colored.");
 					} else {
 						sendHelp(player);
@@ -160,7 +160,7 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
 				else if (args[0].equalsIgnoreCase("list")) {
 					if (player.hasPermission("uhc.teamadmin")) {
 						player.sendMessage(Main.prefix() + "List of teams:");
-						for (Team team : Teams.getManager().getTeamsWithPlayers()) {
+						for (Team team : Teams.getInstance().getTeamsWithPlayers()) {
 							StringBuilder list = new StringBuilder("");
 							int i = 1;
 							
@@ -193,9 +193,9 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
 						PlayerUtils.broadcast(Main.prefix() + "Team management has been enabled.");
 
 						if (game.pregameBoard()) {
-							Scoreboards.getManager().setScore("§e ", 13);
-							Scoreboards.getManager().setScore("§8» §cTeam:", 12);
-							Scoreboards.getManager().setScore("§8» §7/team", 11);
+							Scoreboards.getInstance().setScore("§e ", 13);
+							Scoreboards.getInstance().setScore("§8» §cTeam:", 12);
+							Scoreboards.getInstance().setScore("§8» §7/team", 11);
 						}
 						game.setTeamManagement(true);
 					} else {
@@ -210,9 +210,9 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
 						}
 
 						if (game.pregameBoard()) {
-							Scoreboards.getManager().resetScore("§e ");
-							Scoreboards.getManager().resetScore("§8» §cTeam:");
-							Scoreboards.getManager().resetScore("§8» §7/team");
+							Scoreboards.getInstance().resetScore("§e ");
+							Scoreboards.getInstance().resetScore("§8» §cTeam:");
+							Scoreboards.getInstance().resetScore("§8» §7/team");
 						}
 						PlayerUtils.broadcast(Main.prefix() + "Team management has been disabled.");
 						game.setTeamManagement(false);
@@ -300,7 +300,7 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
 			}
 			else if (args[0].equalsIgnoreCase("clear")) {
 				if (player.hasPermission("uhc.teamadmin")) {
-					for (Team team : Scoreboards.getManager().board.getTeams()) {
+					for (Team team : Scoreboards.getInstance().board.getTeams()) {
 						for (String p : team.getEntries()) {
 							team.removeEntry(p);
 						}
@@ -318,7 +318,7 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
 			else if (args[0].equalsIgnoreCase("list")) {
 				if (player.hasPermission("uhc.teamadmin")) {
 					player.sendMessage(Main.prefix() + "List of teams:");
-					for (Team team : Teams.getManager().getTeamsWithPlayers()) {
+					for (Team team : Teams.getInstance().getTeamsWithPlayers()) {
 						StringBuilder list = new StringBuilder("");
 						int i = 1;
 						
@@ -351,9 +351,9 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
 					PlayerUtils.broadcast(Main.prefix() + "Team management has been enabled.");
 
 					if (game.pregameBoard()) {
-						Scoreboards.getManager().setScore("§e ", 13);
-						Scoreboards.getManager().setScore("§8» §cTeam:", 12);
-						Scoreboards.getManager().setScore("§8» §7/team", 11);
+						Scoreboards.getInstance().setScore("§e ", 13);
+						Scoreboards.getInstance().setScore("§8» §cTeam:", 12);
+						Scoreboards.getInstance().setScore("§8» §7/team", 11);
 					}
 					game.setTeamManagement(true);
 				} else {
@@ -368,9 +368,9 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
 					}
 
 					if (game.pregameBoard()) {
-						Scoreboards.getManager().resetScore("§e ");
-						Scoreboards.getManager().resetScore("§8» §cTeam:");
-						Scoreboards.getManager().resetScore("§8» §7/team");
+						Scoreboards.getInstance().resetScore("§e ");
+						Scoreboards.getInstance().resetScore("§8» §cTeam:");
+						Scoreboards.getInstance().resetScore("§8» §7/team");
 					}
 					PlayerUtils.broadcast(Main.prefix() + "Team management has been disabled.");
 					game.setTeamManagement(false);
@@ -380,7 +380,7 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
 			}
 			else if (args[0].equalsIgnoreCase("color")) {
 				if (player.hasPermission("uhc.teamadmin")) {
-					Teams.getManager().setup();
+					Teams.getInstance().setup();
 					PlayerUtils.broadcast(Main.prefix() + "All teams has been re-colored.");
 				} else {
 					sendHelp(player);
@@ -655,7 +655,7 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
 						return true;
 					}
 					
-					for (Team team : Scoreboards.getManager().board.getTeams()) {
+					for (Team team : Scoreboards.getInstance().board.getTeams()) {
 						team.setAllowFriendlyFire(enable);
 					}
 					
@@ -711,28 +711,28 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
 	        	
 	        	if (args[0].equalsIgnoreCase("add")) {
 		        	if (!args[1].equals("")) {
-		        		for (Team teams : Teams.getManager().getTeams()) {
+		        		for (Team teams : Teams.getInstance().getTeams()) {
 		        			if (teams.getName().toLowerCase().startsWith(args[1].toLowerCase())) {
 		        				arg.add(teams.getName());
 		        			}
 		        		}
 		        	}
 		        	else {
-		        		for (Team teams : Teams.getManager().getTeams()) {
+		        		for (Team teams : Teams.getInstance().getTeams()) {
 		        			arg.add(teams.getName());
 		        		}
 		        	}
 	        	}
 	        	else if (args[0].equalsIgnoreCase("delete")) {
 		        	if (!args[1].equals("")) {
-		        		for (Team teams : Teams.getManager().getTeams()) {
+		        		for (Team teams : Teams.getInstance().getTeams()) {
 		        			if (teams.getName().toLowerCase().startsWith(args[1].toLowerCase())) {
 		        				arg.add(teams.getName());
 		        			}
 		        		}
 		        	}
 		        	else {
-		        		for (Team teams : Teams.getManager().getTeams()) {
+		        		for (Team teams : Teams.getInstance().getTeams()) {
 		        			arg.add(teams.getName());
 		        		}
 		        	}

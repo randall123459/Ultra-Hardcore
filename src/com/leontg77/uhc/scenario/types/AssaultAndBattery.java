@@ -58,7 +58,7 @@ public class AssaultAndBattery extends Scenario implements Listener, CommandExec
 				}
 			}
 			
-			for (Team team : Teams.getManager().getTeamsWithPlayers()) {
+			for (Team team : Teams.getInstance().getTeamsWithPlayers()) {
 				if (team.getSize() == 2) {
 					ArrayList<String> entry = new ArrayList<String>(team.getEntries());
 					types.put(entry.get(0), Type.ASSAULT);

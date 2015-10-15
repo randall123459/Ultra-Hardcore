@@ -23,7 +23,7 @@ public class AboardCommand implements CommandExecutor {
 						Arena.getInstance().resetScore(e);
 					}
 					PlayerUtils.broadcast(Main.prefix() + "Arena board has been disabled.");
-					Scoreboards.getManager().kills.setDisplaySlot(DisplaySlot.SIDEBAR);
+					Scoreboards.getInstance().kills.setDisplaySlot(DisplaySlot.SIDEBAR);
 					game.setArenaBoard(false);
 				} else {
 					PlayerUtils.broadcast(Main.prefix() + "Arena board has been enabled.");

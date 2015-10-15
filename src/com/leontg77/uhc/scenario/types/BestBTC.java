@@ -160,7 +160,7 @@ public class BestBTC extends Scenario implements Listener, CommandExecutor {
 					sender.sendMessage(ChatColor.GRAY + "- §f/btc remove <player> - Removes an player manually to the list.");
 				}
 			} else {
-				sender.sendMessage(Main.NO_PERMISSION_MESSAGE);
+				sender.sendMessage(Main.NO_PERM_MSG);
 			}
 		}
 		return true;

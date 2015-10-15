@@ -12,6 +12,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -19,12 +20,10 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
 
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
-import com.leontg77.uhc.utils.NameUtils;
 import com.leontg77.uhc.utils.PlayerUtils;
 
 /**
@@ -35,9 +34,9 @@ import com.leontg77.uhc.utils.PlayerUtils;
  * @author XHawk87, modified by LeonTG77
  */
 public class UBL implements Runnable {
-    public Map<String, BanEntry> banlistByIGN;
+	private static UBL instance = new UBL();
+	
     public Map<UUID, BanEntry> banlistByUUID;
-	private static UBL manager = new UBL();
     private BukkitTask autoChecker;
 
 	/**
@@ -45,17 +44,14 @@ public class UBL implements Runnable {
 	 * 
 	 * @return The instance.
 	 */
-	public static UBL getManager() {
-		return manager;
-	}
-
-	public void setup() {
-       	reload();
+	public static UBL getInstance() {
+		return instance;
 	}
 	
 	@Override
     public void run() {
         String banlistURL = "https://docs.google.com/spreadsheet/ccc?key=0AjACyg1Jc3_GdEhqWU5PTEVHZDVLYWphd2JfaEZXd2c&output=csv";
+        
         int retries = 3;
         int maxBandwidth = 64;
         int bufferSize = (maxBandwidth * 1024) / 20;
@@ -127,42 +123,33 @@ public class UBL implements Runnable {
                 plugin.getLogger().info("UBL has been updated.");
                 
                 for (Player online : PlayerUtils.getPlayers()) {
-                	if (isBanned(online.getName(), online.getUniqueId())) {
-                		online.kickPlayer(getBanMessage(online.getUniqueId()));
+                	if (!isBanned(online.getUniqueId())) {
                 		continue;
                 	}
                 	
-                	if (isBanned(online.getName())) {
-                		online.kickPlayer(getBanMessage(online.getName()));
-                	}
+            		online.kickPlayer(getBanMessage(online.getUniqueId()));
                 }
             } catch (IOException ex) {
                 plugin.getLogger().severe("Connection was interrupted while downloading banlist from " + banlistURL);
                 data = loadFromBackup();
                 
                 for (Player online : PlayerUtils.getPlayers()) {
-                	if (isBanned(online.getName(), online.getUniqueId())) {
-                		online.kickPlayer(getBanMessage(online.getUniqueId()));
+                	if (!isBanned(online.getUniqueId())) {
                 		continue;
                 	}
                 	
-                	if (isBanned(online.getName())) {
-                		online.kickPlayer(getBanMessage(online.getName()));
-                	}
+            		online.kickPlayer(getBanMessage(online.getUniqueId()));
                 }
             } catch (InterruptedException ex) {
                 plugin.getLogger().log(Level.SEVERE, "Timed out while waiting for banlist server to send data", ex);
                 data = loadFromBackup();
                 
                 for (Player online : PlayerUtils.getPlayers()) {
-                	if (isBanned(online.getName(), online.getUniqueId())) {
-                		online.kickPlayer(getBanMessage(online.getUniqueId()));
+                	if (!isBanned(online.getUniqueId())) {
                 		continue;
                 	}
                 	
-                	if (isBanned(online.getName())) {
-                		online.kickPlayer(getBanMessage(online.getName()));
-                	}
+            		online.kickPlayer(getBanMessage(online.getUniqueId()));
                 }
             }
 
@@ -172,28 +159,22 @@ public class UBL implements Runnable {
             data = loadFromBackup();
             
             for (Player online : PlayerUtils.getPlayers()) {
-            	if (isBanned(online.getName(), online.getUniqueId())) {
-            		online.kickPlayer(getBanMessage(online.getUniqueId()));
+            	if (!isBanned(online.getUniqueId())) {
             		continue;
             	}
             	
-            	if (isBanned(online.getName())) {
-            		online.kickPlayer(getBanMessage(online.getName()));
-            	}
+        		online.kickPlayer(getBanMessage(online.getUniqueId()));
             }
         } catch (IOException ex) {
-            plugin.getLogger().log(Level.WARNING, "Banlist server " + banlistURL + " is currently unreachable", ex);
+            plugin.getLogger().warning("Banlist server " + banlistURL + " is currently unreachable");
             data = loadFromBackup();
             
             for (Player online : PlayerUtils.getPlayers()) {
-            	if (isBanned(online.getName(), online.getUniqueId())) {
-            		online.kickPlayer(getBanMessage(online.getUniqueId()));
+            	if (!isBanned(online.getUniqueId())) {
             		continue;
             	}
             	
-            	if (isBanned(online.getName())) {
-            		online.kickPlayer(getBanMessage(online.getName()));
-            	}
+        		online.kickPlayer(getBanMessage(online.getUniqueId()));
             }
         }
 
@@ -209,8 +190,8 @@ public class UBL implements Runnable {
         reloadConfigAsync(new BukkitRunnable() {
             public void run() {
             	plugin.getLogger().info("Checking UBL for updates...");
-                
                 int autoCheckInterval = 60;
+                
                 schedule(autoCheckInterval);
                 updateBanlist();
             }
@@ -250,50 +231,15 @@ public class UBL implements Runnable {
      * Check if the given player is banned on the UBL and is not exempt on this
      * server
      *
-     * @param ign The in-game name of the player to check
-     * @return True, if the player is banned and not exempt, otherwise false
-     */
-    public boolean isBanned(String ign) {
-        String lname = ign.toLowerCase();
-        
-    	if (banlistByIGN != null) {
-            return banlistByIGN.containsKey(lname);
-    	}
-		return false;
-    }
-
-    /**
-     * Check if the given player is banned on the UBL and is not exempt on this
-     * server
-     *
      * @param ign The in-game name of the player to check against the exemptions
      * @param uuid The universally unique identifier of the player to check
      * @return True, if the player is banned and not exempt, otherwise false
      */
-    public boolean isBanned(String ign, UUID uuid) {
+    public boolean isBanned(UUID uuid) {
     	if (banlistByUUID != null) {
             return banlistByUUID.containsKey(uuid);
     	}
 		return false;
-    }
-
-    /**
-     * @param ign The in-game name of the banned player
-     * @return A personalised ban message for this player
-     */
-    public String getBanMessage(String ign) {
-        BanEntry banEntry = banlistByIGN.get(ign.toLowerCase());
-        
-        if (banEntry == null) {
-            return "Not on the UBL";
-        }
-        
-        return 
-        "§8» §7You have been §4UBL'ed §7from §6/r/ultrahardcore §8«" +
-		"\n" + 
-		"\n§cReason §8» §7" + banEntry.getData("Reason") +
-		"\n§cBan length §8» §7" + banEntry.getData("Length of Ban") +
-		"\n§cCase post §8» §7" + banEntry.getData("Case");
     }
 
     /**
@@ -314,6 +260,40 @@ public class UBL implements Runnable {
         "\n§cBan length §8» §7" + banEntry.getData("Length of Ban") +
         "\n§cCase post §8» §7" + banEntry.getData("Case");
     }
+	
+    /**
+     * Parse things.
+     * 
+     * @param line The line to parse.
+     * @return The parsed line.
+     */
+	public String[] parseLine(String line) {
+	    List<String> fields = new ArrayList<String>();
+	    StringBuilder sb = new StringBuilder();
+	    
+	    for (int i = 0; i < line.length(); i++) {
+	    	char c = line.charAt(i);
+	    	if (c == ',') {
+	    		fields.add(sb.toString());
+	    		sb = new StringBuilder();
+	    	}
+	    	else if (c == '"') {
+	    		int ends = line.indexOf('"', i + 1);
+	    		
+	    		if (ends == -1) {
+	    			throw new IllegalArgumentException("Expected double-quote to terminate (" + i + "): " + line);
+	    		}
+	        
+	    		sb.append(line.substring(i + 1, ends - 1));
+	    		i = ends;
+	    	} 
+	    	else {
+	    		sb.append(c);
+	    	}
+	    }
+	    fields.add(sb.toString());
+	    return fields.toArray(new String[fields.size()]);
+	}
 
     /**
      * Update the entire ban-list using raw CSV lines, overwriting any previous
@@ -322,61 +302,44 @@ public class UBL implements Runnable {
      * @param banlist The new ban-list
      */
     public void setBanList(String fieldNamesCSV, List<String> banlist) {
-        String[] fieldNames = NameUtils.parseLine(fieldNamesCSV);
+        String[] fieldNames = parseLine(fieldNamesCSV);
         
-        if (!Arrays.asList(fieldNames).contains(getIGNFieldName())) {
-            Bukkit.getLogger().warning("There is no matching IGN field (" + getIGNFieldName() + ") in the ban-list data. Please check the UBL spreadsheet and set 'fields.ign' in your config.yml to the correct field name");
-            Bukkit.getServer().broadcast("[AutoUBL] No IGN field found in the ban-list data. If you also have no UUID field then your server will be locked to non-ops for your protection. Please see your server logs for details in how to fix this issue", "bukkit.op");
+        if (!Arrays.asList(fieldNames).contains("IGN") && !Arrays.asList(fieldNames).contains("UUID")) {
+        	plugin.getLogger().warning("The ubl commitee fucked up the google doc, go spam them on skype to fix it :D");
         }
-        if (!Arrays.asList(fieldNames).contains(getUUIDFieldName())) {
-        	Bukkit.getLogger().warning("There is no matching UUID field (" + getUUIDFieldName() + ") in the ban-list data. Please check the UBL spreadsheet and set 'fields.uuid' in your config.yml to the correct field name");
-            Bukkit.getServer().broadcast("[AutoUBL] No UUID field found in the ban-list data. If Mojang has not yet allowed name-changing, this is not a problem. Otherwise, please check your server logs for details on how to fix this issue", "bukkit.op");
-        }
-        this.banlistByIGN = new HashMap<String, BanEntry>();
+        
         this.banlistByUUID = new HashMap<UUID, BanEntry>();
         
         for (String rawCSV : banlist) {
             BanEntry banEntry = new BanEntry(fieldNames, rawCSV);
-            String ign = banEntry.getData(getIGNFieldName());
+            String ign = banEntry.getData("IGN");
+            
             if (ign != null) {
-                this.banlistByIGN.put(ign.toLowerCase(), banEntry);
                 banEntry.setIgn(ign);
             }
-            String uuidString = banEntry.getData(getUUIDFieldName()).trim();
-            if (uuidString != null) {
-                if (uuidString.length() == 32) {
-                    StringBuilder sb = new StringBuilder();
-                    sb.append(uuidString.substring(0, 8)).append('-');
-                    sb.append(uuidString.substring(8, 12)).append('-');
-                    sb.append(uuidString.substring(12, 16)).append('-');
-                    sb.append(uuidString.substring(16, 20)).append('-');
-                    sb.append(uuidString.substring(20, 32));
-                    uuidString = sb.toString();
-                }
-                if (uuidString.length() == 36) {
-                    UUID uuid = UUID.fromString(uuidString);
-                    this.banlistByUUID.put(uuid, banEntry);
-                    banEntry.setUUID(uuid);
-                } else {
-                	Bukkit.getLogger().warning("Invalid UUID in ban-list for " + ign + ": " + uuidString);
-                }
+            
+            String uuidString = banEntry.getData("UUID").trim();
+            
+            if (uuidString == null) {
+            	return;
+            }
+            
+            if (uuidString.length() == 32) {
+                StringBuilder sb = new StringBuilder();
+                sb.append(uuidString.substring(0, 8)).append('-');
+                sb.append(uuidString.substring(8, 12)).append('-');
+                sb.append(uuidString.substring(12, 16)).append('-');
+                sb.append(uuidString.substring(16, 20)).append('-');
+                sb.append(uuidString.substring(20, 32));
+                uuidString = sb.toString();
+            }
+            
+            if (uuidString.length() == 36) {
+                UUID uuid = UUID.fromString(uuidString);
+                this.banlistByUUID.put(uuid, banEntry);
+                banEntry.setUUID(uuid);
             }
         }
-    }
-
-    /**
-     * @return The field name to check for the player's in-game name
-     */
-    public String getIGNFieldName() {
-    	return "IGN";
-    }
-
-    /**
-     * @return The field name to check for the player's universally unique
-     * identifier
-     */
-    public String getUUIDFieldName() {
-        return "UUID";
     }
 	
 	/**
@@ -448,15 +411,20 @@ public class UBL implements Runnable {
         }
     }
 
+    /**
+     * Parse some data.
+     * 
+     * @param data The data parsing.
+     */
     private void parseData(final String data) {
         new BukkitRunnable() {
-            @Override
             public void run() {
                 String[] lines = data.split("\\r?\\n");
                 if (lines.length < 2) {
                     plugin.getLogger().warning("Banlist is empty!");
                     return;
                 }
+                
                 setBanList(lines[0], Arrays.asList(Arrays.copyOfRange(lines, 1, lines.length)));
             }
         }.runTask(plugin);
@@ -529,7 +497,7 @@ public class UBL implements Runnable {
          * @param rawCSV A raw CSV record
          */
         public BanEntry(String[] fieldNames, String rawCSV) {
-            String[] parts = NameUtils.parseLine(rawCSV);
+            String[] parts = parseLine(rawCSV);
             if (parts.length != fieldNames.length) {
                 throw new IllegalArgumentException("Expected " + fieldNames.length + " columns: " + rawCSV);
             }
@@ -589,7 +557,9 @@ public class UBL implements Runnable {
         }
 
         /**
-         * @return A map of all data in this ban entry
+         * Get a map of all data in this ban entry.
+         * 
+         * @return The data map.
          */
         public Map<String, String> getData() {
             return data;

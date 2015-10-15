@@ -236,7 +236,7 @@ public class EntityListener implements Listener {
 						int percent = NumberUtils.makePercent(health);
 						
 						if (health > 0.0000) {
-							killer.sendMessage(Main.prefix() + "§6" + player.getName() + " §7is now at §a" + ((int) percent) + "%");
+							killer.sendMessage(Main.PREFIX + "§6" + player.getName() + " §7is now at §a" + ((int) percent) + "%");
 						}
 					}
 				}.runTaskLater(Main.plugin, 1);
@@ -264,7 +264,7 @@ public class EntityListener implements Listener {
 				double distance = killer.getLocation().distance(player.getLocation());
 				
 				if (distance >= 50) {
-					PlayerUtils.broadcast(Main.prefix() + "§6" + killer.getName() + " §7got a longshot of §6" + NumberUtils.convertDouble(distance) + " §7blocks.");
+					PlayerUtils.broadcast(Main.PREFIX + "§6" + killer.getName() + " §7got a longshot of §6" + NumberUtils.convertDouble(distance) + " §7blocks.");
 				}
 			}
 		}

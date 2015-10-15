@@ -26,7 +26,7 @@ public class Scoreboards {
 	 * 
 	 * @return the instance.
 	 */
-	public static Scoreboards getManager() {
+	public static Scoreboards getInstance() {
 		return manager;
 	}
 	

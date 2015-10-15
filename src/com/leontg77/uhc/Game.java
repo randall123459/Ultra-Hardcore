@@ -267,4 +267,8 @@ public class Game {
 		settings.getConfig().set("rr.name", name);
 		settings.saveConfig();
 	}
+
+	public String getHost() {
+		return settings.getConfig().getString("game.host");
+	}
 }

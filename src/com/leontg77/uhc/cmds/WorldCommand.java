@@ -22,8 +22,8 @@ public class WorldCommand implements CommandExecutor {
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (cmd.getName().equalsIgnoreCase("world")) {
 			if (sender.hasPermission("uhc.world")) {
-				if (args.length < 7) {
-					sender.sendMessage(Main.prefix() + "Usage: /world <worldname> <radius> <seed> <worldtype> <nether> <end> <antistripmine>");
+				if (args.length < 6) {
+					sender.sendMessage(Main.PREFIX + "Usage: /world <worldname> <radius> <seed> <worldtype> <nether> <end>");
 					return true;
 				}
 				
@@ -33,7 +33,6 @@ public class WorldCommand implements CommandExecutor {
 				WorldType worldtype;
 				boolean nether;
 				boolean end;
-				boolean antistripmine;
 				
 				if (args[0].matches("[a-zA-Z]")) {
 					worldname = args[0];
@@ -78,15 +77,6 @@ public class WorldCommand implements CommandExecutor {
 					end = false;
 				} else {
 					sender.sendMessage(ChatColor.RED + "End can only be true or false.");
-					return true;
-				}
-				
-				if (args[6].equalsIgnoreCase("true")) {
-					antistripmine = true;
-				} else if (args[6].equalsIgnoreCase("false")) {
-					antistripmine = false;
-				} else {
-					sender.sendMessage(ChatColor.RED + "AntiStripmine can only be true or false.");
 					return true;
 				}
 				

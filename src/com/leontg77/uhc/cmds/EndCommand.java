@@ -53,7 +53,7 @@ public class EndCommand implements CommandExecutor {
 					Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer cancel");
 					Spectator.getManager().spectators.clear();
 					SpecInfo.totalDiamonds.clear();
-					Parkour.getManager().setup();
+					Parkour.getInstance().setup();
 					State.setState(State.LOBBY);
 					SpecInfo.totalGold.clear();
 					
@@ -94,12 +94,12 @@ public class EndCommand implements CommandExecutor {
 						}
 					}
 					
-					for (String e : Scoreboards.getManager().kills.getScoreboard().getEntries()) {
-						Scoreboards.getManager().resetScore(e);
+					for (String e : Scoreboards.getInstance().kills.getScoreboard().getEntries()) {
+						Scoreboards.getInstance().resetScore(e);
 					}
 					
-					for (String team : Teams.getManager().getTeam("spec").getEntries()) {
-						Teams.getManager().getTeam("spec").removeEntry(team);
+					for (String team : Teams.getInstance().getTeam("spec").getEntries()) {
+						Teams.getInstance().getTeam("spec").removeEntry(team);
 					}
 
 					for (OfflinePlayer whitelisted : Bukkit.getServer().getWhitelistedPlayers()) {
@@ -148,7 +148,7 @@ public class EndCommand implements CommandExecutor {
 				Spectator.getManager().spectators.clear();
 				Fireworks.getInstance().startFireworkShow();
 				SpecInfo.totalDiamonds.clear();
-				Parkour.getManager().setup();
+				Parkour.getInstance().setup();
 				State.setState(State.LOBBY);
 				SpecInfo.totalGold.clear();
 				TeamCommand.sTeam.clear();
@@ -249,12 +249,12 @@ public class EndCommand implements CommandExecutor {
 					}
 				}
 				
-				for (String e : Scoreboards.getManager().kills.getScoreboard().getEntries()) {
-					Scoreboards.getManager().resetScore(e);
+				for (String e : Scoreboards.getInstance().kills.getScoreboard().getEntries()) {
+					Scoreboards.getInstance().resetScore(e);
 				}
 				
-				for (String team : Teams.getManager().getTeam("spec").getEntries()) {
-					Teams.getManager().getTeam("spec").removeEntry(team);
+				for (String team : Teams.getInstance().getTeam("spec").getEntries()) {
+					Teams.getInstance().getTeam("spec").removeEntry(team);
 				}
 
 				for (OfflinePlayer whitelisted : Bukkit.getServer().getWhitelistedPlayers()) {

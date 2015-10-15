@@ -26,7 +26,7 @@ public class MuteCommand implements CommandExecutor {
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (!sender.hasPermission("uhc.mute")) {
-			sender.sendMessage(Main.NO_PERMISSION_MESSAGE);
+			sender.sendMessage(Main.NO_PERM_MSG);
 			return true;
 		}
 		

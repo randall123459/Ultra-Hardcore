@@ -50,7 +50,7 @@ public class TeamHealth extends Scenario implements Listener {
 			run = new BukkitRunnable() {
 				public void run() {
 					for (Player online : PlayerUtils.getPlayers()) {	
-						Team team = Teams.getManager().getTeam(online);
+						Team team = Teams.getInstance().getTeam(online);
 						
 						if (team == null) {
 							int percent = NumberUtils.makePercent(online.getHealth());
@@ -100,7 +100,7 @@ public class TeamHealth extends Scenario implements Listener {
 			run.cancel();
 			run = null;
 			
-			Scoreboards.getManager().setup();
+			Scoreboards.getInstance().setup();
 		}
 	}
 
@@ -111,7 +111,7 @@ public class TeamHealth extends Scenario implements Listener {
 	@EventHandler
     public void onDeath(PlayerDeathEvent event) {
 		Player player = event.getEntity();
-		Team team = Teams.getManager().getTeam(player);
+		Team team = Teams.getInstance().getTeam(player);
 
         if (team != null) {
             team.removeEntry(player.getName());

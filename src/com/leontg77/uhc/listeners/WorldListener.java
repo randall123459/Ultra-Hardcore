@@ -58,7 +58,7 @@ public class WorldListener implements Listener {
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onChunkPopulate(ChunkPopulateEvent event) {
-		AntiStripmine strip = AntiStripmine.getManager();
+		AntiStripmine strip = AntiStripmine.getInstance();
 		World world = event.getWorld();
 		
 		WorldData worldData = strip.getWorldData(world);
@@ -69,18 +69,18 @@ public class WorldListener implements Listener {
 		
 		ChunkOreRemover remover = new ChunkOreRemover(worldData, event.getChunk());
 		
-		if (AntiStripmine.getManager().wasChecked(remover)) {
+		if (AntiStripmine.getInstance().wasChecked(remover)) {
 			Main.plugin.getLogger().warning("Populated " + worldData.getWorld().getName() + " " + remover.getChunkX() + "," + remover.getChunkZ() + " again");
-			AntiStripmine.getManager().queue(remover);
+			AntiStripmine.getInstance().queue(remover);
 		} else {
 			worldData.logQueued(remover);
-			AntiStripmine.getManager().queue(remover);
+			AntiStripmine.getInstance().queue(remover);
 		}
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onWorldInit(WorldInitEvent event) {
-		AntiStripmine strip = AntiStripmine.getManager();
+		AntiStripmine strip = AntiStripmine.getInstance();
 		World world = event.getWorld();
 		
 		strip.registerWorld(world);

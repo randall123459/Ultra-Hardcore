@@ -92,7 +92,7 @@ public class SlimyCrack extends Scenario implements Listener, CommandExecutor {
 	            
 	            generate(player.getWorld(), length, width, speed, z);
 			} else {
-				sender.sendMessage(Main.NO_PERMISSION_MESSAGE);
+				sender.sendMessage(Main.NO_PERM_MSG);
 			}
 		}
 		return true;

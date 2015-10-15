@@ -55,7 +55,7 @@ public class KickCommand implements CommandExecutor {
 		    	PlayerUtils.broadcast(Main.prefix() + "§6" + args[0] + " §7has been kicked for §a" + msg, "uhc.admin");
 		    	target.kickPlayer("§8» §7" + msg + " §8«");
 			} else {
-				sender.sendMessage(Main.NO_PERMISSION_MESSAGE);
+				sender.sendMessage(Main.NO_PERM_MSG);
 			}
 		}
 		return true;

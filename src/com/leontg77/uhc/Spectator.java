@@ -144,7 +144,7 @@ public class Spectator {
 		player.setWalkSpeed(0.2f);
 		player.setFlySpeed(0.1f);
 		
-		Teams.getManager().joinTeam("spec", player);
+		Teams.getInstance().joinTeam("spec", player);
 		
 		if (!spectators.contains(player.getName())) {
 			spectators.add(player.getName());
@@ -198,7 +198,7 @@ public class Spectator {
 		player.setWalkSpeed(0.2f);
 		player.setFlySpeed(0.1f);
 
-		Teams.getManager().leaveTeam(player);
+		Teams.getInstance().leaveTeam(player);
 		
 		if (spectators.contains(player.getName())) {
 			spectators.remove(player.getName());

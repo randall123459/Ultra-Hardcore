@@ -48,7 +48,7 @@ public class AntiStripmine {
 	 * 
 	 * @return The instance.
 	 */
-	public static AntiStripmine getManager() {
+	public static AntiStripmine getInstance() {
 		return manager;
 	}
 

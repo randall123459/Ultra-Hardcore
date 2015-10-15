@@ -50,7 +50,7 @@ public class TempbanCommand implements CommandExecutor {
 		    	if (target == null) {
 					PlayerUtils.broadcast(Main.prefix() + "§6" + args[0] + " §7has been banned for §a" + msg);
 		    		Bukkit.getBanList(Type.NAME).addBan(args[0], msg, date, sender.getName());
-					Scoreboards.getManager().resetScore(args[0]);
+					Scoreboards.getInstance().resetScore(args[0]);
 		            return true;
 				}
 
@@ -90,8 +90,8 @@ public class TempbanCommand implements CommandExecutor {
 			    		BanEntry ban = Bukkit.getBanList(Type.NAME).addBan(target.getName(), msg, date, sender.getName());
 				    	target.setWhitelisted(false);
 				    	
-						Scoreboards.getManager().resetScore(args[0]);
-				    	Scoreboards.getManager().resetScore(target.getName());
+						Scoreboards.getInstance().resetScore(args[0]);
+				    	Scoreboards.getInstance().resetScore(target.getName());
 				    	
 				    	PlayerDeathEvent event = new PlayerDeathEvent(target, new ArrayList<ItemStack>(), 0, null);
 						Bukkit.getServer().getPluginManager().callEvent(event);
@@ -108,7 +108,7 @@ public class TempbanCommand implements CommandExecutor {
 					}
 				}, 60);
 			} else {
-				sender.sendMessage(Main.NO_PERMISSION_MESSAGE);
+				sender.sendMessage(Main.NO_PERM_MSG);
 			}
 		}
 		return true;

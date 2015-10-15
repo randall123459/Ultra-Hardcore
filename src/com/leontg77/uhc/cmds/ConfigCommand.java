@@ -158,7 +158,7 @@ public class ConfigCommand implements CommandExecutor, TabCompleter {
 					Settings.getInstance().getConfig().set("game.host", args[1]);
 					Settings.getInstance().saveConfig();
 					
-					Scoreboards.getManager().kills.setDisplayName("§4UHC §8- §7" + args[1]);
+					Scoreboards.getInstance().kills.setDisplayName("§4UHC §8- §7" + args[1]);
 					sender.sendMessage(Main.prefix() + "You set the host to §a" + args[1] + "§7.");
 
 					for (Player online : PlayerUtils.getPlayers()) {
@@ -380,12 +380,12 @@ public class ConfigCommand implements CommandExecutor, TabCompleter {
 						PlayerUtils.broadcast(Main.prefix() + "This is now an recorded round.");
 						game.setRR(true);
 						
-						Scoreboards.getManager().kills.setDisplayName("§6" + game.getRRName());
+						Scoreboards.getInstance().kills.setDisplayName("§6" + game.getRRName());
 					} else if (args[1].equalsIgnoreCase("false")) {
 						PlayerUtils.broadcast(Main.prefix() + "This is no longer an recorded round.");
 						game.setRR(false);
 						
-						Scoreboards.getManager().kills.setDisplayName("§4UHC §8- §7" + Settings.getInstance().getConfig().getString("game.host"));
+						Scoreboards.getInstance().kills.setDisplayName("§4UHC §8- §7" + Settings.getInstance().getConfig().getString("game.host"));
 					} else {
 						sender.sendMessage(ChatColor.RED + "RR can only be true or false.");
 					}
@@ -395,7 +395,7 @@ public class ConfigCommand implements CommandExecutor, TabCompleter {
 					game.setRRName(args[1].replaceAll("_", " "));
 					
 					if (game.isRecordedRound()) {
-						Scoreboards.getManager().kills.setDisplayName("§6" + game.getRRName());
+						Scoreboards.getInstance().kills.setDisplayName("§6" + game.getRRName());
 					}
 					break;
 				default:

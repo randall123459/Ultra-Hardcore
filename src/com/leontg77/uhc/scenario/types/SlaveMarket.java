@@ -82,7 +82,7 @@ public class SlaveMarket extends Scenario implements Listener, CommandExecutor {
 				biggestBid = -1;
 				bidTime = 0;
 				
-				for (Team teams : Teams.getManager().getTeamsWithPlayers()) {
+				for (Team teams : Teams.getInstance().getTeamsWithPlayers()) {
 					for (String entry : teams.getEntries()) {
 						teams.removeEntry(entry);
 					}
@@ -116,7 +116,7 @@ public class SlaveMarket extends Scenario implements Listener, CommandExecutor {
 						}
 						
 						traders.add(target.getName());
-						Team t = Teams.getManager().findAvailableTeam();
+						Team t = Teams.getInstance().findAvailableTeam();
 						
 						if (t == null) {
 							sender.sendMessage(ChatColor.RED + "Could not find any open teams.");

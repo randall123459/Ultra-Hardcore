@@ -65,7 +65,7 @@ public class ClearInvCommand implements CommandExecutor {
 					}
 				}
 			} else {
-				sender.sendMessage(Main.NO_PERMISSION_MESSAGE);
+				sender.sendMessage(Main.NO_PERM_MSG);
 			}
 		}
 		return true;

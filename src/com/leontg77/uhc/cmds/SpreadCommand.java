@@ -77,7 +77,7 @@ public class SpreadCommand implements CommandExecutor {
 				
 				if (args[2].equalsIgnoreCase("*")) {
 					State.setState(State.SCATTER);
-					Parkour.getManager().shutdown();
+					Parkour.getInstance().shutdown();
 					isReady = false;
 					
 					int t = 0;
@@ -87,8 +87,8 @@ public class SpreadCommand implements CommandExecutor {
 					
 					if (!game.isFFA() && game.getTeamSize() > 1) {
 						for (OfflinePlayer whitelisted : Bukkit.getServer().getWhitelistedPlayers()) {
-							if (Scoreboards.getManager().board.getEntryTeam(whitelisted.getName()) == null) {
-								Team team = Teams.getManager().findAvailableTeam();
+							if (Scoreboards.getInstance().board.getEntryTeam(whitelisted.getName()) == null) {
+								Team team = Teams.getInstance().findAvailableTeam();
 								
 								if (team != null) {
 									team.addEntry(whitelisted.getName());
@@ -97,7 +97,7 @@ public class SpreadCommand implements CommandExecutor {
 						}
 					}
 					
-					for (Team te : Teams.getManager().getTeams()) {
+					for (Team te : Teams.getInstance().getTeams()) {
 						if (te.getSize() > 0) {
 							if (te.getSize() > 1) {
 								t++;
@@ -118,7 +118,7 @@ public class SpreadCommand implements CommandExecutor {
 						world.setStorm(false);
 						
 						for (Entity mob : world.getEntities()) {
-							if (EntityUtils.isClearable(mob.getType())) {
+							if (EntityUtils.isButcherable(mob.getType())) {
 								mob.remove();
 							}
 						}
@@ -151,7 +151,7 @@ public class SpreadCommand implements CommandExecutor {
 								
 								int index = 0;
 								
-								for (Team tem : Teams.getManager().getTeamsWithPlayers()) {
+								for (Team tem : Teams.getInstance().getTeamsWithPlayers()) {
 									for (String player : tem.getEntries()) {
 										scatterLocs.put(player, loc.get(index));
 										
@@ -161,7 +161,7 @@ public class SpreadCommand implements CommandExecutor {
 								}
 								
 								for (OfflinePlayer online : Bukkit.getServer().getWhitelistedPlayers()) {
-									if (Scoreboards.getManager().board.getEntryTeam(online.getName()) == null) {
+									if (Scoreboards.getInstance().board.getEntryTeam(online.getName()) == null) {
 										scatterLocs.put(online.getName(), loc.get(index));
 										index++;
 									}
@@ -318,7 +318,7 @@ public class SpreadCommand implements CommandExecutor {
 					}, 60);
 				}
 			} else {
-				sender.sendMessage(Main.NO_PERMISSION_MESSAGE);
+				sender.sendMessage(Main.NO_PERM_MSG);
 			}
 		}
 		return true;

@@ -70,7 +70,7 @@ public class Captains extends Scenario implements Listener, CommandExecutor {
 				return true;
 			}
 
-			Team team = Teams.getManager().findAvailableTeam();
+			Team team = Teams.getInstance().findAvailableTeam();
 			
 			if (team == null) {
 				player.sendMessage(ChatColor.RED + "No more available teams.");
@@ -104,7 +104,7 @@ public class Captains extends Scenario implements Listener, CommandExecutor {
 				return true;
 			}
 			
-			Team t = Teams.getManager().getTeam(args[0]);
+			Team t = Teams.getInstance().getTeam(args[0]);
 			
 			if (t != null) {
 				t.removeEntry(args[0]);
@@ -152,7 +152,7 @@ public class Captains extends Scenario implements Listener, CommandExecutor {
 				String s = list.get(new Random().nextInt(list.size()));
 				captains.add(s);
 				
-				Team t = Teams.getManager().findAvailableTeam();
+				Team t = Teams.getInstance().findAvailableTeam();
 				
 				if (t == null) {
 					return true;
@@ -227,7 +227,7 @@ public class Captains extends Scenario implements Listener, CommandExecutor {
 				return true;
 			}
 			
-			Team team = Teams.getManager().getTeam(player.getName());
+			Team team = Teams.getInstance().getTeam(player.getName());
 			
 			if (team != null) {
 				team.addEntry(target.getName());

@@ -31,7 +31,7 @@ public class InvseeCommand implements CommandExecutor {
 		InvGUI inv = InvGUI.getManager();
 		
 		if (!spec.isSpectating(player)) {
-			player.sendMessage(Main.NO_PERMISSION_MESSAGE);
+			player.sendMessage(Main.NO_PERM_MSG);
 			return true;
 		}
 		

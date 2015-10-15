@@ -35,7 +35,7 @@ public class PortalListener implements Listener {
 		
 		if (LocationUtils.hasBlockNearby(Material.PORTAL, from)) {
             if (!game.nether()) {
-            	player.sendMessage(Main.prefix() + "The nether is disabled.");
+            	player.sendMessage(Main.PREFIX + "The nether is disabled.");
             	return;
             }
             
@@ -45,7 +45,7 @@ public class PortalListener implements Listener {
 	        switch (from.getWorld().getEnvironment()) {
 			case NETHER:
 	            if (!fromName.endsWith("_nether")) {
-	            	player.sendMessage(Main.prefix() + "Could not teleport you to the overworld, contact the staff now.");
+	            	player.sendMessage(Main.PREFIX + "Could not teleport you to the overworld, contact the staff now.");
 	                return;
 	            }
 
@@ -61,7 +61,7 @@ public class PortalListener implements Listener {
 	        World world = Bukkit.getServer().getWorld(targetName);
 	        
 	        if (world == null) {
-            	player.sendMessage(Main.prefix() + "The nether has not been created.");
+            	player.sendMessage(Main.PREFIX + "The nether has not been created.");
 	            return;
 	        }
 
@@ -73,7 +73,7 @@ public class PortalListener implements Listener {
 	        to = LocationUtils.findSafeLocationInsideBorder(to, 10, travel);
 
 	        if (to == null || to.getY() < 0) {
-            	player.sendMessage(Main.prefix() + "Could not teleport you, contact the staff now.");
+            	player.sendMessage(Main.PREFIX + "Could not teleport you, contact the staff now.");
 	        } else {
 	            event.setTo(to);
 	        }
@@ -81,7 +81,7 @@ public class PortalListener implements Listener {
 		
 		if (LocationUtils.hasBlockNearby(Material.ENDER_PORTAL, from)) {
             if (!game.theEnd()) {
-            	player.sendMessage(Main.prefix() + "The end is disabled.");
+            	player.sendMessage(Main.PREFIX + "The end is disabled.");
             	return;
             }
             
@@ -102,7 +102,7 @@ public class PortalListener implements Listener {
 	        World world = Bukkit.getServer().getWorld(targetName);
 	        
 	        if (world == null) {
-            	player.sendMessage(Main.prefix() + "The end has not been created.");
+            	player.sendMessage(Main.PREFIX + "The end has not been created.");
 	            return;
 	        }
 

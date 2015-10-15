@@ -3,14 +3,21 @@ package com.leontg77.uhc;
 import static com.leontg77.uhc.Main.plugin;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.Date;
 import java.util.TimeZone;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.inventory.InventoryView;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.potion.PotionEffect;
 
 import com.leontg77.uhc.utils.PermsUtils;
 
@@ -296,6 +303,52 @@ public class User {
 	public int getStat(Stat stat) {
 		return config.getInt("stats." + stat.name().toLowerCase(), 0);
 	}
+	
+	public void reset() {
+        resetHealth();
+        resetFood();
+        resetExp();
+        resetInventory();
+        resetEffects();
+    }
+
+    public void resetEffects() {
+        Collection<PotionEffect> effects = player.getActivePotionEffects();
+
+        for (PotionEffect effect : effects) {
+            player.removePotionEffect(effect.getType());
+        }
+    }
+
+    public void resetHealth() {
+        player.setHealth(player.getMaxHealth());
+    }
+
+    public void resetFood() {
+        player.setSaturation(5.0F);
+        player.setExhaustion(0F);
+        player.setFoodLevel(20);
+    }
+
+    public void resetExp() {
+        player.setTotalExperience(0);
+        player.setLevel(0);
+        player.setExp(0F);
+    }
+
+    public void resetInventory() {
+        PlayerInventory inv = player.getInventory();
+
+        inv.clear();
+        inv.setArmorContents(null);
+        player.setItemOnCursor(new ItemStack(Material.AIR));
+
+        InventoryView openInventory = player.getOpenInventory();
+        
+        if (openInventory.getType() == InventoryType.CRAFTING) {
+            openInventory.getTopInventory().clear();
+        }
+    }
 	
 	/**
 	 * The ranking enum class.

@@ -54,7 +54,7 @@ public class Moles extends Scenario implements Listener, CommandExecutor {
 		if (enable) {
 			ArrayList<String> pls = new ArrayList<String>();
 				
-			for (Team team : Teams.getManager().getTeams()) {
+			for (Team team : Teams.getInstance().getTeams()) {
 				if (team.getSize() < 1) {
 					continue;
 				}
@@ -379,7 +379,7 @@ public class Moles extends Scenario implements Listener, CommandExecutor {
 				
 				player.sendMessage(Main.prefix() + "The moles are: §a" + (moleList.length() > 0 ? moleList.toString().trim() : "None") + "§7.");
 			} else {
-				player.sendMessage(Main.NO_PERMISSION_MESSAGE);
+				player.sendMessage(Main.NO_PERM_MSG);
 			}
 		}
 		

@@ -56,7 +56,7 @@ public class LAFS extends Scenario implements Listener {
 				return;
 			}
 			
-			Team t = Teams.getManager().findAvailableTeam();
+			Team t = Teams.getInstance().findAvailableTeam();
 			
 			if (t == null) {
 				player.sendMessage(ChatColor.RED + "No more available teams.");

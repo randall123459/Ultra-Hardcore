@@ -22,44 +22,44 @@ public class BoardCommand implements CommandExecutor {
 		if (cmd.getName().equalsIgnoreCase("board")) {
 			if (sender.hasPermission("uhc.board")) {
 				if (game.pregameBoard()) {
-					for (String e : Scoreboards.getManager().kills.getScoreboard().getEntries()) {
-						Scoreboards.getManager().resetScore(e);
+					for (String e : Scoreboards.getInstance().kills.getScoreboard().getEntries()) {
+						Scoreboards.getInstance().resetScore(e);
 					}
 					
-					PlayerUtils.broadcast(Main.prefix() + "Pregame board disabled.");
+					PlayerUtils.broadcast(Main.PREFIX + "Pregame board disabled.");
 					game.setPregameBoard(false);
 				} else {
-					for (String e : Scoreboards.getManager().kills.getScoreboard().getEntries()) {
-						Scoreboards.getManager().resetScore(e);
+					for (String e : Scoreboards.getInstance().kills.getScoreboard().getEntries()) {
+						Scoreboards.getInstance().resetScore(e);
 					}
 					
-					PlayerUtils.broadcast(Main.prefix() + "Pregame board enabled.");
+					PlayerUtils.broadcast(Main.PREFIX + "Pregame board enabled.");
 					game.setPregameBoard(true);
 
 					if (game.teamManagement()) {
-						Scoreboards.getManager().setScore("§e ", 13);
-						Scoreboards.getManager().setScore("§8» §cTeam:", 12);
-						Scoreboards.getManager().setScore("§8» §7/team", 11);
+						Scoreboards.getInstance().setScore("§e ", 13);
+						Scoreboards.getInstance().setScore("§8» §cTeam:", 12);
+						Scoreboards.getInstance().setScore("§8» §7/team", 11);
 					}
 					if (Arena.getInstance().isEnabled()) {
-						Scoreboards.getManager().setScore("§a ", 10);
-						Scoreboards.getManager().setScore("§8» §cArena:", 9);
-						Scoreboards.getManager().setScore("§8» §7/a ", 8);
+						Scoreboards.getInstance().setScore("§a ", 10);
+						Scoreboards.getInstance().setScore("§8» §cArena:", 9);
+						Scoreboards.getInstance().setScore("§8» §7/a ", 8);
 					}
 					if (!GameUtils.getTeamSize().isEmpty()) {
-						Scoreboards.getManager().setScore("§b ", 7);
-						Scoreboards.getManager().setScore("§8» §cTeamsize:", 6);
-						Scoreboards.getManager().setScore("§8» §7" + GameUtils.getTeamSize(), 5);
+						Scoreboards.getInstance().setScore("§b ", 7);
+						Scoreboards.getInstance().setScore("§8» §cTeamsize:", 6);
+						Scoreboards.getInstance().setScore("§8» §7" + GameUtils.getTeamSize(), 5);
 					}
-					Scoreboards.getManager().setScore("§c ", 4);
-					Scoreboards.getManager().setScore("§8» §cScenarios:", 3);
+					Scoreboards.getInstance().setScore("§c ", 4);
+					Scoreboards.getInstance().setScore("§8» §cScenarios:", 3);
 					for (String scen : settings.getConfig().getString("game.scenarios").split(" ")) {
-						Scoreboards.getManager().setScore("§8» §7" + scen, 2);
+						Scoreboards.getInstance().setScore("§8» §7" + scen, 2);
 					}
-					Scoreboards.getManager().setScore("§d ", 1);
+					Scoreboards.getInstance().setScore("§d ", 1);
 				}
 			} else {
-				sender.sendMessage(Main.prefix() + ChatColor.RED + "You can't use that command.");
+				sender.sendMessage(Main.PREFIX + ChatColor.RED + "You can't use that command.");
 			}
 		}
 		return true;

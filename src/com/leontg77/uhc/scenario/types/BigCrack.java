@@ -89,7 +89,7 @@ public class BigCrack extends Scenario implements Listener, CommandExecutor {
 	            
 	            generate(player.getWorld(), length, width, speed);
 			} else {
-				player.sendMessage(Main.NO_PERMISSION_MESSAGE);
+				player.sendMessage(Main.NO_PERM_MSG);
 			}
 		}
 		return true;
