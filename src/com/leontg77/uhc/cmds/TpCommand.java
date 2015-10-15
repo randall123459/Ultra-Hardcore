@@ -22,7 +22,7 @@ public class TpCommand implements CommandExecutor {
 		Spectator spec = Spectator.getManager();
 		
 		if (!sender.hasPermission("uhc.tp") && !spec.isSpectating(sender.getName())) {
-			sender.sendMessage(Main.NO_PERMISSION_MESSAGE);
+			sender.sendMessage(Main.NO_PERM_MSG);
 			return true;
 		}
 		
@@ -52,7 +52,7 @@ public class TpCommand implements CommandExecutor {
 		}
 		
 		if (!sender.hasPermission("uhc.tp.other")) {
-			sender.sendMessage(Main.NO_PERMISSION_MESSAGE);
+			sender.sendMessage(Main.NO_PERM_MSG);
 			return true;
 		}
 		
