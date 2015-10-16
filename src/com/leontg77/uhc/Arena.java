@@ -1,5 +1,7 @@
 package com.leontg77.uhc;
 
+import static com.leontg77.uhc.Main.plugin;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -7,12 +9,12 @@ import java.util.Random;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
+import org.bukkit.event.HandlerList;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -23,6 +25,7 @@ import org.bukkit.scoreboard.Score;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
+import com.leontg77.uhc.listeners.ArenaListener;
 import com.leontg77.uhc.utils.PlayerUtils;
 import com.leontg77.uhc.utils.ScatterUtils;
 
@@ -47,13 +50,8 @@ public class Arena {
 	
 	private ArrayList<Long> seeds = new ArrayList<Long>();
 
-	@SuppressWarnings("unused")
 	private BukkitRunnable kitcycle;
-	
-	@SuppressWarnings("unused")
 	private BukkitRunnable resetwarner;
-	
-	@SuppressWarnings("unused")
 	private BukkitRunnable reset;
 	
 	/**
@@ -83,26 +81,39 @@ public class Arena {
 		seeds.add(6333008698316655937l);
 		
 		arenaKills.setDisplayName("§4Arena §8- §7Use /a to join");
+		
 		if (Game.getInstance().arenaBoard()) {
 			arenaKills.setDisplaySlot(DisplaySlot.SIDEBAR);
 		}
 		
-		Main.plugin.getLogger().info("The arena has been setup.");
+		plugin.getLogger().info("The arena has been setup.");
 	}
 	
 	/**
 	 * Enable the arena
 	 */
 	public void enable() {
+		Bukkit.getServer().getPluginManager().registerEvents(new ArenaListener(), plugin);
 		this.enabled = true;
 		
 		if (game.pregameBoard()) {
-			Scoreboards.getInstance().setScore("§a ", 10);
-			Scoreboards.getInstance().setScore("§8» §cArena:", 9);
-			Scoreboards.getInstance().setScore("§8» §7/a ", 8);
+			Scoreboards.getInstance().setScore("§a ", 9);
+			Scoreboards.getInstance().setScore("§8» §cArena:", 8);
+			Scoreboards.getInstance().setScore("§8» §7/a ", 7);
+		}
+		
+		if (game.arenaBoard()) {
+			PlayerUtils.broadcast(Main.PREFIX + "The arena board has been enabled.");
+			arenaKills.setDisplaySlot(DisplaySlot.SIDEBAR);
+			
+			game.setPregameBoard(false);
+			game.setArenaBoard(true);
+
+			setScore("§8» §a§lPvE", 1);
+			setScore("§8» §a§lPvE", 0);
 		}
 
-		/*resetwarner = new BukkitRunnable() {
+		resetwarner = new BukkitRunnable() {
 			public void run() {
 			}
 		};
@@ -119,25 +130,19 @@ public class Arena {
 		
 		resetwarner.runTaskTimer(Main.plugin, 1, 1);
 		kitcycle.runTaskTimer(Main.plugin, 1, 1);
-		reset.runTaskTimer(Main.plugin, 1, 1);*/
+		reset.runTaskTimer(Main.plugin, 1, 1);
 	}
 	
 	/**
 	 * Disable the arena
 	 */
 	public void disable() {
+		HandlerList.unregisterAll(new ArenaListener());
 		this.enabled = false;
 		
 		for (Player player : getPlayers()) {
-			player.setItemOnCursor(new ItemStack (Material.AIR));
-			player.getInventory().setArmorContents(null);
-			player.getInventory().clear();
-			player.setMaxHealth(20.0);
-			player.setSaturation(20);
-			player.setFoodLevel(20);
-			player.setHealth(20);
-			player.setLevel(0);
-			player.setExp(0);
+			User user = User.get(player);
+			user.reset();
 			
 			if (player.isDead()) {
 				player.spigot().respawn();
@@ -153,16 +158,26 @@ public class Arena {
 			Scoreboards.getInstance().resetScore("§8» §7/a ");
 		}
 		
+		if (game.arenaBoard()) {
+			for (String entry : board.getEntries()) {
+				resetScore(entry);
+			}
+			
+			PlayerUtils.broadcast(Main.PREFIX + "The arena board has been disabled.");
+			Scoreboards.getInstance().kills.setDisplaySlot(DisplaySlot.SIDEBAR);
+			game.setArenaBoard(false);
+		}
+		
 		killstreak.clear();
 		players.clear();
 
-		/*resetwarner.cancel();
+		resetwarner.cancel();
 		kitcycle.cancel();
 		reset.cancel();
 
 		resetwarner = null;
 		kitcycle = null;
-		reset = null;*/
+		reset = null;
 	}
 
 	public void reset() {
@@ -172,7 +187,7 @@ public class Arena {
 			disable();
 		}
 		
-		PlayerUtils.broadcast(Main.prefix() + "The arena is resetting, lag incoming.");
+		PlayerUtils.broadcast(Main.PREFIX + "The arena is resetting, lag incoming.");
 		
 		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "mv delete arena");
 		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "mvconfirm");
@@ -181,7 +196,7 @@ public class Arena {
 		
 		Bukkit.getScheduler().runTaskLater(Main.plugin, new Runnable() {
 			public void run() {
-				PlayerUtils.broadcast(Main.prefix() + "World reset done, setting up borders.");
+				PlayerUtils.broadcast(Main.PREFIX + "World reset done, setting up borders.");
 				
 				World world = Bukkit.getServer().getWorld("arena");
 				
@@ -194,7 +209,7 @@ public class Arena {
 				world.setGameRuleValue("doDaylightCycle", "false");
 				world.setTime(6000);
 				
-				PlayerUtils.broadcast(Main.prefix() + "Borders setup, pregenning arena world.");
+				PlayerUtils.broadcast(Main.PREFIX + "Borders setup, pregenning arena world.");
 				
 				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "wb arena fill 420");
 				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "wb fill confirm");
@@ -203,7 +218,7 @@ public class Arena {
 		
 		Bukkit.getScheduler().runTaskLater(Main.plugin, new Runnable() {
 			public void run() {
-				PlayerUtils.broadcast(Main.prefix() + "Arena reset complete.");
+				PlayerUtils.broadcast(Main.PREFIX + "Arena reset complete.");
 				if (wasEnabled) {
 					enable();
 				}
@@ -240,37 +255,6 @@ public class Arena {
 	}
 	
 	/**
-	 * Sets the score of the given player.
-	 * 
-	 * @param player the player setting it for.
-	 * @param newScore the new score.
-	 */
-	public void setScore(String player, int newScore) {
-		Score score = arenaKills.getScore(player);
-		
-		score.setScore(newScore);
-	}
-
-	/**
-	 * Gets the given score for the given string.
-	 * 
-	 * @param string the wanted string.
-	 * @return The score of the string.
-	 */
-	public int getScore(String string) {
-		return arenaKills.getScore(string).getScore();
-	}
-
-	/**
-	 * Reset the score of the given string.
-	 * 
-	 * @param string the string resetting.
-	 */
-	public void resetScore(String string) {
-		board.resetScores(string);
-	}
-	
-	/**
 	 * Adds the given player to the arena.
 	 * 
 	 * @param player the player.
@@ -284,6 +268,8 @@ public class Arena {
 			player.sendMessage(ChatColor.RED + "Could not teleport you to the arena.");
 			return;
 		}
+
+		player.sendMessage(Main.PREFIX + "You joined the arena.");
 		
 		killstreak.put(player, 0);
 		players.add(player);
@@ -298,42 +284,38 @@ public class Arena {
 	/**
 	 * Removes the given player from the arena.
 	 * 
-	 * @param player the player.
-	 * @param death True if the removal was caused by dying, false otherwise.
+	 * @param player The player.
+	 * @param death If the removal was caused by dying
 	 */
 	public void removePlayer(Player player, boolean death) {
 		players.remove(player);
 		
-		if (!death) {
-			Team team = Teams.getInstance().getTeam(player);
-
-			if (Arena.getInstance().killstreak.containsKey(player) && Arena.getInstance().killstreak.get(player) > 4) {
-				PlayerUtils.broadcast(Main.prefix() + "§6" + player.getName() + "'s §7killstreak of §a" + Arena.getInstance().killstreak.get(player) + " §7was shut down from leaving");
-			}
-			
-			for (Player p : Arena.getInstance().getPlayers()) {
-				p.sendMessage("§8» " + (team == null ? "§f" : team.getPrefix()) + player.getName() + " §fwas died from leaving");
-			}
-
-			Arena.getInstance().killstreak.put(player, 0); 
-			player.setItemOnCursor(new ItemStack (Material.AIR));
-			player.getInventory().setArmorContents(null);
-			player.setGameMode(GameMode.SURVIVAL);
-			player.getInventory().clear();
-			player.setMaxHealth(20.0);
-			player.setSaturation(20);
-			player.setFoodLevel(20);
-			player.setHealth(20.0);
-			player.setLevel(0);
-			player.setExp(0);
-			
-			if (player.isDead()) {
-				player.spigot().respawn();
-			}
-			
-			board.resetScores(player.getName());
-			player.teleport(Main.getSpawn());
+		if (death) {
+			return;
 		}
+
+		player.sendMessage(Main.PREFIX + "You left the arena.");
+		Team team = Teams.getInstance().getTeam(player);
+
+		if (killstreak.containsKey(player) && killstreak.get(player) > 4) {
+			PlayerUtils.broadcast(Main.PREFIX + "§6" + player.getName() + "'s §7killstreak of §a" + Arena.getInstance().killstreak.get(player) + " §7was shut down from leaving the arena");
+		}
+		
+		for (Player p : Arena.getInstance().getPlayers()) {
+			p.sendMessage("§8» " + (team == null ? "§f" : team.getPrefix()) + player.getName() + " §fdied from leaving the arena");
+		}
+
+		killstreak.put(player, 0); 
+		
+		User user = User.get(player);
+		user.reset();
+		
+		if (player.isDead()) {
+			player.spigot().respawn();
+		}
+		
+		board.resetScores(player.getName());
+		player.teleport(Main.getSpawn());
 	}
 	
 	/**
@@ -385,5 +367,36 @@ public class Arena {
 		player.getInventory().setChestplate(chestplate);
 		player.getInventory().setLeggings(leggings);
 		player.getInventory().setBoots(boots);
+	}
+	
+	/**
+	 * Sets the score of the given player.
+	 * 
+	 * @param player the player setting it for.
+	 * @param newScore the new score.
+	 */
+	public void setScore(String player, int newScore) {
+		Score score = arenaKills.getScore(player);
+		
+		score.setScore(newScore);
+	}
+
+	/**
+	 * Gets the given score for the given string.
+	 * 
+	 * @param string the wanted string.
+	 * @return The score of the string.
+	 */
+	public int getScore(String string) {
+		return arenaKills.getScore(string).getScore();
+	}
+
+	/**
+	 * Reset the score of the given string.
+	 * 
+	 * @param string the string resetting.
+	 */
+	public void resetScore(String string) {
+		board.resetScores(string);
 	}
 }
