@@ -13,8 +13,14 @@ import org.bukkit.entity.Player;
 
 import com.leontg77.uhc.Main;
 
+/**
+ * Edit command class.
+ * 
+ * @author LeonTG77
+ */
 public class EditCommand implements CommandExecutor {
 
+	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, final String[] args) {
 		if (!(sender instanceof Player)) {
 			sender.sendMessage(ChatColor.RED + "Only players can change sign lines.");
@@ -23,44 +29,59 @@ public class EditCommand implements CommandExecutor {
 		
 		Player player = (Player) sender;
 		
-		if (cmd.getName().equalsIgnoreCase("edit")) {
-			if (player.hasPermission("uhc.edit")) {
-				if (args.length < 2) {
-					player.sendMessage(ChatColor.RED + "Usage: /edit <line> <message>");
-					return true;
-				}
-				
-				Block block = player.getTargetBlock((Set<Material>) null, 100);
-				
-				if (block != null && (block.getType() == Material.SIGN || block.getType() == Material.WALL_SIGN || block.getType() == Material.SIGN_POST)) {
-					Sign sign = (Sign) block.getState();
-					int line = 0;
-					try {
-						line = Integer.parseInt(args[0]);
-					} catch (Exception e) {
-						player.sendMessage(ChatColor.RED + "Invaild line number.");
-						return true;
-					}
-					
-					line = line - 1;
-					StringBuilder sb = new StringBuilder("");
-						
-					for (int i = 1; i < args.length; i++){
-					    sb.append(args[i]).append(" ");
-					}
-					               
-					String msg = sb.toString().trim();
-					sign.setLine(line, msg);
-					sign.update();
-					player.sendMessage(Main.prefix() + "You set the sign's §6" + String.valueOf(line + 1) + " §7line to: §f" + msg);
-				} else {
-					player.sendMessage(ChatColor.RED + "You are not looking at a sign.");
-				}
-			
-			} else {
-				player.sendMessage(ChatColor.RED + "You do not have access to that command.");
-			}
+		if (!player.hasPermission("uhc.edit")) {
+			player.sendMessage(Main.NO_PERM_MSG);
+			return true;
 		}
+		
+		if (args.length < 2) {
+			player.sendMessage(Main.PREFIX + "Usage: /edit <line> <message>");
+			return true;
+		}
+		
+		Block block = player.getTargetBlock((Set<Material>) null, 100);
+		
+		if (block == null) {
+			player.sendMessage(ChatColor.RED + "You are not looking at a block.");
+			return true;
+		}
+		
+		if (!(block.getState() instanceof Sign)) {
+			player.sendMessage(ChatColor.RED + "You are not looking at a sign.");
+			return true;
+		}
+		
+		Sign sign = (Sign) block.getState();
+		int line;
+		
+		try {
+			line = Integer.parseInt(args[0]);
+		} catch (Exception e) {
+			player.sendMessage(ChatColor.RED + " is not a vaild number.");
+			return true;
+		}
+		
+		if (line < 1) {
+			line = 1;
+		}
+		
+		if (line > 4) {
+			line = 4;
+		}
+		
+		StringBuilder sb = new StringBuilder("");
+			
+		for (int i = 1; i < args.length; i++){
+		    sb.append(args[i]).append(" ");
+		}
+		               
+		String msg = sb.toString().trim();
+		
+		player.sendMessage(Main.PREFIX + "You set the sign's §a" + line + " §7line to: §6" + msg);
+		line--;
+		
+		sign.setLine(line, msg);
+		sign.update();
 		return true;
 	}
 }
