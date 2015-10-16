@@ -12,8 +12,14 @@ import org.bukkit.command.CommandSender;
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.utils.PlayerUtils;
 
+/**
+ * Border command class.
+ * 
+ * @author LeonTG77
+ */
 public class BorderCommand implements CommandExecutor {
 
+	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (args.length == 0) {
 			sender.sendMessage(Main.PREFIX + "Usage: /border <world> [size]");
