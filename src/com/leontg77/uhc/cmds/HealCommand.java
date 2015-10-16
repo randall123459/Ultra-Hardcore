@@ -8,59 +8,62 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.leontg77.uhc.Main;
+import com.leontg77.uhc.User;
 import com.leontg77.uhc.utils.PlayerUtils;
 
+/**
+ * Heal command class.
+ * 
+ * @author LeonTG77
+ */
 public class HealCommand implements CommandExecutor {
 
+	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, final String[] args) {
-		if (cmd.getName().equalsIgnoreCase("heal")) {
-			if (sender.hasPermission("uhc.heal")) {
-				if (args.length == 0) {
-					if (sender instanceof Player) {
-						Player player = (Player) sender;
-						player.setHealth(player.getMaxHealth());
-						player.setFireTicks(0);
-						player.sendMessage(Main.prefix() + "You have been healed.");
-					} else {
-						sender.sendMessage(ChatColor.RED + "Only players can heal themselves.");
-					}
-					return true;
-				}
-				
-				if (sender.hasPermission("uhc.heal.other")) {
-					if (args[0].equals("*")) {
-						for (Player online : PlayerUtils.getPlayers()) {
-							online.setHealth(online.getMaxHealth());
-							online.setFireTicks(0);
-						}
-						PlayerUtils.broadcast(Main.prefix() + "All players have been healed.");
-					} 
-					else {
-						Player target = Bukkit.getServer().getPlayer(args[0]);
-						
-						if (target == null) {
-							sender.sendMessage(ChatColor.RED + "That player is not online.");
-						}
-
-						target.setHealth(target.getMaxHealth());
-						target.setFireTicks(0);
-						target.sendMessage(Main.prefix() + "You have been healed.");
-						sender.sendMessage(Main.prefix() + "You healed " + target.getName() + ".");
-					}
-				} 
-				else {
-					if (sender instanceof Player) {
-						Player player = (Player) sender;
-						player.setHealth(player.getMaxHealth());
-						player.setFireTicks(0);
-						player.sendMessage(Main.prefix() + "You have been healed.");
-					} else {
-						sender.sendMessage(ChatColor.RED + "Only players can heal themselves.");
-					}
-				}
-			} else {
-				sender.sendMessage(Main.NO_PERM_MSG);
+		if (!sender.hasPermission("uhc.heal")) {
+			sender.sendMessage(Main.NO_PERM_MSG);
+			return true;
+		}
+		
+		if (args.length == 0) {
+			if (!(sender instanceof Player)) {
+				sender.sendMessage(ChatColor.RED + "Only players can heal themselves.");
+				return true;
 			}
+			
+			Player player = (Player) sender;
+			User user = User.get(player);
+			
+			player.sendMessage(Main.PREFIX + "You have been healed.");
+			user.resetHealth();
+			return true;
+		}
+		
+		if (!sender.hasPermission("uhc.feed.other")) {
+			sender.sendMessage(Main.PREFIX + "§cYou cannot heal other players.");
+			return true;
+		}
+		
+		if (args[0].equals("*")) {
+			for (Player online : PlayerUtils.getPlayers()) {
+				User user = User.get(online);
+				user.resetHealth();
+			}
+			
+			PlayerUtils.broadcast(Main.PREFIX + "All players have been healed.");
+		} else {
+			Player target = Bukkit.getServer().getPlayer(args[0]);
+			
+			if (target == null) {
+				sender.sendMessage(ChatColor.RED + args[0] + " is not online.");
+				return true;
+			}
+			
+			User user = User.get(target);
+			user.resetHealth();
+
+			sender.sendMessage(Main.PREFIX + "You healed §a" + target.getName() + "§7.");
+			target.sendMessage(Main.PREFIX + "You have been healed.");
 		}
 		return true;
 	}
