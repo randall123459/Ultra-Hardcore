@@ -1,4 +1,4 @@
-package com.leontg77.uhc;
+package com.leontg77.uhc.inventory;
 
 import static com.leontg77.uhc.Main.plugin;
 
@@ -6,6 +6,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Set;
 import java.util.TimeZone;
 
 import org.bukkit.Bukkit;
@@ -23,6 +24,13 @@ import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import com.leontg77.uhc.Game;
+import com.leontg77.uhc.Main;
+import com.leontg77.uhc.Settings;
+import com.leontg77.uhc.Spectator;
+import com.leontg77.uhc.State;
+import com.leontg77.uhc.Timers;
+import com.leontg77.uhc.User;
 import com.leontg77.uhc.User.Rank;
 import com.leontg77.uhc.scenario.Scenario;
 import com.leontg77.uhc.scenario.ScenarioManager;
@@ -62,24 +70,75 @@ public class InvGUI {
 	 * @return The opened inventory.
 	 */
 	public Inventory openSelector(Player player) {
-		Inventory inv = Bukkit.createInventory(null, PlayerUtils.playerInvSize(), "§8» §cPlayer Selector §8«");
-	
-		for (Player online : PlayerUtils.getPlayers()) {
-			if (!Spectator.getManager().isSpectating(online) && !online.getWorld().getName().equals("lobby")) {
+		ArrayList<Player> list = new ArrayList<Player>(PlayerUtils.getPlayers());
+		Inventory inv = null;
+
+		int index = 0;
+		
+		for (Player online : list) {
+			if (Spectator.getInstance().isSpectating(online) || !GameUtils.getGameWorlds().contains(player.getWorld())) {
+				list.remove(index);
+			}	
+			index++;
+		}
+		
+		int pages = ((list.size() / 28) + 1);
+		
+		pagesForPlayer.put(player, new HashMap<Integer, Inventory>());
+		
+		for (int current = 1; current <= pages; current++) {
+			inv = Bukkit.createInventory(null, 54, "§8» §cPlayer Selector §8«");
+			
+			for (int i = 0; i < 35; i++) {
+				if (list.size() < 1) {
+					continue;
+				}
+				
+				if (noItem(i)) {
+					continue;
+				}
+				
+				Player target = list.remove(0);
+				
 				ItemStack item = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
 				SkullMeta meta = (SkullMeta) item.getItemMeta();
-				meta.setDisplayName(ChatColor.GREEN + online.getName());
-				meta.setOwner(online.getName());
-				meta.setLore(Arrays.asList(ChatColor.GRAY + "Click to teleport to " + online.getName() + "."));
+				meta.setDisplayName("§a" + target.getName());
+				meta.setLore(Arrays.asList("§7Click to teleport."));
+				meta.setOwner(target.getName());
 				item.setItemMeta(meta);
-				inv.addItem(item);
-			}	
+				inv.setItem(i, item);
+			}
+			
+			ItemStack nextpage = new ItemStack (Material.ARROW);
+			ItemMeta pagemeta = nextpage.getItemMeta();
+			pagemeta.setDisplayName(ChatColor.GREEN + "Next page");
+			pagemeta.setLore(Arrays.asList("§7Switch to the next page."));
+			nextpage.setItemMeta(pagemeta);
+			
+			ItemStack prevpage = new ItemStack (Material.ARROW);
+			ItemMeta prevmeta = prevpage.getItemMeta();
+			prevmeta.setDisplayName(ChatColor.GREEN + "Previous page");
+			prevmeta.setLore(Arrays.asList("§7Switch to the previous page."));
+			prevpage.setItemMeta(prevmeta);
+			
+			if (current != 1) {
+				inv.setItem(47, prevpage);
+			}
+			
+			if (current != pages) {
+				inv.setItem(51, nextpage);
+			}
+			
+			pagesForPlayer.get(player).put(current, inv);
 		}
+		
+		inv = pagesForPlayer.get(player).get(1);
+		currentPage.put(player, 1);
 		
 		player.openInventory(inv);
 		return inv;
 	}
-	
+
 	/**
 	 * Opens the inventory of the given target for the given player.
 	 * 
@@ -162,119 +221,111 @@ public class InvGUI {
 	 * @return The opened inventory.
 	 */
 	public Inventory openHOF(Player player, String host) {
+		Set<String> keys = Settings.getInstance().getHOF().getConfigurationSection(host).getKeys(false);
 		TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 		
-		Inventory inv = Bukkit.getServer().createInventory(null, 54, "§8» §c" + host + "'s Hall of Fame §8«");
-		Inventory inv2 = Bukkit.getServer().createInventory(null, 54, "§8» §c" + host + "'s Hall of Fame §8«");
-		Inventory inv3 = Bukkit.getServer().createInventory(null, 54, "§8» §c" + host + "'s Hall of Fame §8«");
-		Inventory inv4 = Bukkit.getServer().createInventory(null, 54, "§8» §c" + host + "'s Hall of Fame §8«");
-
-		HashMap<Integer, Inventory> invs = new HashMap<Integer, Inventory>();
-		pagesForPlayer.put(player, invs);
+		ArrayList<String> list = new ArrayList<String>(keys);
+		Inventory inv = null;
 		
-		pagesForPlayer.get(player).put(1, inv);
-		pagesForPlayer.get(player).put(2, inv2);
-		pagesForPlayer.get(player).put(3, inv3);
-		pagesForPlayer.get(player).put(4, inv4);
+		int pages = ((list.size() / 28) + 1);
 		
-		currentPage.put(player, 1);
+		pagesForPlayer.put(player, new HashMap<Integer, Inventory>());
 		
-		int i = 0;
-		
-		inv.clear();
-		inv2.clear();
-		inv3.clear();
-		inv4.clear();
-		
-		for (String section : Settings.getInstance().getHOF().getConfigurationSection(host).getKeys(false)) {
-			ItemStack game = new ItemStack (Material.GOLDEN_APPLE);
-			ItemMeta meta = game.getItemMeta();
-			meta.setDisplayName("§8» §6" + host + "'s #" + section + " §8«");
+		for (int current = 1; current <= pages; current++) {
+			inv = Bukkit.createInventory(null, 54, "§8» §c" + host + "'s HoF, Page " + current + " §8«");
 			
-			ArrayList<String> lore = new ArrayList<String>();
-			lore.add("§7" + settings.getHOF().getString(host + "." + section + ".date", "N/A"));
-			lore.add(" ");
-			lore.add("§8» §cWinners:");
-			
-			for (String winners : settings.getHOF().getStringList(host + "." + section + ".winners")) {
-				lore.add("§8» §7" + winners);
-			}
-			
-			lore.add(" ");
-			lore.add("§8» §cKills:");
-			lore.add("§8» §7" + settings.getHOF().getString(host + "." + section + ".kills", "-1"));
-			
-			if (!settings.getHOF().getString(host + "." + section + ".teamsize", "FFA").isEmpty()) {
+			for (int i = 0; i < 35; i++) {
+				if (list.size() < 1) {
+					continue;
+				}
+				
+				if (noItem(i)) {
+					continue;
+				}
+				
+				String target = list.remove(0);
+				boolean isSpecial = target.endsWith("50") || target.endsWith("00") || target.endsWith("25") || target.endsWith("75");
+				
+				ItemStack item = new ItemStack (Material.GOLDEN_APPLE, 1, isSpecial ? (short) 1 : (short) 0);
+				ItemMeta meta = item.getItemMeta();
+				meta.setDisplayName("§8» §6" + host + "'s #" + target + " §8«");
+				
+				ArrayList<String> lore = new ArrayList<String>();
+				lore.add("§7" + settings.getHOF().getString(host + "." + target + ".date", "N/A"));
 				lore.add(" ");
-				lore.add("§8» §cTeamsize:");
-				lore.add("§8» §7" + settings.getHOF().getString(host + "." + section + ".teamsize", "FFA"));
+				lore.add("§8» §cWinners:");
+				
+				for (String winners : settings.getHOF().getStringList(host + "." + target + ".winners")) {
+					lore.add("§8» §7" + winners);
+				}
+				
+				lore.add(" ");
+				lore.add("§8» §cKills:");
+				lore.add("§8» §7" + settings.getHOF().getString(host + "." + target + ".kills", "-1"));
+				
+				if (!settings.getHOF().getString(host + "." + target + ".teamsize", "FFA").isEmpty()) {
+					lore.add(" ");
+					lore.add("§8» §cTeamsize:");
+					lore.add("§8» §7" + settings.getHOF().getString(host + "." + target + ".teamsize", "FFA"));
+				}
+				
+				lore.add(" ");
+				lore.add("§8» §cScenario:");
+				
+				for (String scenario : settings.getHOF().getString(host + "." + target + ".scenarios", "Vanilla+").split(" ")) {
+					lore.add("§8» §7" + scenario);
+				}
+				
+				lore.add(" ");
+				meta.setLore(lore);
+				item.setItemMeta(meta);
+				inv.setItem(i, item);
 			}
 			
-			lore.add(" ");
-			lore.add("§8» §cScenario:");
+			ItemStack nextpage = new ItemStack (Material.ARROW);
+			ItemMeta pagemeta = nextpage.getItemMeta();
+			pagemeta.setDisplayName(ChatColor.GREEN + "Next page");
+			pagemeta.setLore(Arrays.asList("§7Switch to the next page."));
+			nextpage.setItemMeta(pagemeta);
 			
-			for (String scenario : settings.getHOF().getString(host + "." + section + ".scenarios", "Vanilla+").split(" ")) {
-				lore.add("§8» §7" + scenario);
+			ItemStack prevpage = new ItemStack (Material.ARROW);
+			ItemMeta prevmeta = prevpage.getItemMeta();
+			prevmeta.setDisplayName(ChatColor.GREEN + "Previous page");
+			prevmeta.setLore(Arrays.asList("§7Switch to the previous page."));
+			prevpage.setItemMeta(prevmeta);
+			
+			String name = GameUtils.getHostName(host);
+			
+			ItemStack head = new ItemStack (Material.SKULL_ITEM, 1, (short) 3);
+			SkullMeta headMeta = (SkullMeta) head.getItemMeta();
+			headMeta.setDisplayName("§8» §6Host Info §8«");
+			headMeta.setOwner(name);
+			ArrayList<String> hlore = new ArrayList<String>();
+			hlore.add(" ");
+			hlore.add("§8» §7Total games hosted: §6" + Settings.getInstance().getHOF().getConfigurationSection(host).getKeys(false).size());
+			hlore.add("§8» §7Rank: §6" + NameUtils.fixString(User.get(PlayerUtils.getOfflinePlayer(name)).getRank().name(), false));
+			hlore.add(" ");
+			hlore.add("§8» §7Host name: §6" + host);
+			hlore.add("§8» §7IGN: §6" + name);
+			hlore.add(" ");
+			headMeta.setLore(hlore);
+			head.setItemMeta(headMeta);
+			
+			inv.setItem(49, head);
+			
+			if (current != 1) {
+				inv.setItem(47, prevpage);
 			}
 			
-			lore.add(" ");
-			meta.setLore(lore);
-			game.setItemMeta(meta);
-
-			if (i < 45) {
-				inv.addItem(game);
-			} else if (i < 90) {
-				inv2.addItem(game);
-			} else if (i < 135) {
-				inv3.addItem(game);
-			} else {
-				inv4.addItem(game);
+			if (current != pages) {
+				inv.setItem(51, nextpage);
 			}
-			i++;
+			
+			pagesForPlayer.get(player).put(current, inv);
 		}
-
-		ItemStack nextpage = new ItemStack (Material.ARROW);
-		ItemMeta pagemeta = nextpage.getItemMeta();
-		pagemeta.setDisplayName(ChatColor.GREEN + "Next page");
-		pagemeta.setLore(Arrays.asList("§7Switch to the next page."));
-		nextpage.setItemMeta(pagemeta);
 		
-		ItemStack prevpage = new ItemStack (Material.ARROW);
-		ItemMeta prevmeta = prevpage.getItemMeta();
-		prevmeta.setDisplayName(ChatColor.GREEN + "Previous page");
-		prevmeta.setLore(Arrays.asList("§7Switch to the previous page."));
-		prevpage.setItemMeta(prevmeta);
-		
-		inv.setItem(51, nextpage);
-		inv4.setItem(47, prevpage);
-		
-		inv2.setItem(47, prevpage);
-		inv2.setItem(51, nextpage);
-		
-		inv3.setItem(47, prevpage);
-		inv3.setItem(51, nextpage);
-		
-		String name = GameUtils.getHostName(host);
-		
-		ItemStack head = new ItemStack (Material.SKULL_ITEM, 1, (short) 3);
-		SkullMeta headMeta = (SkullMeta) head.getItemMeta();
-		headMeta.setDisplayName("§8» §6Host Info §8«");
-		headMeta.setOwner(name);
-		ArrayList<String> hlore = new ArrayList<String>();
-		hlore.add(" ");
-		hlore.add("§8» §7Total games hosted: §6" + Settings.getInstance().getHOF().getConfigurationSection(host).getKeys(false).size());
-		hlore.add("§8» §7Rank: §6" + NameUtils.fixString(User.get(PlayerUtils.getOfflinePlayer(name)).getRank().name(), false));
-		hlore.add(" ");
-		hlore.add("§8» §7Host name: §6" + host);
-		hlore.add("§8» §7IGN: §6" + name);
-		hlore.add(" ");
-		headMeta.setLore(hlore);
-		head.setItemMeta(headMeta);
-		
-		inv.setItem(49, head);
-		inv2.setItem(49, head);
-		inv3.setItem(49, head);
-		inv4.setItem(49, head);
+		inv = pagesForPlayer.get(player).get(1);
+		currentPage.put(player, 1);
 		
 		player.openInventory(inv);
 		return inv;
@@ -294,16 +345,17 @@ public class InvGUI {
 		ItemStack general = new ItemStack (Material.SIGN);
 		ItemMeta generalMeta = general.getItemMeta();
 		generalMeta.setDisplayName("§8» §6General Info §8«");
-		lore.add(" ");
-		lore.add("§8» §7Starter food: §65 minutes of starter saturation.");
-		lore.add("§8» §7Towering: §aAllowed, but come down at meetup.");
+		lore.add(" ");;
 		lore.add("§8» §7Teaming in the arena: §cNot Allowed.");
+		lore.add("§8» §7Starter food: §cNone.");
+		lore.add(" ");
+		lore.add("§8» §7Towering: §aAllowed, but come down at meetup.");
 		lore.add("§8» §7Forting: §aAllowed before meetup.");
 		lore.add(" ");
 		lore.add("§8» §7You can follow our twitter @ArcticUHC to find");
 		lore.add(" §7out when our next games are.");
 		lore.add(" ");
-		lore.add("§8» §7Final heal is 1 minute after start, ");
+		lore.add("§8» §7Final heal is 30 seconds after start, ");
 		lore.add(" §7no more are given after that.");
 		lore.add(" ");
 		lore.add("§8» §7Our UHC plugin is custom coded by LeonTG77.");
@@ -461,8 +513,8 @@ public class InvGUI {
 			lore.add("§8» §7Camping: §aAllowed.");
 			lore.add(" ");
 			lore.add("§8» §7Strength: " + (game.nerfedStrength() ? "§cNerfed" : "§aVanilla"));
-			lore.add("§8» §7Tier 2: §aEnabled.");
-			lore.add("§8» §7Splash: §aEnabled.");
+			lore.add("§8» §7Tier 2: " + (game.tier2() ? "§aEnabled." : "§cDisabled."));
+			lore.add("§8» §7Splash: " + (game.splash() ? "§aEnabled." : "§cDisabled."));
 			lore.add(" ");
 			lore.add("§8» §7Golden Melon: §6" + (game.goldenMelonNeedsIngots() ? "Gold Ingots." : "Golden Nuggets."));
 			lore.add("§8» §7Ghast Drop: §6" + (game.ghastDropGold() ? "Gold Ingot." : "Ghast Tear."));
@@ -493,8 +545,8 @@ public class InvGUI {
 		ItemMeta ratesMeta = rates.getItemMeta();
 		ratesMeta.setDisplayName("§8» §6Rates Info §8«");
 		lore.add(" ");
-		lore.add("§8» §7Apple Rates: §6Vanilla (0.55%)");
-		lore.add("§8» §7Shears: " + (game.shears() ? "§aEnabled." : "§cDisabled.") + "");
+		lore.add("§8» §7Apple Rates: §6" + game.getAppleRates() + "%");
+		lore.add("§8» §7Shears: " + (game.shears() ? "§aWork." : "§cDoes not work.") + "");
 		lore.add("§8» §7Flint Rates: §6" + game.getFlintRates() + "%");
 		lore.add(" ");
 		lore.add("§8» §7Mob Rates: §6Vanilla.");
@@ -623,7 +675,7 @@ public class InvGUI {
 		inv.setItem(19, staff);
 		lore.clear();
 		
-		Main.rules.put(inv, new BukkitRunnable() {
+		Main.gameInfo.put(inv, new BukkitRunnable() {
 			public void run() {
 				ItemStack timer = new ItemStack (Material.WATCH);
 				ItemMeta timerMeta = timer.getItemMeta();
@@ -655,9 +707,32 @@ public class InvGUI {
 			}
 		});
 		
-		Main.rules.get(inv).runTaskTimer(Main.plugin, 1, 1);
+		Main.gameInfo.get(inv).runTaskTimer(Main.plugin, 1, 1);
 		player.openInventory(inv);
 		
 		return inv;
+	}
+	
+	/**
+	 * Check if this slot shall have no items.
+	 * 
+	 * @param slot The slot.
+	 * @return True if it shouldn't, false otherwise.
+	 */
+	private boolean noItem(int slot) {
+		switch (slot) {
+		case 0:
+		case 8:
+		case 9:
+		case 17:
+		case 18:
+		case 26:
+		case 27:
+		case 35:
+		case 36:
+			return true;
+		default:
+			return false;
+		}
 	}
 }
