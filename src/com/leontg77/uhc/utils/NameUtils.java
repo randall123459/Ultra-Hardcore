@@ -4,7 +4,7 @@ import java.lang.reflect.Method;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffectType;
 
@@ -97,8 +97,8 @@ public class NameUtils {
 		}
 	}
 	
-	public static String getMobName(Entity entity) {
-		switch (entity.getType()) {
+	public static String getMobName(EntityType type) {
+		switch (type) {
 		case ARMOR_STAND:
 			return "Armor Stand";
 		case ARROW:
@@ -237,7 +237,7 @@ public class NameUtils {
 	* @param itemStack the item to convert
 	* @return the Json string representation of the item
 	*/
-	public static String convertItemStackToJson(ItemStack itemStack) {
+	public static String convertToJson(ItemStack itemStack) {
 	    Class<?> craftitemstack = ReflectionUtils.getOBCClass("inventory.CraftItemStack");
 	    Method method = ReflectionUtils.getMethod(craftitemstack, "asNMSCopy", ItemStack.class);
 
