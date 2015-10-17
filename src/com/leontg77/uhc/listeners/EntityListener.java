@@ -117,30 +117,36 @@ public class EntityListener implements Listener {
     		return;
     	}
     	
-    	if (!game.isRecordedRound()) {
-        	ItemStack potion = new ItemStack (Material.POTION, 1, (short) 8261);
-        	List<ItemStack> drops = event.getDrops();
-        	
-        	if (entity instanceof Witch) {
-        		Witch witch = (Witch) entity;
-    			Player killer = witch.getKiller();
-    			
-        		if (killer != null) {
-        			drops.remove(potion);
-            		
-        			if (killer.hasPotionEffect(PotionEffectType.POISON)) {
-        				drops.add(potion);
-        			} 
-        			else {
-        				Random rand = new Random();
-        				
-        				if (rand.nextInt(99) < 30) {
-        					drops.add(potion);
-        				}
-        			}
-        		}
-            }
+    	if (game.isRecordedRound()) {
+    		return;
     	}
+        	
+    	ItemStack potion = new ItemStack (Material.POTION, 1, (short) 8261);
+    	List<ItemStack> drops = event.getDrops();
+    	
+    	if (!(entity instanceof Witch)) {
+    		return;
+        }
+    	
+    	Witch witch = (Witch) entity;
+		Player killer = witch.getKiller();
+		
+		if (killer == null) {
+			return;
+		}
+		
+		drops.remove(potion);
+		
+		if (killer.hasPotionEffect(PotionEffectType.POISON)) {
+			drops.add(potion);
+		} 
+		else {
+			Random rand = new Random();
+			
+			if (rand.nextInt(99) < 30) {
+				drops.add(potion);
+			}
+		}
 	}
 	
 	@EventHandler
@@ -233,10 +239,10 @@ public class EntityListener implements Listener {
 						Player killer = (Player) arrow.getShooter();
 						
 						double health = player.getHealth();
-						int percent = NumberUtils.makePercent(health);
+						String percent = NumberUtils.makePercent(health);
 						
 						if (health > 0.0000) {
-							killer.sendMessage(Main.PREFIX + "§6" + player.getName() + " §7is now at §a" + ((int) percent) + "%");
+							killer.sendMessage(Main.PREFIX + "§6" + player.getName() + " §7is now at §a" + percent + "%");
 						}
 					}
 				}.runTaskLater(Main.plugin, 1);
