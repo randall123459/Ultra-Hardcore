@@ -31,16 +31,7 @@ public class MuteCommand implements CommandExecutor {
 		}
 		
 		if (args.length == 0) {
-			Game game = Game.getInstance();
 			
-			if (game.isMuted()) {
-				game.setMuted(false);
-				PlayerUtils.broadcast(Main.prefix() + "The chat has been enabled.");
-				return true;
-			} 
-			
-			PlayerUtils.broadcast(Main.prefix() + "The chat has been disabled.");
-			game.setMuted(true);
 			return true;
 		}
 
