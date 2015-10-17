@@ -11,7 +11,6 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
@@ -83,7 +82,7 @@ public class Timers {
 				for (Player online : PlayerUtils.getPlayers()) {
 					online.playSound(online.getLocation(), Sound.SUCCESSFUL_HIT, 1, 1);
 					
-					if (Spectator.getManager().isSpectating(online)) {
+					if (Spectator.getInstance().isSpectating(online)) {
 						for (Achievement a : Achievement.values()) {
 							if (online.hasAchievement(a)) {
 								online.removeAchievement(a);
@@ -188,8 +187,8 @@ public class Timers {
 				for (Team team : Teams.getInstance().getTeamsWithPlayers()) {
 					Main.teamKills.put(team.getName(), 0);
 					
-					ArrayList<String> players = new ArrayList<String>();
-					TeamCommand.sTeam.put(team.getName(), team.getEntries());
+					ArrayList<String> players = new ArrayList<String>(team.getEntries());
+					TeamCommand.sTeam.put(team.getName(), players);
 				}
 
 				Scoreboards sb = Scoreboards.getInstance();
@@ -268,7 +267,7 @@ public class Timers {
 				meetup--;
 				
 				if (heal == 0) {
-					PlayerUtils.broadcast(Main.prefix() + "Final heal has been given, do not ask for another one.");
+					PlayerUtils.broadcast(Main.PREFIX + "Final heal has been given, do not ask for another one.");
 					
 					for (Player online : PlayerUtils.getPlayers()) {
 						PacketUtils.sendTitle(online, "§6Final heal!", "§aDo not ask for another one.", 5, 10, 5);
@@ -281,7 +280,7 @@ public class Timers {
 				}
 				
 				if (heal == -1) {
-					PlayerUtils.broadcast(Main.prefix() + "The chat has been enabled.");
+					PlayerUtils.broadcast(Main.PREFIX + "The chat has been enabled.");
 					game.setMuted(false);
 				}
 				
@@ -290,11 +289,11 @@ public class Timers {
 						world.setSpawnFlags(true, true);
 					}
 					
-					PlayerUtils.broadcast(Main.prefix() + "Hostile mobs can now spawn.");
+					PlayerUtils.broadcast(Main.PREFIX + "Hostile mobs can now spawn.");
 				}
 
 				if (pvp == 0) {
-					PlayerUtils.broadcast(Main.prefix() + "PvP/iPvP has been enabled.");
+					PlayerUtils.broadcast(Main.PREFIX + "PvP/iPvP has been enabled.");
 					
 					for (Player online : PlayerUtils.getPlayers()) {
 						PacketUtils.sendTitle(online, "", "§4PvP has been enabled!", 5, 10, 5);
@@ -342,7 +341,7 @@ public class Timers {
 				}
 				
 				if (meetup == -2 && game.getBorderShrink() == BorderShrink.MEETUP) {
-					PlayerUtils.broadcast(Main.prefix() + "Border will now shrink to §6300x300 §7over §a10 §7minutes.");
+					PlayerUtils.broadcast(Main.PREFIX + "Border will now shrink to §6300x300 §7over §a10 §7minutes.");
 					
 					for (Player online : PlayerUtils.getPlayers()) {
 						online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
@@ -354,7 +353,7 @@ public class Timers {
 				}
 				
 				if (meetup == -12 && game.getBorderShrink() == BorderShrink.MEETUP) {
-					PlayerUtils.broadcast(Main.prefix() + "Border has stopped shrinking.");
+					PlayerUtils.broadcast(Main.PREFIX + "Border has stopped shrinking.");
 					
 					for (Player online : PlayerUtils.getPlayers()) {
 						online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
@@ -362,7 +361,7 @@ public class Timers {
 				}
 				
 				if (pvp == 45) {
-					PlayerUtils.broadcast(Main.prefix() + "PvP will be enabled in §a45 §7minutes.");
+					PlayerUtils.broadcast(Main.PREFIX + "PvP will be enabled in §a45 §7minutes.");
 					
 					for (Player online : PlayerUtils.getPlayers()) {
 						online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
@@ -371,7 +370,7 @@ public class Timers {
 				}
 				
 				if (pvp == 30) {
-					PlayerUtils.broadcast(Main.prefix() + "PvP will be enabled in §a30 §7minutes.");
+					PlayerUtils.broadcast(Main.PREFIX + "PvP will be enabled in §a30 §7minutes.");
 					
 					for (Player online : PlayerUtils.getPlayers()) {
 						online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
@@ -380,7 +379,7 @@ public class Timers {
 				}
 				
 				if (pvp == 15) {
-					PlayerUtils.broadcast(Main.prefix() + "PvP will be enabled in §a15 §7minutes.");
+					PlayerUtils.broadcast(Main.PREFIX + "PvP will be enabled in §a15 §7minutes.");
 					
 					for (Player online : PlayerUtils.getPlayers()) {
 						online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
@@ -389,7 +388,7 @@ public class Timers {
 				}
 				
 				if (pvp == 10) {
-					PlayerUtils.broadcast(Main.prefix() + "PvP will be enabled in §a10 §7minutes.");
+					PlayerUtils.broadcast(Main.PREFIX + "PvP will be enabled in §a10 §7minutes.");
 					
 					for (Player online : PlayerUtils.getPlayers()) {
 						online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
@@ -398,7 +397,7 @@ public class Timers {
 				}
 				
 				if (pvp == 5) {
-					PlayerUtils.broadcast(Main.prefix() + "PvP will be enabled in §a5 §7minutes.");
+					PlayerUtils.broadcast(Main.PREFIX + "PvP will be enabled in §a5 §7minutes.");
 					
 					for (Player online : PlayerUtils.getPlayers()) {
 						online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
@@ -407,7 +406,7 @@ public class Timers {
 				}
 				
 				if (pvp == 1) {
-					PlayerUtils.broadcast(Main.prefix() + "PvP will be enabled in §a1 §7minute.");
+					PlayerUtils.broadcast(Main.PREFIX + "PvP will be enabled in §a1 §7minute.");
 					
 					for (Player online : PlayerUtils.getPlayers()) {
 						online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
@@ -416,7 +415,7 @@ public class Timers {
 				}
 				
 				if (meetup == 120) {
-					PlayerUtils.broadcast(Main.prefix() + "Meetup is in §a2 §hours.");
+					PlayerUtils.broadcast(Main.PREFIX + "Meetup is in §a2 §hours.");
 					
 					for (Player online : PlayerUtils.getPlayers()) {
 						online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
@@ -425,7 +424,7 @@ public class Timers {
 				}
 				
 				if (meetup == 105) {
-					PlayerUtils.broadcast(Main.prefix() + "Meetup is in §a1 §7hour and §a45 §7minutes.");
+					PlayerUtils.broadcast(Main.PREFIX + "Meetup is in §a1 §7hour and §a45 §7minutes.");
 					
 					for (Player online : PlayerUtils.getPlayers()) {
 						online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
@@ -434,7 +433,7 @@ public class Timers {
 				}
 				
 				if (meetup == 90) {
-					PlayerUtils.broadcast(Main.prefix() + "Meetup is in §a1 §7hour and §a30 §7minutes.");
+					PlayerUtils.broadcast(Main.PREFIX + "Meetup is in §a1 §7hour and §a30 §7minutes.");
 					
 					for (Player online : PlayerUtils.getPlayers()) {
 						online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
@@ -443,7 +442,7 @@ public class Timers {
 				}
 				
 				if (meetup == 75) {
-					PlayerUtils.broadcast(Main.prefix() + "Meetup is in §a1 §7hour and §a15 §7minutes.");
+					PlayerUtils.broadcast(Main.PREFIX + "Meetup is in §a1 §7hour and §a15 §7minutes.");
 					
 					for (Player online : PlayerUtils.getPlayers()) {
 						online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
@@ -452,7 +451,7 @@ public class Timers {
 				}
 				
 				if (meetup == 60) {
-					PlayerUtils.broadcast(Main.prefix() + "Meetup is in §a1 §7hour.");
+					PlayerUtils.broadcast(Main.PREFIX + "Meetup is in §a1 §7hour.");
 					
 					for (Player online : PlayerUtils.getPlayers()) {
 						online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
@@ -461,7 +460,7 @@ public class Timers {
 				}
 				
 				if (meetup == 45) {
-					PlayerUtils.broadcast(Main.prefix() + "Meetup is in §a45 §7minutes.");
+					PlayerUtils.broadcast(Main.PREFIX + "Meetup is in §a45 §7minutes.");
 					
 					for (Player online : PlayerUtils.getPlayers()) {
 						online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
@@ -470,7 +469,7 @@ public class Timers {
 				}
 				
 				if (meetup == 30) {
-					PlayerUtils.broadcast(Main.prefix() + "Meetup is in §a30 §7minutes.");
+					PlayerUtils.broadcast(Main.PREFIX + "Meetup is in §a30 §7minutes.");
 					
 					for (Player online : PlayerUtils.getPlayers()) {
 						online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
@@ -479,7 +478,7 @@ public class Timers {
 				}
 				
 				if (meetup == 15) {
-					PlayerUtils.broadcast(Main.prefix() + "Meetup is in §a15 §7minutes.");
+					PlayerUtils.broadcast(Main.PREFIX + "Meetup is in §a15 §7minutes.");
 					
 					for (Player online : PlayerUtils.getPlayers()) {
 						online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
@@ -488,7 +487,7 @@ public class Timers {
 				}
 				
 				if (meetup == 10) {
-					PlayerUtils.broadcast(Main.prefix() + "Meetup is in §a10 §7minutes.");
+					PlayerUtils.broadcast(Main.PREFIX + "Meetup is in §a10 §7minutes.");
 					
 					for (Player online : PlayerUtils.getPlayers()) {
 						online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
@@ -497,7 +496,7 @@ public class Timers {
 				}
 				
 				if (meetup == 5) {
-					PlayerUtils.broadcast(Main.prefix() + "Meetup is in §a5 §7minutes.");
+					PlayerUtils.broadcast(Main.PREFIX + "Meetup is in §a5 §7minutes.");
 					
 					for (Player online : PlayerUtils.getPlayers()) {
 						online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
@@ -506,7 +505,7 @@ public class Timers {
 				}
 				
 				if (meetup == 1) {
-					PlayerUtils.broadcast(Main.prefix() + "Meetup is in §a1 §7minute.");
+					PlayerUtils.broadcast(Main.PREFIX + "Meetup is in §a1 §7minute.");
 					
 					for (Player online : PlayerUtils.getPlayers()) {
 						online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
@@ -577,7 +576,7 @@ public class Timers {
 				for (Player online : PlayerUtils.getPlayers()) {
 					online.playSound(online.getLocation(), Sound.SUCCESSFUL_HIT, 1, 1);
 					
-					if (Spectator.getManager().isSpectating(online)) {
+					if (Spectator.getInstance().isSpectating(online)) {
 						for (Achievement a : Achievement.values()) {
 							if (online.hasAchievement(a)) {
 								online.removeAchievement(a);
@@ -664,7 +663,7 @@ public class Timers {
 				
 				timerRR();
 				Bukkit.getServer().getPluginManager().registerEvents(new SpecInfo(), Main.plugin);
-				PlayerUtils.broadcast(Main.prefix() + "Start of episode 1");
+				PlayerUtils.broadcast(Main.PREFIX + "Start of episode 1");
 				State.setState(State.INGAME);
 				Scoreboards.getInstance().kills.setDisplayName("§6" + game.getRRName());
 				pvp = 0;
@@ -705,8 +704,8 @@ public class Timers {
 				heal--;
 				
 				if (pvp == 20) {
-					PlayerUtils.broadcast(Main.prefix() + "End of episode 1 | Start of episode 2");
-					PlayerUtils.broadcast(Main.prefix() + "PvP has been enabled!");
+					PlayerUtils.broadcast(Main.PREFIX + "End of episode 1 | Start of episode 2");
+					PlayerUtils.broadcast(Main.PREFIX + "PvP has been enabled!");
 					
 					for (Player online : PlayerUtils.getPlayers()) {
 						online.playSound(online.getLocation(), Sound.FIREWORK_TWINKLE, 1, 1);
@@ -720,7 +719,7 @@ public class Timers {
 				}
 				
 				if (pvp == 40) {
-					PlayerUtils.broadcast(Main.prefix() + "End of episode 2 | Start of episode 3");
+					PlayerUtils.broadcast(Main.PREFIX + "End of episode 2 | Start of episode 3");
 					
 					for (Player online : PlayerUtils.getPlayers()) {
 						online.playSound(online.getLocation(), Sound.FIREWORK_TWINKLE, 1, 1);
@@ -730,7 +729,7 @@ public class Timers {
 				}
 				
 				if (pvp == 60) {
-					PlayerUtils.broadcast(Main.prefix() + "End of episode 3 | Start of episode 4");
+					PlayerUtils.broadcast(Main.PREFIX + "End of episode 3 | Start of episode 4");
 					
 					for (Player online : PlayerUtils.getPlayers()) {
 						online.playSound(online.getLocation(), Sound.FIREWORK_TWINKLE, 1, 1);
@@ -740,7 +739,7 @@ public class Timers {
 				}
 				
 				if (pvp == 80) {
-					PlayerUtils.broadcast(Main.prefix() + "End of episode 4 | Start of episode 5");
+					PlayerUtils.broadcast(Main.PREFIX + "End of episode 4 | Start of episode 5");
 					
 					for (Player online : PlayerUtils.getPlayers()) {
 						online.playSound(online.getLocation(), Sound.FIREWORK_TWINKLE, 1, 1);
@@ -750,8 +749,8 @@ public class Timers {
 				}
 				
 				if (pvp == 100) {
-					PlayerUtils.broadcast(Main.prefix() + "End of episode 5 | Start of episode 6");
-					PlayerUtils.broadcast(Main.prefix() + "Perma day activated!");
+					PlayerUtils.broadcast(Main.PREFIX + "End of episode 5 | Start of episode 6");
+					PlayerUtils.broadcast(Main.PREFIX + "Perma day activated!");
 					
 					for (Player online : PlayerUtils.getPlayers()) {
 						online.playSound(online.getLocation(), Sound.FIREWORK_TWINKLE, 1, 1);
@@ -770,8 +769,8 @@ public class Timers {
 				}
 				
 				if (pvp == 120) {
-					PlayerUtils.broadcast(Main.prefix() + "End of episode 6 | Start of episode 7");
-					PlayerUtils.broadcast(Main.prefix() + "Meetup is now!");
+					PlayerUtils.broadcast(Main.PREFIX + "End of episode 6 | Start of episode 7");
+					PlayerUtils.broadcast(Main.PREFIX + "Meetup is now!");
 					
 					for (Player online : PlayerUtils.getPlayers()) {
 						online.playSound(online.getLocation(), Sound.FIREWORK_TWINKLE, 1, 1);
@@ -781,7 +780,7 @@ public class Timers {
 				}
 				
 				if (pvp == 140) {
-					PlayerUtils.broadcast(Main.prefix() + "End of episode 7 | Start of episode 8");
+					PlayerUtils.broadcast(Main.PREFIX + "End of episode 7 | Start of episode 8");
 					
 					for (Player online : PlayerUtils.getPlayers()) {
 						online.playSound(online.getLocation(), Sound.FIREWORK_TWINKLE, 1, 1);
@@ -791,7 +790,7 @@ public class Timers {
 				}
 				
 				if (pvp == 160) {
-					PlayerUtils.broadcast(Main.prefix() + "End of episode 8 | Start of episode 9");
+					PlayerUtils.broadcast(Main.PREFIX + "End of episode 8 | Start of episode 9");
 					
 					for (Player online : PlayerUtils.getPlayers()) {
 						online.playSound(online.getLocation(), Sound.FIREWORK_TWINKLE, 1, 1);
@@ -801,7 +800,7 @@ public class Timers {
 				}
 				
 				if (pvp == 180) {
-					PlayerUtils.broadcast(Main.prefix() + "End of episode 9 | Start of episode 10");
+					PlayerUtils.broadcast(Main.PREFIX + "End of episode 9 | Start of episode 10");
 					
 					for (Player online : PlayerUtils.getPlayers()) {
 						online.playSound(online.getLocation(), Sound.FIREWORK_TWINKLE, 1, 1);
