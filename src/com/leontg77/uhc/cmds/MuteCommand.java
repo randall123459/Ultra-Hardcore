@@ -10,7 +10,6 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import com.leontg77.uhc.Game;
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.User;
 import com.leontg77.uhc.utils.DateUtils;
@@ -31,7 +30,7 @@ public class MuteCommand implements CommandExecutor {
 		}
 		
 		if (args.length == 0) {
-			
+			sender.sendMessage(Main.PREFIX + "Usage: /mute <player> [time] [reason]");
 			return true;
 		}
 
@@ -47,13 +46,13 @@ public class MuteCommand implements CommandExecutor {
 		if (user.isMuted()) {
 			user.unmute();
 			
-			PlayerUtils.broadcast(Main.prefix() + "§6" + target.getName() + " §7has been unmuted.");
-			target.sendMessage(Main.prefix() + "You are no longer muted.");
+			PlayerUtils.broadcast(Main.PREFIX + "§6" + target.getName() + " §7has been unmuted.");
+			target.sendMessage(Main.PREFIX + "You are no longer muted.");
 			return true;
 		} 
 		
 		if (args.length < 3) {
-			sender.sendMessage(Main.prefix() + "Usage: /mute <player> <time> <reason>");
+			sender.sendMessage(Main.PREFIX + "Usage: /mute <player> <time> <reason>");
 			return true;
 		}
 		
@@ -65,8 +64,8 @@ public class MuteCommand implements CommandExecutor {
     	
     	String reason = message.toString().trim();
 		
-		PlayerUtils.broadcast(Main.prefix() + "§6" + target.getName() + " §7has been " + (args[1].equals("-") ? "muted" : "temp-muted") + " for §a" + reason);
-		target.sendMessage(Main.prefix() + "You have been muted for §a" + reason + "§7.");
+		PlayerUtils.broadcast(Main.PREFIX + "§6" + target.getName() + " §7has been " + (args[1].equals("-") ? "muted" : "temp-muted") + " for §a" + reason);
+		target.sendMessage(Main.PREFIX + "You have been muted for §a" + reason + "§7.");
 		
 		TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 		long time = DateUtils.parseDateDiff(args[1], true);
