@@ -37,7 +37,7 @@ public class Lootcrates extends Scenario implements Listener {
 			this.task = new BukkitRunnable() {
 				public void run() {
 					for (Player online : PlayerUtils.getPlayers()) {
-						if (Spectator.getManager().isSpectating(online)) {
+						if (Spectator.getInstance().isSpectating(online)) {
 							continue;
 						}
 						

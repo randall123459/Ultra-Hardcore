@@ -360,7 +360,7 @@ public class Moles extends Scenario implements Listener, CommandExecutor {
 				return true;
 			}
 			
-			if (Spectator.getManager().isSpectating(player)) {
+			if (Spectator.getInstance().isSpectating(player)) {
 				StringBuilder moleList = new StringBuilder("");
 				int i = 1;
 				

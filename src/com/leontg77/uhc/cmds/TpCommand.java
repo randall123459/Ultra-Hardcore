@@ -19,7 +19,7 @@ public class TpCommand implements CommandExecutor {
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-		Spectator spec = Spectator.getManager();
+		Spectator spec = Spectator.getInstance();
 		
 		if (!sender.hasPermission("uhc.tp") && !spec.isSpectating(sender.getName())) {
 			sender.sendMessage(Main.NO_PERM_MSG);

@@ -30,27 +30,27 @@ public class SpectateCommand implements CommandExecutor, TabCompleter {
 					if (sender instanceof Player) {
 						Player player = (Player) sender;
 						if (args[0].equalsIgnoreCase("toggle")) {
-							Spectator.getManager().toggle(player, false);
+							Spectator.getInstance().toggle(player, false);
 							return true;
 						}
 						
 						if (args[0].equalsIgnoreCase("on")) {
-							Spectator.getManager().enableSpecmode(player, false);
+							Spectator.getInstance().enableSpecmode(player, false);
 							return true;
 						}
 						
 						if (args[0].equalsIgnoreCase("off")) {
-							Spectator.getManager().disableSpecmode(player, false);
+							Spectator.getInstance().disableSpecmode(player, false);
 							return true;
 						}
 						
 						if (args[0].equalsIgnoreCase("list")) {
-							if (Spectator.getManager().spectators.size() < 1) {
+							if (Spectator.getInstance().spectators.size() < 1) {
 						    	sender.sendMessage(Main.prefix() + "There are no spectators.");
 								return true;
 							}
 							
-							ArrayList<String> players = new ArrayList<String>(Spectator.getManager().spectators);
+							ArrayList<String> players = new ArrayList<String>(Spectator.getInstance().spectators);
 							Collections.shuffle(players);
 							
 					    	StringBuilder list = new StringBuilder();
@@ -76,22 +76,22 @@ public class SpectateCommand implements CommandExecutor, TabCompleter {
 						}
 
 						if (args[0].equalsIgnoreCase("info")) {
-							if (Spectator.getManager().specinfo.contains(player.getName())) {
-								Spectator.getManager().specinfo.remove(player.getName());
+							if (Spectator.getInstance().specinfo.contains(player.getName())) {
+								Spectator.getInstance().specinfo.remove(player.getName());
 								player.sendMessage(Main.prefix() + "SpecInfo enabled.");
 							} else {
-								Spectator.getManager().specinfo.add(player.getName());
+								Spectator.getInstance().specinfo.add(player.getName());
 								player.sendMessage(Main.prefix() + "SpecInfo disabled.");
 							}
 							return true;
 						}
 
 						if (args[0].equalsIgnoreCase("cmdspy")) {
-							if (Spectator.getManager().cmdspy.contains(player.getName())) {
-								Spectator.getManager().cmdspy.remove(player.getName());
+							if (Spectator.getInstance().cmdspy.contains(player.getName())) {
+								Spectator.getInstance().cmdspy.remove(player.getName());
 								player.sendMessage(Main.prefix() + "Command spy enabled.");
 							} else {
-								Spectator.getManager().cmdspy.add(player.getName());
+								Spectator.getInstance().cmdspy.add(player.getName());
 								player.sendMessage(Main.prefix() + "Command spy disabled.");
 							}
 							return true;
@@ -100,12 +100,12 @@ public class SpectateCommand implements CommandExecutor, TabCompleter {
 						player.sendMessage(Main.prefix() + "Usage: /spec <on|off|toggle|list|cmdspy|info> [player]");
 					} else {
 						if (args[0].equalsIgnoreCase("list")) {
-							if (Spectator.getManager().spectators.size() < 1) {
+							if (Spectator.getInstance().spectators.size() < 1) {
 						    	sender.sendMessage(Main.prefix() + "There are no spectators.");
 								return true;
 							}
 							
-							ArrayList<String> players = new ArrayList<String>(Spectator.getManager().spectators);
+							ArrayList<String> players = new ArrayList<String>(Spectator.getInstance().spectators);
 							Collections.shuffle(players);
 							
 					    	StringBuilder list = new StringBuilder();
@@ -144,27 +144,27 @@ public class SpectateCommand implements CommandExecutor, TabCompleter {
 					} 
 					
 					if (args[0].equalsIgnoreCase("toggle")) {
-						Spectator.getManager().toggle(target, false);
+						Spectator.getInstance().toggle(target, false);
 						return true;
 					}
 					
 					if (args[0].equalsIgnoreCase("on")) {
-						Spectator.getManager().enableSpecmode(target, false);
+						Spectator.getInstance().enableSpecmode(target, false);
 						return true;
 					}
 					
 					if (args[0].equalsIgnoreCase("off")) {
-						Spectator.getManager().disableSpecmode(target, false);
+						Spectator.getInstance().disableSpecmode(target, false);
 			    		return true;
 					}
 					
 					if (args[0].equalsIgnoreCase("list")) {
-						if (Spectator.getManager().spectators.size() < 1) {
+						if (Spectator.getInstance().spectators.size() < 1) {
 					    	sender.sendMessage(Main.prefix() + "There are no spectators.");
 							return true;
 						}
 						
-						ArrayList<String> players = new ArrayList<String>(Spectator.getManager().spectators);
+						ArrayList<String> players = new ArrayList<String>(Spectator.getInstance().spectators);
 						Collections.shuffle(players);
 						
 				    	StringBuilder list = new StringBuilder();
@@ -190,21 +190,21 @@ public class SpectateCommand implements CommandExecutor, TabCompleter {
 					}
 
 					if (args[0].equalsIgnoreCase("cmdspy")) {
-						if (Spectator.getManager().cmdspy.contains(target.getName())) {
-							Spectator.getManager().cmdspy.remove(target.getName());
+						if (Spectator.getInstance().cmdspy.contains(target.getName())) {
+							Spectator.getInstance().cmdspy.remove(target.getName());
 						} else {
-							Spectator.getManager().cmdspy.add(target.getName());
+							Spectator.getInstance().cmdspy.add(target.getName());
 							sender.sendMessage(Main.prefix() + "Command spy disabled for " + target.getName() + ".");
 						}
 						return true;
 					}
 
 					if (args[0].equalsIgnoreCase("info")) {
-						if (Spectator.getManager().specinfo.contains(target.getName())) {
-							Spectator.getManager().specinfo.remove(target.getName());
+						if (Spectator.getInstance().specinfo.contains(target.getName())) {
+							Spectator.getInstance().specinfo.remove(target.getName());
 							sender.sendMessage(Main.prefix() + "SpecInfo enabled for " + target.getName() + ".");
 						} else {
-							Spectator.getManager().specinfo.add(target.getName());
+							Spectator.getInstance().specinfo.add(target.getName());
 							sender.sendMessage(Main.prefix() + "SpecInfo disabled for " + target.getName() + ".");
 						}
 						return true;
@@ -215,27 +215,27 @@ public class SpectateCommand implements CommandExecutor, TabCompleter {
 					if (sender instanceof Player) {
 						Player player = (Player) sender;
 						if (args[0].equalsIgnoreCase("toggle")) {
-							Spectator.getManager().toggle(player, false);
+							Spectator.getInstance().toggle(player, false);
 							return true;
 						}
 						
 						if (args[0].equalsIgnoreCase("on")) {
-							Spectator.getManager().enableSpecmode(player, false);
+							Spectator.getInstance().enableSpecmode(player, false);
 							return true;
 						}
 						
 						if (args[0].equalsIgnoreCase("off")) {
-							Spectator.getManager().disableSpecmode(player, false);
+							Spectator.getInstance().disableSpecmode(player, false);
 							return true;
 						}
 						
 						if (args[0].equalsIgnoreCase("list")) {
-							if (Spectator.getManager().spectators.size() < 1) {
+							if (Spectator.getInstance().spectators.size() < 1) {
 						    	sender.sendMessage(Main.prefix() + "There are no spectators.");
 								return true;
 							}
 							
-							ArrayList<String> players = new ArrayList<String>(Spectator.getManager().spectators);
+							ArrayList<String> players = new ArrayList<String>(Spectator.getInstance().spectators);
 							Collections.shuffle(players);
 							
 					    	StringBuilder list = new StringBuilder();
@@ -261,22 +261,22 @@ public class SpectateCommand implements CommandExecutor, TabCompleter {
 						}
 
 						if (args[0].equalsIgnoreCase("cmdspy")) {
-							if (Spectator.getManager().cmdspy.contains(player.getName())) {
-								Spectator.getManager().cmdspy.remove(player.getName());
+							if (Spectator.getInstance().cmdspy.contains(player.getName())) {
+								Spectator.getInstance().cmdspy.remove(player.getName());
 								player.sendMessage(Main.prefix() + "Command spy enabled.");
 							} else {
-								Spectator.getManager().cmdspy.add(player.getName());
+								Spectator.getInstance().cmdspy.add(player.getName());
 								player.sendMessage(Main.prefix() + "Command spy disabled.");
 							}
 							return true;
 						}
 
 						if (args[0].equalsIgnoreCase("info")) {
-							if (Spectator.getManager().specinfo.contains(player.getName())) {
-								Spectator.getManager().specinfo.remove(player.getName());
+							if (Spectator.getInstance().specinfo.contains(player.getName())) {
+								Spectator.getInstance().specinfo.remove(player.getName());
 								player.sendMessage(Main.prefix() + "SpecInfo enabled.");
 							} else {
-								Spectator.getManager().specinfo.add(player.getName());
+								Spectator.getInstance().specinfo.add(player.getName());
 								player.sendMessage(Main.prefix() + "SpecInfo disabled.");
 							}
 							return true;
@@ -285,12 +285,12 @@ public class SpectateCommand implements CommandExecutor, TabCompleter {
 						player.sendMessage(Main.prefix() + "Usage: /spec <on|off|toggle|list|cmdspy|info> [player]");
 					} else {
 						if (args[0].equalsIgnoreCase("list")) {
-							if (Spectator.getManager().spectators.size() < 1) {
+							if (Spectator.getInstance().spectators.size() < 1) {
 						    	sender.sendMessage(Main.prefix() + "There are no spectators.");
 								return true;
 							}
 							
-							ArrayList<String> players = new ArrayList<String>(Spectator.getManager().spectators);
+							ArrayList<String> players = new ArrayList<String>(Spectator.getInstance().spectators);
 							Collections.shuffle(players);
 							
 					    	StringBuilder list = new StringBuilder();
@@ -361,7 +361,7 @@ public class SpectateCommand implements CommandExecutor, TabCompleter {
 				        	if (!args[1].equals("")) {
 				        		for (Player online : PlayerUtils.getPlayers()) {
 				        			if (online.getName().toLowerCase().startsWith(args[1].toLowerCase())) {
-				        				if (!Spectator.getManager().isSpectating(online)) {
+				        				if (!Spectator.getInstance().isSpectating(online)) {
 					        				arg.add(online.getName());
 				        				}
 				        			}
@@ -369,7 +369,7 @@ public class SpectateCommand implements CommandExecutor, TabCompleter {
 				        	}
 				        	else {
 				        		for (Player online : PlayerUtils.getPlayers()) {
-			        				if (!Spectator.getManager().isSpectating(online)) {
+			        				if (!Spectator.getInstance().isSpectating(online)) {
 				        				arg.add(online.getName());
 			        				}
 				        		}
@@ -379,7 +379,7 @@ public class SpectateCommand implements CommandExecutor, TabCompleter {
 				        	if (!args[1].equals("")) {
 				        		for (Player online : PlayerUtils.getPlayers()) {
 				        			if (online.getName().toLowerCase().startsWith(args[1].toLowerCase())) {
-				        				if (Spectator.getManager().isSpectating(online)) {
+				        				if (Spectator.getInstance().isSpectating(online)) {
 					        				arg.add(online.getName());
 				        				}
 				        			}
@@ -387,7 +387,7 @@ public class SpectateCommand implements CommandExecutor, TabCompleter {
 				        	}
 				        	else {
 				        		for (Player online : PlayerUtils.getPlayers()) {
-			        				if (Spectator.getManager().isSpectating(online)) {
+			        				if (Spectator.getInstance().isSpectating(online)) {
 				        				arg.add(online.getName());
 			        				}
 				        		}

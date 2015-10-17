@@ -21,7 +21,7 @@ public class TlCommand implements CommandExecutor {
 		Player player = (Player) sender;
 		
 		if (cmd.getName().equalsIgnoreCase("teamloc")) {
-			if (Spectator.getManager().isSpectating(player)) {
+			if (Spectator.getInstance().isSpectating(player)) {
 				player.sendMessage(ChatColor.RED + "You can't do this as a spectator.");
 	        	return true;
 	        }

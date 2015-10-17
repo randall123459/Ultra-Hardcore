@@ -97,7 +97,7 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
 				else if (args[0].equalsIgnoreCase("info")) {
 					Team team = teams.getTeam(player);
 					
-					if (team == null || Spectator.getManager().isSpectating(player)) {
+					if (team == null || Spectator.getInstance().isSpectating(player)) {
 						player.sendMessage(Main.prefix() + "You are not on a team.");
 						return true;
 					}
@@ -395,7 +395,7 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
 					
 					Team team = player.getScoreboard().getEntryTeam(target.getName());
 					
-					if (team == null || Spectator.getManager().isSpectating(target)) {
+					if (team == null || Spectator.getInstance().isSpectating(target)) {
 						player.sendMessage(Main.prefix() + ChatColor.GREEN + target.getName() + "'s §7team info:");
 						player.sendMessage("§8» §7Team: §cNone");
 						if (Main.kills.containsKey(target.getName())) {

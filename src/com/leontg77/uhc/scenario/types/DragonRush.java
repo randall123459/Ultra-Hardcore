@@ -44,7 +44,7 @@ public class DragonRush extends Scenario implements Listener {
     public void onPlayerInteract(PlayerInteractEvent event) {
         Player player = event.getPlayer();
         
-        if (Spectator.getManager().isSpectating(player)) {
+        if (Spectator.getInstance().isSpectating(player)) {
         	return;
         }
 

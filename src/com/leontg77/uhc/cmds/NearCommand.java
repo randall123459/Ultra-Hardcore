@@ -22,7 +22,7 @@ public class NearCommand implements CommandExecutor {
 		Player player = (Player) sender;
 		
 		if (cmd.getName().equalsIgnoreCase("near")) {
-			if (player.hasPermission("uhc.near") || Spectator.getManager().isSpectating(sender.getName())) {
+			if (player.hasPermission("uhc.near") || Spectator.getInstance().isSpectating(sender.getName())) {
 				StringBuilder nearby = new StringBuilder("");
 				
 				for (Entity near : PlayerUtils.getNearby(player.getLocation(), 200)) {

@@ -163,7 +163,7 @@ public class Superheroes extends Scenario implements Listener, CommandExecutor {
 				return true;
 			}
 			
-			if (Spectator.getManager().isSpectating(player)) {
+			if (Spectator.getInstance().isSpectating(player)) {
 				StringBuilder health = new StringBuilder("");
 				StringBuilder invis = new StringBuilder("");
 				StringBuilder jump = new StringBuilder("");

@@ -57,7 +57,7 @@ public class ReplyCommand implements CommandExecutor {
     	}
     	
         CommandSender target = Main.msg.get(sender);
-        Spectator spec = Spectator.getManager();
+        Spectator spec = Spectator.getInstance();
         
         if (spec.isSpectating(sender.getName()) && !spec.isSpectating(target.getName()) && !sender.hasPermission("uhc.seemsg") && !target.hasPermission("uhc.seemsg")) {
     		sender.sendMessage(Main.prefix() + "You are not allowed to msg players as a spectator.");

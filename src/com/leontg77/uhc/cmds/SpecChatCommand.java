@@ -24,7 +24,7 @@ public class SpecChatCommand implements CommandExecutor {
 			return true;
 		}
 		
-        Spectator spec = Spectator.getManager();
+        Spectator spec = Spectator.getInstance();
         Player player = (Player) sender;
         
 		if (!spec.isSpectating(player)) {

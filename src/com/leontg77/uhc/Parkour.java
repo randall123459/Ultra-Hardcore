@@ -10,7 +10,6 @@ import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -115,13 +114,13 @@ public class Parkour implements Listener {
 			
 			if (((ArmorStand) point).getCustomName().contains("Start")) {
 				if (players.contains(player)) {
-					player.sendMessage(Main.prefix() + "The timer has been reset to §a0s§7.");
+					player.sendMessage(Main.PREFIX + "The timer has been reset to §a0s§7.");
 					player.playSound(player.getLocation(), "random.pop", 1, 1);
 					time.put(player, 0);
 					return;
 				}
 				
-				player.sendMessage(Main.prefix() + "Parkour started.");
+				player.sendMessage(Main.PREFIX + "Parkour started.");
 				player.playSound(player.getLocation(), "random.pop", 1, 1);
 				players.add(player);
 				checkpoint.put(player, 0);
@@ -137,7 +136,7 @@ public class Parkour implements Listener {
 					return;
 				}
 				
-				player.sendMessage(Main.prefix() + "You reached checkpoint §c1§7.");
+				player.sendMessage(Main.PREFIX + "You reached checkpoint §c1§7.");
 				player.playSound(player.getLocation(), "random.pop", 1, 1);
 				players.add(player);
 				checkpoint.put(player, 1);
@@ -148,7 +147,7 @@ public class Parkour implements Listener {
 					return;
 				}
 				
-				player.sendMessage(Main.prefix() + "You reached checkpoint §c2§7.");
+				player.sendMessage(Main.PREFIX + "You reached checkpoint §c2§7.");
 				player.playSound(player.getLocation(), "random.pop", 1, 1);
 				players.add(player);
 				checkpoint.put(player, 2);
@@ -159,14 +158,14 @@ public class Parkour implements Listener {
 					return;
 				}
 				
-				player.sendMessage(Main.prefix() + "You reached checkpoint §c3§7.");
+				player.sendMessage(Main.PREFIX + "You reached checkpoint §c3§7.");
 				player.playSound(player.getLocation(), "random.pop", 1, 1);
 				players.add(player);
 				checkpoint.put(player, 3);
 			}
 			
 			if (((ArmorStand) point).getCustomName().contains("finish")) {
-				player.sendMessage(Main.prefix() + "You finished the parkour, time used: §a" + DateUtils.ticksToString(time.get(player)));
+				player.sendMessage(Main.PREFIX + "You finished the parkour, time used: §a" + DateUtils.ticksToString(time.get(player)));
 				player.playSound(player.getLocation(), Sound.LEVEL_UP, 1, 1);
 				
 				players.remove(player);
