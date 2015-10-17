@@ -1,9 +1,9 @@
 package com.leontg77.uhc.scenario;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.scenario.types.Assassins;
@@ -174,8 +174,11 @@ public class ScenarioManager {
 	 * Get a list of all scenarios.
 	 * @return the list of scenarios.
 	 */
-	public Set<Scenario> getScenarios() {
-		return scenarios;
+	public ArrayList<Scenario> getScenarios() {
+		ArrayList<Scenario> list = new ArrayList<Scenario>(scenarios);
+		Collections.shuffle(list);
+		
+		return list;
 	}
 
 	/**
@@ -190,6 +193,8 @@ public class ScenarioManager {
 				list.add(s);
 			}
 		}
+		
+		Collections.shuffle(list);
 		
 		return list;
 	}
@@ -206,6 +211,8 @@ public class ScenarioManager {
 				list.add(s);
 			}
 		}
+		
+		Collections.shuffle(list);
 		
 		return list;
 	}
