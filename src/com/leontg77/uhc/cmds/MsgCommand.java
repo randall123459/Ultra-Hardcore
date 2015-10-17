@@ -53,7 +53,7 @@ public class MsgCommand implements CommandExecutor {
 		}
     	   
     	Player target = Bukkit.getServer().getPlayer(args[0]);
-        Spectator spec = Spectator.getManager();
+        Spectator spec = Spectator.getInstance();
                
         if (target == null) {
         	sender.sendMessage(ChatColor.RED + args[0] + " is not online.");
