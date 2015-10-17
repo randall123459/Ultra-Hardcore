@@ -3,8 +3,10 @@ package com.leontg77.uhc.listeners;
 import static com.leontg77.uhc.Main.plugin;
 
 import java.io.File;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.TimeZone;
 import java.util.UUID;
 
 import org.bukkit.BanEntry;
@@ -26,7 +28,6 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import com.leontg77.uhc.Arena;
 import com.leontg77.uhc.Game;
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.Settings;
@@ -54,12 +55,18 @@ public class LoginListener implements Listener {
 	
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
-		Spectator spec = Spectator.getManager();
+		Spectator spec = Spectator.getInstance();
 		Player player = event.getPlayer();
 		
 		User user = User.get(player);
 		user.getFile().set("username", player.getName());
 		user.getFile().set("uuid", player.getUniqueId().toString());
+		user.getFile().set("ip", player.getAddress().getAddress().getHostAddress());
+		
+		TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+		Date date = new Date();
+		
+		user.getFile().set("lastlogin", date.getTime());
 		user.saveFile();
 		
 		PacketUtils.setTabList(player);
@@ -153,22 +160,21 @@ public class LoginListener implements Listener {
 	@EventHandler
 	public void onPlayerQuit(PlayerQuitEvent event) {
 		Player player = event.getPlayer();
+		User user = User.get(player);
 		
-		Spectator spec = Spectator.getManager();
-		Arena arena = Arena.getInstance();
+		TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+		Date date = new Date();
+		
+		user.getFile().set("lastlogout", date.getTime());
+		user.saveFile();
+		
+		Spectator spec = Spectator.getInstance();
 		
 		PermsUtils.removePermissions(player);
 		event.setQuitMessage(null);
 		
 		if (!spec.isSpectating(player)) {
 			PlayerUtils.broadcast("§8[§c-§8] §7" + player.getName() + " has left.");
-		}
-		
-		if (arena.isEnabled() && arena.hasPlayer(player)) {
-			player.getInventory().setArmorContents(null);
-			player.getInventory().clear();
-			
-			arena.removePlayer(player, false);
 		}
 		
 		if (Main.msg.containsKey(player)) {
