@@ -45,7 +45,6 @@ import com.leontg77.uhc.utils.PlayerUtils;
  * @author LeonTG77
  */
 public class EndCommand implements CommandExecutor {
-	private Settings settings = Settings.getInstance();
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd,	String label, String[] args) {
@@ -67,7 +66,8 @@ public class EndCommand implements CommandExecutor {
 			sender.sendMessage(ChatColor.RED + args[0] + " is not a vaild number.");
 			return true;
 		}
-		
+
+		Settings settings = Settings.getInstance();
 		ArrayList<String> winners = new ArrayList<String>();
 		
 		PlayerUtils.broadcast(Main.PREFIX + "The game is now over!");
@@ -117,7 +117,7 @@ public class EndCommand implements CommandExecutor {
 		settings.saveHOF();
 		
 		for (Scenario scen : ScenarioManager.getInstance().getEnabledScenarios()) {
-			scen.disableScenario();
+			scen.disable();
 		}
 
 		Fireworks firework = Fireworks.getInstance();
@@ -152,7 +152,7 @@ public class EndCommand implements CommandExecutor {
 		parkour.setup();
 		
 		spec.spectators.clear();
-		TeamCommand.sTeam.clear();
+		TeamCommand.savedTeams.clear();
 		
 		SpecInfo.totalDiamonds.clear();
 		SpecInfo.totalGold.clear();
