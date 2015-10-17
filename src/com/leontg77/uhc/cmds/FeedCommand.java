@@ -19,7 +19,7 @@ import com.leontg77.uhc.utils.PlayerUtils;
 public class FeedCommand implements CommandExecutor {
 
 	@Override
-	public boolean onCommand(CommandSender sender, Command cmd, String label, final String[] args) {
+	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (!sender.hasPermission("uhc.feed")) {
 			sender.sendMessage(Main.NO_PERM_MSG);
 			return true;
