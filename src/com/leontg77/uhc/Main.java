@@ -73,7 +73,7 @@ import com.leontg77.uhc.cmds.MsCommand;
 import com.leontg77.uhc.cmds.MsgCommand;
 import com.leontg77.uhc.cmds.MuteCommand;
 import com.leontg77.uhc.cmds.NearCommand;
-import com.leontg77.uhc.cmds.PermaCommand;
+import com.leontg77.uhc.cmds.InfoCommand;
 import com.leontg77.uhc.cmds.PmCommand;
 import com.leontg77.uhc.cmds.PvPCommand;
 import com.leontg77.uhc.cmds.RandomCommand;
@@ -222,7 +222,7 @@ public class Main extends JavaPlugin {
 		getCommand("msg").setExecutor(new MsgCommand());
 		getCommand("mute").setExecutor(new MuteCommand());
 		getCommand("near").setExecutor(new NearCommand());
-		getCommand("perma").setExecutor(new PermaCommand());
+		getCommand("perma").setExecutor(new InfoCommand());
 		getCommand("pm").setExecutor(new PmCommand());
 		getCommand("pvp").setExecutor(new PvPCommand());
 		getCommand("random").setExecutor(new RandomCommand());
@@ -447,7 +447,7 @@ public class Main extends JavaPlugin {
 			settings.getData().set("kills." + kEntry.getKey(), kEntry.getValue());
 		}
 		
-		for (Entry<String, List<String>> entry : TeamCommand.sTeam.entrySet()) {
+		for (Entry<String, List<String>> entry : TeamCommand.savedTeams.entrySet()) {
 			settings.getData().set("teams.data." + entry.getKey(), entry.getValue());
 		}
 		settings.saveData();
@@ -478,7 +478,7 @@ public class Main extends JavaPlugin {
 		try {
 			if (settings.getData().getConfigurationSection("team") != null) {
 				for (String name : settings.getData().getConfigurationSection("teams.data").getKeys(false)) {
-					TeamCommand.sTeam.put("teams.data." + name, settings.getData().getStringList("teams.data." + name));
+					TeamCommand.savedTeams.put("teams.data." + name, settings.getData().getStringList("teams.data." + name));
 				}
 			}
 		} catch (Exception e) {
@@ -487,7 +487,7 @@ public class Main extends JavaPlugin {
 		
 		try {
 			for (String scen : settings.getData().getStringList("scenarios")) {
-				ScenarioManager.getInstance().getScenario(scen).enableScenario();
+				ScenarioManager.getInstance().getScenario(scen).enable();
 			}
 		} catch (Exception e) {
 			logger.warning("Could not recover scenario data.");
