@@ -14,7 +14,6 @@ import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.SkullType;
 import org.bukkit.World;
@@ -24,7 +23,6 @@ import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
@@ -40,7 +38,9 @@ import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.server.ServerListPingEvent;
+import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
@@ -52,7 +52,6 @@ import org.bukkit.scoreboard.Team;
 import com.leontg77.uhc.Arena;
 import com.leontg77.uhc.Fireworks;
 import com.leontg77.uhc.Game;
-import com.leontg77.uhc.InvGUI;
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.Parkour;
 import com.leontg77.uhc.Scoreboards;
@@ -65,6 +64,7 @@ import com.leontg77.uhc.User;
 import com.leontg77.uhc.User.Rank;
 import com.leontg77.uhc.User.Stat;
 import com.leontg77.uhc.cmds.VoteCommand;
+import com.leontg77.uhc.inventory.InvGUI;
 import com.leontg77.uhc.scenario.ScenarioManager;
 import com.leontg77.uhc.utils.BlockUtils;
 import com.leontg77.uhc.utils.DateUtils;
@@ -85,8 +85,9 @@ public class PlayerListener implements Listener {
 	private Game game = Game.getInstance();
 	
 	@EventHandler
-	public void onPlayerDeath(PlayerDeathEvent event) {
+	public void onPlayerDeath(final PlayerDeathEvent event) {
 		final Player player = event.getEntity();
+		Arena arena = Arena.getInstance();
 		
 		new BukkitRunnable() {
 			public void run() {
@@ -94,105 +95,140 @@ public class PlayerListener implements Listener {
 			}
 		}.runTaskLater(Main.plugin, 18);
 		
-		if (Arena.getInstance().isEnabled()) {
-			
-		} else {
-			User user = User.get(player);
-			
-			user.increaseStat(Stat.DEATHS);
-			player.setWhitelisted(false);
-			
-			if (game.deathLightning()) {
-			    player.getWorld().strikeLightningEffect(player.getLocation());
-			}
+		if (arena.isEnabled() && arena.hasPlayer(player)) {
+			return;
+		} 
 
-		    if (game.goldenHeads() && !(player.getWorld().getName().equals("lobby") || player.getWorld().getName().equals("arena"))) {
-				new BukkitRunnable() {
-					@SuppressWarnings("deprecation")
-					public void run() {
-						player.getLocation().getBlock().setType(Material.NETHER_FENCE);
-						player.getLocation().add(0, 1, 0).getBlock().setType(Material.SKULL);
-					    
-						Skull skull;
-						
-						try {
-					        skull = (Skull) player.getLocation().add(0, 1, 0).getBlock().getState();
-						} catch (Exception e) {
-							Bukkit.getLogger().warning("Could not place player skull.");
-							return;
-						}
-						
-					    skull.setSkullType(SkullType.PLAYER);
-					    skull.setOwner(player.getName());
-					    skull.setRotation(BlockUtils.getBlockDirection(player.getLocation()));
-					    skull.update();
-					    
-					    Block b = player.getLocation().add(0, 1, 0).getBlock();
-					    b.setData((byte) 0x1, true);
+		Scoreboards board = Scoreboards.getInstance();
+		User user = User.get(player);
+		
+		user.increaseStat(Stat.DEATHS);
+		player.setWhitelisted(false);
+		
+		if (game.deathLightning()) {
+		    player.getWorld().strikeLightningEffect(player.getLocation());
+		}
+		
+		List<World> worlds = GameUtils.getGameWorlds();
+
+	    if (game.goldenHeads() && worlds.contains(player.getWorld())) {
+			new BukkitRunnable() {
+				@SuppressWarnings("deprecation")
+				public void run() {
+					player.getLocation().getBlock().setType(Material.NETHER_FENCE);
+					player.getLocation().add(0, 1, 0).getBlock().setType(Material.SKULL);
+				    
+					Skull skull;
+					
+					try {
+				        skull = (Skull) player.getLocation().add(0, 1, 0).getBlock().getState();
+					} catch (Exception e) {
+						Bukkit.getLogger().warning("Could not place player skull.");
+						return;
 					}
-				}.runTaskLater(Main.plugin, 1);
-		    }
-			
-			final Player killer = player.getKiller();
-
-			if (killer == null) {
-				if (!game.isRecordedRound() && State.isState(State.INGAME)) {
-			        Scoreboards.getInstance().setScore("§8» §a§lPvE", Scoreboards.getInstance().getScore("§8» §a§lPvE") + 1);
-					Scoreboards.getInstance().resetScore(player.getName());
+					
+				    skull.setSkullType(SkullType.PLAYER);
+				    skull.setOwner(player.getName());
+				    skull.setRotation(BlockUtils.getBlockDirection(player.getLocation()));
+				    skull.update();
+				    
+				    Block b = player.getLocation().add(0, 1, 0).getBlock();
+				    b.setData((byte) 0x1, true);
 				}
-				
-				event.setDeathMessage("§8» §f" + event.getDeathMessage());
+			}.runTaskLater(Main.plugin, 1);
+	    }
+
+		final String deathMessage = event.getDeathMessage();
+		final Player killer = player.getKiller();
+
+		if (killer == null) {
+			if (worlds.contains(player.getWorld())) {
+				board.setScore("§8» §a§lPvE", board.getScore("§8» §a§lPvE") + 1);
+		        board.resetScore(player.getName());
+			}
+			
+			new BukkitRunnable() {
+				public void run() {
+					for (Player online : PlayerUtils.getPlayers()) {
+						online.sendMessage("§8» §f" + deathMessage);
+					}
+				}
+			}.runTaskLater(Main.plugin, 1);
+			
+			Bukkit.getLogger().info("§8» §f" + deathMessage);
+			event.setDeathMessage(null);
+			return;
+		}
+		
+		if (worlds.contains(killer.getWorld())) {
+			board.setScore(killer.getName(), board.getScore(killer.getName()) + 1);
+		}
+		
+		if (deathMessage.contains(killer.getName()) && (deathMessage.contains("slain") || deathMessage.contains("shot"))) {
+			ItemStack item = killer.getItemInHand();
+			
+			if (!item.hasItemMeta() && !item.getItemMeta().hasDisplayName()) {
 				return;
 			}
 			
-	        Scoreboards.getInstance().setScore(killer.getName(), Scoreboards.getInstance().getScore(killer.getName()) + 1);
+			String name = item.getItemMeta().getDisplayName();
 			
-			if (event.getDeathMessage().contains(killer.getName()) && killer.getItemInHand() != null && killer.getItemInHand().hasItemMeta() && killer.getItemInHand().getItemMeta().hasDisplayName() && (event.getDeathMessage().contains("slain") || event.getDeathMessage().contains("shot"))) {
-				ComponentBuilder builder = new ComponentBuilder("§8» §r" + event.getDeathMessage().replace("[" + killer.getItemInHand().getItemMeta().getDisplayName() + "]", ""));
-				
-				if (killer.getItemInHand().getEnchantments().isEmpty()) {
-					builder.append("[" + killer.getItemInHand().getItemMeta().getDisplayName() + "]");
-				} else {
-					StringBuilder colored = new StringBuilder();
-					
-					for (String s : killer.getItemInHand().getItemMeta().getDisplayName().split(" ")) {
-						colored.append(ChatColor.AQUA + s).append(" ");
-					}
-					
-					builder.append("§b[" + colored.toString().trim() + "§b]");
+			ComponentBuilder builder = new ComponentBuilder("§8» §r" + deathMessage.replace("[" + name + "]", ""));
+			StringBuilder colored = new StringBuilder();
+			
+			if (killer.getItemInHand().getEnchantments().isEmpty()) {
+				for (String entry : name.split(" ")) {
+					colored.append("§o" + entry).append(" ");
 				}
-				builder.event(new HoverEvent(HoverEvent.Action.SHOW_ITEM, new BaseComponent[] { new TextComponent(NameUtils.convertItemStackToJson(killer.getItemInHand())) }));
 				
-				final BaseComponent[] result = builder.create();
-				
-				new BukkitRunnable() {
-					public void run() {
-						for (Player online : PlayerUtils.getPlayers()) {
-							online.spigot().sendMessage(result);
-						}
-					}
-				}.runTaskLater(Main.plugin, 1);
-				
-				Bukkit.getLogger().info("§8» §f" + event.getDeathMessage());
-				
-				event.setDeathMessage(null);
+				builder.append("§f[" + colored.toString().trim() + "§f]");
 			} else {
-				event.setDeathMessage("§8» §f" + event.getDeathMessage());
-			}
-			
-			if (game.isRecordedRound()) {
-				return;
-			}
-			
-			if (State.isState(State.INGAME)) {
-				User killerData = User.get(killer);
-				killerData.increaseStat(Stat.KILLS);
-				
-				if (Main.kills.containsKey(killer.getName())) {
-					Main.kills.put(killer.getName(), Main.kills.get(killer.getName()) + 1);
-				} else {
-					Main.kills.put(killer.getName(), 1);
+				for (String entry : name.split(" ")) {
+					colored.append("§b§o" + entry).append(" ");
 				}
+				
+				builder.append("§b[" + colored.toString().trim() + "§b]");
+			}
+			
+			builder.event(new HoverEvent(HoverEvent.Action.SHOW_ITEM, new BaseComponent[] {new TextComponent(NameUtils.convertToJson(item))}));
+			final BaseComponent[] result = builder.create();
+			
+			new BukkitRunnable() {
+				public void run() {
+					for (Player online : PlayerUtils.getPlayers()) {
+						online.spigot().sendMessage(result);
+					}
+				}
+			}.runTaskLater(Main.plugin, 1);
+			
+			Bukkit.getLogger().info("§8» §f" + event.getDeathMessage());
+			
+			event.setDeathMessage(null);
+		} else {
+			new BukkitRunnable() {
+				public void run() {
+					for (Player online : PlayerUtils.getPlayers()) {
+						online.sendMessage("§8» §f" + deathMessage);
+					}
+				}
+			}.runTaskLater(Main.plugin, 1);
+			
+			Bukkit.getLogger().info("§8» §f" + deathMessage);
+			event.setDeathMessage(null);
+		}
+		
+		if (game.isRecordedRound()) {
+			return;
+		}
+
+		User killerData = User.get(killer);
+		killerData.increaseStat(Stat.KILLS);
+		
+		if (State.isState(State.INGAME)) {
+			if (Main.kills.containsKey(killer.getName())) {
+				Main.kills.put(killer.getName(), Main.kills.get(killer.getName()) + 1);
+			} else {
+				Main.kills.put(killer.getName(), 1);
 			}
 			
 			Team team = Teams.getInstance().getTeam(killer);
@@ -204,82 +240,87 @@ public class PlayerListener implements Listener {
 					Main.teamKills.put(team.getName(), 1);
 				}
 			}
-
-			Scoreboards.getInstance().resetScore(player.getName());
 		}
+
+		board.resetScore(player.getName());
 	}
 	
 	@EventHandler
 	public void onPlayerRespawn(PlayerRespawnEvent event) {
 		final Player player = event.getPlayer();
+
+		Scoreboards board = Scoreboards.getInstance();
+		Arena arena = Arena.getInstance();
 		
-		World w = Bukkit.getServer().getWorld(settings.getData().getString("spawn.world"));
-		double x = settings.getData().getDouble("spawn.x");
-		double y = settings.getData().getDouble("spawn.y");
-		double z = settings.getData().getDouble("spawn.z");
-		float yaw = (float) settings.getData().getDouble("spawn.yaw");
-		float pitch = (float) settings.getData().getDouble("spawn.pitch");
-		
-		Location loc = new Location(w, x, y, z, yaw, pitch);
-		event.setRespawnLocation(loc);
-		
-		Scoreboards.getInstance().resetScore(player.getName());
+		event.setRespawnLocation(Main.getSpawn());
+		board.resetScore(player.getName());
 		player.setMaxHealth(20);
 		
-		if (!Arena.getInstance().isEnabled() && !State.isState(State.LOBBY) && !game.isRecordedRound()) {
-			player.sendMessage(Main.PREFIX + "Thanks for playing our game, it really means a lot :)");
-			player.sendMessage(Main.PREFIX + "Follow us on twtter to know when our next games are: §a@ArcticUHC");
-			
-			if (player.hasPermission("uhc.prelist")) {
-				player.sendMessage(Main.PREFIX + "You will be put into spectator mode in 10 seconds.");
-				
-				Bukkit.getServer().getScheduler().runTaskLater(Main.plugin, new Runnable() {
-					public void run() {
-						if (!State.isState(State.LOBBY) && player.isOnline() && !Spectator.getManager().isSpectating(player)) {
-							for (Player online : PlayerUtils.getPlayers()) {
-								online.showPlayer(player);
-							}
-							
-							Spectator.getManager().enableSpecmode(player, true);
-						}
-					}
-				}, 200);
-				
-				for (Player online : PlayerUtils.getPlayers()) {
-					online.hidePlayer(player);
-				}
-			} else {
-				player.sendMessage(Main.PREFIX + "You may stay as long as you want (You are vanished).");
-				
-				for (Player online : PlayerUtils.getPlayers()) {
-					online.hidePlayer(player);
-				}
-			}
-			
+		if (arena.isEnabled() || State.isState(State.LOBBY) || game.isRecordedRound()) {
+			return;
+		}
+		
+		player.sendMessage(Main.PREFIX + "Thanks for playing our game, it really means a lot :)");
+		player.sendMessage(Main.PREFIX + "Follow us on twtter to know when our next games are: §a@ArcticUHC");
+		
+		for (Player online : PlayerUtils.getPlayers()) {
+			online.hidePlayer(player);
+		}
+		
+		if (!player.hasPermission("uhc.prelist")) {
+			player.sendMessage(Main.PREFIX + "You may stay as long as you want (You are vanished).");
 			player.sendMessage(Main.PREFIX + "Please do not spam, rage, spoil or be a bad sportsman.");
 		}
+		
+		player.sendMessage(Main.PREFIX + "You will be put into spectator mode in 10 seconds.");
+		player.sendMessage(Main.PREFIX + "Please do not spam, rage, spoil or be a bad sportsman.");
+		
+		new BukkitRunnable() {
+			public void run() {
+				Spectator spec = Spectator.getInstance();
+				
+				if (State.isState(State.LOBBY) || !player.isOnline() || spec.isSpectating(player)) {
+					return;
+				}
+				
+				for (Player online : PlayerUtils.getPlayers()) {
+					online.showPlayer(player);
+				}
+				
+				Spectator.getInstance().enableSpecmode(player, true);
+			}
+		}.runTaskLater(Main.plugin, 200);
 	}
 	
-	@EventHandler(priority = EventPriority.HIGH)
+	@EventHandler
     public void onAsyncPlayerChat(AsyncPlayerChatEvent event) {
 		Player player = event.getPlayer();
 		User user = User.get(player);
 
+		Teams teams = Teams.getInstance();
+		Team team = teams.getTeam(player);
+		
+		String message = event.getMessage();
+		String name = (team == null || team.getName().equals("spec") ? player.getName() : team.getPrefix() + player.getName());
+		
 		event.setCancelled(true);
     	
     	if (game.isRecordedRound()) {
-    		Team team = player.getScoreboard().getEntryTeam(player.getName());
-			PlayerUtils.broadcast((team != null ? team.getPrefix() + player.getName() : player.getName()) + "§8 » §f" + event.getMessage());
+    		PlayerUtils.broadcast(name + "§8 » §f" + message);
     		return;
     	}
 		
-		if (VoteCommand.running && (event.getMessage().equalsIgnoreCase("y") || event.getMessage().equalsIgnoreCase("n"))) {
-			if (!State.isState(State.LOBBY) && player.getWorld().getName().equals("lobby")) {
+		if (VoteCommand.running && (message.equalsIgnoreCase("y") || message.equalsIgnoreCase("n"))) {
+			World world = player.getWorld();
+			
+			if (!State.isState(State.LOBBY) && world.getName().equals("lobby")) {
 				player.sendMessage(ChatColor.RED + "You cannot vote when you are dead.");
 				return;
 			}
 			
-			if (Spectator.getManager().isSpectating(player)) {
+			Spectator spec = Spectator.getInstance();
+			
+			if (spec.isSpectating(player)) {
 				player.sendMessage(ChatColor.RED + "You cannot vote as a spectator.");
 				return;
 			}
@@ -324,148 +365,125 @@ public class PlayerListener implements Listener {
 		}
 		
 		if (user.getRank() == Rank.HOST) {
-			Team team = player.getScoreboard().getEntryTeam(player.getName());
+			String host = settings.getConfig().getString("game.host");
+			String uuid = player.getUniqueId().toString();
 			
-			if (player.getUniqueId().toString().equals("02dc5178-f7ec-4254-8401-1a57a7442a2f")) {
-				if (settings.getConfig().getString("game.host").equals(player.getName())) {
-					PlayerUtils.broadcast("§3§lHost §8| §f" + (team != null ? (team.getName().equals("spec") ? player.getName() : team.getPrefix() + player.getName()) : player.getName()) + "§8 » §f" + ChatColor.translateAlternateColorCodes('&', event.getMessage()));
-				} 
-				else {
-					PlayerUtils.broadcast("§3§lCo Host §8| §f" + (team != null ? (team.getName().equals("spec") ? player.getName() : team.getPrefix() + player.getName()) : player.getName()) + "§8 » §f" + ChatColor.translateAlternateColorCodes('&', event.getMessage()));
+			String prefix;
+			
+			if (uuid.equals("02dc5178-f7ec-4254-8401-1a57a7442a2f")) {
+				if (host.equals(player.getName())) {
+					prefix = "§3§lHost";
+				} else {
+					prefix = "§3§lCo Host";
+				}	
+			} else {
+				if (host.equals(player.getName())) {
+					prefix = "§4§lHost";
+				} else {
+					prefix = "§4§lCo Host";
 				}	
 			}
-			else {
-				if (settings.getConfig().getString("game.host").equals(player.getName())) {
-					PlayerUtils.broadcast("§4§lHost §8| §f" + (team != null ? (team.getName().equals("spec") ? player.getName() : team.getPrefix() + player.getName()) : player.getName()) + "§8 » §f" + ChatColor.translateAlternateColorCodes('&', event.getMessage()));
-				} 
-				else {
-					PlayerUtils.broadcast("§4§lCo Host §8| §f" + (team != null ? (team.getName().equals("spec") ? player.getName() : team.getPrefix() + player.getName()) : player.getName()) + "§8 » §f" + ChatColor.translateAlternateColorCodes('&', event.getMessage()));
-				}	
-			}
+			
+			PlayerUtils.broadcast(prefix + " §8| §f" + name + "§8 » §f" + ChatColor.translateAlternateColorCodes('&', message));
+			return;
 		}
-		else if (user.getRank() == Rank.TRIAL) {
-			Team team = player.getScoreboard().getEntryTeam(player.getName());
-			PlayerUtils.broadcast("§4§lTrial Host §8| §f" + (team != null ? (team.getName().equals("spec") ? player.getName() : team.getPrefix() + player.getName()) : player.getName()) + "§8 » §f" + ChatColor.translateAlternateColorCodes('&', event.getMessage()));
+		
+		if (user.getRank() == Rank.TRIAL) {
+			PlayerUtils.broadcast("§4§lTrial Host §8| §f" + name + "§8 » §f" + ChatColor.translateAlternateColorCodes('&', message));
+			return;
 		}
-		else if (user.getRank() == Rank.STAFF) {
-			Team team = player.getScoreboard().getEntryTeam(player.getName());
-			PlayerUtils.broadcast("§c§lStaff §8| §f" + (team != null ? (team.getName().equals("spec") ? player.getName() : team.getPrefix() + player.getName()) : player.getName()) + "§8 » §f" + event.getMessage());
+		
+		if (user.getRank() == Rank.STAFF) {
+			PlayerUtils.broadcast("§c§lStaff §8| §f" + name + "§8 » §f" + message);
+			return;
 		}
-		else if (user.getRank() == Rank.VIP) {
+		
+		if (user.getRank() == Rank.VIP) {
 			if (game.isMuted()) {
 				player.sendMessage(Main.PREFIX + "The chat is currently muted.");
 				return;
 			}
 
-			Team team = player.getScoreboard().getEntryTeam(player.getName());
-			PlayerUtils.broadcast("§5§lVIP §8| §f" + (team != null ? (team.getName().equals("spec") ? player.getName() : team.getPrefix() + player.getName()) : player.getName()) + "§8 » §f" + event.getMessage());
+			PlayerUtils.broadcast("§5§lVIP §8| §f" + name + "§8 » §f" + message);
+			return;
 		} 
-		else {
-			if (game.isMuted()) {
-				player.sendMessage(Main.PREFIX + "The chat is currently muted.");
-				return;
-			}
 			
-			Team team = player.getScoreboard().getEntryTeam(player.getName());
-			PlayerUtils.broadcast((team != null ? team.getPrefix() + player.getName() : player.getName()) + "§8 » §f" + event.getMessage());
-		} 
+		if (game.isMuted()) {
+			player.sendMessage(Main.PREFIX + "The chat is currently muted.");
+			return;
+		}
+
+		PlayerUtils.broadcast(name + "§8 » §f" + message);
 	}
 	
 	@EventHandler
 	public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
+		String message = event.getMessage();
 		Player player = event.getPlayer();
 		
+		Spectator spec = Spectator.getInstance();
+		Fireworks fire = Fireworks.getInstance();
+		
 		for (Player online : PlayerUtils.getPlayers()) {
-			if (online.hasPermission("uhc.commandspy") && (online.getGameMode() == GameMode.CREATIVE || Spectator.getManager().isSpectating(online)) && Spectator.getManager().hasCommandSpy(online) && online != player) {
-				online.sendMessage(ChatColor.YELLOW + player.getName() + ": §7" + event.getMessage());
+			if (online == player) {
+				continue;
 			}
+			
+			if (!online.hasPermission("uhc.cmdspy")) {
+				continue;
+			}
+			
+			if (!spec.hasCommandSpy(online)) {
+				continue;
+			}
+			
+			if (online.getGameMode() != GameMode.CREATIVE && !spec.isSpectating(online)) {
+				continue;
+			}
+			
+			online.sendMessage("§8" + player.getName() + ": §7" + message);
 		}
 		
-		if (event.getMessage().split(" ")[0].equalsIgnoreCase("/fire")) {
+		String command = message.split(" ")[0].substring(1);
+		
+		if (command.equalsIgnoreCase("fire")) {
 			if (player.hasPermission("uhc.staff")) {
-				Fireworks.getInstance().startFireworkShow();
-			}
-			event.setCancelled(true);
-			return;
-		}
-		
-		if (event.getMessage().split(" ")[0].equalsIgnoreCase("/score")) {
-			String[] args = event.getMessage().split(" ");
-			
-			int i = 0;
-			
-			StringBuilder builder = new StringBuilder();
-			
-			for (String arg : args) {
-				if (i == 0 || i == 1) {
-					i++;
-					continue;
-				}
-				
-				builder.append(arg).append(" ");
-			}
-			
-			Scoreboards.getInstance().setScore(ChatColor.translateAlternateColorCodes('&', builder.toString().trim()), Integer.parseInt(args[1]));
-			return;
-		}
-		
-		if (event.getMessage().split(" ")[0].equalsIgnoreCase("/me")) {
-			player.sendMessage(Main.PREFIX + "You can't use that command.");
-			event.setCancelled(true);
-			return;
-		}
-		
-		if (event.getMessage().split(" ")[0].startsWith("/bukkit:") && !player.hasPermission("uhc.admin")) {
-			player.sendMessage(Main.PREFIX + "You can't use that command.");
-			event.setCancelled(true);
-			return;
-		}
-		
-		if (event.getMessage().split(" ")[0].startsWith("/minecraft:") && !player.hasPermission("uhc.admin")) {
-			player.sendMessage(Main.PREFIX + "You can't use that command.");
-			event.setCancelled(true);
-			return;
-		}
-		
-		if (event.getMessage().split(" ")[0].equalsIgnoreCase("/kill")) {
-			player.sendMessage(Main.PREFIX + "You can't use that command.");
-			event.setCancelled(true);
-			return;
-		}
-		
-		if (event.getMessage().split(" ")[0].equalsIgnoreCase("/rl")) {
-			if (!State.isState(State.LOBBY) && player.hasPermission("bukkit.command.reload")) {
-				player.sendMessage(ChatColor.RED + "You might not want to reload when the game is running.");
-				player.sendMessage(ChatColor.RED + "If you still want to reload, do it in the console.");
+				fire.startFireworkShow();
 				event.setCancelled(true);
 			}
 			return;
 		}
 		
-		if (event.getMessage().split(" ")[0].equalsIgnoreCase("/reload")) {
-			if (!State.isState(State.LOBBY) && player.hasPermission("bukkit.command.reload")) {
-				player.sendMessage(ChatColor.RED + "You might not want to reload when the game is running.");
-				player.sendMessage(ChatColor.RED + "If you still want to reload, do it in the console.");
-				event.setCancelled(true);
-			}
+		if (command.equalsIgnoreCase("me") || command.equalsIgnoreCase("kill")) {
+			player.sendMessage(Main.NO_PERM_MSG);
+			event.setCancelled(true);
 			return;
 		}
 		
-		if (event.getMessage().split(" ")[0].equalsIgnoreCase("/stop")) {
-			if (!State.isState(State.LOBBY) && player.hasPermission("bukkit.command.stop")) {
-				player.sendMessage(ChatColor.RED + "You might not want to stop when the game is running.");
-				player.sendMessage(ChatColor.RED + "If you still want to stop, do it in the console.");
-				event.setCancelled(true);
+		if (command.startsWith("bukkit:") && command.startsWith("minecraft:")) {
+			if (player.hasPermission("uhc.admin")) {
+				return;
 			}
+			
+			player.sendMessage(Main.NO_PERM_MSG);
+			event.setCancelled(true);
 			return;
 		}
 		
-		if (event.getMessage().split(" ")[0].equalsIgnoreCase("/restart")) {
-			if (!State.isState(State.LOBBY) && player.hasPermission("spigot.command.restart")) {
-				player.sendMessage(ChatColor.RED + "You might not want to restart when the game is running.");
-				player.sendMessage(ChatColor.RED + "If you still want to restart, do it in the console.");
-				event.setCancelled(true);
+		if (command.equalsIgnoreCase("rl") || command.equalsIgnoreCase("reload") || command.equalsIgnoreCase("stop") || command.equalsIgnoreCase("restart")) {
+			if (State.isState(State.LOBBY) || State.isState(State.SCATTER)) {
+				return;
 			}
+			
+			String done = command.replace("rl", "reload");
+			
+			if (!player.hasPermission("bukkit.command." + done)) {
+				return;
+			}
+			
+			player.sendMessage(ChatColor.RED + "You may not want to " + done + " when the game is running.");
+			player.sendMessage(ChatColor.RED + "If you still want to " + done + ", do it in the console.");
+			event.setCancelled(true);
 			return;
 		}
 	}
@@ -477,8 +495,8 @@ public class PlayerListener implements Listener {
 		String teamSize = GameUtils.getTeamSize();
 		String state = GameUtils.getState();
 		
-		event.setMotd("§4§lArctic UHC §8- §71.8 §8- §a" + state + "§r \n" + 
-		ChatColor.GOLD + teamSize + scenarios + (teamSize.startsWith("Open") || teamSize.startsWith("No") ? "" : "§8 - §4Host: §7" + host));
+		event.setMotd("§4§lArctic UHC §8- §71.8 §8- §a" + state + "§r \n§6" + 
+		teamSize + scenarios + (teamSize.startsWith("Open") || teamSize.startsWith("No") ? "" : "§8 - §4Host: §7" + host));
 
 		int max = settings.getConfig().getInt("maxplayers", 80);
 		event.setMaxPlayers(max);
@@ -513,87 +531,146 @@ public class PlayerListener implements Listener {
 		}
 	}
 	
-	@EventHandler(priority = EventPriority.HIGH)
+	@EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {	
         Player player = event.getPlayer();
+        World world = player.getWorld();
         
-        if (player.getWorld().getName().equals("lobby") && !player.hasPermission("uhc.build") && (event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.LEFT_CLICK_BLOCK)) {
-        	event.setCancelled(true);
-        }
+        Action action = event.getAction();
+        ItemStack item = event.getItem();
         
-        if (event.getAction() == Action.RIGHT_CLICK_BLOCK && State.isState(State.INGAME) && Timers.pvp > 0 && !game.isRecordedRound()) {
-        	if (event.getItem() != null && (event.getItem().getType() == Material.LAVA_BUCKET || event.getItem().getType() == Material.FLINT_AND_STEEL || event.getItem().getType() == Material.CACTUS || event.getItem().getType() == Material.SAND || event.getItem().getType() == Material.GRAVEL)) {
-        		for (Entity nearby : PlayerUtils.getNearby(event.getClickedBlock().getLocation(), 5)) {
-        			if (nearby instanceof Player) {
-        				if (nearby == player) {
-        					continue;
-        				}
-        				
-        				if (Spectator.getManager().isSpectating((Player) nearby)) {
-        					continue;
-        				}
-        				
-        				PlayerUtils.broadcast(Main.PREFIX + "§c" + player.getName() + " §7attempted to iPvP §c" + nearby.getName(), "uhc.staff");
-        				player.sendMessage(Main.PREFIX + "iPvP is not allowed before PvP.");
-        				player.sendMessage(Main.PREFIX + "Stop iPvPing now or staff will take action.");
-        				event.setCancelled(true);
-        			}
+        Spectator spec = Spectator.getInstance();
+        InvGUI inv = InvGUI.getInstance();
+        
+        if (world.getName().equals("lobby")) {
+        	if (action == Action.PHYSICAL) {
+            	event.setCancelled(true);
+        	} else {
+        		if (!player.hasPermission("uhc.build")) {
+        			event.setCancelled(true);
         		}
         	}
+        }
+        
+        if (item == null) {
         	return;
         }
         
-        if (event.getAction() == Action.PHYSICAL && player.getWorld().getName().equals("lobby")) {
-        	event.setCancelled(true);
-        	return;
-        }
-        
-		if (Spectator.getManager().isSpectating(player)) {
-			if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-				InvGUI.getManager().openSelector(player);
-			} else if (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK) {
-				ArrayList<Player> players = new ArrayList<Player>();
-				for (Player online : PlayerUtils.getPlayers()) {
-					if (!Spectator.getManager().isSpectating(online) && !online.getWorld().getName().equals("lobby")) {
-						players.add(online);
+        if (action == Action.RIGHT_CLICK_BLOCK && State.isState(State.INGAME) && Timers.pvp > 0 && !game.isRecordedRound()) {
+        	if (item.getType() != Material.LAVA_BUCKET && item.getType() != Material.FLINT_AND_STEEL && item.getType() != Material.CACTUS) {
+            	return;
+        	}
+        	
+        	for (Entity nearby : PlayerUtils.getNearby(event.getClickedBlock().getLocation(), 5)) {
+    			if (!(nearby instanceof Player)) {
+    				continue;
+    			}
+    			
+    			Player near = (Player) nearby;
+				
+				if (near == player) {
+					continue;
+				}
+				
+				if (spec.isSpectating(near)) {
+					continue;
+				}
+				
+				Team pTeam = Teams.getInstance().getTeam(player);
+				Team nearTeam = Teams.getInstance().getTeam(near);
+				
+				if (pTeam != null && nearTeam != null) {
+					if (pTeam == nearTeam) {
+						continue;
 					}
 				}
 				
-				if (players.size() > 0) {
-					Player target = players.get(new Random().nextInt(players.size()));
-					player.teleport(target.getLocation());
-					player.sendMessage(Main.PREFIX + "You teleported to §a" + target.getName() + "§7.");
-				} else {
-					player.sendMessage(Main.PREFIX + "No players to teleport to.");
+				PlayerUtils.broadcast(Main.PREFIX + "§c" + player.getName() + " §7attempted to iPvP §c" + near.getName(), "uhc.staff");
+				
+				player.sendMessage(Main.PREFIX + "iPvP is not allowed before PvP.");
+				player.sendMessage(Main.PREFIX + "Stop iPvPing now or staff will take action.");
+				
+				item.setType(Material.AIR);
+				event.setCancelled(true);
+				break;
+    		}
+        	return;
+        }
+        
+		if (!spec.isSpectating(player)) {
+			return;
+		}
+		
+		if (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK) {
+			inv.openSelector(player);
+		} 
+		else if (action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK) {
+			ArrayList<Player> players = new ArrayList<Player>();
+			
+			for (Player online : PlayerUtils.getPlayers()) {
+				World oWorld = online.getWorld();
+				
+				if (!spec.isSpectating(online) && !GameUtils.getGameWorlds().contains(oWorld)) {
+					players.add(online);
 				}
 			}
+			
+			if (players.size() <= 0) {
+				player.sendMessage(Main.PREFIX + "No players to teleport to.");
+				return;
+			}
+			
+			Random rand = new Random();
+			Player target = players.get(rand.nextInt(players.size()));
+			
+			player.sendMessage(Main.PREFIX + "You teleported to §a" + target.getName() + "§7.");
+			player.teleport(target.getLocation());
 		}
 	}
 	
 	@EventHandler
     public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
-		if (event.getRightClicked() instanceof ArmorStand) {
+		Entity clicked = event.getRightClicked();
+		
+		List<World> worlds = GameUtils.getGameWorlds();
+		World world = clicked.getWorld();
+		
+		if (clicked instanceof ArmorStand && !worlds.contains(world)) {
 			event.setCancelled(true);
 			return;
 		}
 		
-		if (event.getRightClicked() instanceof Player) {
-			Player player = (Player) event.getPlayer();
-	    	Player clicked = (Player) event.getRightClicked();
-					
-			if (Spectator.getManager().isSpectating(player)) {
-				if (Spectator.getManager().isSpectating(clicked)) {
-					return;
-				}
-				
-				InvGUI.getManager().openPlayerInventory(player, clicked);
-			}
+		if (!(clicked instanceof Player)) {
+			return;
 		}
+	    	
+		Player interacted = (Player) event.getRightClicked();
+		Player player = event.getPlayer();
+				
+		Spectator spec = Spectator.getInstance();
+		InvGUI inv = InvGUI.getInstance();
+		
+		if (!spec.isSpectating(player)) {
+			return;
+		}
+		
+		if (spec.isSpectating(interacted)) {
+			return;
+		}
+		
+		inv.openPlayerInventory(player, interacted);
     }
 	
 	@EventHandler
 	public void onPrepareItemCraft(PrepareItemCraftEvent event) {
-		ItemStack item = event.getRecipe().getResult();
+		Recipe recipe = event.getRecipe();
+		
+		CraftingInventory inv = event.getInventory();
+		ItemStack item = recipe.getResult();
+		
+		if (item == null) {
+			return;
+		}
 		
 		/**
 		 * @author Ghowden
@@ -602,50 +679,55 @@ public class PlayerListener implements Listener {
             ItemMeta meta = item.getItemMeta();
             String name = "N/A";
           
-            for (ItemStack items : event.getInventory().getContents()) {
-                if (items.getType() == Material.SKULL_ITEM) {
-                    SkullMeta skullMeta = (SkullMeta) items.getItemMeta();
+            for (ItemStack content : inv.getContents()) {
+                if (content.getType() == Material.SKULL_ITEM) {
+                    SkullMeta skullMeta = (SkullMeta) content.getItemMeta();
                     name = skullMeta.getOwner();
                     break;
                 }
             }
 
             List<String> list = meta.getLore();
-            list.add(ChatColor.AQUA + "Made from the head of: " + name);
+            list.add(ChatColor.AQUA + "Made from the head of: " + (name == null ? "N/A" : name));
             meta.setLore(list);
             item.setItemMeta(meta);
-            event.getInventory().setResult(item);
+            
+            inv.setResult(item);
         }
 		
-		if (item != null && item.getType() == Material.GOLDEN_APPLE) {
-			if (item.getItemMeta().getDisplayName() != null && item.getItemMeta().getDisplayName().equals("§6Golden Head")) {
-				if (ScenarioManager.getInstance().getScenario("VengefulSpirits").isEnabled()) {
+		if (item.getType() == Material.GOLDEN_APPLE) {
+			if (item.hasItemMeta() && item.getItemMeta().hasDisplayName() && item.getItemMeta().getDisplayName().equals("§6Golden Head")) {
+				ScenarioManager scen = ScenarioManager.getInstance();
+				
+				if (scen.getScenario("VengefulSpirits").isEnabled()) {
 					return;
 				}
 				
 				if (!game.goldenHeads()) {
-					event.getInventory().setResult(new ItemStack(Material.AIR));
+					inv.setResult(new ItemStack(Material.AIR));
 				}
+				return;
 			}
 			
 			if (item.getDurability() == 1) {
 				if (!game.notchApples()) {
-					event.getInventory().setResult(new ItemStack(Material.AIR));
+					inv.setResult(new ItemStack(Material.AIR));
 				}
 			}
+			return;
 		}
 		
-		if (item != null && item.getType() == Material.SPECKLED_MELON) {
-			if (game.goldenMelonNeedsIngots()) {
-				if (event.getRecipe() instanceof ShapedRecipe) {
-					if (((ShapedRecipe) event.getRecipe()).getIngredientMap().values().contains(new ItemStack (Material.GOLD_NUGGET))) {
-						event.getInventory().setResult(new ItemStack(Material.AIR));
+		if (item.getType() == Material.SPECKLED_MELON) {
+			if (recipe instanceof ShapedRecipe) {
+				ShapedRecipe shaped = (ShapedRecipe) event.getRecipe();
+				
+				if (game.goldenMelonNeedsIngots()) {
+					if (shaped.getIngredientMap().values().contains(new ItemStack (Material.GOLD_NUGGET))) {
+						inv.setResult(new ItemStack(Material.AIR));
 					}
-				}
-			} else {
-				if (event.getRecipe() instanceof ShapedRecipe) {
-					if (((ShapedRecipe) event.getRecipe()).getIngredientMap().values().contains(new ItemStack (Material.GOLD_INGOT))) {
-						event.getInventory().setResult(new ItemStack(Material.AIR));
+				} else {
+					if (shaped.getIngredientMap().values().contains(new ItemStack (Material.GOLD_INGOT))) {
+						inv.setResult(new ItemStack(Material.AIR));
 					}
 				}
 			}
@@ -654,57 +736,62 @@ public class PlayerListener implements Listener {
 	
 	@EventHandler
 	public void onPlayerAchievementAwarded(PlayerAchievementAwardedEvent event) {
+		Spectator spec = Spectator.getInstance();
 		Player player = event.getPlayer();
 		
-		if (Spectator.getManager().isSpectating(player)) {
-			event.setCancelled(true);
+		if (!spec.isSpectating(player) && State.isState(State.INGAME)) {
 			return;
 		}
 		
-		if (!State.isState(State.INGAME)) {
-			event.setCancelled(true);
-		}
+		event.setCancelled(true);
 	}
 	
 	@EventHandler
 	public void onPlayerItemConsume(PlayerItemConsumeEvent event) {
 		final Player player = event.getPlayer();
+		final ItemStack item = event.getItem();
+		
 		final float before = player.getSaturation();
 
-		Bukkit.getServer().getScheduler().runTaskLater(Main.plugin, new Runnable() {
+		new BukkitRunnable() {
 			public void run() {
 				float change = player.getSaturation() - before;
 				player.setSaturation((float) (before + change * 2.5D));
 			}
-	    }, 1L);
+        }.runTaskLater(Main.plugin, 1);
 		
-		if (event.getItem().getType() == Material.GOLDEN_APPLE && !game.absorption()) {
-			player.removePotionEffect(PotionEffectType.ABSORPTION);
+		if (item.getType() == Material.GOLDEN_APPLE) {
+			if (!game.absorption()) {
+				player.removePotionEffect(PotionEffectType.ABSORPTION);
+				
+				new BukkitRunnable() {
+					public void run() {
+						player.removePotionEffect(PotionEffectType.ABSORPTION);
+					}
+		        }.runTaskLater(Main.plugin, 1);
+			}
 			
-			Bukkit.getServer().getScheduler().runTaskLater(Main.plugin, new Runnable() {
-				public void run() {
-					player.removePotionEffect(PotionEffectType.ABSORPTION);
-				}
-	        }, 1L);
-		}
-		
-		if (event.getItem().getType() == Material.GOLDEN_APPLE && event.getItem().getItemMeta().getDisplayName() != null && event.getItem().getItemMeta().getDisplayName().equals("§6Golden Head")) {
-			player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 25 * (game.goldenHeadsHeal() * 2), 1));
+			if (item.hasItemMeta() && item.getItemMeta().hasDisplayName() && item.getItemMeta().getDisplayName().equals("§6Golden Head")) {
+				player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 25 * (game.goldenHeadsHeal() * 2), 1));
+			}
 		}
 	}
 	
 	@EventHandler
 	public void onFoodLevelChange(FoodLevelChangeEvent event) {
 		Player player = (Player) event.getEntity();
+		World world = player.getWorld();
 		
-		if (player.getWorld().getName().equals("lobby")) {
+		if (world.getName().equals("lobby")) {
 			event.setCancelled(true);
 			event.setFoodLevel(20);
 			return;
 		}
 		
-		if (event.getFoodLevel() < player.getFoodLevel()) {
-			event.setCancelled(new Random().nextInt(100) < 66);
+		if (event.getFoodLevel() >= player.getFoodLevel()) {
+			return;
 	    }
+		
+		event.setCancelled(new Random().nextInt(100) < 66);
 	}
 }
