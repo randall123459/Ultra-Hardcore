@@ -32,10 +32,19 @@ public class NumberUtils {
 	 * @param health the health of the player.
 	 * @return the percent of the health.
 	 */
-	public static int makePercent(double health) {
+	public static String makePercent(double health) {
 		double hearts = health / 2;
-		double precent = hearts * 10;
-		return (int) precent;
+		double percent = hearts * 10;
+		
+		if (percent >= 66) {
+			return "§a" + ((int) percent);
+		} else if (percent >= 33) {
+			return "§e" + ((int) percent);
+		} else if (percent == 0) {
+			return "§7" + ((int) percent);
+		} else {
+			return "§c" + ((int) percent);
+		}
 	}
 	
 	/**
