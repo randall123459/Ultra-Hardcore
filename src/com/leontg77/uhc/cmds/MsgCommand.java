@@ -38,12 +38,12 @@ public class MsgCommand implements CommandExecutor {
 				Date date = new Date();
 				
 				if (user.getUnmuteTime() == -1 || user.getUnmuteTime() > date.getTime()) {
-					sender.sendMessage(Main.prefix() + "You have been muted for: §a" + user.getMutedReason());
+					sender.sendMessage(Main.PREFIX + "You have been muted for: §a" + user.getMutedReason());
 					
 					if (user.getUnmuteTime() < 0) {
-						sender.sendMessage(Main.prefix() + "Your mute is permanent.");
+						sender.sendMessage(Main.PREFIX + "Your mute is permanent.");
 					} else {
-						sender.sendMessage(Main.prefix() + "Your mute expires in: §a" + DateUtils.formatDateDiff(user.getUnmuteTime()));
+						sender.sendMessage(Main.PREFIX + "Your mute expires in: §a" + DateUtils.formatDateDiff(user.getUnmuteTime()));
 					}
 					return true;
 				} else {
@@ -61,7 +61,7 @@ public class MsgCommand implements CommandExecutor {
         }
         
         if (spec.isSpectating(sender.getName()) && !spec.isSpectating(target.getName()) && !sender.hasPermission("uhc.seemsg") && !target.hasPermission("uhc.seemsg")) {
-    		sender.sendMessage(Main.prefix() + "");
+    		sender.sendMessage(Main.PREFIX + "You cannot message players while a spectator.");
         	return true;
     	}
                
