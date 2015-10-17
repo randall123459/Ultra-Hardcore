@@ -19,7 +19,7 @@ import com.leontg77.uhc.inventory.InvGUI;
 public class InvseeCommand implements CommandExecutor {
 
 	@Override
-	public boolean onCommand(CommandSender sender, Command cmd, String label, final String[] args) {
+	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (!(sender instanceof Player)) {
 			sender.sendMessage(ChatColor.RED + "Only players can open player invs.");
 			return true;
@@ -30,13 +30,13 @@ public class InvseeCommand implements CommandExecutor {
 		Spectator spec = Spectator.getInstance();
 		InvGUI inv = InvGUI.getInstance();
 		
-		if (!spec.isSpectating(player)) {
+		if (!sender.hasPermission("uhc.invsee") && !spec.isSpectating(player)) {
 			player.sendMessage(Main.NO_PERM_MSG);
 			return true;
 		}
 		
 		if (args.length == 0) {
-    		player.sendMessage(Main.prefix() + "Usage: /invsee <player>");
+    		player.sendMessage(Main.PREFIX + "Usage: /invsee <player>");
     		return true;
 		}
 		
