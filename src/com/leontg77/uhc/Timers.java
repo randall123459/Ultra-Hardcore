@@ -188,7 +188,7 @@ public class Timers {
 					Main.teamKills.put(team.getName(), 0);
 					
 					ArrayList<String> players = new ArrayList<String>(team.getEntries());
-					TeamCommand.sTeam.put(team.getName(), players);
+					TeamCommand.savedTeams.put(team.getName(), players);
 				}
 
 				Scoreboards sb = Scoreboards.getInstance();
