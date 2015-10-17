@@ -6,8 +6,6 @@ description: UHC plugin made for Leons UHC
 softdepend: [ProtocolLib]
 
 commands:
-  aboard:
-    description: Toggle the arena board.
   arena:
     description: Command to join the arena.
     aliases: [a, p]
@@ -58,6 +56,10 @@ commands:
   hof:
     description: View the hall of fame.
     aliases: [halloffame]
+  hotbar:
+    description: Save your arena hotbar.
+  info:
+    description: View information on a player.
   invsee:
     description: Opens the targets inventoty.
   kick:
@@ -77,10 +79,10 @@ commands:
     description: Mute a player or the chat.
   near:
     description: Check for nearby players.
-  perma:
-    description: Enable permaday.
   pm:
     description: Team chat command.
+  pregen:
+    description: Pregen a world.
   pvp:
     description: Toggle pvp in a specific world.
   random:
@@ -148,6 +150,8 @@ commands:
   whitelist:
     description: Whitelisting command.
     aliases: [wl]
+  world:
+    description: Create and manage worlds.
 # Scenario Commands.
   target:
     description: View your assassins target.

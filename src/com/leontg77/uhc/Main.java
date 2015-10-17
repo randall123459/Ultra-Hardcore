@@ -65,6 +65,8 @@ import com.leontg77.uhc.cmds.HOFCommand;
 import com.leontg77.uhc.cmds.HealCommand;
 import com.leontg77.uhc.cmds.HealthCommand;
 import com.leontg77.uhc.cmds.HelpopCommand;
+import com.leontg77.uhc.cmds.HotbarCommand;
+import com.leontg77.uhc.cmds.InfoCommand;
 import com.leontg77.uhc.cmds.InvseeCommand;
 import com.leontg77.uhc.cmds.KickCommand;
 import com.leontg77.uhc.cmds.ListCommand;
@@ -73,8 +75,8 @@ import com.leontg77.uhc.cmds.MsCommand;
 import com.leontg77.uhc.cmds.MsgCommand;
 import com.leontg77.uhc.cmds.MuteCommand;
 import com.leontg77.uhc.cmds.NearCommand;
-import com.leontg77.uhc.cmds.InfoCommand;
 import com.leontg77.uhc.cmds.PmCommand;
+import com.leontg77.uhc.cmds.PregenCommand;
 import com.leontg77.uhc.cmds.PvPCommand;
 import com.leontg77.uhc.cmds.RandomCommand;
 import com.leontg77.uhc.cmds.RankCommand;
@@ -103,6 +105,7 @@ import com.leontg77.uhc.cmds.UnbanCommand;
 import com.leontg77.uhc.cmds.UnbanIPCommand;
 import com.leontg77.uhc.cmds.VoteCommand;
 import com.leontg77.uhc.cmds.WhitelistCommand;
+import com.leontg77.uhc.cmds.WorldCommand;
 import com.leontg77.uhc.listeners.BlockListener;
 import com.leontg77.uhc.listeners.EntityListener;
 import com.leontg77.uhc.listeners.LoginListener;
@@ -214,6 +217,8 @@ public class Main extends JavaPlugin {
 		getCommand("health").setExecutor(new HealthCommand());
 		getCommand("helpop").setExecutor(new HelpopCommand());
 		getCommand("hof").setExecutor(new HOFCommand());
+		getCommand("hotbar").setExecutor(new HotbarCommand());
+		getCommand("info").setExecutor(new InfoCommand());
 		getCommand("invsee").setExecutor(new InvseeCommand());
 		getCommand("kick").setExecutor(new KickCommand());
 		getCommand("list").setExecutor(new ListCommand());
@@ -222,8 +227,8 @@ public class Main extends JavaPlugin {
 		getCommand("msg").setExecutor(new MsgCommand());
 		getCommand("mute").setExecutor(new MuteCommand());
 		getCommand("near").setExecutor(new NearCommand());
-		getCommand("perma").setExecutor(new InfoCommand());
 		getCommand("pm").setExecutor(new PmCommand());
+		getCommand("pregen").setExecutor(new PregenCommand());
 		getCommand("pvp").setExecutor(new PvPCommand());
 		getCommand("random").setExecutor(new RandomCommand());
 		getCommand("rank").setExecutor(new RankCommand());
@@ -252,6 +257,7 @@ public class Main extends JavaPlugin {
 		getCommand("unbanip").setExecutor(new UnbanIPCommand());
 		getCommand("vote").setExecutor(new VoteCommand());
 		getCommand("whitelist").setExecutor(new WhitelistCommand());
+		getCommand("world").setExecutor(new WorldCommand());
 		
 		if (State.isState(State.LOBBY)) {
 			File playerData = new File(Bukkit.getWorlds().get(0).getWorldFolder(), "playerdata");
