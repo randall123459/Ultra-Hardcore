@@ -7,6 +7,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Difficulty;
 import org.bukkit.World;
 import org.bukkit.World.Environment;
+import org.bukkit.WorldBorder;
 import org.bukkit.WorldCreator;
 import org.bukkit.WorldType;
 import org.bukkit.command.Command;
@@ -104,7 +105,6 @@ public class WorldCommand implements CommandExecutor {
 				config.getWorlds().set("worlds." + world.getName() + ".seed", seed);
 				config.getWorlds().set("worlds." + world.getName() + ".environment", Environment.NORMAL.name());
 				config.getWorlds().set("worlds." + world.getName() + ".worldtype", worldtype.name());
-				config.getWorlds().set("worlds." + world.getName() + ".antistripmine", antistripmine);
 				config.saveWorlds();
 				
 				if (nether) {
@@ -132,7 +132,6 @@ public class WorldCommand implements CommandExecutor {
 					config.getWorlds().set("worlds." + world.getName() + ".seed", seed);
 					config.getWorlds().set("worlds." + world.getName() + ".environment", Environment.NETHER.name());
 					config.getWorlds().set("worlds." + world.getName() + ".worldtype", WorldType.NORMAL.name());
-					config.getWorlds().set("worlds." + world.getName() + ".antistripmine", antistripmine);
 					config.saveWorlds();
 				}
 				
@@ -146,13 +145,16 @@ public class WorldCommand implements CommandExecutor {
 					World endWorld = endCreator.createWorld();
 					endWorld.setDifficulty(Difficulty.HARD);
 					endWorld.setSpawnLocation(100, 49, 0);
+					
+					WorldBorder border = endWorld.getWorldBorder();
 
-					endWorld.getWorldBorder().setWarningDistance(0);
-					endWorld.getWorldBorder().setDamageAmount(0.1);
-					endWorld.getWorldBorder().setSize(radius - 1);
-					endWorld.getWorldBorder().setDamageBuffer(30);
-					endWorld.getWorldBorder().setCenter(0.5, 0.5);
-					endWorld.getWorldBorder().setWarningTime(60);
+					border.setWarningDistance(0);
+					border.setWarningTime(60);
+					border.setDamageAmount(0.1);
+					border.setDamageBuffer(30);
+					
+					border.setSize(radius - 1);
+					border.setCenter(0.5, 0.5);
 					
 					endWorld.save();
 					
@@ -161,7 +163,6 @@ public class WorldCommand implements CommandExecutor {
 					config.getWorlds().set("worlds." + endWorld.getName() + ".seed", seed);
 					config.getWorlds().set("worlds." + endWorld.getName() + ".environment", Environment.THE_END.name());
 					config.getWorlds().set("worlds." + endWorld.getName() + ".worldtype", WorldType.NORMAL.name());
-					config.getWorlds().set("worlds." + endWorld.getName() + ".antistripmine", antistripmine);
 					config.saveWorlds();
 				}
 			} else {
