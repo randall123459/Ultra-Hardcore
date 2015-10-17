@@ -31,16 +31,19 @@ public class HOFCommand implements CommandExecutor, TabCompleter {
 		Player player = (Player) sender;
 		String host = GameUtils.getCurrentHost();
 		
+		Settings settings = Settings.getInstance();
+		InvGUI inv = InvGUI.getInstance();
+		
 		if (args.length > 0) {
 			host = GameUtils.getHost(args[0]);
 		}
 		
-		if (Settings.getInstance().getHOF().getConfigurationSection(host) == null) {
+		if (settings.getHOF().getConfigurationSection(host) == null) {
 			sender.sendMessage(ChatColor.RED + "That player has not hosted any games here.");
 			return true;
 		}
 		
-		InvGUI.getInstance().openHOF(player, host);
+		inv.openHOF(player, host);
 		return true;
 	}
 	
@@ -51,14 +54,15 @@ public class HOFCommand implements CommandExecutor, TabCompleter {
 		}
 		
     	ArrayList<String> toReturn = new ArrayList<String>();
+		Settings settings = Settings.getInstance();
     	
 		if (args.length == 1) {
         	if (args[0].equals("")) {
-        		for (String type : Settings.getInstance().getHOF().getKeys(false)) {
+        		for (String type : settings.getHOF().getKeys(false)) {
     				toReturn.add(type);
         		}
         	} else {
-        		for (String type : Settings.getInstance().getHOF().getKeys(false)) {
+        		for (String type : settings.getHOF().getKeys(false)) {
         			if (type.toLowerCase().startsWith(args[0].toLowerCase())) {
         				toReturn.add(type);
         			}
