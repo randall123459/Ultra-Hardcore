@@ -6,7 +6,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import com.leontg77.uhc.InvGUI;
+import com.leontg77.uhc.inventory.InvGUI;
 
 /**
  * UHC command class.
@@ -23,7 +23,7 @@ public class UHCCommand implements CommandExecutor {
 		}
 		
 		Player player = (Player) sender;
-		InvGUI.getManager().openGameInfo(player);
+		InvGUI.getInstance().openGameInfo(player);
 		return true;
 	}
 }
