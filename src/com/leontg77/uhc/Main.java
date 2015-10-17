@@ -45,7 +45,6 @@ import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import com.leontg77.uhc.Spectator.SpecInfo;
-import com.leontg77.uhc.cmds.AboardCommand;
 import com.leontg77.uhc.cmds.ArenaCommand;
 import com.leontg77.uhc.cmds.BanCommand;
 import com.leontg77.uhc.cmds.BanIPCommand;
@@ -53,7 +52,7 @@ import com.leontg77.uhc.cmds.BoardCommand;
 import com.leontg77.uhc.cmds.BorderCommand;
 import com.leontg77.uhc.cmds.BroadcastCommand;
 import com.leontg77.uhc.cmds.ButcherCommand;
-import com.leontg77.uhc.cmds.ClearChatCommand;
+import com.leontg77.uhc.cmds.ChatCommand;
 import com.leontg77.uhc.cmds.ClearInvCommand;
 import com.leontg77.uhc.cmds.ClearXpCommand;
 import com.leontg77.uhc.cmds.ConfigCommand;
@@ -106,7 +105,6 @@ import com.leontg77.uhc.cmds.VoteCommand;
 import com.leontg77.uhc.cmds.WhitelistCommand;
 import com.leontg77.uhc.listeners.BlockListener;
 import com.leontg77.uhc.listeners.EntityListener;
-import com.leontg77.uhc.listeners.InventoryListener;
 import com.leontg77.uhc.listeners.LoginListener;
 import com.leontg77.uhc.listeners.PlayerListener;
 import com.leontg77.uhc.listeners.PortalListener;
@@ -116,6 +114,8 @@ import com.leontg77.uhc.scenario.ScenarioManager;
 import com.leontg77.uhc.utils.NumberUtils;
 import com.leontg77.uhc.utils.PermsUtils;
 import com.leontg77.uhc.utils.PlayerUtils;
+import com.leontg77.uhc.worlds.terrain.AntiStripmine;
+import com.leontg77.uhc.worlds.terrain.BiomeSwap;
 
 /**
  * Main class of the UHC plugin.
@@ -135,7 +135,7 @@ public class Main extends JavaPlugin {
 	public static HashMap<CommandSender, CommandSender> msg = new HashMap<CommandSender, CommandSender>();
 	
 	public static HashMap<Inventory, BukkitRunnable> invsee = new HashMap<Inventory, BukkitRunnable>();
-	public static HashMap<Inventory, BukkitRunnable> rules = new HashMap<Inventory, BukkitRunnable>();
+	public static HashMap<Inventory, BukkitRunnable> gameInfo = new HashMap<Inventory, BukkitRunnable>();
 	
 	public static HashMap<String, Integer> teamKills = new HashMap<String, Integer>();
 	public static HashMap<String, Integer> kills = new HashMap<String, Integer>();
@@ -166,14 +166,18 @@ public class Main extends JavaPlugin {
 		plugin = this;
 		settings.setup();
 
-		ScenarioManager.getInstance().setup();
 		AntiStripmine.getInstance().setup();
-		Scoreboards.getInstance().setup();
+		Announcer.getInstance().setup();
+		Arena.getInstance().setup();
+		
 		BiomeSwap.getInstance().setup();
 		Parkour.getInstance().setup();
-		Arena.getInstance().setup();
+		
 		Teams.getInstance().setup();
 		UBL.getInstance().reload();
+		
+		ScenarioManager.getInstance().setup();
+		Scoreboards.getInstance().setup();
 	    
 		recoverData();
 		addRecipes();
@@ -185,13 +189,11 @@ public class Main extends JavaPlugin {
 		
 		manager.registerEvents(new BlockListener(), this);
 		manager.registerEvents(new EntityListener(), this);
-		manager.registerEvents(new InventoryListener(), this);
 		manager.registerEvents(new LoginListener(), this);
 		manager.registerEvents(new PlayerListener(), this);
 		manager.registerEvents(new PortalListener(), this);
 		manager.registerEvents(new WorldListener(), this);
 
-		getCommand("aboard").setExecutor(new AboardCommand());
 		getCommand("arena").setExecutor(new ArenaCommand());
 		getCommand("ban").setExecutor(new BanCommand());
 		getCommand("banip").setExecutor(new BanIPCommand());
@@ -199,7 +201,7 @@ public class Main extends JavaPlugin {
 		getCommand("border").setExecutor(new BorderCommand());
 		getCommand("broadcast").setExecutor(new BroadcastCommand());
 		getCommand("butcher").setExecutor(new ButcherCommand());
-		getCommand("clearchat").setExecutor(new ClearChatCommand());
+		getCommand("clearchat").setExecutor(new ChatCommand());
 		getCommand("clearinv").setExecutor(new ClearInvCommand());
 		getCommand("clearxp").setExecutor(new ClearXpCommand());
 		getCommand("config").setExecutor(new ConfigCommand());
@@ -261,13 +263,21 @@ public class Main extends JavaPlugin {
 			int totalStatsfiles = 0;
 			
 			for (File dataFiles : playerData.listFiles()) {
-				dataFiles.delete();
-				totalDatafiles++;
+				try {
+					dataFiles.delete();
+					totalDatafiles++;
+				} catch (Exception e) {
+					logger.warning("Could not delete " + dataFiles.getName() + ".");
+				}
 			}
 			
 			for (File statsFiles : stats.listFiles()) {
-				statsFiles.delete();
-				totalStatsfiles++;
+				try {
+					statsFiles.delete();
+					totalStatsfiles++;
+				} catch (Exception e) {
+					logger.warning("Could not delete " + statsFiles.getName() + ".");
+				}
 			}
 
 			plugin.getLogger().info("Deleted " + totalDatafiles + " player data files.");
@@ -275,7 +285,7 @@ public class Main extends JavaPlugin {
 		}
 		
 		if (State.isState(State.INGAME)) {
-			Bukkit.getServer().getPluginManager().registerEvents(new SpecInfo(), this);
+			manager.registerEvents(new SpecInfo(), this);
 		}
 		
 		for (Player online : PlayerUtils.getPlayers()) {	
@@ -297,33 +307,23 @@ public class Main extends JavaPlugin {
 					}
 					
 					if (chestplate != null && chestplate.getType() == Material.LEATHER_HELMET) {
-						inv.setHelmet(rainbowArmor(online, chestplate));
+						inv.setChestplate(rainbowArmor(online, chestplate));
 					}
 					
 					if (leggings != null && leggings.getType() == Material.LEATHER_HELMET) {
-						inv.setHelmet(rainbowArmor(online, leggings));
+						inv.setLeggings(rainbowArmor(online, leggings));
 					}
 					
 					if (boots != null && boots.getType() == Material.LEATHER_HELMET) {
-						inv.setHelmet(rainbowArmor(online, boots));
+						inv.setBoots(rainbowArmor(online, boots));
 					}
 					
 					Game game = Game.getInstance();
 					
 					if (game.tabShowsHealthColor()) {
-						ChatColor color;
-
-						if (online.getHealth() < 6.66D) {
-							color = ChatColor.RED;
-						} 
-						else if (online.getHealth() < 13.33D) {
-							color = ChatColor.YELLOW;
-						} 
-						else {
-							color = ChatColor.GREEN;
-						}
+						String percentColor = NumberUtils.makePercent(online.getHealth()).substring(0, 2);
 					    
-					    online.setPlayerListName(color + online.getName());
+					    online.setPlayerListName(percentColor + online.getName());
 					}
 					
 					String uuid = online.getUniqueId().toString();
@@ -334,7 +334,7 @@ public class Main extends JavaPlugin {
 					}
 
 					Scoreboard sb = Bukkit.getScoreboardManager().getMainScoreboard();
-					int percent = NumberUtils.makePercent(online.getHealth());
+					int percent = Integer.parseInt(NumberUtils.makePercent(online.getHealth()).substring(2));
 					
 					Objective tabList = sb.getObjective("tabHealth");
 					Objective bellowName = sb.getObjective("nameHealth");
