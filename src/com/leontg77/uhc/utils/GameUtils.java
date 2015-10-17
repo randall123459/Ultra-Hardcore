@@ -81,6 +81,10 @@ public class GameUtils {
 				}
 			} 
 			else {
+				if (getTeamSize().startsWith("Open")) {
+					return "Open for visitors.";
+				} 
+				
 				return "Waiting for players...";
 			}
 		case SCATTER:
@@ -125,6 +129,36 @@ public class GameUtils {
 		} 
 		else {
 			return "cTo" + (game.getTeamSize() > 0 ? game.getTeamSize() : "X") + " ";
+		}
+	}
+	
+	/**
+	 * Get the teamsize in a more advanced string format.
+	 * 
+	 * @return The string in advanced format.
+	 */
+	public static String getAdvancedTeamSize() {
+		Game game = Game.getInstance();
+		
+		if (game.isFFA()) {
+			if (game.getTeamSize() == 1) {
+				return "Free for all ";
+			} 
+			else if (game.getTeamSize() == 0) {
+				return "No ";
+			}
+			else if (game.getTeamSize() == -1) {
+				return "Open ";
+			} 
+			else if (game.getTeamSize() == -2) {
+				return "";
+			}
+			else {
+				return "Random To" + (game.getTeamSize() > 0 ? game.getTeamSize() : "X") + " ";
+			}
+		} 
+		else {
+			return "Chosen To" + (game.getTeamSize() > 0 ? game.getTeamSize() : "X") + " ";
 		}
 	}
 	
