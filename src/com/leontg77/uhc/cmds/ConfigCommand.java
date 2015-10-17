@@ -54,17 +54,17 @@ public class ConfigCommand implements CommandExecutor, TabCompleter {
 				switch (type) {
 				case ABSORPTION:
 					if (args[1].equalsIgnoreCase("true")) {
-						PlayerUtils.broadcast(Main.prefix() + "Absorption has been enabled.");
+						PlayerUtils.broadcast(Main.PREFIX + "Absorption has been enabled.");
 						game.setAbsorption(true);
 					} else if (args[1].equalsIgnoreCase("false")) {
-						PlayerUtils.broadcast(Main.prefix() + "Absorption has been disabled.");
+						PlayerUtils.broadcast(Main.PREFIX + "Absorption has been disabled.");
 						game.setAbsorption(false);
 					} else {
 						sender.sendMessage(ChatColor.RED + "Absorption can only be true or false.");
 					}
 					break;
 				case BORDER:
-					BorderShrink border;
+					BorderShrink rorder;
 					
 					try {
 						border = BorderShrink.valueOf(args[1].toUpperCase());
@@ -73,15 +73,15 @@ public class ConfigCommand implements CommandExecutor, TabCompleter {
 						return true;
 					}
 					
-					PlayerUtils.broadcast(Main.prefix() + "Border will now shrink " + (border == BorderShrink.START ? "from" : "at") + " " + border.name().toLowerCase());
+					PlayerUtils.broadcast(Main.PREFIX + "Border will now shrink " + border.getPreText() + border.name().toLowerCase());
 					game.setBorderShrink(border);
 					break;
 				case DEATHLIGHTNING:
 					if (args[1].equalsIgnoreCase("true")) {
-						PlayerUtils.broadcast(Main.prefix() + "DeathLightning has been enabled.");
+						PlayerUtils.broadcast(Main.PREFIX + "DeathLightning has been enabled.");
 						game.setDeathLightning(true);
 					} else if (args[1].equalsIgnoreCase("false")) {
-						PlayerUtils.broadcast(Main.prefix() + "DeathLightning has been disabled.");
+						PlayerUtils.broadcast(Main.PREFIX + "DeathLightning has been disabled.");
 						game.setDeathLightning(false);
 					} else {
 						sender.sendMessage(ChatColor.RED + "DeathLightning can only be true or false.");
@@ -90,14 +90,14 @@ public class ConfigCommand implements CommandExecutor, TabCompleter {
 				case FFA:
 					if (args[1].equalsIgnoreCase("true")) {
 						game.setFFA(true);
-						PlayerUtils.broadcast(Main.prefix() + "The teamsize is now §a" + GameUtils.getTeamSize().trim() + "§7.");
+						PlayerUtils.broadcast(Main.PREFIX + "The teamsize is now §a" + GameUtils.getTeamSize().trim() + "§7.");
 						
 						for (Player online : PlayerUtils.getPlayers()) {
 							PacketUtils.setTabList(online);
 						}
 					} else if (args[1].equalsIgnoreCase("false")) {
 						game.setFFA(false);
-						PlayerUtils.broadcast(Main.prefix() + "The teamsize is now §a" + GameUtils.getTeamSize().trim() + "§7.");
+						PlayerUtils.broadcast(Main.PREFIX + "The teamsize is now §a" + GameUtils.getTeamSize().trim() + "§7.");
 						
 						for (Player online : PlayerUtils.getPlayers()) {
 							PacketUtils.setTabList(online);
@@ -116,15 +116,15 @@ public class ConfigCommand implements CommandExecutor, TabCompleter {
 						return true;
 					}
 					
-					PlayerUtils.broadcast(Main.prefix() + "Flint rates are now §a" + f + "%");
+					PlayerUtils.broadcast(Main.PREFIX + "Flint rates are now §a" + f + "%");
 					game.setFlintRates(f);
 					break;
 				case GHASTDROPS:
 					if (args[1].equalsIgnoreCase("true")) {
-						PlayerUtils.broadcast(Main.prefix() + "Ghasts now drop gold ingots.");
+						PlayerUtils.broadcast(Main.PREFIX + "Ghasts now drop gold ingots.");
 						game.setGhastDropGold(true);
 					} else if (args[1].equalsIgnoreCase("false")) {
-						PlayerUtils.broadcast(Main.prefix() + "Ghasts now drop ghast tears.");
+						PlayerUtils.broadcast(Main.PREFIX + "Ghasts now drop ghast tears.");
 						game.setGhastDropGold(false);
 					} else {
 						sender.sendMessage(ChatColor.RED + "GhastDrops can only be true or false.");
@@ -132,10 +132,10 @@ public class ConfigCommand implements CommandExecutor, TabCompleter {
 					break;
 				case GOLDENHEADS:
 					if (args[1].equalsIgnoreCase("true")) {
-						PlayerUtils.broadcast(Main.prefix() + "GoldenHeads has been enabled.");
+						PlayerUtils.broadcast(Main.PREFIX + "GoldenHeads has been enabled.");
 						game.setGoldenHeads(true);
 					} else if (args[1].equalsIgnoreCase("false")) {
-						PlayerUtils.broadcast(Main.prefix() + "GoldenHeads has been disabled.");
+						PlayerUtils.broadcast(Main.PREFIX + "GoldenHeads has been disabled.");
 						game.setGoldenHeads(false);
 					} else {
 						sender.sendMessage(ChatColor.RED + "GoldenHeads can only be true or false.");
@@ -151,7 +151,7 @@ public class ConfigCommand implements CommandExecutor, TabCompleter {
 						return true;
 					}
 					
-					PlayerUtils.broadcast(Main.prefix() + "GoldenHeads now heal §a" + heal + "§7 hearts.");
+					PlayerUtils.broadcast(Main.PREFIX + "GoldenHeads now heal §a" + heal + "§7 hearts.");
 					game.setGoldenHeadsHeal(heal);
 					break;
 				case HOST:
@@ -159,7 +159,7 @@ public class ConfigCommand implements CommandExecutor, TabCompleter {
 					Settings.getInstance().saveConfig();
 					
 					Scoreboards.getInstance().kills.setDisplayName("§4UHC §8- §7" + args[1]);
-					sender.sendMessage(Main.prefix() + "You set the host to §a" + args[1] + "§7.");
+					sender.sendMessage(Main.PREFIX + "You set the host to §a" + args[1] + "§7.");
 
 					for (Player online : PlayerUtils.getPlayers()) {
 						PacketUtils.setTabList(online);
@@ -169,7 +169,7 @@ public class ConfigCommand implements CommandExecutor, TabCompleter {
 					Settings.getInstance().getConfig().set("matchpost", args[1]);
 					Settings.getInstance().saveConfig();
 					
-					sender.sendMessage(Main.prefix() + "You set the matchpost to §a" + args[1] + "§7.");
+					sender.sendMessage(Main.PREFIX + "You set the matchpost to §a" + args[1] + "§7.");
 					break;
 				case MAXPLAYERS:
 					int max;
@@ -184,7 +184,7 @@ public class ConfigCommand implements CommandExecutor, TabCompleter {
 					Settings.getInstance().getConfig().set("maxplayers", max);
 					Settings.getInstance().saveConfig();
 
-					PlayerUtils.broadcast(Main.prefix() + "Max player slots are now §a" + max + "§7.");
+					PlayerUtils.broadcast(Main.PREFIX + "Max player slots are now §a" + max + "§7.");
 					break;
 				case MEETUP:
 					int meetup;
@@ -200,14 +200,14 @@ public class ConfigCommand implements CommandExecutor, TabCompleter {
 					Settings.getInstance().saveConfig();
 
 					Timers.meetup = meetup;
-					PlayerUtils.broadcast(Main.prefix() + "Meetup is now §a" + meetup + "§7 minutes in.");
+					PlayerUtils.broadcast(Main.PREFIX + "Meetup is now §a" + meetup + "§7 minutes in.");
 					break;
 				case NERFEDSTRENGTH:
 					if (args[1].equalsIgnoreCase("true")) {
-						PlayerUtils.broadcast(Main.prefix() + "Strength is now nerfed.");
+						PlayerUtils.broadcast(Main.PREFIX + "Strength is now nerfed.");
 						game.setNerfedStrength(true);
 					} else if (args[1].equalsIgnoreCase("false")) {
-						PlayerUtils.broadcast(Main.prefix() + "Strength is no longer nerfed.");
+						PlayerUtils.broadcast(Main.PREFIX + "Strength is no longer nerfed.");
 						game.setNerfedStrength(false);
 					} else {
 						sender.sendMessage(ChatColor.RED + "NerfedStrength can only be true or false.");
@@ -215,10 +215,10 @@ public class ConfigCommand implements CommandExecutor, TabCompleter {
 					break;
 				case NETHER:
 					if (args[1].equalsIgnoreCase("true")) {
-						PlayerUtils.broadcast(Main.prefix() + "Nether has been enabled.");
+						PlayerUtils.broadcast(Main.PREFIX + "Nether has been enabled.");
 						game.setNether(true);
 					} else if (args[1].equalsIgnoreCase("false")) {
-						PlayerUtils.broadcast(Main.prefix() + "Nether has been disabled.");
+						PlayerUtils.broadcast(Main.PREFIX + "Nether has been disabled.");
 						game.setNether(false);
 					} else {
 						sender.sendMessage(ChatColor.RED + "Nether can only be true or false.");
@@ -226,10 +226,10 @@ public class ConfigCommand implements CommandExecutor, TabCompleter {
 					break;
 				case NOTCHAPPLES:
 					if (args[1].equalsIgnoreCase("true")) {
-						PlayerUtils.broadcast(Main.prefix() + "NotchApples has been enabled.");
+						PlayerUtils.broadcast(Main.PREFIX + "NotchApples has been enabled.");
 						game.setNotchApples(true);
 					} else if (args[1].equalsIgnoreCase("false")) {
-						PlayerUtils.broadcast(Main.prefix() + "NotchApples has been disabled.");
+						PlayerUtils.broadcast(Main.PREFIX + "NotchApples has been disabled.");
 						game.setNotchApples(false);
 					} else {
 						sender.sendMessage(ChatColor.RED + "NotchApples can only be true or false.");
@@ -237,10 +237,10 @@ public class ConfigCommand implements CommandExecutor, TabCompleter {
 					break;
 				case PEARLDAMAGE:
 					if (args[1].equalsIgnoreCase("true")) {
-						PlayerUtils.broadcast(Main.prefix() + "PearlDamage has been enabled.");
+						PlayerUtils.broadcast(Main.PREFIX + "PearlDamage has been enabled.");
 						game.setPearlDamage(true);
 					} else if (args[1].equalsIgnoreCase("false")) {
-						PlayerUtils.broadcast(Main.prefix() + "PearlDamage has been disabled.");
+						PlayerUtils.broadcast(Main.PREFIX + "PearlDamage has been disabled.");
 						game.setPearlDamage(false);
 					} else {
 						sender.sendMessage(ChatColor.RED + "PearlDamage can only be true or false.");
@@ -260,7 +260,7 @@ public class ConfigCommand implements CommandExecutor, TabCompleter {
 					Settings.getInstance().saveConfig();
 
 					Timers.pvp = pvp;
-					PlayerUtils.broadcast(Main.prefix() + "PvP is now §a" + pvp + "§7 minutes in.");
+					PlayerUtils.broadcast(Main.PREFIX + "PvP is now §a" + pvp + "§7 minutes in.");
 					break;
 				case SCENARIOS:
 					StringBuilder bu = new StringBuilder();
@@ -272,7 +272,7 @@ public class ConfigCommand implements CommandExecutor, TabCompleter {
 					Settings.getInstance().getConfig().set("game.scenarios", ChatColor.translateAlternateColorCodes('&', bu.toString().trim()));
 					Settings.getInstance().saveConfig();
 
-					sender.sendMessage(Main.prefix() + "You set the scenarios to §a" + ChatColor.translateAlternateColorCodes('&', bu.toString().trim()) + "§7.");
+					sender.sendMessage(Main.PREFIX + "You set the scenarios to §a" + ChatColor.translateAlternateColorCodes('&', bu.toString().trim()) + "§7.");
 
 					for (Player online : PlayerUtils.getPlayers()) {
 						PacketUtils.setTabList(online);
@@ -288,15 +288,15 @@ public class ConfigCommand implements CommandExecutor, TabCompleter {
 						return true;
 					}
 					
-					PlayerUtils.broadcast(Main.prefix() + "Shear rates are now §a" + s + "%");
+					PlayerUtils.broadcast(Main.PREFIX + "Shear rates are now §a" + s + "%");
 					game.setShearRates(s);
 					break;
 				case SHEARS:
 					if (args[1].equalsIgnoreCase("true")) {
-						PlayerUtils.broadcast(Main.prefix() + "Shears has been enabled.");
+						PlayerUtils.broadcast(Main.PREFIX + "Shears has been enabled.");
 						game.setShears(true);
 					} else if (args[1].equalsIgnoreCase("false")) {
-						PlayerUtils.broadcast(Main.prefix() + "Shears has been disabled.");
+						PlayerUtils.broadcast(Main.PREFIX + "Shears has been disabled.");
 						game.setShears(false);
 					} else {
 						sender.sendMessage(ChatColor.RED + "Shears can only be true or false.");
@@ -313,7 +313,7 @@ public class ConfigCommand implements CommandExecutor, TabCompleter {
 					}
 					
 					State.setState(st);
-					sender.sendMessage(Main.prefix() + "You set the state to §a" + args[1] + "§7.");
+					sender.sendMessage(Main.PREFIX + "You set the state to §a" + args[1] + "§7.");
 					break;
 				case TEAMSIZE:
 					int tz;
@@ -326,7 +326,7 @@ public class ConfigCommand implements CommandExecutor, TabCompleter {
 					}
 					
 					game.setTeamSize(tz);
-					PlayerUtils.broadcast(Main.prefix() + "The teamsize is now §a" + GameUtils.getTeamSize().trim() + "§7.");
+					PlayerUtils.broadcast(Main.PREFIX + "The teamsize is now §a" + GameUtils.getTeamSize().trim() + "§7.");
 					
 					for (Player online : PlayerUtils.getPlayers()) {
 						PacketUtils.setTabList(online);
@@ -334,10 +334,10 @@ public class ConfigCommand implements CommandExecutor, TabCompleter {
 					break;
 				case TABCOLORS:
 					if (args[1].equalsIgnoreCase("true")) {
-						PlayerUtils.broadcast(Main.prefix() + "Tab will now have the color of your health.");
+						PlayerUtils.broadcast(Main.PREFIX + "Tab will now have the color of your health.");
 						game.setTabShowsHealthColor(true);
 					} else if (args[1].equalsIgnoreCase("false")) {
-						PlayerUtils.broadcast(Main.prefix() + "Tab will no longer have the color of your health.");
+						PlayerUtils.broadcast(Main.PREFIX + "Tab will no longer have the color of your health.");
 						game.setTabShowsHealthColor(false);
 						
 						for (Player online : PlayerUtils.getPlayers()) {
@@ -349,10 +349,10 @@ public class ConfigCommand implements CommandExecutor, TabCompleter {
 					break;
 				case HARDERCRAFTING:
 					if (args[1].equalsIgnoreCase("true")) {
-						PlayerUtils.broadcast(Main.prefix() + "HarderCrafting has been enabled.");
+						PlayerUtils.broadcast(Main.PREFIX + "HarderCrafting has been enabled.");
 						game.setGoldenMelonNeedsIngots(true);
 					} else if (args[1].equalsIgnoreCase("false")) {
-						PlayerUtils.broadcast(Main.prefix() + "HarderCrafting has been disabled.");
+						PlayerUtils.broadcast(Main.PREFIX + "HarderCrafting has been disabled.");
 						game.setGoldenMelonNeedsIngots(false);
 					} else {
 						sender.sendMessage(ChatColor.RED + "TheEnd can only be true or false.");
@@ -360,10 +360,10 @@ public class ConfigCommand implements CommandExecutor, TabCompleter {
 					break;
 				case THEEND:
 					if (args[1].equalsIgnoreCase("true")) {
-						PlayerUtils.broadcast(Main.prefix() + "TheEnd has been enabled.");
+						PlayerUtils.broadcast(Main.PREFIX + "TheEnd has been enabled.");
 						game.setTheEnd(true);
 					} else if (args[1].equalsIgnoreCase("false")) {
-						PlayerUtils.broadcast(Main.prefix() + "TheEnd has been disabled.");
+						PlayerUtils.broadcast(Main.PREFIX + "TheEnd has been disabled.");
 						game.setTheEnd(false);
 					} else {
 						sender.sendMessage(ChatColor.RED + "TheEnd can only be true or false.");
@@ -373,16 +373,16 @@ public class ConfigCommand implements CommandExecutor, TabCompleter {
 					Settings.getInstance().getConfig().set("game.world", args[1]);
 					Settings.getInstance().saveConfig();
 
-					sender.sendMessage(Main.prefix() + "You set the game world to §a" + args[1] + "§7.");
+					sender.sendMessage(Main.PREFIX + "You set the game world to §a" + args[1] + "§7.");
 					break;
 				case RR:
 					if (args[1].equalsIgnoreCase("true")) {
-						PlayerUtils.broadcast(Main.prefix() + "This is now an recorded round.");
+						PlayerUtils.broadcast(Main.PREFIX + "This is now an recorded round.");
 						game.setRR(true);
 						
 						Scoreboards.getInstance().kills.setDisplayName("§6" + game.getRRName());
 					} else if (args[1].equalsIgnoreCase("false")) {
-						PlayerUtils.broadcast(Main.prefix() + "This is no longer an recorded round.");
+						PlayerUtils.broadcast(Main.PREFIX + "This is no longer an recorded round.");
 						game.setRR(false);
 						
 						Scoreboards.getInstance().kills.setDisplayName("§4UHC §8- §7" + Settings.getInstance().getConfig().getString("game.host"));
@@ -391,7 +391,7 @@ public class ConfigCommand implements CommandExecutor, TabCompleter {
 					}
 					break;
 				case RRNAME:
-					sender.sendMessage(Main.prefix() + "You set the RR name to §a" + args[1].replaceAll("_", " ") + "§7.");
+					sender.sendMessage(Main.PREFIX + "You set the RR name to §a" + args[1].replaceAll("_", " ") + "§7.");
 					game.setRRName(args[1].replaceAll("_", " "));
 					
 					if (game.isRecordedRound()) {
