@@ -59,7 +59,7 @@ public class InvGUI {
 	 * 
 	 * @return The instance.
 	 */
-	public static InvGUI getManager() {
+	public static InvGUI getInstance() {
 		return manager;
 	}
 	

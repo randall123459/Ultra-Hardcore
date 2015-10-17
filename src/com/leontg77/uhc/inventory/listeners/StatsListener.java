@@ -1,4 +1,4 @@
-package com.leontg77.uhc.listeners;
+package com.leontg77.uhc.inventory.listeners;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -22,9 +22,9 @@ import org.bukkit.potion.PotionEffectType;
 
 import com.leontg77.uhc.Arena;
 import com.leontg77.uhc.Game;
-import com.leontg77.uhc.InvGUI;
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.Spectator;
+import com.leontg77.uhc.inventory.InvGUI;
 import com.leontg77.uhc.utils.PlayerUtils;
 
 /**
@@ -34,7 +34,7 @@ import com.leontg77.uhc.utils.PlayerUtils;
  * 
  * @author LeonTG77
  */
-public class InventoryListener implements Listener {
+public class StatsListener implements Listener {
 	
 	@EventHandler
 	public void onInventoryOpen(InventoryOpenEvent event) {
@@ -60,9 +60,9 @@ public class InventoryListener implements Listener {
 			Main.invsee.remove(inv);
 		}
 		
-		if (Main.rules.containsKey(inv)) {
-			Main.rules.get(inv).cancel();
-			Main.rules.remove(inv);
+		if (Main.gameInfo.containsKey(inv)) {
+			Main.gameInfo.get(inv).cancel();
+			Main.gameInfo.remove(inv);
 		}
 	}
 
@@ -83,6 +83,9 @@ public class InventoryListener implements Listener {
         }
         
 		Player player = (Player) event.getWhoClicked();
+		InvGUI manager = InvGUI.getInstance();
+		
+		Spectator spec = Spectator.getInstance();
 		Arena arena = Arena.getInstance();
 		
 		Inventory inv = event.getInventory();
@@ -99,9 +102,7 @@ public class InventoryListener implements Listener {
 			return;
 		}
 		
-		if (inv.getTitle().endsWith("'s Hall of Fame §8«")) {
-			InvGUI manager = InvGUI.getManager();
-			
+		if (inv.getTitle().contains("'s HoF, Page")) {
 			if (item.hasItemMeta() && item.getItemMeta().hasDisplayName()) {
 				if (item.getItemMeta().getDisplayName().equalsIgnoreCase("§aNext page")) {
 					manager.currentPage.put(player, manager.currentPage.get(player) + 1);
@@ -123,23 +124,35 @@ public class InventoryListener implements Listener {
 			return;
 		}
 		
-		if (Spectator.getManager().isSpectating(player)) {
+		if (spec.isSpectating(player)) {
 			if (inv.getTitle().equals("§8» §cPlayer Selector §8«")) {
-				if (!event.getCurrentItem().hasItemMeta() || !event.getCurrentItem().getItemMeta().hasDisplayName()) {
-					return;
-				}
-				
-				Player target = Bukkit.getServer().getPlayer(event.getCurrentItem().getItemMeta().getDisplayName().substring(2, event.getCurrentItem().getItemMeta().getDisplayName().length()));
-				
-				if (target == null) {
-					player.sendMessage(Main.PREFIX + "The player you clicked is not online.");
-				} 
-				else {
-					player.teleport(target);
-				}
-				
-				player.closeInventory();
 				event.setCancelled(true);
+				
+				if (item.hasItemMeta() && item.getItemMeta().hasDisplayName()) {
+					if (item.getItemMeta().getDisplayName().equalsIgnoreCase("§aNext page")) {
+						manager.currentPage.put(player, manager.currentPage.get(player) + 1);
+						player.openInventory(manager.pagesForPlayer.get(player).get(manager.currentPage.get(player)));
+						return;
+					}
+					
+					if (item.getItemMeta().getDisplayName().equalsIgnoreCase("§aPrevious page")) {
+						manager.currentPage.put(player, manager.currentPage.get(player) - 1); 
+						player.openInventory(manager.pagesForPlayer.get(player).get(manager.currentPage.get(player)));
+						return;
+					}
+					
+					Player target = Bukkit.getServer().getPlayer(item.getItemMeta().getDisplayName().substring(2));
+					
+					if (target == null) {
+						player.sendMessage(Main.PREFIX + "The player you clicked is not online.");
+					} 
+					else {
+						player.sendMessage(Main.PREFIX + "You teleported to §a" + target.getName() + "§7.");
+						player.teleport(target);
+					}
+					
+					player.closeInventory();
+				}
 				return;
 			}
 			
@@ -147,7 +160,7 @@ public class InventoryListener implements Listener {
 				if (event.isLeftClick()) {
 					ArrayList<Player> players = new ArrayList<Player>();
 					for (Player online : PlayerUtils.getPlayers()) {
-						if (!Spectator.getManager().isSpectating(online)) {
+						if (!Spectator.getInstance().isSpectating(online)) {
 							players.add(online);
 						}
 					}
@@ -165,7 +178,7 @@ public class InventoryListener implements Listener {
 					return;
 				}
 				
-				InvGUI.getManager().openSelector(player);
+				InvGUI.getInstance().openSelector(player);
 				event.setCancelled(true);
 				return;
 			}
@@ -194,7 +207,7 @@ public class InventoryListener implements Listener {
 				
 				for (Player online : PlayerUtils.getPlayers()) {
 					if (online.getWorld().getEnvironment() == Environment.NETHER) {
-						if (Spectator.getManager().isSpectating(online)) {
+						if (Spectator.getInstance().isSpectating(online)) {
 							continue;
 						}
 						
@@ -212,7 +225,7 @@ public class InventoryListener implements Listener {
 				
 				for (Player online : PlayerUtils.getPlayers()) {
 					if (online.getWorld().getEnvironment() == Environment.NETHER) {
-						if (Spectator.getManager().isSpectating(online)) {
+						if (Spectator.getInstance().isSpectating(online)) {
 							continue;
 						}
 						
