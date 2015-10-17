@@ -44,7 +44,7 @@ public abstract class Scenario {
 	 * <p>
 	 * Registers listeners if needed.
 	 */
-	public void enableScenario() {
+	public void enable() {
 		if (this instanceof Listener) {
 			Bukkit.getServer().getPluginManager().registerEvents((Listener) this, Main.plugin);
 		}
@@ -57,7 +57,7 @@ public abstract class Scenario {
 	 * <p>
 	 * Unregisters listeners if needed.
 	 */
-	public void disableScenario() {
+	public void disable() {
 		if (this instanceof Listener) {
 			HandlerList.unregisterAll((Listener) this);
 		}
