@@ -25,7 +25,7 @@ import com.leontg77.uhc.utils.PlayerUtils;
 
 public class ConfigCommand implements CommandExecutor, TabCompleter {
 
-	public boolean onCommand(CommandSender sender, Command cmd, String label, final String[] args) {
+	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		Game game = Game.getInstance();
 		
 		if (cmd.getName().equalsIgnoreCase("config")) {

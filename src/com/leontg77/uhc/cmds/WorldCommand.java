@@ -42,7 +42,7 @@ public class WorldCommand implements CommandExecutor {
 					return true;
 				}
 				
-				try {
+				try {erge
 					radius = Integer.parseInt(args[1]);
 				} catch (Exception e) {
 					sender.sendMessage(ChatColor.RED + "Invaild radius.");
