@@ -271,4 +271,19 @@ public class Game {
 	public String getHost() {
 		return settings.getConfig().getString("game.host");
 	}
+
+	public boolean tier2() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public boolean splash() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public String getAppleRates() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
