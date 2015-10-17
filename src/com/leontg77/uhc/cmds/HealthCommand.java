@@ -11,9 +11,15 @@ import com.leontg77.uhc.Main;
 import com.leontg77.uhc.scenario.ScenarioManager;
 import com.leontg77.uhc.utils.NumberUtils;
 
+/**
+ * Health command class.
+ * 
+ * @author LeonTG77
+ */
 public class HealthCommand implements CommandExecutor {
 
-	public boolean onCommand(CommandSender sender, Command cmd, String label, final String[] args) {
+	@Override
+	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		ScenarioManager scen = ScenarioManager.getInstance();
 		
 		if (scen.getScenario("Paranoia").isEnabled() || scen.getScenario("TeamHealth").isEnabled()) {
