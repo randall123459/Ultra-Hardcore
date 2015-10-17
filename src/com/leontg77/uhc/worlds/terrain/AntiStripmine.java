@@ -1,4 +1,4 @@
-package com.leontg77.uhc;
+package com.leontg77.uhc.worlds.terrain;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -28,6 +28,8 @@ import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
+
+import com.leontg77.uhc.Main;
 
 @SuppressWarnings("deprecation")
 public class AntiStripmine {
