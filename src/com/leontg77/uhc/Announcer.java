@@ -1,5 +1,7 @@
 package com.leontg77.uhc;
 
+import java.util.Random;
+
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.leontg77.uhc.utils.PlayerUtils;
@@ -34,7 +36,9 @@ public class Announcer {
 			}
 		};
 		
-		task.runTaskTimer(Main.plugin, 12000, 12000);
+		Random rand = new Random();
+		
+		task.runTaskTimer(Main.plugin, 1200, 1200 + rand.nextInt(6000));
 		
 		Main.plugin.getLogger().info("The announcer has been setup.");
 	}
