@@ -11,43 +11,49 @@ import com.leontg77.uhc.Main;
 import com.leontg77.uhc.Spectator;
 import com.leontg77.uhc.utils.PlayerUtils;
 
+/**
+ * Near command class.
+ * 
+ * @author LeonTG77
+ */
 public class NearCommand implements CommandExecutor {
 
+	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (!(sender instanceof Player)) {
-			sender.sendMessage(ChatColor.RED + "Only players can check whos near them.");
+			sender.sendMessage(ChatColor.RED + "Only players can see nearby players.");
+			return true;
+		}
+
+		Spectator spec = Spectator.getInstance();
+		Player player = (Player) sender;
+		
+		if (!sender.hasPermission("uhc.invsee") && !spec.isSpectating(player)) {
+			player.sendMessage(Main.NO_PERM_MSG);
 			return true;
 		}
 		
-		Player player = (Player) sender;
+		StringBuilder nearby = new StringBuilder("");
 		
-		if (cmd.getName().equalsIgnoreCase("near")) {
-			if (player.hasPermission("uhc.near") || Spectator.getInstance().isSpectating(sender.getName())) {
-				StringBuilder nearby = new StringBuilder("");
-				
-				for (Entity near : PlayerUtils.getNearby(player.getLocation(), 200)) {
-					if (near instanceof Player) {
-						if (!player.canSee((Player) near)) {
-							continue;
-						}
-						
-						if (nearby.length() > 0) {
-							nearby.append("§8, ");
-						}
-
-						Player nearb = (Player) near;
-						if (nearb != player) {
-							nearby.append("§7" + nearb.getName() + "§f(§c" + ((int) player.getLocation().distance(nearb.getLocation())) + "m§f)§8");
-						}
-					}
+		for (Entity near : PlayerUtils.getNearby(player.getLocation(), 200)) {
+			if (near instanceof Player) {
+				if (!player.canSee((Player) near)) {
+					continue;
 				}
 				
-				player.sendMessage(Main.prefix() + "Players nearby:");
-				player.sendMessage(nearby.length() > 0 ? nearby.toString().trim() : "There are no players nearby.");
-			} else {
-				player.sendMessage(ChatColor.RED + "You do not have access to that command.");
+				if (nearby.length() > 0) {
+					nearby.append("§8, ");
+				}
+
+				Player nearb = (Player) near;
+				if (nearb != player) {
+					nearby.append("§7" + nearb.getName() + "§f(§c" + ((int) player.getLocation().distance(nearb.getLocation())) + "m§f)§8");
+				}
 			}
 		}
+		
+		player.sendMessage(Main.PREFIX + "Players nearby:");
+		player.sendMessage("§8» §7" + (nearby.length() > 0 ? nearby.toString().trim() : "There are no players nearby."));
 		return true;
 	}
 }
