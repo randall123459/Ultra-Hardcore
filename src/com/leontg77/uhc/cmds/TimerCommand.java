@@ -16,12 +16,18 @@ import com.leontg77.uhc.utils.DateUtils;
 import com.leontg77.uhc.utils.PacketUtils;
 import com.leontg77.uhc.utils.PlayerUtils;
 
+/**
+ * Timer command class.
+ * 
+ * @author LeonTG77
+ */
 public class TimerCommand implements CommandExecutor, TabCompleter {
 	private BukkitRunnable run = null;
 	private boolean countdown = true;
 	private String message;
 	private int ticks;
 	
+	@Override
 	public boolean onCommand(final CommandSender sender, Command cmd, String label, String[] args) {
 		if (!sender.hasPermission("uhc.timer")) {
 			sender.sendMessage(Main.NO_PERM_MSG);
@@ -103,6 +109,7 @@ public class TimerCommand implements CommandExecutor, TabCompleter {
 		return true;
 	}
 	
+	@Override
 	public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {
 		if (!sender.hasPermission("uhc.timer")) {
 			return null;
@@ -113,7 +120,6 @@ public class TimerCommand implements CommandExecutor, TabCompleter {
     	if (args.length == 1) {
         	ArrayList<String> types = new ArrayList<String>();
         	types.add("cancel");
-        	types.add("");
         	
         	if (args[0].equals("")) {
         		for (String type : types) {
@@ -128,7 +134,7 @@ public class TimerCommand implements CommandExecutor, TabCompleter {
         	}
         }
     	
-    	if (args.length > 1) {
+    	if (args.length == 2) {
         	ArrayList<String> types = new ArrayList<String>();
         	types.add("&7The game is starting in &8»&a");
         	
