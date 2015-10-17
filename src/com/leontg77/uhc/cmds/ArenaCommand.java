@@ -50,15 +50,6 @@ public class ArenaCommand implements CommandExecutor {
 					return true;
 				} else if (args[0].equalsIgnoreCase("board")) {
 					if (game.arenaBoard()) {
-						PlayerUtils.broadcast(Main.PREFIX + "The arena board has been enabled.");
-						arena.arenaKills.setDisplaySlot(DisplaySlot.SIDEBAR);
-						
-						game.setPregameBoard(false);
-						game.setArenaBoard(true);
-
-						arena.setScore("§8» §a§lPvE", 1);
-						arena.setScore("§8» §a§lPvE", 0);
-					} else {
 						for (String entry : arena.board.getEntries()) {
 							arena.resetScore(entry);
 						}
@@ -68,6 +59,15 @@ public class ArenaCommand implements CommandExecutor {
 						
 						Scoreboards board = Scoreboards.getInstance();
 						board.kills.setDisplaySlot(DisplaySlot.SIDEBAR);
+					} else {
+						PlayerUtils.broadcast(Main.PREFIX + "The arena board has been enabled.");
+						arena.arenaKills.setDisplaySlot(DisplaySlot.SIDEBAR);
+						
+						game.setPregameBoard(false);
+						game.setArenaBoard(true);
+
+						arena.setScore("§8» §a§lPvE", 1);
+						arena.setScore("§8» §a§lPvE", 0);
 					}
 					return true;
 				}
