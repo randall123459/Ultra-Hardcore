@@ -23,7 +23,9 @@ public class UHCCommand implements CommandExecutor {
 		}
 		
 		Player player = (Player) sender;
-		InvGUI.getInstance().openGameInfo(player);
+		InvGUI inv = InvGUI.getInstance();
+		
+		inv.openGameInfo(player);
 		return true;
 	}
 }
