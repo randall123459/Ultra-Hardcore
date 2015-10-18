@@ -8,6 +8,7 @@ import org.bukkit.WorldBorder;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.utils.PlayerUtils;
@@ -22,7 +23,23 @@ public class BorderCommand implements CommandExecutor {
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (args.length == 0) {
+			if (sender instanceof Player) {
+				Player player = (Player) sender;
+				World world = player.getWorld();
+				
+				WorldBorder border = world.getWorldBorder();
+				int size = (int) border.getSize();
+				
+				sender.sendMessage(Main.PREFIX + "The border is currently: §a" + size + "x" + size);
+				return true;
+			}
+			
 			sender.sendMessage(Main.PREFIX + "Usage: /border <world> [size]");
+			return true;
+		}
+		
+		if (!sender.hasPermission("uhc.border")) {
+			sender.sendMessage(Main.NO_PERM_MSG);
 			return true;
 		}
 		
@@ -38,7 +55,7 @@ public class BorderCommand implements CommandExecutor {
 		if (args.length == 1) {
 			int size = (int) border.getSize();
 			
-			sender.sendMessage(Main.PREFIX + "The borders in '§6" + world.getName() + "§7' are currently: §a" + size + "x" + size);
+			sender.sendMessage(Main.PREFIX + "The border in '§6" + world.getName() + "§7' is currently: §a" + size + "x" + size);
 			return true;
 		}
 		
