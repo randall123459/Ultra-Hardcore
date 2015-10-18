@@ -117,6 +117,7 @@ import com.leontg77.uhc.scenario.ScenarioManager;
 import com.leontg77.uhc.utils.NumberUtils;
 import com.leontg77.uhc.utils.PermsUtils;
 import com.leontg77.uhc.utils.PlayerUtils;
+import com.leontg77.uhc.worlds.Manager;
 import com.leontg77.uhc.worlds.terrain.AntiStripmine;
 import com.leontg77.uhc.worlds.terrain.BiomeSwap;
 
@@ -182,6 +183,8 @@ public class Main extends JavaPlugin {
 		ScenarioManager.getInstance().setup();
 		Scoreboards.getInstance().setup();
 	    
+		Manager.getInstance().loadWorlds();
+		
 		recoverData();
 		addRecipes();
 
@@ -204,7 +207,7 @@ public class Main extends JavaPlugin {
 		getCommand("border").setExecutor(new BorderCommand());
 		getCommand("broadcast").setExecutor(new BroadcastCommand());
 		getCommand("butcher").setExecutor(new ButcherCommand());
-		getCommand("clearchat").setExecutor(new ChatCommand());
+		getCommand("chat").setExecutor(new ChatCommand());
 		getCommand("clearinv").setExecutor(new ClearInvCommand());
 		getCommand("clearxp").setExecutor(new ClearXpCommand());
 		getCommand("config").setExecutor(new ConfigCommand());
@@ -233,7 +236,6 @@ public class Main extends JavaPlugin {
 		getCommand("random").setExecutor(new RandomCommand());
 		getCommand("rank").setExecutor(new RankCommand());
 		getCommand("reply").setExecutor(new ReplyCommand());
-		getCommand("rules").setExecutor(new UHCCommand());
 		getCommand("scenario").setExecutor(new ScenarioCommand());
 		getCommand("sethealth").setExecutor(new SethealthCommand());
 		getCommand("setmaxhealth").setExecutor(new SetmaxhealthCommand());
@@ -253,6 +255,7 @@ public class Main extends JavaPlugin {
 		getCommand("teamloc").setExecutor(new TlCommand());
 		getCommand("tp").setExecutor(new TpCommand());
 		getCommand("tps").setExecutor(new TpsCommand());
+		getCommand("uhc").setExecutor(new UHCCommand());
 		getCommand("unban").setExecutor(new UnbanCommand());
 		getCommand("unbanip").setExecutor(new UnbanIPCommand());
 		getCommand("vote").setExecutor(new VoteCommand());
@@ -312,15 +315,15 @@ public class Main extends JavaPlugin {
 						inv.setHelmet(rainbowArmor(online, hemlet));
 					}
 					
-					if (chestplate != null && chestplate.getType() == Material.LEATHER_HELMET) {
+					if (chestplate != null && chestplate.getType() == Material.LEATHER_CHESTPLATE) {
 						inv.setChestplate(rainbowArmor(online, chestplate));
 					}
 					
-					if (leggings != null && leggings.getType() == Material.LEATHER_HELMET) {
+					if (leggings != null && leggings.getType() == Material.LEATHER_LEGGINGS) {
 						inv.setLeggings(rainbowArmor(online, leggings));
 					}
 					
-					if (boots != null && boots.getType() == Material.LEATHER_HELMET) {
+					if (boots != null && boots.getType() == Material.LEATHER_BOOTS) {
 						inv.setBoots(rainbowArmor(online, boots));
 					}
 					
@@ -518,28 +521,30 @@ public class Main extends JavaPlugin {
 		int green = rain[1];
 		int red = rain[2];		
 
-		if (red == 255 && blue == 0) {
-			green++;
-		}
+		if (item.getType() == Material.LEATHER_HELMET) {
+			if (red == 255 && blue == 0) {
+				green++;
+			}
+				
+			if (green == 255 && blue == 0) {
+				red--;
+			}
 			
-		if (green == 255 && blue == 0) {
-			red--;
-		}
-		
-		if (green == 255 && red == 0) {
-			blue++;
-		}
-			
-		if (blue == 255 && red == 0) {
-			green--;
-		}
-			
-		if (green == 0 && blue == 255) {
-			red++;
-		}
-			
-		if (green == 0 && red == 255) {
-			blue--;
+			if (green == 255 && red == 0) {
+				blue++;
+			}
+				
+			if (blue == 255 && red == 0) {
+				green--;
+			}
+				
+			if (green == 0 && blue == 255) {
+				red++;
+			}
+				
+			if (green == 0 && red == 255) {
+				blue--;
+			}
 		}
 			
 		rainbow.put(player, new int[] { blue, green, red });
