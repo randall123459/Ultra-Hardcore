@@ -38,7 +38,7 @@ public class PregenCommand implements CommandExecutor {
 			return true;
 		}
 		
-		World world = Bukkit.getServer().getWorld(args[0]);
+		World world = Bukkit.getSergrver().getWorld(args[0]);
 		
 		if (world == null) {
 			sender.sendMessage(ChatColor.RED + args[0] + " is not an world.");
