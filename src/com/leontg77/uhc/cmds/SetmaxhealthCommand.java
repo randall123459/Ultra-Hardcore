@@ -56,7 +56,7 @@ public class SetmaxhealthCommand implements CommandExecutor {
 			Player player = (Player) sender;
 			
 			player.setMaxHealth(health);
-			player.sendMessage(Main.PREFIX + "You set your max health to §6" + NumberUtils.makePercent(health));
+			player.sendMessage(Main.PREFIX + "You set your max health to §6" + NumberUtils.makePercent(health) + "%");
 			return true;
 		}
 		
@@ -65,19 +65,19 @@ public class SetmaxhealthCommand implements CommandExecutor {
 				online.setMaxHealth(health);
 			}
 			
-			PlayerUtils.broadcast(Main.PREFIX + "All players max health was set to §6" + NumberUtils.makePercent(health));
+			PlayerUtils.broadcast(Main.PREFIX + "All players max health was set to §6" + NumberUtils.makePercent(health) + "%");
 			return true;
 		}
 		
 		Player target = Bukkit.getServer().getPlayer(args[1]);
 		
 		if (target == null) {
-			sender.sendMessage(ChatColor.RED + "That player is not online.");
+			sender.sendMessage(ChatColor.RED + args[1] + " is not online.");
 			return true;
 		}
 
-		sender.sendMessage(Main.PREFIX + "You set §6" + target.getName() + "'s §7max health to §6" + NumberUtils.makePercent(health));
-		target.sendMessage(Main.PREFIX + "Your max health was set to §6" + NumberUtils.makePercent(health));
+		sender.sendMessage(Main.PREFIX + "You set §6" + target.getName() + "'s §7max health to §6" + NumberUtils.makePercent(health) + "%");
+		target.sendMessage(Main.PREFIX + "Your max health was set to §6" + NumberUtils.makePercent(health) + "%");
 		target.setMaxHealth(health);
 		return true;
 	}
