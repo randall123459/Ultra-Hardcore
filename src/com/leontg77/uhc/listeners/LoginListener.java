@@ -95,10 +95,10 @@ public class LoginListener implements Listener {
 			} else {
 				PlayerUtils.broadcast("§8[§a+§8] §7" + player.getName() + " has joined.");
 				
-				if (user.hasntBeenWelcomed()) {
+				if (user.isNew()) {
 					File f = new File(plugin.getDataFolder() + File.separator + "users" + File.separator);
 					
-					PlayerUtils.broadcast(Main.PREFIX + "Welcome §6" + player.getName() + " §7to the server! [§a" + f.listFiles().length + "§7]");
+					PlayerUtils.broadcast(Main.PREFIX + "Welcome §6" + player.getName() + " §7to the server! §8[§a#" + f.listFiles().length + "§8]");
 				}
 			}
 		}
