@@ -147,6 +147,10 @@ public class PlayerListener implements Listener {
 		        board.resetScore(player.getName());
 			}
 			
+			if (deathMessage == null) {
+				return;
+			}
+			
 			new BukkitRunnable() {
 				public void run() {
 					for (Player online : PlayerUtils.getPlayers()) {
@@ -164,57 +168,59 @@ public class PlayerListener implements Listener {
 			board.setScore(killer.getName(), board.getScore(killer.getName()) + 1);
 		}
 		
-		if (deathMessage.contains(killer.getName()) && (deathMessage.contains("slain") || deathMessage.contains("shot"))) {
-			ItemStack item = killer.getItemInHand();
-			
-			if (!item.hasItemMeta() && !item.getItemMeta().hasDisplayName()) {
-				return;
-			}
-			
-			String name = item.getItemMeta().getDisplayName();
-			
-			ComponentBuilder builder = new ComponentBuilder("§8» §r" + deathMessage.replace("[" + name + "]", ""));
-			StringBuilder colored = new StringBuilder();
-			
-			if (killer.getItemInHand().getEnchantments().isEmpty()) {
-				for (String entry : name.split(" ")) {
-					colored.append("§o" + entry).append(" ");
+		if (deathMessage != null) {
+			if (deathMessage.contains(killer.getName()) && (deathMessage.contains("slain") || deathMessage.contains("shot"))) {
+				ItemStack item = killer.getItemInHand();
+				
+				if (!item.hasItemMeta() && !item.getItemMeta().hasDisplayName()) {
+					return;
 				}
 				
-				builder.append("§f[" + colored.toString().trim() + "§f]");
+				String name = item.getItemMeta().getDisplayName();
+				
+				ComponentBuilder builder = new ComponentBuilder("§8» §r" + deathMessage.replace("[" + name + "]", ""));
+				StringBuilder colored = new StringBuilder();
+				
+				if (killer.getItemInHand().getEnchantments().isEmpty()) {
+					for (String entry : name.split(" ")) {
+						colored.append("§o" + entry).append(" ");
+					}
+					
+					builder.append("§f[" + colored.toString().trim() + "§f]");
+				} else {
+					for (String entry : name.split(" ")) {
+						colored.append("§b§o" + entry).append(" ");
+					}
+					
+					builder.append("§b[" + colored.toString().trim() + "§b]");
+				}
+				
+				builder.event(new HoverEvent(HoverEvent.Action.SHOW_ITEM, new BaseComponent[] {new TextComponent(NameUtils.convertToJson(item))}));
+				final BaseComponent[] result = builder.create();
+				
+				new BukkitRunnable() {
+					public void run() {
+						for (Player online : PlayerUtils.getPlayers()) {
+							online.spigot().sendMessage(result);
+						}
+					}
+				}.runTaskLater(Main.plugin, 1);
+				
+				Bukkit.getLogger().info("§8» §f" + event.getDeathMessage());
+				
+				event.setDeathMessage(null);
 			} else {
-				for (String entry : name.split(" ")) {
-					colored.append("§b§o" + entry).append(" ");
-				}
+				new BukkitRunnable() {
+					public void run() {
+						for (Player online : PlayerUtils.getPlayers()) {
+							online.sendMessage("§8» §f" + deathMessage);
+						}
+					}
+				}.runTaskLater(Main.plugin, 1);
 				
-				builder.append("§b[" + colored.toString().trim() + "§b]");
+				Bukkit.getLogger().info("§8» §f" + deathMessage);
+				event.setDeathMessage(null);
 			}
-			
-			builder.event(new HoverEvent(HoverEvent.Action.SHOW_ITEM, new BaseComponent[] {new TextComponent(NameUtils.convertToJson(item))}));
-			final BaseComponent[] result = builder.create();
-			
-			new BukkitRunnable() {
-				public void run() {
-					for (Player online : PlayerUtils.getPlayers()) {
-						online.spigot().sendMessage(result);
-					}
-				}
-			}.runTaskLater(Main.plugin, 1);
-			
-			Bukkit.getLogger().info("§8» §f" + event.getDeathMessage());
-			
-			event.setDeathMessage(null);
-		} else {
-			new BukkitRunnable() {
-				public void run() {
-					for (Player online : PlayerUtils.getPlayers()) {
-						online.sendMessage("§8» §f" + deathMessage);
-					}
-				}
-			}.runTaskLater(Main.plugin, 1);
-			
-			Bukkit.getLogger().info("§8» §f" + deathMessage);
-			event.setDeathMessage(null);
 		}
 		
 		if (game.isRecordedRound()) {
