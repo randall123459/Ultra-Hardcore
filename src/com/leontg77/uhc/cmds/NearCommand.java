@@ -33,27 +33,28 @@ public class NearCommand implements CommandExecutor {
 			return true;
 		}
 		
-		StringBuilder nearby = new StringBuilder("");
+		StringBuilder nearList = new StringBuilder("");
 		
 		for (Entity near : PlayerUtils.getNearby(player.getLocation(), 200)) {
 			if (near instanceof Player) {
-				if (!player.canSee((Player) near)) {
+				Player nearby = (Player) near;
+				
+				if (!player.canSee(nearby)) {
 					continue;
 				}
 				
-				if (nearby.length() > 0) {
-					nearby.append("§8, ");
+				if (nearList.length() > 0) {
+					nearList.append("§8, ");
 				}
-
-				Player nearb = (Player) near;
-				if (nearb != player) {
-					nearby.append("§7" + nearb.getName() + "§f(§c" + ((int) player.getLocation().distance(nearb.getLocation())) + "m§f)§8");
+				
+				if (nearby != player) {
+					nearList.append("§a" + nearby.getName() + "§7(§c" + ((int) player.getLocation().distance(nearby.getLocation())) + "m§7)§a");
 				}
 			}
 		}
 		
-		player.sendMessage(Main.PREFIX + "Players nearby:");
-		player.sendMessage("§8» §7" + (nearby.length() > 0 ? nearby.toString().trim() : "There are no players nearby."));
+		player.sendMessage(Main.PREFIX + "Nearby players:");
+		player.sendMessage("§8» §7" + (nearList.length() > 0 ? nearList.toString().trim() : "There are no players nearby."));
 		return true;
 	}
 }
