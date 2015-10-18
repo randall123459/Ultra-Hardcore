@@ -3,6 +3,7 @@ package com.leontg77.uhc.utils;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.TravelAgent;
+import org.bukkit.World.Environment;
 import org.bukkit.WorldBorder;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -45,7 +46,9 @@ public class LocationUtils {
 	 * @return The highest block.
 	 */
 	public static Location getHighestBlock(Location loc) {
-		for (int i = 255; i >= 0; i--) {
+		int highest = loc.getWorld().getEnvironment() == Environment.NETHER ? 127 : 255;
+		
+		for (int i = highest; i >= 0; i--) {
 			if (loc.getWorld().getBlockAt(loc.getBlockX(), i, loc.getBlockZ()).getType() != Material.AIR) {
 				return loc.getWorld().getBlockAt(loc.getBlockX(), i, loc.getBlockZ()).getLocation();
 			}
