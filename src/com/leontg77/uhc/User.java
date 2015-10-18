@@ -34,6 +34,8 @@ public class User {
 	
 	private FileConfiguration config;
 	private File file;
+    
+    private boolean creating = false;
 	
 	/**
 	 * Gets the data of the given player.
@@ -72,8 +74,6 @@ public class User {
         	plugin.getDataFolder().mkdir();
         }
         
-        boolean creating = false;
-        
         File folder = new File(plugin.getDataFolder() + File.separator + "users" + File.separator);
         
         if (!folder.exists()) {
@@ -107,11 +107,8 @@ public class User {
         	
         	config.set("firstjoined", new Date().getTime());
         	config.set("lastlogin", new Date().getTime());
-        	config.set("lastlogoff", -1);
+        	config.set("lastlogoff", -1l);
         	config.set("rank", Rank.USER.name());
-        	
-        	config.set("new.unique", folder.listFiles());
-        	config.set("new.hasbeenwelcomed", false);
         	
 			config.set("muted.status", false);
 			config.set("muted.reason", "NOT_MUTED");
@@ -130,16 +127,8 @@ public class User {
 	 * 
 	 * @return True if he hasn't, false otherwise.
 	 */
-	public boolean hasntBeenWelcomed() {
-		boolean joined = config.getBoolean("new.hasbeenwelcomed", true);
-		
-		if (joined) {
-            return false;
-        } else {
-        	config.set("new.hasbeenwelcomed", true);
-        	saveFile();
-			return true;
-        }
+	public boolean isNew() {
+		return creating;
 	}
 	
 	/**
