@@ -1,5 +1,9 @@
 package com.leontg77.uhc.utils;
 
+import static com.leontg77.uhc.Main.plugin;
+
+import java.io.File;
+
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.PermissionAttachment;
 
@@ -22,6 +26,20 @@ public class PermsUtils {
 	 * @param player the player.
 	 */
 	public static void addPermissions(Player player) {
+		File folder = new File(plugin.getDataFolder() + File.separator + "users" + File.separator);
+        boolean found = false;
+		
+		for (File file : folder.listFiles()) {
+			if (file.getName().startsWith(player.getUniqueId().toString())) {
+				found = true;
+				break;
+			}
+		}
+		
+		if (!found) {
+			return;
+		}
+		
 		if (Main.permissions.get(player.getName()) == null) {
 			Main.permissions.put(player.getName(), player.addAttachment(Main.plugin));
 		}
