@@ -21,6 +21,7 @@ public class KickCommand implements CommandExecutor {
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (!sender.hasPermission("uhc.kick")) {
 			sender.sendMessage(Main.NO_PERM_MSG);
+			return true;
 		}
 		
 		if (args.length < 2) {
