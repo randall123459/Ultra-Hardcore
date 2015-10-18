@@ -26,9 +26,9 @@ commands:
     description: Kills all hostile mobs.
   config:
     description: Change the config settings.
-  clearchat:
-    description: Clear the chat.
-    aliases: [cc]
+  chat:
+    description: Manage the chat.
+    aliases: [c]
   clearinv:
     description: Clear someones inv.
     aliases: [clear, clearinv, ci]
@@ -92,9 +92,6 @@ commands:
   reply:
     description: Reply to your latest msg.
     aliases: [r]
-  rules:
-    description: View the game information.
-    aliases: [uhc, info]
   scenario:
     description: Enable and disable scenarios
     aliases: [scen]
@@ -140,6 +137,9 @@ commands:
     aliases: [lag]
   tp:
     description: Makes you able to teleport as a spectator.
+  uhc:
+    description: View the game information.
+    aliases: [game]
   unban:
     description: Unban a player.
   unbanip:
@@ -152,6 +152,7 @@ commands:
     aliases: [wl]
   world:
     description: Create and manage worlds.
+    aliases: [w, mv]
 # Scenario Commands.
   target:
     description: View your assassins target.
