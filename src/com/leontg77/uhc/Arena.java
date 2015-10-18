@@ -12,6 +12,8 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.World.Environment;
+import org.bukkit.WorldType;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
@@ -28,6 +30,7 @@ import org.bukkit.scoreboard.Team;
 import com.leontg77.uhc.listeners.ArenaListener;
 import com.leontg77.uhc.utils.PlayerUtils;
 import com.leontg77.uhc.utils.ScatterUtils;
+import com.leontg77.uhc.worlds.Manager;
 
 /**
  * PvP Arena class.
@@ -188,42 +191,27 @@ public class Arena {
 		}
 		
 		PlayerUtils.broadcast(Main.PREFIX + "The arena is resetting, lag incoming.");
+		Manager manager = Manager.getInstance();
 		
-		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "mv delete arena");
-		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "mvconfirm");
+		World world = Bukkit.getServer().getWorld("arena");
 		
-		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "mvcreate arena normal -s " + seeds.get(new Random().nextInt(seeds.size())));
+		manager.deleteWorld(world);
+		manager.createWorld("arena", 200, seeds.get(new Random().nextInt(seeds.size())), Environment.NORMAL, WorldType.NORMAL);
 		
-		Bukkit.getScheduler().runTaskLater(Main.plugin, new Runnable() {
-			public void run() {
-				PlayerUtils.broadcast(Main.PREFIX + "World reset done, setting up borders.");
-				
-				World world = Bukkit.getServer().getWorld("arena");
-				
-				world.getWorldBorder().setSize(400);
-				world.getWorldBorder().setCenter(0.0, 0.0);
-				world.getWorldBorder().setWarningDistance(0);
-				world.getWorldBorder().setWarningTime(60);
-				world.getWorldBorder().setDamageAmount(0.1);
-				world.getWorldBorder().setDamageBuffer(50);
-				world.setGameRuleValue("doDaylightCycle", "false");
-				world.setTime(6000);
-				
-				PlayerUtils.broadcast(Main.PREFIX + "Borders setup, pregenning arena world.");
-				
-				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "wb arena fill 420");
-				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "wb fill confirm");
-			}
-		}, 200);
+		PlayerUtils.broadcast(Main.PREFIX + "World reset done, setting up world options...");
+
+		world.setGameRuleValue("doDaylightCycle", "false");
+		world.setTime(6000);
 		
-		Bukkit.getScheduler().runTaskLater(Main.plugin, new Runnable() {
-			public void run() {
-				PlayerUtils.broadcast(Main.PREFIX + "Arena reset complete.");
-				if (wasEnabled) {
-					enable();
-				}
-			}
-		}, 620);
+		PlayerUtils.broadcast(Main.PREFIX + "Options setup, pregenning arena world.");
+		
+		// TODO: Pregen code...
+		
+		PlayerUtils.broadcast(Main.PREFIX + "Arena reset complete.");
+		
+		if (wasEnabled) {
+			enable();
+		}
 	}
 
 	/**
