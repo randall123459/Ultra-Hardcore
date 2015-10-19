@@ -683,8 +683,8 @@ public class InvGUI {
 				lore.add(" ");
 				
 				if (Game.getInstance().isRecordedRound()) {
-					lore.add("§8» §7Current Episode: §a" + Timers.meetup + " mins");
-					lore.add("§8» §7Time to next episode: §a" + Timers.heal + " mins");
+					lore.add("§8» §7Current Episode: §a" + Timers.meetup);
+					lore.add("§8» §7Time to next episode: §a" + Timers.time + " mins");
 				}
 				else if (GameUtils.getTeamSize().startsWith("No") || GameUtils.getTeamSize().startsWith("Open")) {
 					lore.add("§8» §7There are no matches running.");
@@ -693,9 +693,9 @@ public class InvGUI {
 					lore.add("§8» §7The game has not started yet.");
 				}
 				else {
-					lore.add(Timers.healSeconds <= 0 ? "§8» §eFinal heal has passed." : "§8» §7Final heal in: §a" + DateUtils.ticksToString(Timers.healSeconds));
+					lore.add("§8» §7Time since start: §a" + DateUtils.ticksToString(Timers.timeSeconds));
 					lore.add(Timers.pvpSeconds <= 0 ? "§8» §aPvP is enabled." : "§8» §7PvP in: §a" + DateUtils.ticksToString(Timers.pvpSeconds));
-					lore.add(Timers.meetupSeconds <= 0 ? "§8» §cMeetup is now!" : "§8» §7Meetup in: §a" + DateUtils.ticksToString(Timers.meetupSeconds));
+					lore.add(Timers.meetupSeconds <= 0 ? "§8» §6Meetup is now!" : "§8» §7Meetup in: §a" + DateUtils.ticksToString(Timers.meetupSeconds));
 				}
 				
 				lore.add(" ");

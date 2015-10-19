@@ -22,8 +22,8 @@ public class TimeLeftCommand implements CommandExecutor {
 	public boolean onCommand(CommandSender sender, Command cmd,	String label, String[] args) {
 		if (cmd.getName().equalsIgnoreCase("timeleft")) {
 			if (Game.getInstance().isRecordedRound()) {
-				sender.sendMessage(Main.PREFIX + "Current Episode: §a" + Timers.meetup + " mins");
-				sender.sendMessage(Main.PREFIX + "Time to next episode: §a" + Timers.heal + " mins");
+				sender.sendMessage(Main.PREFIX + "Current Episode: §a" + Timers.meetup);
+				sender.sendMessage(Main.PREFIX + "Time to next episode: §a" + Timers.time + " minutes");
 				return true;
 			}
 			
@@ -37,10 +37,10 @@ public class TimeLeftCommand implements CommandExecutor {
 				return true;
 			}
 			
-			sender.sendMessage(Main.PREFIX + "Timers:");
-			sender.sendMessage(Timers.healSeconds <= 0 ? "§8» §eFinal heal has passed." : "§8» §7Final heal in: §a" + DateUtils.ticksToString(Timers.healSeconds));
+			sender.sendMessage(Main.PREFIX + "Game timers:");
+			sender.sendMessage("§8» §7Time since start: §a" + DateUtils.ticksToString(Timers.timeSeconds));
 			sender.sendMessage(Timers.pvpSeconds <= 0 ? "§8» §aPvP is enabled." : "§8» §7PvP in: §a" + DateUtils.ticksToString(Timers.pvpSeconds));
-			sender.sendMessage(Timers.meetupSeconds <= 0 ? "§8» §cMeetup is now!" : "§8» §7Meetup in: §a" + DateUtils.ticksToString(Timers.meetupSeconds));
+			sender.sendMessage(Timers.meetupSeconds <= 0 ? "§8» §6Meetup is now!" : "§8» §7Meetup in: §a" + DateUtils.ticksToString(Timers.meetupSeconds));
 		}
 		return true;
 	}
