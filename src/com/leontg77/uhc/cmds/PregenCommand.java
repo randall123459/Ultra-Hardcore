@@ -16,7 +16,7 @@ import org.bukkit.command.CommandSender;
 
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.Settings;
-import com.leontg77.uhc.worlds.Pregen;
+import com.leontg77.uhc.worlds.Pregenner;
 
 public class PregenCommand implements CommandExecutor {
 
@@ -26,7 +26,7 @@ public class PregenCommand implements CommandExecutor {
 			return true;
 		}
 		
-		Pregen pregen = Pregen.getInstance();
+		Pregenner pregen = Pregenner.getInstance();
 		
 		if (args.length < 2) {
 			if (args.length > 0 && args[0].equalsIgnoreCase("cancel")) {

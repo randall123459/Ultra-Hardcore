@@ -15,7 +15,7 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
 import com.leontg77.uhc.Main;
-import com.leontg77.uhc.worlds.Manager;
+import com.leontg77.uhc.worlds.WorldManager;
 
 /**
  * World command class.
@@ -42,7 +42,7 @@ public class WorldCommand implements CommandExecutor, TabCompleter {
 			return true;
 		}
 		
-		Manager manager = Manager.getInstance();
+		WorldManager manager = WorldManager.getInstance();
 		
 		if (args[0].equalsIgnoreCase("create")) {
 			if (args.length < 7) {
