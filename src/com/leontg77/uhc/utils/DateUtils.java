@@ -60,6 +60,54 @@ public class DateUtils {
     }
 
     /**
+     * Converts the seconds to advanced hours, minutes and seconds.
+     * 
+     * @author ghowden, modified by LeonTG77
+     * 
+     * @param ticks the number of seconds
+     * @return The converted version.
+     */
+    public static String advancedTicksToString(long ticks) {
+    	int hours = (int) Math.floor(ticks / (double) SECONDS_PER_HOUR);
+        ticks -= hours * SECONDS_PER_HOUR;
+        int minutes = (int) Math.floor(ticks / (double) SECONDS_PER_MINUTE);
+        ticks -= minutes * SECONDS_PER_MINUTE;
+        int seconds = (int) ticks;
+
+        StringBuilder output = new StringBuilder();
+        
+        if (hours > 0) {
+            output.append(hours).append(" ").append(hours == 1 ? "§7hour§a" : "§7hours§a");
+            
+            if (minutes == 0) {
+                if (output.length() > 0) {
+                    output.append(" ");
+                }
+                
+                output.append(minutes).append(" ").append(minutes == 1 ? "§7minute§a" : "§7minutes§a");
+            }
+        }
+        
+        if (minutes > 0) {
+            if (output.length() > 0) {
+                output.append(" ");
+            }
+            
+            output.append(minutes).append(" ").append(minutes == 1 ? "§7minute§a" : "§7minutes§a");
+        }
+        
+        if (seconds > 0) {
+            if (output.length() > 0) {
+                output.append(" ");
+            }
+            
+            output.append(seconds).append(" ").append(seconds == 1 ? "§7second§a" : "§7seconds§a");
+        }
+
+        return output.toString();
+    }
+
+    /**
      * Idk, essentials made this...
      */
 	public static long parseDateDiff(String time, boolean future) {
