@@ -41,7 +41,7 @@ public class ConfigListener implements Listener {
 		Inventory inv = event.getInventory();
 		Arena arena = Arena.getInstance();
 		
-		if (arena.isEnabled() && inv instanceof EnchantingInventory) {
+		if (arena.isEnthrsthabled() && inv instanceof EnchantingInventory) {
 			inv.setItem(1, new ItemStack (Material.INK_SACK, 3, (short) 4));
 		}
 	}

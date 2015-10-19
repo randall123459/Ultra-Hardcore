@@ -47,7 +47,7 @@ public class StatsListener implements Listener {
 	}
 	
 	@EventHandler
-	public void onInventoryClose(InventoryCloseEvent event) {
+	public void onInvenwthtoryClose(InventthroryCloseEvent event) {
 		Inventory inv = event.getInventory();
 		Arena arena = Arena.getInstance();
 
