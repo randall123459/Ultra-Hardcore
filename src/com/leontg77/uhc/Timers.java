@@ -12,15 +12,21 @@ import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Team;
 
 import com.leontg77.uhc.Main.BorderShrink;
 import com.leontg77.uhc.Spectator.SpecInfo;
 import com.leontg77.uhc.User.Stat;
 import com.leontg77.uhc.cmds.TeamCommand;
+import com.leontg77.uhc.inventory.InvGUI;
 import com.leontg77.uhc.scenario.ScenarioManager;
 import com.leontg77.uhc.utils.DateUtils;
 import com.leontg77.uhc.utils.EntityUtils;
@@ -36,77 +42,204 @@ import com.leontg77.uhc.utils.PlayerUtils;
  * @author LeonTG77
  */
 public class Timers {
-	private static Settings settings = Settings.getInstance();
-	private static Game game = Game.getInstance();
+	private static Timers instance = new Timers();
+	private Game game = Game.getInstance();
 
 	public static int taskSeconds;
 	public static int taskMinutes;
-	
-	public static int heal;
+
+	public static int time;
 	public static int pvp;
 	public static int meetup;
 	
-	public static int healSeconds;
+	public static int timeSeconds;
 	public static int pvpSeconds;
 	public static int meetupSeconds;
 	
 	/**
+	 * Get the instance of the class.
+	 * 
+	 * @return The instance.
+	 */
+	public static Timers getInstance() {
+		return instance;
+	}
+	
+	/**
 	 * Start the countdown for the game.
 	 */
-	public static void start() {
-		for (Player online : PlayerUtils.getPlayers()) {
-			PacketUtils.sendTitle(online, "§c3", "", 1, 20, 1);
-			online.playSound(online.getLocation(), Sound.SUCCESSFUL_HIT, 1, 0);
+	public void start() {
+		for (int i = 0; i < 150; i++) {
+			for (Player online : PlayerUtils.getPlayers()) {
+				online.sendMessage("§0");
+			}
 		}
 		
-		Bukkit.getServer().getScheduler().runTaskLater(Main.plugin, new Runnable() {
+		PlayerUtils.broadcast(Main.PREFIX + "The game will start in 30 seconds.");
+		PlayerUtils.broadcast(Main.PREFIX + "Opening game info inventory in 5 seconds.");
+
+		new BukkitRunnable() {
+			public void run() {
+				for (Player online : PlayerUtils.getPlayers()) {
+					InvGUI.getInstance().openGameInfo(online);
+				}
+			}
+		}.runTaskLater(Main.plugin, 100);
+
+		new BukkitRunnable() {
+			public void run() {
+				PlayerUtils.broadcast(Main.PREFIX + "Remember to use §a/uhc §7for all game information.");
+			}
+		}.runTaskLater(Main.plugin, 250);
+
+		new BukkitRunnable() {
+			public void run() {
+				PlayerUtils.broadcast(Main.PREFIX + "If you have a question and §a/uhc§7 didn't help, ask in §a/helpop");
+			}
+		}.runTaskLater(Main.plugin, 300);
+
+		new BukkitRunnable() {
+			public void run() {
+				PlayerUtils.broadcast(Main.PREFIX + "To find the matchpost, use §a/post");
+			}
+		}.runTaskLater(Main.plugin, 350);
+
+		new BukkitRunnable() {
+			public void run() {
+				PlayerUtils.broadcast(Main.PREFIX + "Useful commands can be found in the tab list.");
+			}
+		}.runTaskLater(Main.plugin, 400);
+
+		new BukkitRunnable() {
+			public void run() {
+				for (Player online : PlayerUtils.getPlayers()) {
+					PacketUtils.sendTitle(online, "§45", "", 1, 20, 1);
+					online.playSound(online.getLocation(), Sound.SUCCESSFUL_HIT, 1, 0);
+				}
+				
+				PlayerUtils.broadcast(Main.PREFIX + "Game starting in §45.");
+			}
+		}.runTaskLater(Main.plugin, 500);
+		
+		new BukkitRunnable() {
+			public void run() {
+				for (Player online : PlayerUtils.getPlayers()) {
+					PacketUtils.sendTitle(online, "§c4", "", 1, 20, 1);
+					online.playSound(online.getLocation(), Sound.SUCCESSFUL_HIT, 1, 0);
+				}
+				
+				PlayerUtils.broadcast(Main.PREFIX + "Game starting in §c4.");
+			}
+		}.runTaskLater(Main.plugin, 520);
+		
+		new BukkitRunnable() {
+			public void run() {
+				for (Player online : PlayerUtils.getPlayers()) {
+					PacketUtils.sendTitle(online, "§63", "", 1, 20, 1);
+					online.playSound(online.getLocation(), Sound.SUCCESSFUL_HIT, 1, 0);
+				}
+				
+				PlayerUtils.broadcast(Main.PREFIX + "Game starting in §63.");
+			}
+		}.runTaskLater(Main.plugin, 540);
+
+		new BukkitRunnable() {
 			public void run() {
 				for (Player online : PlayerUtils.getPlayers()) {
 					PacketUtils.sendTitle(online, "§e2", "", 1, 20, 1);
 					online.playSound(online.getLocation(), Sound.SUCCESSFUL_HIT, 1, 0);
 				}
+				
+				PlayerUtils.broadcast(Main.PREFIX + "Game starting in §e2.");
 			}
-		}, 20);
-		
-		Bukkit.getServer().getScheduler().runTaskLater(Main.plugin, new Runnable() {
+		}.runTaskLater(Main.plugin, 560);
+
+		new BukkitRunnable() {
 			public void run() {
 				for (Player online : PlayerUtils.getPlayers()) {
 					PacketUtils.sendTitle(online, "§a1", "", 1, 20, 1);
 					online.playSound(online.getLocation(), Sound.SUCCESSFUL_HIT, 1, 0);
 				}
+				
+				PlayerUtils.broadcast(Main.PREFIX + "Game starting in §a1.");
 			}
-		}, 40);
+		}.runTaskLater(Main.plugin, 580);
 		
-		Bukkit.getServer().getScheduler().runTaskLater(Main.plugin, new Runnable() {
+		new BukkitRunnable() {
 			public void run() {
+				ScenarioManager scen = ScenarioManager.getInstance();
+				Spectator spec = Spectator.getInstance();
+
+				Scoreboards sb = Scoreboards.getInstance();
+				Teams teams = Teams.getInstance();
+
+				PluginManager manager = Bukkit.getPluginManager();
+				manager.registerEvents(new SpecInfo(), Main.plugin);
+				
+				State.setState(State.INGAME);
+				game.setArenaBoard(false);
+				
+				sb.setScore("§8» §a§lPvE", 1);
+				sb.setScore("§8» §a§lPvE", 0);
+				
+				pvp = game.getPvP();
+				meetup = game.getMeetup();
+				
+				pvpSeconds = (pvp * 60);
+				meetupSeconds = (meetup * 60);
+				
+				timer();
+
+				Bukkit.getServer().setIdleTimeout(10);
+				SpecInfo.totalDiamonds.clear();
+				SpecInfo.totalGold.clear();
+				
+				PlayerUtils.broadcast("§8» --------------------------------- «");
+				PlayerUtils.broadcast(Main.PREFIX + "The game has started!");
+				PlayerUtils.broadcast(Main.PREFIX + "PvP will be enabled in: §a" + pvp + " minutes.");
+				PlayerUtils.broadcast(Main.PREFIX + "Meetup is in: §a" + meetup + " minutes.");
+				PlayerUtils.broadcast("§8» --------------------------------- «");
+
+				for (Player online : PlayerUtils.getPlayers()) {
+					PacketUtils.sendAction(online, "§7Final heal is given in §8» §a" + DateUtils.ticksToString(20));
+				}
+				
+				for (Team team : teams.getTeamsWithPlayers()) {
+					Main.teamKills.put(team.getName(), 0);
+					
+					ArrayList<String> players = new ArrayList<String>(team.getEntries());
+					TeamCommand.savedTeams.put(team.getName(), players);
+				}
+				
+				for (String entry : sb.board.getEntries()) {
+					if (sb.getScore(entry) > 0) {
+						sb.setScore(entry, sb.getScore(entry) + 50);
+					}
+				}
+				
+				for (World world : GameUtils.getGameWorlds()) {
+					world.setDifficulty(Difficulty.HARD);
+					world.setPVP(false);
+					world.setTime(0);
+					
+					world.setGameRuleValue("doDaylightCycle", "true");
+					world.setSpawnFlags(false, true);
+					world.setThundering(false);
+					world.setStorm(false);
+					
+					if (game.getBorderShrink() == BorderShrink.START) {
+						world.getWorldBorder().setSize(300, meetupSeconds);
+					}
+					
+					for (Entity mob : world.getEntities()) {
+						if (EntityUtils.isButcherable(mob.getType())) {
+							mob.remove();
+						}
+					}
+				}
+				
 				for (Player online : PlayerUtils.getPlayers()) {
 					online.playSound(online.getLocation(), Sound.SUCCESSFUL_HIT, 1, 1);
-					
-					if (Spectator.getInstance().isSpectating(online)) {
-						for (Achievement a : Achievement.values()) {
-							if (online.hasAchievement(a)) {
-								online.removeAchievement(a);
-							}
-						}
-						
-						for (PotionEffect effect : online.getActivePotionEffects()) {
-							if (effect.getType().equals(PotionEffectType.NIGHT_VISION)) {
-								continue;
-							}
-							
-							online.removePotionEffect(effect.getType());	
-						}
-						
-						online.awardAchievement(Achievement.OPEN_INVENTORY);
-						online.setHealth(online.getMaxHealth());
-						online.setSaturation(20);
-						online.setFoodLevel(20);
-						online.setFireTicks(0);
-						online.setLevel(0);
-						online.setExp(0);
-						PacketUtils.sendTitle(online, "§aGo!", "§7Have fun spectating!", 1, 20, 1);
-						continue;
-					}
 					
 					for (Achievement a : Achievement.values()) {
 						if (online.hasAchievement(a)) {
@@ -114,11 +247,24 @@ public class Timers {
 						}
 					}
 					
-					if (online.getGameMode() != GameMode.SURVIVAL) {
-						online.setGameMode(GameMode.SURVIVAL);
+					if (spec.isSpectating(online)) {
+						PacketUtils.sendTitle(online, "§aGo!", "§7Have fun spectating!", 1, 20, 1);
+					} else {
+						PacketUtils.sendTitle(online, "§aGo!", "§7Good luck, have fun!", 1, 20, 1);
+						
+						if (online.getGameMode() != GameMode.SURVIVAL) {
+							online.setGameMode(GameMode.SURVIVAL);
+						}
 					}
 					
-					if (ScenarioManager.getInstance().getScenario("Kings").isEnabled()) {
+					User user = User.get(online);
+					user.increaseStat(Stat.GAMESPLAYED);
+
+					user.resetHealth();
+					user.resetFood();
+					user.resetExp();
+					
+					if (scen.getScenario("Kings").isEnabled()) {
 						for (PotionEffect effect : online.getActivePotionEffects()) {
 							if (effect.getType().equals(PotionEffectType.DAMAGE_RESISTANCE)) {
 								continue;
@@ -135,13 +281,13 @@ public class Timers {
 							online.removePotionEffect(effect.getType());	
 						}
 					} else {
-						for (PotionEffect effect : online.getActivePotionEffects()) {
-							online.removePotionEffect(effect.getType());	
-						}
+						user.resetEffects();
 					}
 					
-					if (ScenarioManager.getInstance().getScenario("SlaveMarket").isEnabled()) {
-						for (ItemStack item : online.getInventory().getContents()) {
+					if (scen.getScenario("SlaveMarket").isEnabled()) {
+						PlayerInventory inv = online.getInventory();
+
+						for (ItemStack item : inv.getContents()) {
 							if (item == null) {
 								continue;
 							}
@@ -150,106 +296,32 @@ public class Timers {
 								continue;
 							}
 							
-							online.getInventory().remove(item);	
+							inv.removeItem(item);	
 						}
+						
+				        inv.setArmorContents(null);
+				        online.setItemOnCursor(new ItemStack(Material.AIR));
+
+				        InventoryView openInventory = online.getOpenInventory();
+				        
+				        if (openInventory.getType() == InventoryType.CRAFTING) {
+				            openInventory.getTopInventory().clear();
+				        }
 					} else {
-						online.getInventory().clear();
+						user.resetInventory();
 					}
 
-					online.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 250, 100));
-					if (!online.getUniqueId().toString().equals("cb996bf0-333f-42c2-85ca-3a9bec231cc6")) {
-						online.addPotionEffect(new PotionEffect(PotionEffectType.SATURATION, 6000, 100));
-					}
-					
-					online.setItemOnCursor(new ItemStack (Material.AIR));
-					online.awardAchievement(Achievement.OPEN_INVENTORY);
-					online.getInventory().setArmorContents(null);
-					online.setHealth(online.getMaxHealth());
-					online.setAllowFlight(false);
-					online.setSaturation(20);
-					online.setFoodLevel(20);
-					online.setFlying(false);
-					online.setFireTicks(0);
-					online.setLevel(0);
-					online.setExp(0);
-
-					Bukkit.getServer().setIdleTimeout(10);
+					online.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 100, 100));
 					Main.kills.put(online.getName(), 0);
-					SpecInfo.totalDiamonds.clear();
-					SpecInfo.totalGold.clear();
-					
-					PacketUtils.sendTitle(online, "§aGo!", "§7Good luck, have fun!", 1, 20, 1);
-					
-					User data = User.get(online);
-					data.increaseStat(Stat.GAMESPLAYED);
-				}
-				
-				for (Team team : Teams.getInstance().getTeamsWithPlayers()) {
-					Main.teamKills.put(team.getName(), 0);
-					
-					ArrayList<String> players = new ArrayList<String>(team.getEntries());
-					TeamCommand.savedTeams.put(team.getName(), players);
-				}
-
-				Scoreboards sb = Scoreboards.getInstance();
-				
-				for (String entry : sb.board.getEntries()) {
-					if (sb.getScore(entry) > 0) {
-						sb.setScore(entry, sb.getScore(entry) + 50);
-					}
-				}
-
-				game.setPregameBoard(false);
-				game.setArenaBoard(false);
-				
-				Bukkit.getServer().getPluginManager().registerEvents(new SpecInfo(), Main.plugin);
-				State.setState(State.INGAME);
-				Scoreboards.getInstance().setScore("§8» §a§lPvE", 1);
-				Scoreboards.getInstance().setScore("§8» §a§lPvE", 0);
-				
-				heal = 1;
-				pvp = settings.getConfig().getInt("time.pvp");
-				meetup = settings.getConfig().getInt("time.meetup");
-				
-				healSeconds = 60;
-				pvpSeconds = (settings.getConfig().getInt("time.pvp") * 60);
-				meetupSeconds = (settings.getConfig().getInt("time.meetup") * 60);
-
-				for (Player online : PlayerUtils.getPlayers()) {
-					PacketUtils.sendAction(online, "§7Final heal is given in §8» §a" + DateUtils.ticksToString(healSeconds));
-				}
-				
-				timer();
-				
-				for (World world : GameUtils.getGameWorlds()) {
-					world.setTime(0);
-					world.setDifficulty(Difficulty.HARD);
-					world.setPVP(false);
-					
-					world.setGameRuleValue("doDaylightCycle", "true");
-					world.setSpawnFlags(false, true);
-					world.setThundering(false);
-					world.setStorm(false);
-					
-					
-					for (Entity mob : world.getEntities()) {
-						if (EntityUtils.isButcherable(mob.getType())) {
-							mob.remove();
-						}
-					}
-					
-					if (game.getBorderShrink() == BorderShrink.START) {
-						world.getWorldBorder().setSize(300, meetup * 60);
-					}
 				}
 			}
-		}, 60);
+		}.runTaskLater(Main.plugin, 600);
 	}
 	
 	/**
 	 * Start the timers.
 	 */
-	public static void timer() {
+	public void timer() {
 		if (Bukkit.getScheduler().isQueued(taskMinutes) || Bukkit.getScheduler().isCurrentlyRunning(taskMinutes)) {
 			Bukkit.getScheduler().cancelTask(taskMinutes);
 		}
@@ -260,31 +332,19 @@ public class Timers {
 		
 		taskMinutes = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(Main.plugin, new Runnable() {
 			public void run() {
+				ScenarioManager scen = ScenarioManager.getInstance();
 				Scoreboards sb = Scoreboards.getInstance();
 				
-				heal--;
+				time++;
 				pvp--;
 				meetup--;
 				
-				if (heal == 0) {
-					PlayerUtils.broadcast(Main.PREFIX + "Final heal has been given, do not ask for another one.");
-					
-					for (Player online : PlayerUtils.getPlayers()) {
-						PacketUtils.sendTitle(online, "§6Final heal!", "§aDo not ask for another one.", 5, 10, 5);
-						online.playSound(online.getLocation(), Sound.NOTE_BASS, 1, 1);
-						online.setHealth(online.getMaxHealth());
-						online.setSaturation(20);
-						online.setFoodLevel(20);
-						online.setFireTicks(0);
-					}
-				}
-				
-				if (heal == -1) {
+				if (time == 1) {
 					PlayerUtils.broadcast(Main.PREFIX + "The chat has been enabled.");
 					game.setMuted(false);
 				}
 				
-				if (heal == -2) {
+				if (time == 2) {
 					for (World world : GameUtils.getGameWorlds()) {
 						world.setSpawnFlags(true, true);
 					}
@@ -313,15 +373,22 @@ public class Timers {
 							sb.resetScore(entry);
 						}
 					}
-					return;
 				}
 				
 				if (meetup == 0) {
-					
 					PlayerUtils.broadcast(ChatColor.DARK_GRAY + "»»»»»»»»»»»»»»»«««««««««««««««");
 					PlayerUtils.broadcast(" ");
 					PlayerUtils.broadcast(ChatColor.RED + " Meetup is now, head to 0,0!");
 					PlayerUtils.broadcast(" ");
+					PlayerUtils.broadcast(ChatColor.RED + " You may be do anything you want as long");
+					PlayerUtils.broadcast(ChatColor.RED + " as your inside 300x300 on the surface!");
+					PlayerUtils.broadcast(" ");
+					
+					if (game.getBorderShrink() == BorderShrink.MEETUP) {
+						PlayerUtils.broadcast(ChatColor.RED + " Borders will shrink in 2 minutes.");
+						PlayerUtils.broadcast(" ");
+					}
+					
 					PlayerUtils.broadcast(ChatColor.DARK_GRAY + "»»»»»»»»»»»»»»»«««««««««««««««");
 					
 					for (Player online : PlayerUtils.getPlayers()) {
@@ -332,212 +399,114 @@ public class Timers {
 						world.setThundering(false);
 						world.setStorm(false);
 
-						if (!ScenarioManager.getInstance().getScenario("Astrophobia").isEnabled()) {
+						if (!scen.getScenario("Astrophobia").isEnabled()) {
 							world.setGameRuleValue("doDaylightCycle", "false");
 							world.setTime(6000);
 						}
 					}
-					return;
 				}
 				
-				if (meetup == -2 && game.getBorderShrink() == BorderShrink.MEETUP) {
-					PlayerUtils.broadcast(Main.PREFIX + "Border will now shrink to §6300x300 §7over §a10 §7minutes.");
-					
-					for (Player online : PlayerUtils.getPlayers()) {
-						online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
-					}
+				if (game.getBorderShrink() == BorderShrink.MEETUP) {
+					if (meetup == -2) {
+						PlayerUtils.broadcast(Main.PREFIX + "Border will now shrink to §6300x300 §7over §a10 §7minutes.");
+						
+						for (Player online : PlayerUtils.getPlayers()) {
+							online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
+						}
 
-					for (World world : GameUtils.getGameWorlds()) {
-						world.getWorldBorder().setSize(300, 600);
+						for (World world : GameUtils.getGameWorlds()) {
+							world.getWorldBorder().setSize(300, 600);
+						}
+					}
+					
+					if (meetup == -12) {
+						PlayerUtils.broadcast(Main.PREFIX + "Border has stopped shrinking.");
+						
+						for (Player online : PlayerUtils.getPlayers()) {
+							online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
+						}
 					}
 				}
 				
-				if (meetup == -12 && game.getBorderShrink() == BorderShrink.MEETUP) {
-					PlayerUtils.broadcast(Main.PREFIX + "Border has stopped shrinking.");
+				if (meetup > 0) {
+					String meetupToString = String.valueOf(meetup);
 					
-					for (Player online : PlayerUtils.getPlayers()) {
-						online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
+					if (meetupToString.equals("1") || meetupToString.endsWith("5") || meetupToString.endsWith("0")) {
+						PlayerUtils.broadcast(Main.PREFIX + "Meetup is in §a" + DateUtils.advancedTicksToString(meetup * 60) + "§7.");
+						
+						for (Player online : PlayerUtils.getPlayers()) {
+							online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
+						}
+						
+						if (meetupToString.equals("1")) {
+							PlayerUtils.broadcast(Main.PREFIX + "Start preparing to head to 0,0.");
+							return;
+						}
 					}
 				}
 				
-				if (pvp == 45) {
-					PlayerUtils.broadcast(Main.PREFIX + "PvP will be enabled in §a45 §7minutes.");
+				if (pvp > 0) {
+					String pvpToString = String.valueOf(pvp);
 					
-					for (Player online : PlayerUtils.getPlayers()) {
-						online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
-					}
-					return;
-				}
-				
-				if (pvp == 30) {
-					PlayerUtils.broadcast(Main.PREFIX + "PvP will be enabled in §a30 §7minutes.");
-					
-					for (Player online : PlayerUtils.getPlayers()) {
-						online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
-					}
-					return;
-				}
-				
-				if (pvp == 15) {
-					PlayerUtils.broadcast(Main.PREFIX + "PvP will be enabled in §a15 §7minutes.");
-					
-					for (Player online : PlayerUtils.getPlayers()) {
-						online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
-					}
-					return;
-				}
-				
-				if (pvp == 10) {
-					PlayerUtils.broadcast(Main.PREFIX + "PvP will be enabled in §a10 §7minutes.");
-					
-					for (Player online : PlayerUtils.getPlayers()) {
-						online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
-					}
-					return;
-				}
-				
-				if (pvp == 5) {
-					PlayerUtils.broadcast(Main.PREFIX + "PvP will be enabled in §a5 §7minutes.");
-					
-					for (Player online : PlayerUtils.getPlayers()) {
-						online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
-					}
-					return;
-				}
-				
-				if (pvp == 1) {
-					PlayerUtils.broadcast(Main.PREFIX + "PvP will be enabled in §a1 §7minute.");
-					
-					for (Player online : PlayerUtils.getPlayers()) {
-						online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
-					}
-					return;
-				}
-				
-				if (meetup == 120) {
-					PlayerUtils.broadcast(Main.PREFIX + "Meetup is in §a2 §hours.");
-					
-					for (Player online : PlayerUtils.getPlayers()) {
-						online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
-					}
-					return;
-				}
-				
-				if (meetup == 105) {
-					PlayerUtils.broadcast(Main.PREFIX + "Meetup is in §a1 §7hour and §a45 §7minutes.");
-					
-					for (Player online : PlayerUtils.getPlayers()) {
-						online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
-					}
-					return;
-				}
-				
-				if (meetup == 90) {
-					PlayerUtils.broadcast(Main.PREFIX + "Meetup is in §a1 §7hour and §a30 §7minutes.");
-					
-					for (Player online : PlayerUtils.getPlayers()) {
-						online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
-					}
-					return;
-				}
-				
-				if (meetup == 75) {
-					PlayerUtils.broadcast(Main.PREFIX + "Meetup is in §a1 §7hour and §a15 §7minutes.");
-					
-					for (Player online : PlayerUtils.getPlayers()) {
-						online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
-					}
-					return;
-				}
-				
-				if (meetup == 60) {
-					PlayerUtils.broadcast(Main.PREFIX + "Meetup is in §a1 §7hour.");
-					
-					for (Player online : PlayerUtils.getPlayers()) {
-						online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
-					}
-					return;
-				}
-				
-				if (meetup == 45) {
-					PlayerUtils.broadcast(Main.PREFIX + "Meetup is in §a45 §7minutes.");
-					
-					for (Player online : PlayerUtils.getPlayers()) {
-						online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
-					}
-					return;
-				}
-				
-				if (meetup == 30) {
-					PlayerUtils.broadcast(Main.PREFIX + "Meetup is in §a30 §7minutes.");
-					
-					for (Player online : PlayerUtils.getPlayers()) {
-						online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
-					}
-					return;
-				}
-				
-				if (meetup == 15) {
-					PlayerUtils.broadcast(Main.PREFIX + "Meetup is in §a15 §7minutes.");
-					
-					for (Player online : PlayerUtils.getPlayers()) {
-						online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
-					}
-					return;
-				}
-				
-				if (meetup == 10) {
-					PlayerUtils.broadcast(Main.PREFIX + "Meetup is in §a10 §7minutes.");
-					
-					for (Player online : PlayerUtils.getPlayers()) {
-						online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
-					}
-					return;
-				}
-				
-				if (meetup == 5) {
-					PlayerUtils.broadcast(Main.PREFIX + "Meetup is in §a5 §7minutes.");
-					
-					for (Player online : PlayerUtils.getPlayers()) {
-						online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
-					}
-					return;
-				}
-				
-				if (meetup == 1) {
-					PlayerUtils.broadcast(Main.PREFIX + "Meetup is in §a1 §7minute.");
-					
-					for (Player online : PlayerUtils.getPlayers()) {
-						online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
+					if (pvpToString.equals("1") || pvpToString.endsWith("5") || pvpToString.endsWith("0")) {
+						PlayerUtils.broadcast(Main.PREFIX + "PvP will be enabled in §a" + DateUtils.advancedTicksToString(pvp * 60) + "§7.");
+						
+						for (Player online : PlayerUtils.getPlayers()) {
+							online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
+						}
 					}
 				}
 			}
 		}, 1200, 1200);
 		
 		taskSeconds = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(Main.plugin, new Runnable() {
+			int finalHeal = 20;
+			int timeToBorder = 120;
+			
 			public void run() {
-				healSeconds--;
+				timeSeconds++;
 				pvpSeconds--;
 				meetupSeconds--;
 				
-				if (healSeconds > 0) {
+				if (timeSeconds == 20) {
+					PlayerUtils.broadcast(Main.PREFIX + "Final heal has been given.");
+					PlayerUtils.broadcast(Main.PREFIX + "Do not ask for another one.");
+					
 					for (Player online : PlayerUtils.getPlayers()) {
-						PacketUtils.sendAction(online, "§7Final heal is given in §8» §a" + DateUtils.ticksToString(healSeconds));
+						PacketUtils.sendTitle(online, "§6Final heal!", "§7Do not ask for another one", 5, 10, 5);
+						online.playSound(online.getLocation(), Sound.NOTE_BASS, 1, 1);
+						
+						User user = User.get(online);
+						user.resetHealth();
+						user.resetFood();
 					}
 				}
-				else if (pvpSeconds > 0) {
+				
+				if (timeSeconds < 20) {
+					finalHeal--;
+					
+					for (Player online : PlayerUtils.getPlayers()) {
+						PacketUtils.sendAction(online, "§7Final heal is given in §8» §a" + DateUtils.ticksToString(finalHeal));
+					}
+				} else if (pvpSeconds > 0) {
 					for (Player online : PlayerUtils.getPlayers()) {
 						PacketUtils.sendAction(online, "§7PvP is enabled in §8» §a" + DateUtils.ticksToString(pvpSeconds));
 					}
-				}
-				else if (meetupSeconds > 0) {
+				} else if (meetupSeconds > 0) {
 					for (Player online : PlayerUtils.getPlayers()) {
 						PacketUtils.sendAction(online, "§7Meetup is in §8» §a" + DateUtils.ticksToString(meetupSeconds));
 					}
-				}
-				else {
+				} else {
 					for (Player online : PlayerUtils.getPlayers()) {
 						PacketUtils.sendAction(online, "§8» §6Meetup is now! §8«");
+					}
+					
+					timeToBorder--;
+					
+					if (timeToBorder == 60 || timeToBorder == 30 || timeToBorder == 10 || timeToBorder == 5 || 
+						timeToBorder == 4 || timeToBorder == 3 || timeToBorder == 2 || timeToBorder == 1) {
+						
+						PlayerUtils.broadcast(Main.PREFIX + "The border starts shrinking in §a" + DateUtils.advancedTicksToString(timeToBorder) + "§7.");
 					}
 				}
 			}
@@ -547,7 +516,7 @@ public class Timers {
 	/**
 	 * Start the countdown for the recorded round.
 	 */
-	public static void startRR() {
+	public void startRR() {
 		for (Player online : PlayerUtils.getPlayers()) {
 			PacketUtils.sendTitle(online, "§c3", "", 1, 20, 1);
 			online.playSound(online.getLocation(), Sound.SUCCESSFUL_HIT, 1, 0);
@@ -693,7 +662,7 @@ public class Timers {
 	/**
 	 * Start the recorded round timers.
 	 */
-	public static void timerRR() {
+	public void timerRR() {
 		if (Bukkit.getScheduler().isQueued(taskMinutes) || Bukkit.getScheduler().isCurrentlyRunning(taskMinutes)) {
 			Bukkit.getScheduler().cancelTask(taskMinutes);
 		}
@@ -701,7 +670,7 @@ public class Timers {
 		taskMinutes = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(Main.plugin, new Runnable() {
 			public void run() {
 				pvp++;
-				heal--;
+				time--;
 				
 				if (pvp == 20) {
 					PlayerUtils.broadcast(Main.PREFIX + "End of episode 1 | Start of episode 2");
@@ -714,7 +683,7 @@ public class Timers {
 					for (World world : GameUtils.getGameWorlds()) {
 						world.setPVP(true);
 					}
-					heal = 20;
+					time = 20;
 					meetup++;
 				}
 				
@@ -724,7 +693,7 @@ public class Timers {
 					for (Player online : PlayerUtils.getPlayers()) {
 						online.playSound(online.getLocation(), Sound.FIREWORK_TWINKLE, 1, 1);
 					}
-					heal = 20;
+					time = 20;
 					meetup++;
 				}
 				
@@ -734,7 +703,7 @@ public class Timers {
 					for (Player online : PlayerUtils.getPlayers()) {
 						online.playSound(online.getLocation(), Sound.FIREWORK_TWINKLE, 1, 1);
 					}
-					heal = 20;
+					time = 20;
 					meetup++;
 				}
 				
@@ -744,7 +713,7 @@ public class Timers {
 					for (Player online : PlayerUtils.getPlayers()) {
 						online.playSound(online.getLocation(), Sound.FIREWORK_TWINKLE, 1, 1);
 					}
-					heal = 20;
+					time = 20;
 					meetup++;
 				}
 				
@@ -764,7 +733,7 @@ public class Timers {
 						world.setGameRuleValue("doDaylightCycle", "false");
 						world.setTime(6000);
 					}
-					heal = 20;
+					time = 20;
 					meetup++;
 				}
 				
@@ -775,7 +744,7 @@ public class Timers {
 					for (Player online : PlayerUtils.getPlayers()) {
 						online.playSound(online.getLocation(), Sound.FIREWORK_TWINKLE, 1, 1);
 					}
-					heal = 20;
+					time = 20;
 					meetup++;
 				}
 				
@@ -785,7 +754,7 @@ public class Timers {
 					for (Player online : PlayerUtils.getPlayers()) {
 						online.playSound(online.getLocation(), Sound.FIREWORK_TWINKLE, 1, 1);
 					}
-					heal = 20;
+					time = 20;
 					meetup++;
 				}
 				
@@ -795,7 +764,7 @@ public class Timers {
 					for (Player online : PlayerUtils.getPlayers()) {
 						online.playSound(online.getLocation(), Sound.FIREWORK_TWINKLE, 1, 1);
 					}
-					heal = 20;
+					time = 20;
 					meetup++;
 				}
 				
@@ -805,7 +774,7 @@ public class Timers {
 					for (Player online : PlayerUtils.getPlayers()) {
 						online.playSound(online.getLocation(), Sound.FIREWORK_TWINKLE, 1, 1);
 					}
-					heal = 20;
+					time = 20;
 					meetup++;
 				}
 			}
