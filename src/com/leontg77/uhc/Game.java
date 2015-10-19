@@ -286,4 +286,14 @@ public class Game {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	public int getPvP() {
+		// TODO Auto-generated method stub
+		return 3;
+	}
+
+	public int getMeetup() {
+		// TODO Auto-generated method stub
+		return 4;
+	}
 }
