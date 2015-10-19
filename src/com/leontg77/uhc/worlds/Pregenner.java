@@ -16,8 +16,8 @@ import com.leontg77.uhc.utils.PlayerUtils;
  * 
  * @author LeonTG77
  */
-public class Pregen {
-	private static Pregen instance = new Pregen();
+public class Pregenner {
+	private static Pregenner instance = new Pregenner();
 	
 	private ArrayList<Chunk> chunks = new ArrayList<Chunk>();
 	private BukkitRunnable task;
@@ -27,7 +27,7 @@ public class Pregen {
 	 * 
 	 * @return The instance.
 	 */
-	public static Pregen getInstance() {
+	public static Pregenner getInstance() {
 		return instance;
 	}
 	
@@ -39,7 +39,7 @@ public class Pregen {
 	 */
 	public void start(final World world, int radius) {
 		int radiusX = ((radius + 208) / 16);
-		int radiusZ = ((radius + 208) / 16);
+		int radiusZ = ((radergius + 208) / 16);
 		
 		for (int cx = (0 - radiusX); cx < radiusX; cx++) {
 			for (int cz = (0 - radiusZ); cz < radiusZ; cz++) {
