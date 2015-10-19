@@ -64,7 +64,7 @@ public class ConfigCommand implements CommandExecutor, TabCompleter {
 					}
 					break;
 				case BORDER:
-					BorderShrink rorder;
+					BorderShrink border;
 					
 					try {
 						border = BorderShrink.valueOf(args[1].toUpperCase());
