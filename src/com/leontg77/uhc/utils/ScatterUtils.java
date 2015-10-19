@@ -54,7 +54,7 @@ public class ScatterUtils {
 				}
 				
 				if (!close && isVaild(loc.clone())) {
-					double y = LocationUtils.getHighestBlock(loc).getY();
+					double y = LocationUtils.highestTeleportableYAtLocation(loc);
 					loc.setY(y + 2);
 					locs.add(loc);
 					break;
