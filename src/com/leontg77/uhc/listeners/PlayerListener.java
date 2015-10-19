@@ -794,10 +794,8 @@ public class PlayerListener implements Listener {
 			return;
 		}
 		
-		if (event.getFoodLevel() >= player.getFoodLevel()) {
-			return;
+		if (event.getFoodLevel() < player.getFoodLevel()) {
+			event.setCancelled(new Random().nextInt(100) < 66);
 	    }
-		
-		event.setCancelled(new Random().nextInt(100) < 66);
 	}
 }
