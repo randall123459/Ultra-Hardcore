@@ -26,6 +26,8 @@ public class StartCommand implements CommandExecutor {
 			return true;
 		}
 		
+		Timers timers = Timers.getInstance();
+		
 		if (State.isState(State.LOBBY)) {
 			sender.sendMessage(ChatColor.RED + "You cannot start the game without scattering first.");
 		}
@@ -33,25 +35,25 @@ public class StartCommand implements CommandExecutor {
 			PlayerUtils.broadcast(Main.PREFIX + "The game is starting.");
 			
 			if (Game.getInstance().isRecordedRound()) {
-				Timers.startRR();
+				timers.startRR();
 			} else {
 				PlayerUtils.broadcast(Main.PREFIX + "Remember to read the match post: " + Settings.getInstance().getConfig().getString("matchpost"));
 				PlayerUtils.broadcast(Main.PREFIX + "If you have any questions, use /helpop.");
-				Timers.start();
+				timers.start();
 			}
 		}
 		else if (State.isState(State.INGAME)) {
 			if (args.length < 3) {
-				sender.sendMessage(ChatColor.RED + "Usage: /start <timetofinalheal> <timetopvp> <timetomeetup>");
+				sender.sendMessage(ChatColor.RED + "Usage: /start <timepassed> <timetopvp> <timetomeetup>");
 				return true;
 			}
 			
-			int heal;
+			int timePassed;
 			int pvp;
 			int meetup;
 			
 			try {
-				heal = Integer.parseInt(args[0]);
+				timePassed = Integer.parseInt(args[0]);
 			} catch (Exception e) {
 				sender.sendMessage(ChatColor.RED + "Invaild number.");
 				return true;
@@ -71,18 +73,18 @@ public class StartCommand implements CommandExecutor {
 				return true;
 			}
 			
-			Timers.heal = heal;
+			Timers.time = timePassed;
 			Timers.pvp = pvp;
 			Timers.meetup = meetup;
 			
-			Timers.healSeconds = (heal > 0 ? (heal * 60) : 0);
+			Timers.timeSeconds = (timePassed > 0 ? (timePassed * 60) : 0);
 			Timers.pvpSeconds = (pvp > 0 ? (pvp * 60) : 0);
 			Timers.meetupSeconds = (meetup > 0 ? (meetup * 60) : 0);
 
 			if (Game.getInstance().isRecordedRound()) {
-				Timers.timerRR();
+				timers.timerRR();
 			} else {
-				Timers.timer();
+				timers.timer();
 			}
 		}
 		return true;
