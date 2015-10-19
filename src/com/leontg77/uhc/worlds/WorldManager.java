@@ -20,16 +20,16 @@ import com.leontg77.uhc.utils.LocationUtils;
  * 
  * @author LeonTG77
  */
-public class Manager {
+public class WorldManager {
 	private Settings config = Settings.getInstance();
-	private static Manager instance = new Manager();
+	private static WorldManager instance = new WorldManager();
 	
 	/**
 	 * Get the instance of the class.
 	 * 
 	 * @return The instance.
 	 */
-	public static Manager getInstance() {
+	public static WorldManager getInstance() {
 		return instance;
 	}
 	
@@ -126,7 +126,7 @@ public class Manager {
 		Set<String> worlds = config.getWorlds().getConfigurationSection("worlds").getKeys(false);
 		
 		if (!worlds.contains(name)) {
-			throw new Exception("This world already exist.");
+			throw new Exception("This world doesn't exist.");
 		}
 		
 		WorldCreator creator = new WorldCreator(name);
