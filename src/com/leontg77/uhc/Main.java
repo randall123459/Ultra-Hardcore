@@ -117,7 +117,7 @@ import com.leontg77.uhc.scenario.ScenarioManager;
 import com.leontg77.uhc.utils.NumberUtils;
 import com.leontg77.uhc.utils.PermsUtils;
 import com.leontg77.uhc.utils.PlayerUtils;
-import com.leontg77.uhc.worlds.Manager;
+import com.leontg77.uhc.worlds.WorldManager;
 import com.leontg77.uhc.worlds.terrain.AntiStripmine;
 import com.leontg77.uhc.worlds.terrain.BiomeSwap;
 
@@ -183,7 +183,7 @@ public class Main extends JavaPlugin {
 		ScenarioManager.getInstance().setup();
 		Scoreboards.getInstance().setup();
 	    
-		Manager.getInstance().loadWorlds();
+		WorldManager.getInstance().loadWorlds();
 		
 		recoverData();
 		addRecipes();
