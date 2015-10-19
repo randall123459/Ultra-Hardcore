@@ -15,10 +15,11 @@ public enum State {
 	 * @param state the state setting it to.
 	 */
 	public static void setState(State state) {
-		Settings.getInstance().getData().set("state", state.name().toUpperCase());
-		Settings.getInstance().saveData();
-		
+		Settings settings = Settings.getInstance();
 		currentState = state;
+		
+		settings.getData().set("state", state.name());
+		settings.saveData();
 	}
 	
 	/**
