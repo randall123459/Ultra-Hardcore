@@ -30,7 +30,7 @@ import org.bukkit.scoreboard.Team;
 import com.leontg77.uhc.listeners.ArenaListener;
 import com.leontg77.uhc.utils.PlayerUtils;
 import com.leontg77.uhc.utils.ScatterUtils;
-import com.leontg77.uhc.worlds.Manager;
+import com.leontg77.uhc.worlds.WorldManager;
 
 /**
  * PvP Arena class.
@@ -191,7 +191,7 @@ public class Arena {
 		}
 		
 		PlayerUtils.broadcast(Main.PREFIX + "The arena is resetting, lag incoming.");
-		Manager manager = Manager.getInstance();
+		WorldManager manager = WorldManager.getInstance();
 		
 		World world = Bukkit.getServer().getWorld("arena");
 		
