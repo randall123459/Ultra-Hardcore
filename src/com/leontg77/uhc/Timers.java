@@ -75,8 +75,8 @@ public class Timers {
 			}
 		}
 		
-		PlayerUtils.broadcast(Main.PREFIX + "The game will start in 30 seconds.");
-		PlayerUtils.broadcast(Main.PREFIX + "Opening game info inventory in 5 seconds.");
+		PlayerUtils.broadcast(Main.PREFIX + "The game will start in §a30§7 seconds.");
+		PlayerUtils.broadcast(Main.PREFIX + "Opening game info inventory in §a5§7 seconds.");
 
 		new BukkitRunnable() {
 			public void run() {
