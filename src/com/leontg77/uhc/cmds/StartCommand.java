@@ -7,9 +7,8 @@ import org.bukkit.command.CommandSender;
 
 import com.leontg77.uhc.Game;
 import com.leontg77.uhc.Main;
-import com.leontg77.uhc.Timers;
-import com.leontg77.uhc.Settings;
 import com.leontg77.uhc.State;
+import com.leontg77.uhc.Timers;
 import com.leontg77.uhc.utils.PlayerUtils;
 
 /**
@@ -37,8 +36,6 @@ public class StartCommand implements CommandExecutor {
 			if (Game.getInstance().isRecordedRound()) {
 				timers.startRR();
 			} else {
-				PlayerUtils.broadcast(Main.PREFIX + "Remember to read the match post: " + Settings.getInstance().getConfig().getString("matchpost"));
-				PlayerUtils.broadcast(Main.PREFIX + "If you have any questions, use /helpop.");
 				timers.start();
 			}
 		}
