@@ -1,5 +1,7 @@
 package com.leontg77.uhc;
 
+import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import com.leontg77.uhc.Main.BorderShrink;
@@ -269,7 +271,7 @@ public class Game {
 	}
 
 	public String getHost() {
-		return settings.getConfig().getString("game.host");
+		return settings.getConfig().getString("game.host", "None");
 	}
 
 	public boolean tier2() {
@@ -282,9 +284,9 @@ public class Game {
 		return false;
 	}
 
-	public String getAppleRates() {
+	public int getAppleRates() {
 		// TODO Auto-generated method stub
-		return null;
+		return 1;
 	}
 
 	public int getPvP() {
@@ -295,5 +297,37 @@ public class Game {
 	public int getMeetup() {
 		// TODO Auto-generated method stub
 		return 4;
+	}
+
+	public boolean antiStripmine() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public boolean horses() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public boolean horseHealing() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public boolean horseArmor() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public int getMaxPlayers() {
+		return settings.getConfig().getInt("maxplayers", 150);
+	}
+
+	public String getMatchPost() {
+		return settings.getConfig().getString("matchpost", "redd.it");
+	}
+
+	public World getWorld() {
+		return Bukkit.getWorld(settings.getConfig().getString("game.world", "leon"));
 	}
 }
