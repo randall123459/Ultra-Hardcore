@@ -4,12 +4,10 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
@@ -55,7 +53,6 @@ import com.leontg77.uhc.utils.PlayerUtils;
  */
 public class Spectator {
 	private static Spectator manager = new Spectator();
-	private Settings settings = Settings.getInstance();
 	
 	public HashSet<String> spectators = new HashSet<String>();
 	public HashSet<String> specinfo = new HashSet<String>();
@@ -182,16 +179,7 @@ public class Spectator {
 			}
 
 			player.sendMessage(Main.PREFIX + "You are no longer in spectator mode.");
-
-			World w = Bukkit.getServer().getWorld(settings.getData().getString("spawn.world"));
-			double x = settings.getData().getDouble("spawn.x");
-			double y = settings.getData().getDouble("spawn.y");
-			double z = settings.getData().getDouble("spawn.z");
-			float yaw = (float) settings.getData().getDouble("spawn.yaw");
-			float pitch = (float) settings.getData().getDouble("spawn.pitch");
-			
-			Location loc = new Location(w, x, y, z, yaw, pitch);
-			player.teleport(loc);
+			player.teleport(Main.getSpawn());
 		}
 		
 		player.setGameMode(GameMode.SURVIVAL);
