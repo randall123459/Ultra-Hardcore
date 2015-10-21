@@ -46,7 +46,8 @@ public class Scoreboards {
 			nameHealth = board.registerNewObjective("nameHealth", "dummy");
 		}
 		
-		kills.setDisplayName("§4UHC §8- §7" + Settings.getInstance().getConfig().getString("game.host"));
+		Game game = Game.getInstance();
+		kills.setDisplayName("§4UHC §8- §7" + game.getHost());
 		
 		if (!Game.getInstance().arenaBoard()) {
 			kills.setDisplaySlot(DisplaySlot.SIDEBAR);
