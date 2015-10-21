@@ -26,7 +26,6 @@ import com.leontg77.uhc.Main.BorderShrink;
 import com.leontg77.uhc.Spectator.SpecInfo;
 import com.leontg77.uhc.User.Stat;
 import com.leontg77.uhc.cmds.TeamCommand;
-import com.leontg77.uhc.inventory.InvGUI;
 import com.leontg77.uhc.scenario.ScenarioManager;
 import com.leontg77.uhc.utils.DateUtils;
 import com.leontg77.uhc.utils.EntityUtils;

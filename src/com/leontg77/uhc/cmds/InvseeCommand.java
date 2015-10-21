@@ -7,9 +7,9 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import com.leontg77.uhc.InvGUI;
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.Spectator;
-import com.leontg77.uhc.inventory.InvGUI;
 
 /**
  * Invsee command class

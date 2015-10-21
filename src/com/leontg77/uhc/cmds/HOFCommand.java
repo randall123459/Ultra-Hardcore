@@ -10,8 +10,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
+import com.leontg77.uhc.InvGUI;
 import com.leontg77.uhc.Settings;
-import com.leontg77.uhc.inventory.InvGUI;
 import com.leontg77.uhc.utils.GameUtils;
 
 /**
