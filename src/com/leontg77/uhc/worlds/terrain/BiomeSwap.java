@@ -38,7 +38,8 @@ public class BiomeSwap {
 	}
 
 	private void update() {
-		doSwap(Settings.getInstance().getSwap().getStringList("swap"));
+		Settings settings = Settings.getInstance();
+		doSwap(settings.getSwap().getStringList("swap"));
 	}
 
 	private void doSwap(List<String> swaps) {
