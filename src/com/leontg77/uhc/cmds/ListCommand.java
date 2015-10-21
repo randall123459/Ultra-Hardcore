@@ -3,14 +3,13 @@ package com.leontg77.uhc.cmds;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import com.leontg77.uhc.Game;
 import com.leontg77.uhc.Main;
-import com.leontg77.uhc.Settings;
 import com.leontg77.uhc.utils.PlayerUtils;
 
 /**
@@ -27,7 +26,7 @@ public class ListCommand implements CommandExecutor {
 			return true;
 		}
 
-		Settings settings = Settings.getInstance();
+		Game game = Game.getInstance();
 		
 		ArrayList<Player> players = new ArrayList<Player>(PlayerUtils.getPlayers());
 		Collections.shuffle(players);
@@ -52,7 +51,7 @@ public class ListCommand implements CommandExecutor {
 			p++;
 		}
     			
-    	sender.sendMessage(Main.PREFIX + "There are §6" + (p - 1) + " §7out of§6 " + settings.getConfig().getInt("maxplayers", Bukkit.getMaxPlayers()) + " §7players online.");
+    	sender.sendMessage(Main.PREFIX + "There are §6" + (p - 1) + " §7out of§6 " + game.getMaxPlayers() + " §7players online.");
     	sender.sendMessage("§8» §7Players§8: §a" + list.toString() + "§8.");
 		return true;
 	}
