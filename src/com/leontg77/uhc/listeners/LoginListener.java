@@ -30,7 +30,6 @@ import org.bukkit.potion.PotionEffectType;
 
 import com.leontg77.uhc.Game;
 import com.leontg77.uhc.Main;
-import com.leontg77.uhc.Settings;
 import com.leontg77.uhc.Spectator;
 import com.leontg77.uhc.State;
 import com.leontg77.uhc.UBL;
@@ -50,7 +49,6 @@ import com.leontg77.uhc.utils.PlayerUtils;
  * @author LeonTG77
  */
 public class LoginListener implements Listener {
-	private Settings settings = Settings.getInstance();
 	private Game game = Game.getInstance();
 	
 	@EventHandler
@@ -273,7 +271,7 @@ public class LoginListener implements Listener {
 			} 
 			else {
 				if (State.isState(State.LOBBY)) {
-					event.setKickMessage("§8» §7You are not whitelisted §8«\n\n§cThe game has not opened yet,\n§ccheck the post for open time.\n\n§7Match post: §a" + settings.getConfig().getString("matchpost", "redd.it"));
+					event.setKickMessage("§8» §7You are not whitelisted §8«\n\n§cThe game has not opened yet,\n§ccheck the post for open time.\n\n§7Match post: §a" + game.getMatchPost());
 				}
 				else {
 					event.setKickMessage("§8» §7You are not whitelisted §8«\n\n§cThe game has already started");
@@ -303,7 +301,7 @@ public class LoginListener implements Listener {
 			return;
 		}
 		
-		if (PlayerUtils.getPlayers().size() >= settings.getConfig().getInt("maxplayers", 150)) {
+		if (PlayerUtils.getPlayers().size() >= game.getMaxPlayers()) {
 			if (game.isRecordedRound()) {
 				return;
 			}
