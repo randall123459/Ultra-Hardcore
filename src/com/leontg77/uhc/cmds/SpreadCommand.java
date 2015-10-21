@@ -25,7 +25,6 @@ import com.leontg77.uhc.Game;
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.Parkour;
 import com.leontg77.uhc.Scoreboards;
-import com.leontg77.uhc.Settings;
 import com.leontg77.uhc.State;
 import com.leontg77.uhc.Teams;
 import com.leontg77.uhc.utils.EntityUtils;
@@ -54,8 +53,8 @@ public class SpreadCommand implements CommandExecutor {
 			return true;
 		}
 
-		Settings settings = Settings.getInstance();
-		final String name = settings.getConfig().getString("game.world");
+		Game game = Game.getInstance();
+		final String name = game.getWorld().getName();
 		
 		if (Bukkit.getWorld(name) == null) {
 			sender.sendMessage(ChatColor.RED + "There are no worlds called " + name + ".");
@@ -90,8 +89,6 @@ public class SpreadCommand implements CommandExecutor {
 			
 			int t = 0;
 			int s = 0;
-
-			Game game = Game.getInstance();
 			
 			if (!game.isFFA() && game.getTeamSize() > 1) {
 				for (OfflinePlayer whitelisted : Bukkit.getServer().getWhitelistedPlayers()) {
