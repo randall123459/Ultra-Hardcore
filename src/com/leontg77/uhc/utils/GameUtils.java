@@ -7,7 +7,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.World;
 
 import com.leontg77.uhc.Game;
-import com.leontg77.uhc.Settings;
 import com.leontg77.uhc.State;
 
 /**
@@ -26,9 +25,9 @@ public class GameUtils {
 	 */
 	public static List<World> getGameWorlds() {
 		ArrayList<World> worlds = new ArrayList<World>();
-		Settings settings = Settings.getInstance();
+		Game game = Game.getInstance();
 		
-		World main = Bukkit.getWorld(settings.getConfig().getString("game.world"));
+		World main = game.getWorld();
 		
 		if (main != null) {
 			worlds.add(main);
@@ -168,7 +167,8 @@ public class GameUtils {
 	 * @return The hof name.
 	 */
 	public static String getCurrentHost() {
-		String host = Settings.getInstance().getConfig().getString("game.host");
+		Game game = Game.getInstance();
+		String host = game.getHost();
 		
 		if (host.equalsIgnoreCase("LeonTG77")) {
 			return "Leon";
