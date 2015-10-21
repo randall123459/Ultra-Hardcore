@@ -32,6 +32,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
+import com.leontg77.uhc.Game;
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.Settings;
 import com.leontg77.uhc.scenario.Scenario;
@@ -68,12 +69,14 @@ public class Astrophobia extends Scenario implements Listener {
 	public void setEnabled(boolean enable) {
 		enabled = enable;
 		
+		Game game = Game.getInstance();
+		
 		if (enable) {
-			Bukkit.getWorld(Settings.getInstance().getConfig().getString("game.world")).setGameRuleValue("doDaylightCycle", "false");
-			Bukkit.getWorld(Settings.getInstance().getConfig().getString("game.world")).setTime(18000);
+			game.getWorld().setGameRuleValue("doDaylightCycle", "false");
+			game.getWorld().setTime(18000);
 			startForPlayer();
 		} else {
-			Bukkit.getWorld(Settings.getInstance().getConfig().getString("game.world")).setGameRuleValue("doDaylightCycle", "true");
+			game.getWorld().setGameRuleValue("doDaylightCycle", "true");
 			stopAstroTask();
 		}
 	}
