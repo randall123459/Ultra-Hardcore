@@ -1,11 +1,10 @@
 package com.leontg77.uhc.scenario.types;
 
-import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 
-import com.leontg77.uhc.Settings;
+import com.leontg77.uhc.Game;
 import com.leontg77.uhc.scenario.Scenario;
 
 /**
@@ -14,6 +13,7 @@ import com.leontg77.uhc.scenario.Scenario;
  * @author LeonTG77
  */
 public class Permakill extends Scenario implements Listener {
+	private Game game = Game.getInstance();
 	private boolean enabled = false;
 
 	public Permakill() {
@@ -24,10 +24,10 @@ public class Permakill extends Scenario implements Listener {
 		enabled = enable;
 		
 		if (enable) {
-			Bukkit.getWorld(Settings.getInstance().getConfig().getString("game.world")).setGameRuleValue("doDaylightCycle", "false");
-			Bukkit.getWorld(Settings.getInstance().getConfig().getString("game.world")).setTime(6000);
+			game.getWorld().setGameRuleValue("doDaylightCycle", "false");
+			game.getWorld().setTime(6000);
 		} else {
-			Bukkit.getWorld(Settings.getInstance().getConfig().getString("game.world")).setGameRuleValue("doDaylightCycle", "true");
+			game.getWorld().setGameRuleValue("doDaylightCycle", "true");
 		}
 	}
 
@@ -37,10 +37,10 @@ public class Permakill extends Scenario implements Listener {
 	
 	@EventHandler
 	public void onPlayerDeath(PlayerDeathEvent e) {
-		if (Bukkit.getWorld(Settings.getInstance().getConfig().getString("game.world")).getTime() == 6000) {
-			Bukkit.getWorld(Settings.getInstance().getConfig().getString("game.world")).setTime(18000);
+		if (game.getWorld().getTime() == 6000) {
+			game.getWorld().setTime(18000);
 		} else {
-			Bukkit.getWorld(Settings.getInstance().getConfig().getString("game.world")).setTime(6000);
+			game.getWorld().setTime(6000);
 		}
 	}
 }
