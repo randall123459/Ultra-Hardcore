@@ -1,4 +1,4 @@
-package com.leontg77.uhc.inventory.listeners;
+package com.leontg77.uhc.listeners.inventory;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
