@@ -14,7 +14,6 @@ import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
 import com.leontg77.uhc.Game;
-import com.leontg77.uhc.Settings;
 
 /**
  * Packet utilities class.
@@ -24,7 +23,6 @@ import com.leontg77.uhc.Settings;
  * @author LeonTG77
  */
 public class PacketUtils {
-	private static Settings settings = Settings.getInstance();
 	
 	/**
 	 * Sets a tablist for the given player.
@@ -46,7 +44,7 @@ public class PacketUtils {
 	    );
 
 		String gamemode = GameUtils.getTeamSize() + game.getScenarios();
-		String host = settings.getConfig().getString("game.host");
+		String host = game.getHost();
 		int teamsize = game.getTeamSize();
 	        
 		IChatBaseComponent footerJSON = ChatSerializer.a(
