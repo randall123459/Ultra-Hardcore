@@ -21,7 +21,7 @@ import com.leontg77.uhc.utils.LocationUtils;
  * @author LeonTG77
  */
 public class WorldManager {
-	private Settings config = Settings.getInstance();
+	private Settings settings = Settings.getInstance();
 	private static WorldManager instance = new WorldManager();
 	
 	/**
@@ -37,7 +37,7 @@ public class WorldManager {
 	 * Load all the saved worlds.
 	 */
 	public void loadWorlds() {
-		Set<String> worlds = config.getWorlds().getConfigurationSection("worlds").getKeys(false);
+		Set<String> worlds = settings.getWorlds().getConfigurationSection("worlds").getKeys(false);
 		
 		for (String world : worlds) {
 			String name = world;
@@ -83,12 +83,12 @@ public class WorldManager {
 		
 		world.save();
 
-		config.getWorlds().set("worlds." + world.getName() + ".name", name);
-		config.getWorlds().set("worlds." + world.getName() + ".radius", radius);
-		config.getWorlds().set("worlds." + world.getName() + ".seed", seed);
-		config.getWorlds().set("worlds." + world.getName() + ".environment", environment.name());
-		config.getWorlds().set("worlds." + world.getName() + ".worldtype", type.name());
-		config.saveWorlds();
+		settings.getWorlds().set("worlds." + world.getName() + ".name", name);
+		settings.getWorlds().set("worlds." + world.getName() + ".radius", radius);
+		settings.getWorlds().set("worlds." + world.getName() + ".seed", seed);
+		settings.getWorlds().set("worlds." + world.getName() + ".environment", environment.name());
+		settings.getWorlds().set("worlds." + world.getName() + ".worldtype", type.name());
+		settings.saveWorlds();
 	}
 	
 	/**
@@ -105,8 +105,8 @@ public class WorldManager {
 		Bukkit.getServer().unloadWorld(world, false);
 		
 		if (FileUtils.deleteWorld(world.getWorldFolder())) {
-			config.getWorlds().set("worlds." + world.getName(), null);
-			config.saveWorlds();
+			settings.getWorlds().set("worlds." + world.getName(), null);
+			settings.saveWorlds();
 			return true;
 		}
 		return false;
@@ -123,7 +123,7 @@ public class WorldManager {
 	 * @throws Exception if world doesn't exist.
 	 */
 	public void loadWorld(String name) throws Exception {
-		Set<String> worlds = config.getWorlds().getConfigurationSection("worlds").getKeys(false);
+		Set<String> worlds = settings.getWorlds().getConfigurationSection("worlds").getKeys(false);
 		
 		if (!worlds.contains(name)) {
 			throw new Exception("This world doesn't exist.");
@@ -132,9 +132,9 @@ public class WorldManager {
 		WorldCreator creator = new WorldCreator(name);
 		creator.generateStructures(true);
 		
-		long seed = config.getWorlds().getLong("worlds." + name + ".seed", 2347862349786234l);
-		Environment environment = Environment.valueOf(config.getWorlds().getString("worlds." + name + ".environment", Environment.NORMAL.name()));
-		WorldType worldtype = WorldType.valueOf(config.getWorlds().getString("worlds." + name + ".worldtype", WorldType.NORMAL.name()));
+		long seed = settings.getWorlds().getLong("worlds." + name + ".seed", 2347862349786234l);
+		Environment environment = Environment.valueOf(settings.getWorlds().getString("worlds." + name + ".environment", Environment.NORMAL.name()));
+		WorldType worldtype = WorldType.valueOf(settings.getWorlds().getString("worlds." + name + ".worldtype", WorldType.NORMAL.name()));
 		
 		creator.environment(environment);
 		creator.type(worldtype);
