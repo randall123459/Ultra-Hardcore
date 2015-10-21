@@ -52,10 +52,10 @@ import org.bukkit.scoreboard.Team;
 import com.leontg77.uhc.Arena;
 import com.leontg77.uhc.Fireworks;
 import com.leontg77.uhc.Game;
+import com.leontg77.uhc.InvGUI;
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.Parkour;
 import com.leontg77.uhc.Scoreboards;
-import com.leontg77.uhc.Settings;
 import com.leontg77.uhc.Spectator;
 import com.leontg77.uhc.State;
 import com.leontg77.uhc.Teams;
@@ -64,7 +64,6 @@ import com.leontg77.uhc.User;
 import com.leontg77.uhc.User.Rank;
 import com.leontg77.uhc.User.Stat;
 import com.leontg77.uhc.cmds.VoteCommand;
-import com.leontg77.uhc.inventory.InvGUI;
 import com.leontg77.uhc.scenario.ScenarioManager;
 import com.leontg77.uhc.utils.BlockUtils;
 import com.leontg77.uhc.utils.DateUtils;
@@ -81,7 +80,6 @@ import com.leontg77.uhc.utils.RecipeUtils;
  * @author LeonTG77
  */
 public class PlayerListener implements Listener {
-	private Settings settings = Settings.getInstance();
 	private Game game = Game.getInstance();
 	
 	@EventHandler
@@ -371,7 +369,7 @@ public class PlayerListener implements Listener {
 		}
 		
 		if (user.getRank() == Rank.HOST) {
-			String host = settings.getConfig().getString("game.host");
+			String host = game.getHost();
 			String uuid = player.getUniqueId().toString();
 			
 			String prefix;
@@ -496,15 +494,15 @@ public class PlayerListener implements Listener {
 	
 	@EventHandler
 	public void onServerListPing(ServerListPingEvent event) {
-		String scenarios = ChatColor.translateAlternateColorCodes('&', settings.getConfig().getString("game.scenarios", "games scheduled"));
-		String host = Settings.getInstance().getConfig().getString("game.host", "None");
+		String scenarios = ChatColor.translateAlternateColorCodes('&', game.getScenarios());
+		String host = game.getHost();
 		String teamSize = GameUtils.getTeamSize();
 		String state = GameUtils.getState();
 		
 		event.setMotd("§4§lArctic UHC §8- §71.8 §8- §a" + state + "§r \n§6" + 
 		teamSize + scenarios + (teamSize.startsWith("Open") || teamSize.startsWith("No") ? "" : "§8 - §4Host: §7" + host));
 
-		int max = settings.getConfig().getInt("maxplayers", 80);
+		int max = game.getMaxPlayers();
 		event.setMaxPlayers(max);
 	}
 	
