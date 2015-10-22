@@ -28,7 +28,7 @@ public class SpecChatCommand implements CommandExecutor {
         Player player = (Player) sender;
         
 		if (!spec.isSpectating(player)) {
-			sender.sendMessage(Main.PREFIX + "§cYou are not a spectator.");
+			sender.sendMessage(Main.PREFIX + "You are not a spectator.");
 			return true;
 		}
 		
@@ -43,7 +43,7 @@ public class SpecChatCommand implements CommandExecutor {
 			message.append(args[i]).append(" ");
 		}
 
-        String msg = "§8[§5SpecChat§8] §c" + sender.getName() + "§8 » §f" + message.toString().trim();
+        String msg = "§8[§5SpecChat§8] §7" + sender.getName() + "§8 » §f" + message.toString().trim();
         
         for (Player online : PlayerUtils.getPlayers()) {
         	if (!spec.isSpectating(online)) {
