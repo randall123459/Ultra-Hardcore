@@ -60,6 +60,7 @@ import com.leontg77.uhc.cmds.EditCommand;
 import com.leontg77.uhc.cmds.EndCommand;
 import com.leontg77.uhc.cmds.FeedCommand;
 import com.leontg77.uhc.cmds.GamemodeCommand;
+import com.leontg77.uhc.cmds.GiveCommand;
 import com.leontg77.uhc.cmds.GiveallCommand;
 import com.leontg77.uhc.cmds.HOFCommand;
 import com.leontg77.uhc.cmds.HealCommand;
@@ -86,6 +87,7 @@ import com.leontg77.uhc.cmds.SethealthCommand;
 import com.leontg77.uhc.cmds.SetmaxhealthCommand;
 import com.leontg77.uhc.cmds.SetspawnCommand;
 import com.leontg77.uhc.cmds.SkullCommand;
+import com.leontg77.uhc.cmds.SpecChatCommand;
 import com.leontg77.uhc.cmds.SpectateCommand;
 import com.leontg77.uhc.cmds.SpeedCommand;
 import com.leontg77.uhc.cmds.SpreadCommand;
@@ -112,6 +114,12 @@ import com.leontg77.uhc.listeners.LoginListener;
 import com.leontg77.uhc.listeners.PlayerListener;
 import com.leontg77.uhc.listeners.PortalListener;
 import com.leontg77.uhc.listeners.WorldListener;
+import com.leontg77.uhc.listeners.inventory.HOFListener;
+import com.leontg77.uhc.listeners.inventory.InfoListener;
+import com.leontg77.uhc.listeners.inventory.InvseeListener;
+import com.leontg77.uhc.listeners.inventory.SelectorListener;
+import com.leontg77.uhc.listeners.inventory.SpectatorListener;
+import com.leontg77.uhc.listeners.inventory.StatsListener;
 import com.leontg77.uhc.scenario.Scenario;
 import com.leontg77.uhc.scenario.ScenarioManager;
 import com.leontg77.uhc.utils.NumberUtils;
@@ -192,13 +200,20 @@ public class Main extends JavaPlugin {
 		PluginManager manager = Bukkit.getServer().getPluginManager();
 		
 	    protocol.addPacketListener(new HardcoreHearts(this));
-		
+
 		manager.registerEvents(new BlockListener(), this);
 		manager.registerEvents(new EntityListener(), this);
 		manager.registerEvents(new LoginListener(), this);
 		manager.registerEvents(new PlayerListener(), this);
 		manager.registerEvents(new PortalListener(), this);
 		manager.registerEvents(new WorldListener(), this);
+		
+		manager.registerEvents(new HOFListener(), this);
+		manager.registerEvents(new InfoListener(), this);
+		manager.registerEvents(new InvseeListener(), this);
+		manager.registerEvents(new SelectorListener(), this);
+		manager.registerEvents(new SpectatorListener(), this);
+		manager.registerEvents(new StatsListener(), this);
 
 		getCommand("arena").setExecutor(new ArenaCommand());
 		getCommand("ban").setExecutor(new BanCommand());
@@ -216,6 +231,7 @@ public class Main extends JavaPlugin {
 		getCommand("feed").setExecutor(new FeedCommand());
 		getCommand("gamemode").setExecutor(new GamemodeCommand());
 		getCommand("giveall").setExecutor(new GiveallCommand());
+		getCommand("give").setExecutor(new GiveCommand());
 		getCommand("heal").setExecutor(new HealCommand());
 		getCommand("health").setExecutor(new HealthCommand());
 		getCommand("helpop").setExecutor(new HelpopCommand());
@@ -240,6 +256,7 @@ public class Main extends JavaPlugin {
 		getCommand("sethealth").setExecutor(new SethealthCommand());
 		getCommand("setmaxhealth").setExecutor(new SetmaxhealthCommand());
 		getCommand("skull").setExecutor(new SkullCommand());
+		getCommand("sc").setExecutor(new SpecChatCommand());
 		getCommand("spectate").setExecutor(new SpectateCommand());
 		getCommand("setspawn").setExecutor(new SetspawnCommand());
 		getCommand("speed").setExecutor(new SpeedCommand());
