@@ -330,4 +330,14 @@ public class Game {
 	public World getWorld() {
 		return Bukkit.getWorld(settings.getConfig().getString("game.world", "leon"));
 	}
+
+	public void setStats(boolean b) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public boolean stats() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }
