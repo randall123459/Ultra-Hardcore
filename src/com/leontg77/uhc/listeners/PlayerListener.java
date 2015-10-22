@@ -14,6 +14,7 @@ import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.SkullType;
 import org.bukkit.World;
@@ -50,7 +51,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Team;
 
 import com.leontg77.uhc.Arena;
-import com.leontg77.uhc.Fireworks;
 import com.leontg77.uhc.Game;
 import com.leontg77.uhc.InvGUI;
 import com.leontg77.uhc.Main;
@@ -167,13 +167,9 @@ public class PlayerListener implements Listener {
 		}
 		
 		if (deathMessage != null) {
-			if (deathMessage.contains(killer.getName()) && (deathMessage.contains("slain") || deathMessage.contains("shot"))) {
-				ItemStack item = killer.getItemInHand();
-				
-				if (!item.hasItemMeta() && !item.getItemMeta().hasDisplayName()) {
-					return;
-				}
-				
+			ItemStack item = killer.getItemInHand();
+			
+			if (item.hasItemMeta() && item.getItemMeta().hasDisplayName() && deathMessage.contains(killer.getName()) && (deathMessage.contains("slain") || deathMessage.contains("shot"))) {
 				String name = item.getItemMeta().getDisplayName();
 				
 				ComponentBuilder builder = new ComponentBuilder("§8» §r" + deathMessage.replace("[" + name + "]", ""));
@@ -291,7 +287,7 @@ public class PlayerListener implements Listener {
 					online.showPlayer(player);
 				}
 				
-				Spectator.getInstance().enableSpecmode(player, true);
+				spec.enableSpecmode(player, true);
 			}
 		}.runTaskLater(Main.plugin, 200);
 	}
@@ -426,7 +422,6 @@ public class PlayerListener implements Listener {
 		Player player = event.getPlayer();
 		
 		Spectator spec = Spectator.getInstance();
-		Fireworks fire = Fireworks.getInstance();
 		
 		for (Player online : PlayerUtils.getPlayers()) {
 			if (online == player) {
@@ -449,14 +444,6 @@ public class PlayerListener implements Listener {
 		}
 		
 		String command = message.split(" ")[0].substring(1);
-		
-		if (command.equalsIgnoreCase("fire")) {
-			if (player.hasPermission("uhc.staff")) {
-				fire.startFireworkShow();
-				event.setCancelled(true);
-			}
-			return;
-		}
 		
 		if (command.equalsIgnoreCase("me") || command.equalsIgnoreCase("kill")) {
 			player.sendMessage(Main.NO_PERM_MSG);
@@ -485,7 +472,7 @@ public class PlayerListener implements Listener {
 				return;
 			}
 			
-			player.sendMessage(ChatColor.RED + "You may not want to " + done + " when the game is running.");
+			player.sendMessage(ChatColor.RED + "You may not want to " + done + " when a game is running.");
 			player.sendMessage(ChatColor.RED + "If you still want to " + done + ", do it in the console.");
 			event.setCancelled(true);
 			return;
@@ -509,8 +496,9 @@ public class PlayerListener implements Listener {
 	@EventHandler
 	public void onPlayerMove(PlayerMoveEvent event) {
 		Player player = event.getPlayer();
+		Location to = event.getTo();
 		
-		if (event.getTo().getWorld().getName().equals("lobby") && event.getTo().getY() <= 20) {
+		if (to.getWorld().getName().equals("lobby") && to.getY() <= 20) {
 			Parkour parkour = Parkour.getInstance();
 			
 			if (parkour.isParkouring(player)) {
@@ -556,14 +544,16 @@ public class PlayerListener implements Listener {
         	}
         }
         
-        if (item == null) {
-        	return;
-        }
-        
         if (action == Action.RIGHT_CLICK_BLOCK && State.isState(State.INGAME) && Timers.pvp > 0 && !game.isRecordedRound()) {
+            if (item == null) {
+            	return;
+            }
+            
         	if (item.getType() != Material.LAVA_BUCKET && item.getType() != Material.FLINT_AND_STEEL && item.getType() != Material.CACTUS) {
             	return;
         	}
+			
+			Team pTeam = Teams.getInstance().getTeam(player);
         	
         	for (Entity nearby : PlayerUtils.getNearby(event.getClickedBlock().getLocation(), 5)) {
     			if (!(nearby instanceof Player)) {
@@ -580,16 +570,13 @@ public class PlayerListener implements Listener {
 					continue;
 				}
 				
-				Team pTeam = Teams.getInstance().getTeam(player);
 				Team nearTeam = Teams.getInstance().getTeam(near);
 				
 				if (pTeam != null && nearTeam != null) {
-					if (pTeam == nearTeam) {
-						continue;
+					if (pTeam != nearTeam) {
+						PlayerUtils.broadcast(Main.PREFIX + "§c" + player.getName() + " §7attempted to iPvP §c" + near.getName(), "uhc.staff");
 					}
 				}
-				
-				PlayerUtils.broadcast(Main.PREFIX + "§c" + player.getName() + " §7attempted to iPvP §c" + near.getName(), "uhc.staff");
 				
 				player.sendMessage(Main.PREFIX + "iPvP is not allowed before PvP.");
 				player.sendMessage(Main.PREFIX + "Stop iPvPing now or staff will take action.");
@@ -598,7 +585,6 @@ public class PlayerListener implements Listener {
 				event.setCancelled(true);
 				break;
     		}
-        	return;
         }
         
 		if (!spec.isSpectating(player)) {
