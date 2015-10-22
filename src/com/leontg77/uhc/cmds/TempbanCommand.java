@@ -31,7 +31,7 @@ public class TempbanCommand implements CommandExecutor {
 
 	@Override
 	public boolean onCommand(final CommandSender sender, Command cmd, String label, final String[] args) {
-		if (!sender.hasPermission("uhc.ban")) {
+		if (!sender.hasPermission("uhc.tempban")) {
 			sender.sendMessage(Main.NO_PERM_MSG);
 			return true;
 		}
