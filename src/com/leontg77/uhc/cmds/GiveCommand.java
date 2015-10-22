@@ -47,7 +47,7 @@ public class GiveCommand implements CommandExecutor {
 		} 
 		catch (Exception e) {
 			for (Material types : Material.values()) {
-				if (types.name().startsWith(args[0].toUpperCase())) {
+				if (types.name().startsWith(args[1].toUpperCase())) {
 					material = types;
 					break;
 				}
