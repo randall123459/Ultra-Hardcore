@@ -276,6 +276,10 @@ public class User {
 			return;
 		}
 		
+		if (!game.stats()) {
+			return;
+		}
+		
 		String statName = stat.name().toLowerCase();
 		int current = config.getInt("stats." + statName, 0);
 		
@@ -293,6 +297,9 @@ public class User {
 		return config.getInt("stats." + stat.name().toLowerCase(), 0);
 	}
 	
+	/**
+	 * Reset the players health, food, xp, inventory and effects.
+	 */
 	public void reset() {
         resetHealth();
         resetFood();
@@ -301,6 +308,9 @@ public class User {
         resetEffects();
     }
 
+	/**
+	 * Reset the players effects.
+	 */
     public void resetEffects() {
         Collection<PotionEffect> effects = player.getActivePotionEffects();
 
@@ -309,22 +319,34 @@ public class User {
         }
     }
 
+	/**
+	 * Reset the players health.
+	 */
     public void resetHealth() {
         player.setHealth(player.getMaxHealth());
     }
 
+	/**
+	 * Reset the players food.
+	 */
     public void resetFood() {
         player.setSaturation(5.0F);
         player.setExhaustion(0F);
         player.setFoodLevel(20);
     }
 
+	/**
+	 * Reset the players xp.
+	 */
     public void resetExp() {
         player.setTotalExperience(0);
         player.setLevel(0);
         player.setExp(0F);
     }
 
+	/**
+	 * Reset the players inventory.
+	 */
     public void resetInventory() {
         PlayerInventory inv = player.getInventory();
 
@@ -354,6 +376,6 @@ public class User {
 	 * @author LeonTG77
 	 */
 	public enum Stat {
-		DEATHS, KILLS, WINS, GAMESPLAYED, ARENAKILLS, ARENADEATHS, GOLDENAPPLESEATEN, GOLDENHEADSEATEN, HORSESTAMED, NETHER, END, DIAMONDS, GOLD, HOSTILEMOBKILLS, ANIMALKILLS, KILLSTREAK, DAMAGETAKEN, POTIOJNS;
+		DEATHS, KILLS, WINS, GAMESPLAYED, ARENAKILLS, ARENADEATHS, ARENAKILLSTREAK, GOLDENAPPLESEATEN, GOLDENHEADSEATEN, HORSESTAMED, WOLVESTAMED, NETHER, END, DIAMONDS, GOLD, HOSTILEMOBKILLS, ANIMALKILLS, KILLSTREAK, DAMAGETAKEN, POTIONS;
 	}
 }
