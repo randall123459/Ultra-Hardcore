@@ -37,7 +37,7 @@ public class InfoListener implements Listener {
         
 		Inventory inv = event.getInventory();
 		
-		if (!inv.getTitle().equals("§8» §cGame Information §8«")) {
+		if (!inv.getTitle().equals("» §7Game Information")) {
 			return;
 		}
 		

@@ -39,7 +39,7 @@ public class SelectorListener implements Listener {
 			return;
 		}
 			
-		if (inv.getTitle().equals("§8» §cPlayer Selector §8«")) {
+		if (inv.getTitle().equals("» §7Player Selector")) {
 			return;
 		}
 		
