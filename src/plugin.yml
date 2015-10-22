@@ -46,6 +46,8 @@ commands:
     aliases: [gm]
   giveall:
     description: Give everyone online an item.
+  give:
+    description: Give a player an item.
   heal:
     description: Heal someone.
   health:
@@ -101,6 +103,8 @@ commands:
     description: Set the max health of a player.
   skull:
     description: Spawn a player head.
+  sc:
+    description: Talk in spectator chat.
   spectate:
     description: Change your spectator status.
     aliases: [spec]
@@ -111,8 +115,7 @@ commands:
   spread:
     description: Spread all players and freeze them.
   ac:
-    description: StaffChat Command.
-    aliases: [sc]
+    description: Talk in StaffChat.
   start:
     description: Start command.
   stats:
