@@ -70,6 +70,7 @@ public class PermsUtils {
 			perm.setPermission("uhc.sethealth", true);
 			perm.setPermission("uhc.setmaxhealth", true);
 			perm.setPermission("uhc.spectate", true);
+			perm.setPermission("uhc.seemsg", true);
 			perm.setPermission("uhc.cmdspy", true);
 			perm.setPermission("uhc.staff", true);
 			perm.setPermission("uhc.admin", true);
