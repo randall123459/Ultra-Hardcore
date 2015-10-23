@@ -378,12 +378,12 @@ public class ConfigCommand implements CommandExecutor, TabCompleter {
 				case RR:
 					if (args[1].equalsIgnoreCase("true")) {
 						PlayerUtils.broadcast(Main.PREFIX + "This is now an recorded round.");
-						game.setRR(true);
+						game.setRecordedRound(true);
 						
 						Scoreboards.getInstance().kills.setDisplayName("§6" + game.getRRName());
 					} else if (args[1].equalsIgnoreCase("false")) {
 						PlayerUtils.broadcast(Main.PREFIX + "This is no longer an recorded round.");
-						game.setRR(false);
+						game.setRecordedRound(false);
 						
 						Scoreboards.getInstance().kills.setDisplayName("§4UHC §8- §7" + Settings.getInstance().getConfig().getString("game.host"));
 					} else {
