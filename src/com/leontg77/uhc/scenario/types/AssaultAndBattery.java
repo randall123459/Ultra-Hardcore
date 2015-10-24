@@ -79,19 +79,19 @@ public class AssaultAndBattery extends Scenario implements Listener, CommandExec
 			
 			for (Player online : PlayerUtils.getPlayers()) {
 				if (!types.containsKey(online.getName())) {
-					online.sendMessage(Main.prefix() + "You are both, you can only do all types of damage.");
+					online.sendMessage(Main.PREFIX + "You are both, you can only do all types of damage.");
 					return;
 				}
 				
 				switch (types.get(online.getName())) {
 				case ASSAULT:
-					online.sendMessage(Main.prefix() + "You are the assaulter, you can only do melee damage.");
+					online.sendMessage(Main.PREFIX + "You are the assaulter, you can only do melee damage.");
 					break;
 				case BATTERY:
-					online.sendMessage(Main.prefix() + "You are the battery, you can only do projectile damage.");
+					online.sendMessage(Main.PREFIX + "You are the battery, you can only do projectile damage.");
 					break;
 				case BOTH:
-					online.sendMessage(Main.prefix() + "You are both, you can only do all types of damage.");
+					online.sendMessage(Main.PREFIX + "You are both, you can only do all types of damage.");
 					break;
 				}
 			}
@@ -145,7 +145,8 @@ public class AssaultAndBattery extends Scenario implements Listener, CommandExec
 			}
 		}
 	}
-	
+
+	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (!(sender instanceof Player)) {
 			sender.sendMessage(ChatColor.RED + "Only players can use AssaultAndBattery commands.");
@@ -156,31 +157,31 @@ public class AssaultAndBattery extends Scenario implements Listener, CommandExec
 		
 		if (cmd.getName().equalsIgnoreCase("class")) {
 			if (!isEnabled()) {
-				player.sendMessage(Main.prefix() + "\"AssaultAndBattery\" is not enabled.");
+				player.sendMessage(Main.PREFIX + "\"AssaultAndBattery\" is not enabled.");
 				return true;
 			}
 			
 			if (!types.containsKey(player.getName())) {
-				player.sendMessage(Main.prefix() + "You are both, you can only do all types of damage.");
+				player.sendMessage(Main.PREFIX + "You are both, you can only do all types of damage.");
 				return true;
 			}
 			
 			switch (types.get(player.getName())) {
 			case ASSAULT:
-				player.sendMessage(Main.prefix() + "You are the assaulter, you can only do melee damage.");
+				player.sendMessage(Main.PREFIX + "You are the assaulter, you can only do melee damage.");
 				break;
 			case BATTERY:
-				player.sendMessage(Main.prefix() + "You are the battery, you can only do projectile damage.");
+				player.sendMessage(Main.PREFIX + "You are the battery, you can only do projectile damage.");
 				break;
 			case BOTH:
-				player.sendMessage(Main.prefix() + "You are both, you can only do all types of damage.");
+				player.sendMessage(Main.PREFIX + "You are both, you can only do all types of damage.");
 				break;
 			}
 		}
 		
 		if (cmd.getName().equalsIgnoreCase("listclass")) {
 			if (!isEnabled()) {
-				player.sendMessage(Main.prefix() + "\"AssaultAndBattery\" is not enabled.");
+				player.sendMessage(Main.PREFIX + "\"AssaultAndBattery\" is not enabled.");
 				return true;
 			}
 			
@@ -212,9 +213,9 @@ public class AssaultAndBattery extends Scenario implements Listener, CommandExec
 				}
 			}
 			
-			player.sendMessage(Main.prefix() + "Assaulters: " + assault.toString().trim());
-			player.sendMessage(Main.prefix() + "Batteries: " + battery.toString().trim());
-			player.sendMessage(Main.prefix() + "Both: " + both.toString().trim());
+			player.sendMessage(Main.PREFIX + "Assaulters: " + assault.toString().trim());
+			player.sendMessage(Main.PREFIX + "Batteries: " + battery.toString().trim());
+			player.sendMessage(Main.PREFIX + "Both: " + both.toString().trim());
 		}
 		return true;
 	}

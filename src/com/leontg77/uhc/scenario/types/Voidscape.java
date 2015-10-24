@@ -60,13 +60,13 @@ public class Voidscape extends Scenario implements Listener, CommandExecutor {
 		
 		if (cmd.getName().equalsIgnoreCase("void")) {
 			if (!isEnabled()) {
-				sender.sendMessage(Main.prefix() + "\"Voidscape\" is not enabled.");
+				sender.sendMessage(Main.PREFIX + "\"Voidscape\" is not enabled.");
 				return true;
 			}
 			
 			if (sender.hasPermission("uhc.void")) {
 				if (args.length == 0) {
-					player.sendMessage(Main.prefix() + "Usage: /void <radius>");
+					player.sendMessage(Main.PREFIX + "Usage: /void <radius>");
 					return true;
 				}
 				
@@ -83,7 +83,7 @@ public class Voidscape extends Scenario implements Listener, CommandExecutor {
 				int radiusZ = (radius / 16);
 				
 				chunks.clear();
-				PlayerUtils.broadcast(Main.prefix() + "Voidscape generation started.");
+				PlayerUtils.broadcast(Main.PREFIX + "Voidscape generation started.");
 				
 				for (int cx = (0 - radiusX); cx < radiusX; cx++) {
 					for (int cz = (0 - radiusZ); cz < radiusZ; cz++) {
@@ -100,7 +100,7 @@ public class Voidscape extends Scenario implements Listener, CommandExecutor {
 					public void run() {
 						if (i >= chunks.size()) {
 							cancel();
-							PlayerUtils.broadcast(Main.prefix() + "Voidscape generation finished.");
+							PlayerUtils.broadcast(Main.PREFIX + "Voidscape generation finished.");
 							return;
 						}
 						
@@ -123,14 +123,14 @@ public class Voidscape extends Scenario implements Listener, CommandExecutor {
 						int one = ((chunks.size() - finished.size())*100 / chunks.size());
 						
 						for (Player online : PlayerUtils.getPlayers()) {
-							PacketUtils.sendAction(online, Main.prefix() + "Voidscape generation §6" + one + "% §7finished");
+							PacketUtils.sendAction(online, Main.PREFIX + "Voidscape generation §6" + one + "% §7finished");
 						}
 						
 						i++;
 					}
 				}.runTaskTimer(Main.plugin, 2, 2);
 			} else {
-				sender.sendMessage(Main.prefix() + "You can't use that command.");
+				sender.sendMessage(Main.PREFIX + "You can't use that command.");
 			}
 		}
 		return true;

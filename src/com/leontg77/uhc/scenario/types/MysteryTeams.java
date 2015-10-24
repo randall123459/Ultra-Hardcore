@@ -58,10 +58,11 @@ public class MysteryTeams extends Scenario implements Listener, CommandExecutor 
 		return "§6[§cMysteryTeams§6] §f";
 	}
 	
+	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (cmd.getName().equalsIgnoreCase("mt")) {
 			if (!isEnabled()) {
-				sender.sendMessage(Main.prefix() + "\"MysteryTeams\" is not enabled.");
+				sender.sendMessage(Main.PREFIX + "\"MysteryTeams\" is not enabled.");
 				return true;
 			}
 			
@@ -135,7 +136,7 @@ public class MysteryTeams extends Scenario implements Listener, CommandExecutor 
 					    		meta.setBaseColor(t.getDyeColor());
 					    		item.setItemMeta(meta);
 					    		
-								p.sendMessage(Main.prefix() + "You were added to " + t.getChatColor() + t.getName() + " §7team.");
+								p.sendMessage(Main.PREFIX + "You were added to " + t.getChatColor() + t.getName() + " §7team.");
 					    		PlayerUtils.giveItem(p, item);
 							}
 						} catch (Exception e) {
@@ -143,7 +144,7 @@ public class MysteryTeams extends Scenario implements Listener, CommandExecutor 
 						}
 
 						if (this.teams.get(t).size() > 0) {
-							sender.sendMessage(Main.prefix() + "Created a rTo" + teamSize + " using team " + t.getName() + ".");
+							sender.sendMessage(Main.PREFIX + "Created a rTo" + teamSize + " using team " + t.getName() + ".");
 						}
 					} else {
 						sender.sendMessage(prefix() + "§7Usage: /mt randomize <teamsize> [playersnotplaying]");

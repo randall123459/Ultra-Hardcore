@@ -55,7 +55,7 @@ public class SlaveMarket extends Scenario implements Listener, CommandExecutor {
 	}
 	
 	public String prefix() {
-		return Main.prefix().replaceAll("UHC", "Slave");
+		return Main.PREFIX.replaceAll("UHC", "Slave");
 	}
 	
 	@EventHandler
@@ -71,7 +71,7 @@ public class SlaveMarket extends Scenario implements Listener, CommandExecutor {
 	public boolean onCommand(final CommandSender sender, Command cmd, String label, final String[] args) {
 		if (cmd.getName().equalsIgnoreCase("slavereset")) {
 			if (!isEnabled()) {
-				sender.sendMessage(Main.prefix() + "\"SlaveMarket\" is not enabled.");
+				sender.sendMessage(Main.PREFIX + "\"SlaveMarket\" is not enabled.");
 				return true;
 			}
 			
@@ -90,19 +90,19 @@ public class SlaveMarket extends Scenario implements Listener, CommandExecutor {
 				
 				PlayerUtils.broadcast(prefix() + "SlaveMarket has been reset.");
 			} else {
-				sender.sendMessage(Main.prefix() + "You can't use that command.");
+				sender.sendMessage(Main.PREFIX + "You can't use that command.");
 			}
 		}
 		
 		if (cmd.getName().equalsIgnoreCase("slaveowner")) {
 			if (!isEnabled()) {
-				sender.sendMessage(Main.prefix() + "\"SlaveMarket\" is not enabled.");
+				sender.sendMessage(Main.PREFIX + "\"SlaveMarket\" is not enabled.");
 				return true;
 			}
 			
 			if (sender.hasPermission("uhc.slavemarket")) {
 				if (args.length == 0) {
-					sender.sendMessage(Main.prefix() + "Usage: /slaveowner <add|remove|list> [player] [amountofdias]");
+					sender.sendMessage(Main.PREFIX + "Usage: /slaveowner <add|remove|list> [player] [amountofdias]");
 					return true;
 				}
 				
@@ -141,7 +141,7 @@ public class SlaveMarket extends Scenario implements Listener, CommandExecutor {
 							target.getInventory().addItem(new ItemStack (Material.DIAMOND, 30));
 						}
 					} else {
-						sender.sendMessage(Main.prefix() + "Usage: /slaveowner <add|remove|list> [player] [amountofdias]");
+						sender.sendMessage(Main.PREFIX + "Usage: /slaveowner <add|remove|list> [player] [amountofdias]");
 					}
 				}
 				else if (args[0].equalsIgnoreCase("remove")) {
@@ -163,7 +163,7 @@ public class SlaveMarket extends Scenario implements Listener, CommandExecutor {
 						PlayerUtils.broadcast(prefix() + ChatColor.GREEN + args[1] + " §7is no longer a slave owner!");
 						target.getInventory().clear();
 					} else {
-						sender.sendMessage(Main.prefix() + "Usage: /slaveowner <add|remove|list> [player] [amountofdias]");
+						sender.sendMessage(Main.PREFIX + "Usage: /slaveowner <add|remove|list> [player] [amountofdias]");
 					}
 				}
 				else if (args[0].equalsIgnoreCase("list")) {
@@ -180,16 +180,16 @@ public class SlaveMarket extends Scenario implements Listener, CommandExecutor {
 					sender.sendMessage(prefix() + "Current slaves: " + s.toString().trim());
 				}
 				else {
-					sender.sendMessage(Main.prefix() + "Usage: /slaveowner <add|remove|list> [player] [amountofdias]");
+					sender.sendMessage(Main.PREFIX + "Usage: /slaveowner <add|remove|list> [player] [amountofdias]");
 				}
 			} else {
-				sender.sendMessage(Main.prefix() + "You can't use that command.");
+				sender.sendMessage(Main.PREFIX + "You can't use that command.");
 			}
 		}
 		
 		if (cmd.getName().equalsIgnoreCase("startbid")) {
 			if (!isEnabled()) {
-				sender.sendMessage(Main.prefix() + "\"SlaveMarket\" is not enabled.");
+				sender.sendMessage(Main.PREFIX + "\"SlaveMarket\" is not enabled.");
 				return true;
 			}
 			
@@ -310,7 +310,7 @@ public class SlaveMarket extends Scenario implements Listener, CommandExecutor {
 					}
 				}, 80);
 			} else {
-				sender.sendMessage(Main.prefix() + "You can't use that command.");
+				sender.sendMessage(Main.PREFIX + "You can't use that command.");
 			}
 		}
 		
@@ -323,13 +323,13 @@ public class SlaveMarket extends Scenario implements Listener, CommandExecutor {
 			Player player = (Player) sender;
 			
 			if (!isEnabled()) {
-				sender.sendMessage(Main.prefix() + "\"SlaveMarket\" is not enabled.");
+				sender.sendMessage(Main.PREFIX + "\"SlaveMarket\" is not enabled.");
 				return true;
 			}
 			
 			if (traders.contains(player.getName())) {
 				if (args.length == 0) {
-					player.sendMessage(Main.prefix() + "Usage: /bid <amount>");
+					player.sendMessage(Main.PREFIX + "Usage: /bid <amount>");
 					return true;
 				}
 				

@@ -34,38 +34,40 @@ public class LAFS extends Scenario implements Listener {
 	
 	@EventHandler
 	public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
-		if (event.getRightClicked() instanceof Player) {
-			Player player = event.getPlayer();
-			Player clicked = (Player) event.getRightClicked();
-			
-			if (player.getWorld().getName().equals("lobby") || player.getWorld().getName().equals("arena")) {
-				return;
-			}
-			
-			if (clicked.getWorld().getName().equals("lobby") || clicked.getWorld().getName().equals("arena")) {
-				return;
-			}
-			
-			if (player.getScoreboard().getEntryTeam(player.getName()) != null) {
-				player.sendMessage(ChatColor.RED + "You are already on a team");
-				return;
-			}
-			
-			if (clicked.getScoreboard().getEntryTeam(clicked.getName()) != null) {
-				player.sendMessage(ChatColor.RED + "That player is already on a team.");
-				return;
-			}
-			
-			Team t = Teams.getInstance().findAvailableTeam();
-			
-			if (t == null) {
-				player.sendMessage(ChatColor.RED + "No more available teams.");
-				return;
-			}
-			
-			t.addEntry(player.getName());
-			t.addEntry(clicked.getName());
-			PlayerUtils.broadcast(Main.prefix().replaceAll("UHC", "§d§lLAFS") + ChatColor.GREEN + player.getName() + " §7and§a " + clicked.getName() + " §7has found each other.");
+		if (!(event.getRightClicked() instanceof Player)) {
+			return;
 		}
+		
+		Player player = event.getPlayer();
+		Player clicked = (Player) event.getRightClicked();
+		
+		if (player.getWorld().getName().equals("lobby") || player.getWorld().getName().equals("arena")) {
+			return;
+		}
+		
+		if (clicked.getWorld().getName().equals("lobby") || clicked.getWorld().getName().equals("arena")) {
+			return;
+		}
+		
+		if (player.getScoreboard().getEntryTeam(player.getName()) != null) {
+			player.sendMessage(ChatColor.RED + "You are already on a team");
+			return;
+		}
+		
+		if (clicked.getScoreboard().getEntryTeam(clicked.getName()) != null) {
+			player.sendMessage(ChatColor.RED + "That player is already on a team.");
+			return;
+		}
+		
+		Team t = Teams.getInstance().findAvailableTeam();
+		
+		if (t == null) {
+			player.sendMessage(ChatColor.RED + "No more available teams.");
+			return;
+		}
+		
+		t.addEntry(player.getName());
+		t.addEntry(clicked.getName());
+		PlayerUtils.broadcast(Main.PREFIX.replaceFirst("UHC", "§d§lLAFS") + ChatColor.GREEN + player.getName() + " §7and§a " + clicked.getName() + " §7has found each other.");
 	}
 }

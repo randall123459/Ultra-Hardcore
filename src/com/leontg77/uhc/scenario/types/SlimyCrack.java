@@ -65,7 +65,7 @@ public class SlimyCrack extends Scenario implements Listener, CommandExecutor {
 		
 		if (cmd.getName().equalsIgnoreCase("slimecrack")) {
 			if (!isEnabled()) {
-				player.sendMessage(Main.prefix() + "\"SlimyCrack\" is not enabled.");
+				player.sendMessage(Main.PREFIX + "\"SlimyCrack\" is not enabled.");
 				return true;
 			}
 			
@@ -148,7 +148,7 @@ public class SlimyCrack extends Scenario implements Listener, CommandExecutor {
                             populate(world, chunk, width, length, z2);
     						
     						for (Player online : PlayerUtils.getPlayers()) {
-    							PacketUtils.sendAction(online, Main.prefix().replaceAll("UHC", "SlimyCrack") + "Populated chunk at x = §a" + chunk.getX() + "§7, z = §a" + chunk.getZ() + "§7.");
+    							PacketUtils.sendAction(online, Main.PREFIX.replaceAll("UHC", "SlimyCrack") + "Populated chunk at x = §a" + chunk.getX() + "§7, z = §a" + chunk.getZ() + "§7.");
     						}
                         }
                     }.runTaskLater(Main.plugin, delayMultiplier * speed);
@@ -164,7 +164,7 @@ public class SlimyCrack extends Scenario implements Listener, CommandExecutor {
                             populate(world, chunk, width, length, z2);
     						
     						for (Player online : PlayerUtils.getPlayers()) {
-    							PacketUtils.sendAction(online, Main.prefix().replaceAll("UHC", "SlimyCrack") + "Populated chunk at x = §a" + chunk.getX() + "§7, z = §a" + chunk.getZ() + "§7.");
+    							PacketUtils.sendAction(online, Main.PREFIX.replaceAll("UHC", "SlimyCrack") + "Populated chunk at x = §a" + chunk.getX() + "§7, z = §a" + chunk.getZ() + "§7.");
     						}
                         }
                     }.runTaskLater(Main.plugin, delayMultiplier * speed);
@@ -176,7 +176,7 @@ public class SlimyCrack extends Scenario implements Listener, CommandExecutor {
         new BukkitRunnable() {
             public void run() {
             	generation = false;
-                PlayerUtils.broadcast(Main.prefix().replaceAll("UHC", "SlimyCrack") + "SlimyCrack generation finished!");
+                PlayerUtils.broadcast(Main.PREFIX.replaceAll("UHC", "SlimyCrack") + "SlimyCrack generation finished!");
             }
         }.runTaskLater(Main.plugin, delayMultiplier * speed);
     }

@@ -54,6 +54,7 @@ public class BigCrack extends Scenario implements Listener, CommandExecutor {
         }
     }
 	
+	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (!(sender instanceof Player)) {
 			sender.sendMessage(ChatColor.RED + "Only players can have generate cracks.");
@@ -62,36 +63,35 @@ public class BigCrack extends Scenario implements Listener, CommandExecutor {
 		
 		Player player = (Player) sender;
 		
-		if (cmd.getName().equalsIgnoreCase("bigcrack")) {
-			if (!isEnabled()) {
-				player.sendMessage(Main.prefix() + "\"BigCrack\" is not enabled.");
-				return true;
-			}
-			
-			if (player.hasPermission("uhc.bigcrack.generate")) {
-				if (args.length < 3) {
-					player.sendMessage(ChatColor.RED + "Usage: /bigcrack <width> <length> <speed>");
-	                return true;
-	            }
-
-	            int width;
-	            int length;
-	            int speed;
-	            
-	            try {
-	                width = Integer.parseInt(args[0]);
-	                length = Integer.parseInt(args[1]);
-	                speed = Integer.parseInt(args[2]);
-	            } catch (NumberFormatException ex) {
-	            	player.sendMessage(ChatColor.RED + "Invaild number!");
-	                return true;
-	            }
-	            
-	            generate(player.getWorld(), length, width, speed);
-			} else {
-				player.sendMessage(Main.NO_PERM_MSG);
-			}
+		if (!isEnabled()) {
+			player.sendMessage(Main.PREFIX + "\"BigCrack\" is not enabled.");
+			return true;
 		}
+		
+		if (!player.hasPermission("uhc.bigcrack.generate")) {
+			sender.sendMessage(Main.NO_PERM_MSG);
+			return true;
+		}
+		
+		if (args.length < 3) {
+			player.sendMessage(ChatColor.RED + "Usage: /bigcrack <width> <length> <speed>");
+            return true;
+        }
+
+        int width;
+        int length;
+        int speed;
+        
+        try {
+            width = Integer.parseInt(args[0]);
+            length = Integer.parseInt(args[1]);
+            speed = Integer.parseInt(args[2]);
+        } catch (NumberFormatException ex) {
+        	player.sendMessage(ChatColor.RED + "Invaild number!");
+            return true;
+        }
+        
+        generate(player.getWorld(), length, width, speed);
 		return true;
 	}
 	
@@ -127,7 +127,7 @@ public class BigCrack extends Scenario implements Listener, CommandExecutor {
                         populate(world, chunk, width, length);
 						
 						for (Player online : PlayerUtils.getPlayers()) {
-							PacketUtils.sendAction(online, Main.prefix().replaceAll("UHC", "Bigcrack") + "Populated chunk at x = §a" + chunk.getX() + "§7, z = §a" + chunk.getZ() + "§7.");
+							PacketUtils.sendAction(online, Main.PREFIX.replaceAll("UHC", "Bigcrack") + "Populated chunk at x = §a" + chunk.getX() + "§7, z = §a" + chunk.getZ() + "§7.");
 						}
                     }
                 }.runTaskLater(Main.plugin, delayMultiplier * speed);
@@ -138,7 +138,7 @@ public class BigCrack extends Scenario implements Listener, CommandExecutor {
         new BukkitRunnable() {
             public void run() {
             	generation = false;
-                PlayerUtils.broadcast(Main.prefix().replaceAll("UHC", "Bigcrack") + "Bigcrack generation finished!");
+                PlayerUtils.broadcast(Main.PREFIX.replaceAll("UHC", "Bigcrack") + "Bigcrack generation finished!");
             }
         }.runTaskLater(Main.plugin, delayMultiplier * speed);
     }

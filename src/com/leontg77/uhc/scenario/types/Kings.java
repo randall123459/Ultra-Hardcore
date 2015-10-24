@@ -96,12 +96,12 @@ public class Kings extends Scenario implements Listener, CommandExecutor {
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (cmd.getName().equalsIgnoreCase("addking")) {
 			if (!isEnabled()) {
-				sender.sendMessage(Main.prefix() + "\"Kings\" is not enabled.");
+				sender.sendMessage(Main.PREFIX + "\"Kings\" is not enabled.");
 				return true;
 			}
 			
 			if (args.length == 0) {
-				sender.sendMessage(Main.prefix() + "Usage: /setking <player>");
+				sender.sendMessage(Main.PREFIX + "Usage: /setking <player>");
 				return true;
 			}
 			
@@ -127,7 +127,7 @@ public class Kings extends Scenario implements Listener, CommandExecutor {
 		
 		if (cmd.getName().equalsIgnoreCase("remking")) {
 			if (!isEnabled()) {
-				sender.sendMessage(Main.prefix() + "\"Kings\" is not enabled.");
+				sender.sendMessage(Main.PREFIX + "\"Kings\" is not enabled.");
 				return true;
 			}
 			

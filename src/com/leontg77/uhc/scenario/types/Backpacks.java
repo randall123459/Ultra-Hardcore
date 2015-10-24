@@ -59,7 +59,8 @@ public class Backpacks extends Scenario implements Listener, CommandExecutor {
 		
 		player.getEnderChest().clear();
 	}
-	
+
+	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (!(sender instanceof Player)) {
 			sender.sendMessage(ChatColor.RED + "Only players can use backpacks.");
@@ -68,14 +69,12 @@ public class Backpacks extends Scenario implements Listener, CommandExecutor {
 		
 		Player player = (Player) sender;
 		
-		if (cmd.getName().equalsIgnoreCase("bp")) {
-			if (!isEnabled()) {
-				player.sendMessage(Main.prefix() + "\"Backbacks\" is not enabled.");
-				return true;
-			}
-
-			player.openInventory(player.getEnderChest());
+		if (!isEnabled()) {
+			player.sendMessage(Main.PREFIX + "\"Backbacks\" is not enabled.");
+			return true;
 		}
+
+		player.openInventory(player.getEnderChest());
 		return true;
 	}
 }

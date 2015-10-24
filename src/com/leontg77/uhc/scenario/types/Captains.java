@@ -51,12 +51,12 @@ public class Captains extends Scenario implements Listener, CommandExecutor {
 	public boolean onCommand(CommandSender player, Command cmd, String label, String[] args) {
 		if (cmd.getName().equalsIgnoreCase("addcaptain")) {
 			if (!isEnabled()) {
-				player.sendMessage(Main.prefix() + "\"Captains\" is not enabled.");
+				player.sendMessage(Main.PREFIX + "\"Captains\" is not enabled.");
 				return true;
 			}
 			
 			if (!player.hasPermission("uhc.captains")) {
-				player.sendMessage(ChatColor.RED + "You do not have access to that command.");
+				player.sendMessage(Main.NO_PERM_MSG);
 				return true;
 			}
 			
@@ -80,17 +80,17 @@ public class Captains extends Scenario implements Listener, CommandExecutor {
 			team.addEntry(args[0]);
 			
 			captains.add(args[0]);
-			PlayerUtils.broadcast(Main.prefix() + ChatColor.GREEN + args[0] + " §7is now an captain.");
+			PlayerUtils.broadcast(Main.PREFIX + ChatColor.GREEN + args[0] + " §7is now an captain.");
 		}
 		
 		if (cmd.getName().equalsIgnoreCase("removecaptain")) {
 			if (!isEnabled()) {
-				player.sendMessage(Main.prefix() + "\"Captains\" is not enabled.");
+				player.sendMessage(Main.PREFIX + "\"Captains\" is not enabled.");
 				return true;
 			}
 			
 			if (!player.hasPermission("uhc.captains")) {
-				player.sendMessage(ChatColor.RED + "You do not have access to that command.");
+				player.sendMessage(Main.NO_PERM_MSG);
 				return true;
 			}
 			
@@ -111,17 +111,17 @@ public class Captains extends Scenario implements Listener, CommandExecutor {
 			}
 			
 			captains.remove(args[0]);
-			PlayerUtils.broadcast(Main.prefix() + args[0] + ChatColor.GREEN + " §7is no longer an captain.");
+			PlayerUtils.broadcast(Main.PREFIX + args[0] + ChatColor.GREEN + " §7is no longer an captain.");
 		}
 		
 		if (cmd.getName().equalsIgnoreCase("randomcaptain")) {
 			if (!isEnabled()) {
-				player.sendMessage(Main.prefix() + "\"Captains\" is not enabled.");
+				player.sendMessage(Main.PREFIX + "\"Captains\" is not enabled.");
 				return true;
 			}
 			
 			if (!player.hasPermission("uhc.captains")) {
-				player.sendMessage(ChatColor.RED + "You do not have access to that command.");
+				player.sendMessage(Main.NO_PERM_MSG);
 				return true;
 			}
 			
@@ -159,31 +159,31 @@ public class Captains extends Scenario implements Listener, CommandExecutor {
 				}
 				
 				t.addEntry(s);
-				PlayerUtils.broadcast(Main.prefix() + ChatColor.GREEN + s + " §7is now an captain.");
+				PlayerUtils.broadcast(Main.PREFIX + ChatColor.GREEN + s + " §7is now an captain.");
 			}
 		}
 		
 		if (cmd.getName().equalsIgnoreCase("cycle")) {
 			if (!isEnabled()) {
-				player.sendMessage(Main.prefix() + "\"Captains\" is not enabled.");
+				player.sendMessage(Main.PREFIX + "\"Captains\" is not enabled.");
 				return true;
 			}
 			
 			if (!player.hasPermission("uhc.captains")) {
-				player.sendMessage(ChatColor.RED + "You do not have access to that command.");
+				player.sendMessage(Main.NO_PERM_MSG);
 				return true;
 			}
 			
 			if (cycle) {
 				cycle = false;
-				PlayerUtils.broadcast(Main.prefix() + "Captains can no longer choose players.");
+				PlayerUtils.broadcast(Main.PREFIX + "Captains can no longer choose players.");
 				chooser = "none";
 				current = -1;
 			} else {
 				cycle = true;
-				PlayerUtils.broadcast(Main.prefix() + "Captains can now choose players.");
+				PlayerUtils.broadcast(Main.PREFIX + "Captains can now choose players.");
 				String cap = captains.get(0);
-				PlayerUtils.broadcast(Main.prefix() + "First captain to choose is §a" + cap);
+				PlayerUtils.broadcast(Main.PREFIX + "First captain to choose is §a" + cap);
 				chooser = cap;
 				current = 0;
 			}
@@ -191,7 +191,7 @@ public class Captains extends Scenario implements Listener, CommandExecutor {
 		
 		if (cmd.getName().equalsIgnoreCase("choose")) {
 			if (!isEnabled()) {
-				player.sendMessage(Main.prefix() + "\"Captains\" is not enabled.");
+				player.sendMessage(Main.PREFIX + "\"Captains\" is not enabled.");
 				return true;
 			}
 			
@@ -238,7 +238,7 @@ public class Captains extends Scenario implements Listener, CommandExecutor {
 				current = 0;
 			}
 			
-			PlayerUtils.broadcast(Main.prefix() + player.getName() + ChatColor.GREEN + " §7has picked §a" + target.getName() + "§7, next captain to choose is §a" + captains.get(current));
+			PlayerUtils.broadcast(Main.PREFIX + player.getName() + ChatColor.GREEN + " §7has picked §a" + target.getName() + "§7, next captain to choose is §a" + captains.get(current));
 			chooser = captains.get(current);
 		}
 		return true;

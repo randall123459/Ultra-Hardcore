@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -44,20 +43,21 @@ public class BestBTC extends Scenario implements Listener, CommandExecutor {
 		enabled = enable;
 		
 		if (enable) {
-			for (Player online : Bukkit.getServer().getOnlinePlayers()) {
+			for (Player online : PlayerUtils.getPlayers()) {
 				list.add(online.getName());
 			}
 			
 			this.task = new BukkitRunnable() {
 				public void run() {
 					for (Player online : PlayerUtils.getPlayers()) {
-						if (list.contains(online.getName())) {
-							online.setMaxHealth(online.getMaxHealth() + 2);
-							online.setHealth(online.getHealth() + 2);
-							online.sendMessage(ChatColor.GREEN + "You were rewarded for your BTC skills!");
-						} else {
+						if (!list.contains(online.getName())) {
 							online.sendMessage(ChatColor.GREEN + "BestBTC players gained a heart!");
+							continue;
 						}
+
+						online.setMaxHealth(online.getMaxHealth() + 2);
+						online.setHealth(online.getHealth() + 2);
+						online.sendMessage(ChatColor.GREEN + "You were rewarded for your BTC skills!");
 					}
 				}
 			};
@@ -84,26 +84,31 @@ public class BestBTC extends Scenario implements Listener, CommandExecutor {
 		Player player = event.getPlayer();
 		Block block = event.getBlock();
 
-		if (!list.contains(player.getName()) && block.getType() == Material.DIAMOND_ORE) {
-			PlayerUtils.broadcast(ChatColor.GREEN + player.getName() + " mined a diamond! He is back on the Best BTC List!");
-			list.add(player.getName());
+		if (list.contains(player.getName()) || block.getType() != Material.DIAMOND_ORE) {
+			return;
 		}
+		
+		PlayerUtils.broadcast(ChatColor.GREEN + player.getName() + " mined a diamond! He is back on the Best BTC List!");
+		list.add(player.getName());
 	}
 
 	@EventHandler(ignoreCancelled = true)
 	public void onPlayerMove(PlayerMoveEvent event) {
 		Player player = event.getPlayer();
 
-		if (list.contains(player.getName()) && event.getTo().getBlockY() > 50) {
-			PlayerUtils.broadcast(ChatColor.RED + player.getName() + " moved above y:50!");
-			list.remove(player.getName());
+		if (!list.contains(player.getName()) || event.getTo().getBlockY() <= 50) {
+			return;
 		}
+		
+		PlayerUtils.broadcast(ChatColor.RED + player.getName() + " moved above y:50!");
+		list.remove(player.getName());
 	}
-	
+
+	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (cmd.getName().equalsIgnoreCase("btclist")) {
 			if (!isEnabled()) {
-				sender.sendMessage(Main.prefix() + "\"BestBTC\" is not enabled.");
+				sender.sendMessage(Main.PREFIX + "\"BestBTC\" is not enabled.");
 				return true;
 			}
 
@@ -121,18 +126,18 @@ public class BestBTC extends Scenario implements Listener, CommandExecutor {
 				btclist.append(ChatColor.GOLD + btc.get(i));
 			}
 			
-			sender.sendMessage(Main.prefix() + "People still on the BestBTC list:\n§a" + (btclist.length() > 0 ? btclist.toString().trim() : "None") + "§7.");
+			sender.sendMessage(Main.PREFIX + "People still on the BestBTC list:\n§a" + (btclist.length() > 0 ? btclist.toString().trim() : "None") + "§7.");
 		}
 		
 		if (cmd.getName().equalsIgnoreCase("btc")) {
 			if (!isEnabled()) {
-				sender.sendMessage(Main.prefix() + "\"BestBTC\" is not enabled.");
+				sender.sendMessage(Main.PREFIX + "\"BestBTC\" is not enabled.");
 				return true;
 			}
 			
 			if (sender.hasPermission("uhc.bestpve.admin")) {
 				if (args.length < 2) {
-					sender.sendMessage(Main.prefix() + "Help for BestBTC:");
+					sender.sendMessage(Main.PREFIX + "Help for BestBTC:");
 					sender.sendMessage(ChatColor.GRAY + "- §f/btc add <player> - Adds an player manually to the list.");
 					sender.sendMessage(ChatColor.GRAY + "- §f/btc remove <player> - Removes an player manually to the list.");
 					return true;
@@ -140,22 +145,22 @@ public class BestBTC extends Scenario implements Listener, CommandExecutor {
 				
 				if (args[0].equalsIgnoreCase("add")) {
 					if (list.contains(args[1])) {
-						sender.sendMessage(Main.prefix() + ChatColor.RED + args[1] + " already on the BestBTC list.");
+						sender.sendMessage(Main.PREFIX + ChatColor.RED + args[1] + " already on the BestBTC list.");
 						return true;
 					}
 					
 					list.add(args[1]);
-					sender.sendMessage(Main.prefix() + args[1] + " added to the BestBTC list.");
+					sender.sendMessage(Main.PREFIX + args[1] + " added to the BestBTC list.");
 				} else if (args[0].equalsIgnoreCase("remove")) {
 					if (!list.contains(args[1])) {
-						sender.sendMessage(Main.prefix() + ChatColor.RED + args[1] + " is not on the BestBTC list.");
+						sender.sendMessage(Main.PREFIX + ChatColor.RED + args[1] + " is not on the BestBTC list.");
 						return true;
 					}
 					
 					list.remove(args[1]);
-					sender.sendMessage(Main.prefix() + args[1] + " removed from the BestBTC list.");
+					sender.sendMessage(Main.PREFIX + args[1] + " removed from the BestBTC list.");
 				} else {
-					sender.sendMessage(Main.prefix() + "Help for BestBTC:");
+					sender.sendMessage(Main.PREFIX + "Help for BestBTC:");
 					sender.sendMessage(ChatColor.GRAY + "- §f/btc add <player> - Adds an player manually to the list.");
 					sender.sendMessage(ChatColor.GRAY + "- §f/btc remove <player> - Removes an player manually to the list.");
 				}

@@ -47,30 +47,28 @@ public class BiomeParanoia extends Scenario implements Listener, CommandExecutor
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-		if (cmd.getName().equalsIgnoreCase("bl")) {
-			if (!isEnabled()) {
-				sender.sendMessage(Main.prefix() + "\"BiomeParanoia\" is not enabled.");
-				return true;
-			}
-			
-			sender.sendMessage(Main.prefix() + "All biome colors:");
-			
-			StringBuilder biomes = new StringBuilder();
-			
-			for (Biome b : Biome.values()) {
-				if (!isSendable(b)) {
-					continue;
-				}
-				
-				if (biomes.length() > 0) {
-					biomes.append("§f, ");
-				}
-				
-				biomes.append(biomeColor(b) + NameUtils.fixString(b.name(), true));
-			}
-			
-			sender.sendMessage(biomes.toString().trim());
+		if (!isEnabled()) {
+			sender.sendMessage(Main.PREFIX + "\"BiomeParanoia\" is not enabled.");
+			return true;
 		}
+		
+		sender.sendMessage(Main.PREFIX + "All biome colors:");
+		
+		StringBuilder biomes = new StringBuilder();
+		
+		for (Biome b : Biome.values()) {
+			if (!isSendable(b)) {
+				continue;
+			}
+			
+			if (biomes.length() > 0) {
+				biomes.append("§f, ");
+			}
+			
+			biomes.append(biomeColor(b) + NameUtils.fixString(b.name(), true));
+		}
+		
+		sender.sendMessage(biomes.toString().trim());
 		return true;
 	}
 

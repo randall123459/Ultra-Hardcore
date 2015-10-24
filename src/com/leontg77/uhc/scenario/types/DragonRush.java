@@ -76,7 +76,7 @@ public class DragonRush extends Scenario implements Listener {
         	placed++;
         	
         	if (placed == 3) {
-            	PlayerUtils.broadcast(Main.prefix() + "§d§l§oThe portal has been activated.");
+            	PlayerUtils.broadcast(Main.PREFIX + "§d§l§oThe portal has been activated.");
             	
             	for (Player online : PlayerUtils.getPlayers()) {
     				online.playSound(online.getLocation(), Sound.PORTAL_TRAVEL, 1, 1);
@@ -91,7 +91,7 @@ public class DragonRush extends Scenario implements Listener {
 					}
             	}
         	} else if (placed < 3) {
-            	PlayerUtils.broadcast(Main.prefix() + "An eye has been placed (§a" + placed + "§7/§a3§7)");
+            	PlayerUtils.broadcast(Main.PREFIX + "An eye has been placed (§a" + placed + "§7/§a3§7)");
             	
             	for (Player online : PlayerUtils.getPlayers()) {
     				online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 1);

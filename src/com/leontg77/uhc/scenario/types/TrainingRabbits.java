@@ -58,7 +58,7 @@ public class TrainingRabbits extends Scenario implements Listener {
 		ItemStack item = event.getItem();
 		
 		if (item.getType() == Material.MILK_BUCKET) {
-			player.sendMessage(Main.prefix() + "You cannot drink milk in TrainingRabbits.");
+			player.sendMessage(Main.PREFIX + "You cannot drink milk in TrainingRabbits.");
 			event.setItem(new ItemStack (Material.AIR));
 			event.setCancelled(true);
 		}

@@ -41,7 +41,7 @@ public class Assassins extends Scenario implements Listener, CommandExecutor {
 		enabled = enable;
 		
 		if (enable) {
-			PlayerUtils.broadcast(Main.prefix() + "Assigning targets...");
+			PlayerUtils.broadcast(Main.PREFIX + "Assigning targets...");
 			ArrayList<Player> players = new ArrayList<Player>(PlayerUtils.getPlayers());
 			Collections.shuffle(players);
 	          
@@ -73,7 +73,7 @@ public class Assassins extends Scenario implements Listener, CommandExecutor {
 			
 			setTarget(assassin, target);
 			assassins.remove(player.getName());
-			event.setDeathMessage(Main.prefix() + ChatColor.GREEN + player.getName() + " §7was eliminated!");
+			event.setDeathMessage(Main.PREFIX + ChatColor.GREEN + player.getName() + " §7was eliminated!");
 		}
 	}
 
@@ -91,6 +91,7 @@ public class Assassins extends Scenario implements Listener, CommandExecutor {
 		}
 	}
 	
+	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (!(sender instanceof Player)) {
 			sender.sendMessage(ChatColor.RED + "Only players can have targets.");
@@ -99,14 +100,12 @@ public class Assassins extends Scenario implements Listener, CommandExecutor {
 		
 		Player player = (Player) sender;
 		
-		if (cmd.getName().equalsIgnoreCase("target")) {
-			if (!isEnabled()) {
-				player.sendMessage(Main.prefix() + "\"Assassins\" is not enabled.");
-				return true;
-			}
-			
-			player.sendMessage(Main.prefix() + "Your target is: §a" + getTarget(player.getName()));
+		if (!isEnabled()) {
+			player.sendMessage(Main.PREFIX + "\"Assassins\" is not enabled.");
+			return true;
 		}
+		
+		player.sendMessage(Main.PREFIX + "Your target is: §a" + getTarget(player.getName()));
 		return true;
 	}
 
@@ -157,7 +156,7 @@ public class Assassins extends Scenario implements Listener, CommandExecutor {
 		Player player = Bukkit.getServer().getPlayer(assassin);
 		
 		if (player != null) {
-			player.sendMessage(Main.prefix() + "Your target is now: " + ChatColor.GREEN + target);
+			player.sendMessage(Main.PREFIX + "Your target is now: " + ChatColor.GREEN + target);
 		}
 	}
 }

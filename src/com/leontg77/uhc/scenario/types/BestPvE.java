@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -42,20 +41,21 @@ public class BestPvE extends Scenario implements Listener, CommandExecutor {
 		enabled = enable;
 		
 		if (enable) {
-			for (Player online : Bukkit.getServer().getOnlinePlayers()) {
+			for (Player online : PlayerUtils.getPlayers()) {
 				list.add(online.getName());
 			}
 			
 			this.task = new BukkitRunnable() {
 				public void run() {
 					for (Player online : PlayerUtils.getPlayers()) {
-						if (list.contains(online.getName())) {
-							online.setMaxHealth(online.getMaxHealth() + 2);
-							online.setHealth(online.getHealth() + 2);
-							online.sendMessage(ChatColor.GREEN + "You were rewarded for your PvE skills!");
-						} else {
+						if (!list.contains(online.getName())) {
 							online.sendMessage(ChatColor.GREEN + "BestPvE players gained a heart!");
+							continue;
 						}
+
+						online.setMaxHealth(online.getMaxHealth() + 2);
+						online.setHealth(online.getHealth() + 2);
+						online.sendMessage(ChatColor.GREEN + "You were rewarded for your PvE skills!");
 					}
 				}
 			};
@@ -77,20 +77,25 @@ public class BestPvE extends Scenario implements Listener, CommandExecutor {
 	
 	@EventHandler
 	public void onPlayerDeath(PlayerDeathEvent event) {
-		if (event.getEntity().getKiller() == null) {
+		Player killer = event.getEntity().getKiller();
+		
+		if (killer == null) {
 			return;
 		}
 
-		final Player player = event.getEntity().getKiller();
+		final Player player = killer;
 
-		if (!list.contains(player.getName())) {
-			PlayerUtils.broadcast(ChatColor.GREEN + player.getName() + " got a kill! He is back on the Best PvE List!");
-			Bukkit.getServer().getScheduler().runTaskLater(Main.plugin, new Runnable() {
-				public void run() {
-					list.add(player.getName());
-				}
-			}, 20);
+		if (list.contains(player.getName())) {
+			return;
 		}
+		
+		PlayerUtils.broadcast(ChatColor.GREEN + player.getName() + " got a kill! He is back on the Best PvE List!");
+		
+		new BukkitRunnable() {
+			public void run() {
+				list.add(player.getName());
+			}
+		}.runTaskLater(Main.plugin, 20);
 	}
 
 	@EventHandler(ignoreCancelled = true)
@@ -105,16 +110,19 @@ public class BestPvE extends Scenario implements Listener, CommandExecutor {
 
 		Player player = (Player) event.getEntity();
 
-		if (list.contains(player.getName())) {
-			PlayerUtils.broadcast(ChatColor.RED + player.getName() + " took damage!");
-			list.remove(player.getName());
+		if (!list.contains(player.getName())) {
+			return;
 		}
+		
+		PlayerUtils.broadcast(ChatColor.RED + player.getName() + " took damage!");
+		list.remove(player.getName());
 	}
-	
+
+	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (cmd.getName().equalsIgnoreCase("pvelist")) {
 			if (!isEnabled()) {
-				sender.sendMessage(Main.prefix() + "\"BestPvE\" is not enabled.");
+				sender.sendMessage(Main.PREFIX + "\"BestPvE\" is not enabled.");
 				return true;
 			}
 
@@ -132,18 +140,18 @@ public class BestPvE extends Scenario implements Listener, CommandExecutor {
 				btclist.append(ChatColor.GOLD + btc.get(i));
 			}
 			
-			sender.sendMessage(Main.prefix() + "People still on the BestPvE list:\n§a" + (btclist.length() > 0 ? btclist.toString().trim() : "None") + "§7.");
+			sender.sendMessage(Main.PREFIX + "People still on the BestPvE list:\n§a" + (btclist.length() > 0 ? btclist.toString().trim() : "None") + "§7.");
 		}
 		
 		if (cmd.getName().equalsIgnoreCase("pve")) {
 			if (!isEnabled()) {
-				sender.sendMessage(Main.prefix() + "\"BestPvE\" is not enabled.");
+				sender.sendMessage(Main.PREFIX + "\"BestPvE\" is not enabled.");
 				return true;
 			}
 			
 			if (sender.hasPermission("uhc.bestpve.admin")) {
 				if (args.length < 2) {
-					sender.sendMessage(Main.prefix() + "Help for BestPvE:");
+					sender.sendMessage(Main.PREFIX + "Help for BestPvE:");
 					sender.sendMessage(ChatColor.GRAY + "- §f/pve add <player> - Adds an player manually to the list.");
 					sender.sendMessage(ChatColor.GRAY + "- §f/pve remove <player> - Removes an player manually to the list.");
 					return true;
@@ -151,22 +159,22 @@ public class BestPvE extends Scenario implements Listener, CommandExecutor {
 				
 				if (args[0].equalsIgnoreCase("add")) {
 					if (list.contains(args[1])) {
-						sender.sendMessage(Main.prefix() + ChatColor.RED + args[1] + " already on the BestPvE list.");
+						sender.sendMessage(Main.PREFIX + ChatColor.RED + args[1] + " already on the BestPvE list.");
 						return true;
 					}
 					
 					list.add(args[1]);
-					sender.sendMessage(Main.prefix() + args[1] + " added to the BestPvE list.");
+					sender.sendMessage(Main.PREFIX + args[1] + " added to the BestPvE list.");
 				} else if (args[0].equalsIgnoreCase("remove")) {
 					if (!list.contains(args[1])) {
-						sender.sendMessage(Main.prefix() + ChatColor.RED + args[1] + " is not on the BestPvE list.");
+						sender.sendMessage(Main.PREFIX + ChatColor.RED + args[1] + " is not on the BestPvE list.");
 						return true;
 					}
 					
 					list.remove(args[1]);
-					sender.sendMessage(Main.prefix() + args[1] + " removed from the BestPvE list.");
+					sender.sendMessage(Main.PREFIX + args[1] + " removed from the BestPvE list.");
 				} else {
-					sender.sendMessage(Main.prefix() + "Help for BestPvE:");
+					sender.sendMessage(Main.PREFIX + "Help for BestPvE:");
 					sender.sendMessage(ChatColor.GRAY + "- §f/pve add <player> - Adds an player manually to the list.");
 					sender.sendMessage(ChatColor.GRAY + "- §f/pve remove <player> - Removes an player manually to the list.");
 				}

@@ -39,9 +39,11 @@ public class Inventors extends Scenario implements Listener {
 		Player player = (Player) event.getWhoClicked();
 		ItemStack item = event.getRecipe().getResult();
 		
-		if (!crafted.contains(item.getType().name() + item.getDurability())) {
-			crafted.add(item.getType().name() + item.getDurability());
-			PlayerUtils.broadcast(Main.prefix().replaceAll("UHC", "Inventors") + ChatColor.GREEN + player.getName() + " §7crafted §6" + item.getType().name().toLowerCase().replaceAll("_", " ") + (item.getDurability() > 0 ? ":" + item.getDurability() : "") + " §7first.");
+		if (crafted.contains(item.getType().name() + item.getDurability())) {
+			return;
 		}
+		
+		crafted.add(item.getType().name() + item.getDurability());
+		PlayerUtils.broadcast(Main.PREFIX.replaceFirst("UHC", "Inventors") + ChatColor.GREEN + player.getName() + " §7crafted §6" + item.getType().name().toLowerCase().replaceAll("_", " ") + (item.getDurability() > 0 ? ":" + item.getDurability() : "") + " §7first.");
 	}
 }

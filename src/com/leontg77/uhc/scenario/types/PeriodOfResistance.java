@@ -178,7 +178,7 @@ public class PeriodOfResistance extends Scenario implements Listener, CommandExe
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (!isEnabled()) {
-			sender.sendMessage(Main.prefix() + "\"PeriodOfResistance\" is not enabled.");
+			sender.sendMessage(Main.PREFIX + "\"PeriodOfResistance\" is not enabled.");
 			return true;
 		}
 		

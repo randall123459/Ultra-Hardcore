@@ -59,81 +59,80 @@ public class ChunkApocalypse extends Scenario implements Listener, CommandExecut
 		
 		Player player = (Player) sender;
 		
-		if (cmd.getName().equalsIgnoreCase("chunkapo")) {
-			if (!isEnabled()) {
-				sender.sendMessage(Main.prefix() + "\"ChunkApocalypse\" is not enabled.");
-				return true;
-			}
-			
-			if (sender.hasPermission("uhc.chunkapo")) {
-				if (args.length == 0) {
-					player.sendMessage(Main.prefix() + "Usage: /chunkapo <radius>");
-					return true;
+		if (!isEnabled()) {
+			sender.sendMessage(Main.PREFIX + "\"ChunkApocalypse\" is not enabled.");
+			return true;
+		}
+		
+		if (!sender.hasPermission("uhc.chunkapo")) {
+			sender.sendMessage(Main.NO_PERM_MSG);
+			return true;
+		}
+		
+		if (args.length == 0) {
+			player.sendMessage(Main.PREFIX + "Usage: /chunkapo <radius>");
+			return true;
+		}
+		
+		int radius;
+		
+		try {
+			radius = Integer.parseInt(args[0]);
+		} catch (Exception e) {
+			player.sendMessage(ChatColor.RED + "That is not an vaild radius.");
+			return true;
+		}
+		
+		int radiusX = (radius / 16);
+		int radiusZ = (radius / 16);
+		
+		chunks.clear();
+		PlayerUtils.broadcast(Main.PREFIX + "ChunkApocalypse generation started.");
+		
+		for (int cx = (0 - radiusX); cx < radiusX; cx++) {
+			for (int cz = (0 - radiusZ); cz < radiusZ; cz++) {
+				Chunk chunk = player.getWorld().getChunkAt(cx, cz);
+				
+				if (new Random().nextInt(99) < 30) {
+					finished.add(chunk);
+					chunks.add(chunk);
 				}
-				
-				int radius;
-				
-				try {
-					radius = Integer.parseInt(args[0]);
-				} catch (Exception e) {
-					player.sendMessage(ChatColor.RED + "That is not an vaild radius.");
-					return true;
-				}
-				
-				int radiusX = (radius / 16);
-				int radiusZ = (radius / 16);
-				
-				chunks.clear();
-				PlayerUtils.broadcast(Main.prefix() + "ChunkApocalypse generation started.");
-				
-				for (int cx = (0 - radiusX); cx < radiusX; cx++) {
-					for (int cz = (0 - radiusZ); cz < radiusZ; cz++) {
-						Chunk chunk = player.getWorld().getChunkAt(cx, cz);
-						
-						if (new Random().nextInt(99) < 30) {
-							finished.add(chunk);
-							chunks.add(chunk);
-						}
-					}
-				}
-			
-				new BukkitRunnable() {
-					int i = 0;
-					
-					public void run() {
-						if (i >= chunks.size()) {
-							cancel();
-							PlayerUtils.broadcast(Main.prefix() + "ChunkApocalypse generation finished.");
-							return;
-						}
-						
-						Chunk chunk = chunks.get(i);
-						
-						for (int y = 0; y < 128; y++) {
-							for (int x = 0; x < 16; x++) {
-								for (int z = 0; z < 17; z++) {
-									Block block = chunk.getBlock(x, y, z);
-									
-									block.setType(Material.AIR);
-								}
-							}
-						}
-
-						finished.remove(chunk);
-
-						int one = ((chunks.size() - finished.size())*100 / chunks.size());
-						
-						for (Player online : PlayerUtils.getPlayers()) {
-							PacketUtils.sendAction(online, Main.prefix() + "Removed chunk at x:" + chunk.getX() + " z:" + chunk.getZ() + ", §6" + one + "% §7finished");
-						}
-						
-						i++;
-					}
-				}.runTaskTimer(Main.plugin, 2, 2);
-			} else {
-				sender.sendMessage(Main.prefix() + "You can't use that command.");
 			}
 		}
+	
+		new BukkitRunnable() {
+			int i = 0;
+			
+			public void run() {
+				if (i >= chunks.size()) {
+					cancel();
+					PlayerUtils.broadcast(Main.PREFIX + "ChunkApocalypse generation finished.");
+					return;
+				}
+				
+				Chunk chunk = chunks.get(i);
+				
+				for (int y = 0; y < 128; y++) {
+					for (int x = 0; x < 16; x++) {
+						for (int z = 0; z < 17; z++) {
+							Block block = chunk.getBlock(x, y, z);
+							
+							block.setType(Material.AIR);
+						}
+					}
+				}
+
+				finished.remove(chunk);
+
+				int one = ((chunks.size() - finished.size())*100 / chunks.size());
+				
+				for (Player online : PlayerUtils.getPlayers()) {
+					PacketUtils.sendAction(online, Main.PREFIX + "Removed chunk at x:" + chunk.getX() + " z:" + chunk.getZ() + ", §6" + one + "% §7finished");
+				}
+				
+				i++;
+			}
+		}.runTaskTimer(Main.plugin, 2, 2);
 		return true;
 	}
 }

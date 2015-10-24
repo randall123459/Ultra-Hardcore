@@ -66,7 +66,7 @@ public class Pyrophobia extends Scenario implements Listener, CommandExecutor {
 		Player player = event.getPlayer();
 		
 		if (event.getItemStack().getType() == Material.WATER_BUCKET) {
-			player.sendMessage(Main.prefix().replace("UHC", "Pyrophobia") + ChatColor.RED + "You cannot have water in PyroPhobia.");
+			player.sendMessage(Main.PREFIX.replace("UHC", "Pyrophobia") + ChatColor.RED + "You cannot have water in PyroPhobia.");
 			event.setItemStack(new ItemStack (Material.BUCKET));
 			event.setCancelled(true);
 		}
@@ -111,7 +111,7 @@ public class Pyrophobia extends Scenario implements Listener, CommandExecutor {
 		
 		if (cmd.getName().equalsIgnoreCase("genpyro")) {
 			if (args.length == 0) {
-				player.sendMessage(Main.prefix().replaceAll("UHC", "Pyrophobia") + "Starting PyroPhobia convertion.");
+				player.sendMessage(Main.PREFIX.replaceAll("UHC", "Pyrophobia") + "Starting PyroPhobia convertion.");
 				convertToPyro(player.getWorld(), 1100);
 				return true;
 			}
@@ -125,7 +125,7 @@ public class Pyrophobia extends Scenario implements Listener, CommandExecutor {
 				return true;
 			}
 
-			player.sendMessage(Main.prefix().replaceAll("UHC", "Pyrophobia") + "Starting PyroPhobia convertion.");
+			player.sendMessage(Main.PREFIX.replaceAll("UHC", "Pyrophobia") + "Starting PyroPhobia convertion.");
 			convertToPyro(player.getWorld(), radius);
 		}
 		return true;
@@ -134,7 +134,7 @@ public class Pyrophobia extends Scenario implements Listener, CommandExecutor {
 	private void completedPyro(final World w, int radius) {
 		Bukkit.getServer().getScheduler().cancelTask(this.generateTaskID);
 		this.generateTaskID = -1;
-		Bukkit.getServer().broadcastMessage(Main.prefix().replaceAll("UHC", "Pyrophobia") + "World mid Converted");
+		Bukkit.getServer().broadcastMessage(Main.PREFIX.replaceAll("UHC", "Pyrophobia") + "World mid Converted");
 
 		this.locations = new ArrayList<Location>();
 		for (int i = -1 * radius; i < radius; i += 16) {
@@ -159,7 +159,7 @@ public class Pyrophobia extends Scenario implements Listener, CommandExecutor {
 	protected void completedForReal() {
 		Bukkit.getServer().getScheduler().cancelTask(this.generateTaskID);
 		this.generateTaskID = -1;
-		Bukkit.getServer().broadcastMessage(Main.prefix().replaceAll("UHC", "Pyrophobia") + "World Converted");
+		Bukkit.getServer().broadcastMessage(Main.PREFIX.replaceAll("UHC", "Pyrophobia") + "World Converted");
 	}
 
 	private void convertToPyro(final World w, final int radius) {

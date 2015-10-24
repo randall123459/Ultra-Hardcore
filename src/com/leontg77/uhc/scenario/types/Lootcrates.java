@@ -52,7 +52,7 @@ public class Lootcrates extends Scenario implements Listener {
 						PlayerUtils.giveItem(online, item);
 					}
 					
-					PlayerUtils.broadcast(Main.prefix() + "Lootcrates has been given out.");
+					PlayerUtils.broadcast(Main.PREFIX + "Lootcrates has been given out.");
 				}
 			};
 
@@ -78,7 +78,7 @@ public class Lootcrates extends Scenario implements Listener {
 		if (item.hasItemMeta() && item.getItemMeta().hasDisplayName()) {
 			if (item.getType() == Material.CHEST && item.getItemMeta().getDisplayName().equals("§bTier 1 lootcrate")) {
 				int i = new Random().nextInt(5);
-				player.sendMessage(Main.prefix() + "You rolled an §a" + (i + 1) + "§7.");
+				player.sendMessage(Main.PREFIX + "You rolled an §a" + (i + 1) + "§7.");
 				event.setCancelled(true);
 				
 				switch (i) {
@@ -106,7 +106,7 @@ public class Lootcrates extends Scenario implements Listener {
 
 			if (item.getType() == Material.ENDER_CHEST && item.getItemMeta().getDisplayName().equals("§bTier 2 lootcrate")) {
 				int i = new Random().nextInt(10);
-				player.sendMessage(Main.prefix() + "You rolled an §a" + (i + 1) + "§7.");
+				player.sendMessage(Main.PREFIX + "You rolled an §a" + (i + 1) + "§7.");
 				event.setCancelled(true);
 				
 				switch (i) {

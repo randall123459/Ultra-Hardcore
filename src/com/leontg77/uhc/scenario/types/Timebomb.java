@@ -66,7 +66,7 @@ public class Timebomb extends Scenario implements Listener {
 		
 		Bukkit.getServer().getScheduler().runTaskLater(Main.plugin, new Runnable() {
 			public void run() {
-				PlayerUtils.broadcast(Main.prefix().replaceAll("UHC", "Timebomb") + ChatColor.GREEN + player.getName() + "'s §7corpse has exploded!");
+				PlayerUtils.broadcast(Main.PREFIX.replaceAll("UHC", "Timebomb") + ChatColor.GREEN + player.getName() + "'s §7corpse has exploded!");
 				loc.getWorld().createExplosion(loc.getX(), loc.getY(), loc.getZ(), 10, false, true);
 				// Using actual lightning to kill the items.
 				loc.getWorld().strikeLightning(loc);

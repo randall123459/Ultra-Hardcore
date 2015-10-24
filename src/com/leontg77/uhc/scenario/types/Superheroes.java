@@ -48,7 +48,7 @@ public class Superheroes extends Scenario implements Listener, CommandExecutor {
 		if (enable) {
 			for (Player online : PlayerUtils.getPlayers()) {
 				HeroType type = getRandom(online);
-				online.sendMessage(Main.prefix() + "You are the §a" + type.name().toLowerCase() + " §7type.");
+				online.sendMessage(Main.PREFIX + "You are the §a" + type.name().toLowerCase() + " §7type.");
 				
 				switch (type) {
 				case HEALTH:
@@ -134,7 +134,7 @@ public class Superheroes extends Scenario implements Listener, CommandExecutor {
 	@EventHandler
 	public void onPlayerItemConsume(PlayerItemConsumeEvent event) {
 		if (event.getItem().getType() == Material.MILK_BUCKET) {
-			event.getPlayer().sendMessage(Main.prefix() + "You cannot drink milk in superheros.");
+			event.getPlayer().sendMessage(Main.PREFIX + "You cannot drink milk in superheros.");
 			event.setCancelled(true);
 			event.setItem(new ItemStack (Material.AIR));
 		}
@@ -159,7 +159,7 @@ public class Superheroes extends Scenario implements Listener, CommandExecutor {
 		
 		if (cmd.getName().equalsIgnoreCase("slist")) {
 			if (!isEnabled()) {
-				player.sendMessage(Main.prefix() + "\"Superheroes\" is not enabled.");
+				player.sendMessage(Main.PREFIX + "\"Superheroes\" is not enabled.");
 				return true;
 			}
 			
@@ -216,7 +216,7 @@ public class Superheroes extends Scenario implements Listener, CommandExecutor {
 					}
 				}
 				
-				player.sendMessage(Main.prefix() + "List of types:");
+				player.sendMessage(Main.PREFIX + "List of types:");
 				player.sendMessage("§8» §7Health: " + health.toString().trim());
 				player.sendMessage("§8» §7Invis: " + invis.toString().trim());
 				player.sendMessage("§8» §7Jump: " + jump.toString().trim());
@@ -228,13 +228,13 @@ public class Superheroes extends Scenario implements Listener, CommandExecutor {
 		
 		if (cmd.getName().equalsIgnoreCase("super")) {
 			if (!isEnabled()) {
-				player.sendMessage(Main.prefix() + "\"Superheroes\" is not enabled.");
+				player.sendMessage(Main.PREFIX + "\"Superheroes\" is not enabled.");
 				return true;
 			}
 			
 			if (player.hasPermission("uhc.superheroes.admin")) {
 				if (args.length == 0) {
-					player.sendMessage(Main.prefix() + "Help for superheroes:");
+					player.sendMessage(Main.PREFIX + "Help for superheroes:");
 					player.sendMessage(ChatColor.GRAY + "- §f/super set <player> - Add a random effect to a player.");
 					player.sendMessage(ChatColor.GRAY + "- §f/super clear <player> - Clears the players effects.");
 					player.sendMessage(ChatColor.GRAY + "- §f/super apply - Reapply the effects.");
@@ -242,7 +242,7 @@ public class Superheroes extends Scenario implements Listener, CommandExecutor {
 				}
 				
 				if (args[0].equalsIgnoreCase("apply")) {
-					player.sendMessage(Main.prefix() + "Effects reapplied.");
+					player.sendMessage(Main.PREFIX + "Effects reapplied.");
 					for (Player online : PlayerUtils.getPlayers()) {
 						for (PotionEffect effect : online.getActivePotionEffects()) {
 							online.removePotionEffect(effect.getType());
@@ -393,8 +393,8 @@ public class Superheroes extends Scenario implements Listener, CommandExecutor {
 					default:
 						break;
 					}
-					player.sendMessage(Main.prefix() + "Given §a" + target.getName() + " §7an random effect.");
-					target.sendMessage(Main.prefix() + "You are the §a" + type.name().toLowerCase() + " §7type.");
+					player.sendMessage(Main.PREFIX + "Given §a" + target.getName() + " §7an random effect.");
+					target.sendMessage(Main.PREFIX + "You are the §a" + type.name().toLowerCase() + " §7type.");
 				} else if (args[0].equalsIgnoreCase("clear")) {
 					if (args.length == 1) {
 						player.sendMessage(ChatColor.RED + "Usage: /super clear <player>");
@@ -412,10 +412,10 @@ public class Superheroes extends Scenario implements Listener, CommandExecutor {
 					for (PotionEffect effect : target.getActivePotionEffects()) {
 						target.removePotionEffect(effect.getType());
 					}
-					player.sendMessage(Main.prefix() + "Effects of §a" + target.getName() + " §7has been cleared.");
-					target.sendMessage(Main.prefix() + "Your effects has been cleared.");
+					player.sendMessage(Main.PREFIX + "Effects of §a" + target.getName() + " §7has been cleared.");
+					target.sendMessage(Main.PREFIX + "Your effects has been cleared.");
 				} else {
-					player.sendMessage(Main.prefix() + "Help for superheroes:");
+					player.sendMessage(Main.PREFIX + "Help for superheroes:");
 					player.sendMessage(ChatColor.GRAY + "- §f/super set <player> - Add a random effect to a player.");
 					player.sendMessage(ChatColor.GRAY + "- §f/super clear <player> - Clears the players effects.");
 					player.sendMessage(ChatColor.GRAY + "- §f/super apply - Reapply the effects.");

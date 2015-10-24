@@ -53,7 +53,7 @@ public class TeamHealth extends Scenario implements Listener {
 						Team team = Teams.getInstance().getTeam(online);
 						
 						if (team == null) {
-							int percent = NumberUtils.makePercent(online.getHealth());
+							int percent = Integer.parseInt(NumberUtils.makePercent(online.getHealth()).substring(2));
 							
 							if (teamHealth != null) {
 								Score score = teamHealth.getScore(online.getName());
@@ -76,7 +76,7 @@ public class TeamHealth extends Scenario implements Listener {
 								}
 							}
 
-							int percent = NumberUtils.makePercent(health);
+							int percent = Integer.parseInt(NumberUtils.makePercent(health).substring(2));
 							
 							if (teamHealth != null) {
 								Score score = teamHealth.getScore(online.getName());
