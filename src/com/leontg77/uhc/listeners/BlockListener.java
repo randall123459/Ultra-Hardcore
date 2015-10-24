@@ -2,30 +2,25 @@ package com.leontg77.uhc.listeners;
 
 import java.util.Random;
 
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.TreeSpecies;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockBurnEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.LeavesDecayEvent;
-import org.bukkit.event.world.ChunkUnloadEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.material.Tree;
-import org.bukkit.util.Vector;
 
-import com.leontg77.uhc.Arena;
 import com.leontg77.uhc.Game;
+import com.leontg77.uhc.Main;
 import com.leontg77.uhc.State;
 import com.leontg77.uhc.utils.BlockUtils;
+import com.leontg77.uhc.utils.EntityUtils;
+import com.leontg77.uhc.utils.GameUtils;
 
 /**
  * Block listener class.
@@ -37,7 +32,7 @@ import com.leontg77.uhc.utils.BlockUtils;
 public class BlockListener implements Listener {
 	private Game game = Game.getInstance();
 	
-	@EventHandler(priority = EventPriority.HIGHEST)
+	@EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
     	Player player = event.getPlayer();
 		Block block = event.getBlock();
@@ -47,51 +42,95 @@ public class BlockListener implements Listener {
     		return;
     	}
     	
-    	if (event.getBlock().getWorld().getName().equals("lobby") && !player.hasPermission("uhc.build")) {
+    	if (!GameUtils.getGameWorlds().contains(block.getWorld()) && !block.getWorld().getName().equals("arena") && !player.hasPermission("uhc.build")) {
     		event.setCancelled(true);
-    		return;
+			return;
     	}
+    	
+		if (player.getGameMode() == GameMode.CREATIVE) {
+			return;
+		}
+    	
+		Random rand = new Random();
 		
 		if (block.getType() == Material.GRAVEL) {
-			if ((new Random().nextInt(99) + 1) <= game.getFlintRates()) {
-				event.setCancelled(true);
-				BlockUtils.blockCrack(player, block.getLocation(), 13);
-				block.setType(Material.AIR);
-				block.getState().update();
-				Item item = block.getWorld().dropItem(block.getLocation().add(0.5, 0.7, 0.5), new ItemStack (Material.FLINT));
-				item.setVelocity(new Vector(0, 0.2, 0));
+			if (rand.nextInt(99) < game.getFlintRates()) {
+				Main.toReplace.put(Material.GRAVEL, new ItemStack (Material.FLINT));
 			} else {
-				event.setCancelled(true);
-				BlockUtils.blockCrack(player, block.getLocation(), 13);
-				block.setType(Material.AIR);
-				block.getState().update();
-				Item item = block.getWorld().dropItem(block.getLocation().add(0.5, 0.7, 0.5), new ItemStack (Material.GRAVEL));
-				item.setVelocity(new Vector(0, 0.2, 0));
+				Main.toReplace.put(Material.FLINT, new ItemStack (Material.GRAVEL));
 			}
+			return;
 		}
 		
-		if (game.shears()) {
-			if (block.getType() == Material.LEAVES) {
-				try {
-					Tree tree = (Tree) event.getBlock().getState().getData();
-					if (tree.getSpecies() == TreeSpecies.GENERIC) {
-						Random r = new Random();
-						
-						if (player.getItemInHand() != null && player.getItemInHand().getType() == Material.SHEARS) {
-							if ((r.nextInt(99) + 1) <= game.getShearRates()) {
-								event.getBlock().getWorld().dropItem(event.getBlock().getLocation(), new ItemStack(Material.APPLE, 1));
-							}
-						}
-					}
-				} catch (ClassCastException localClassCastException) {
-					Bukkit.getLogger().warning(ChatColor.RED + "Could not shear leaf for apple @ " + block.getLocation().toString());
+		if (block.getType() != Material.LEAVES && block.getType() != Material.LEAVES_2) {
+			return;
+		}
+		
+		short damage = block.getState().getData().toItemStack().getDurability();
+		
+		if (block.getType() == Material.LEAVES) {
+			if (rand.nextInt(99) < 5) {
+				Item item = block.getWorld().dropItem(block.getLocation().add(0.5, 0.7, 0.5), BlockUtils.getSaplingFor(Material.LEAVES, damage));
+				item.setVelocity(EntityUtils.randomOffset());
+			}
+			
+			if (damage != 0 && damage != 4 && damage != 8 && damage != 12) {
+				return;
+			}
+
+			ItemStack hand = player.getItemInHand();
+
+			if (game.shears() && hand != null && hand.getType() == Material.SHEARS) {
+				if (rand.nextInt(99) >= game.getShearRates()) {
+					return;
 				}
+
+				Item item = block.getWorld().dropItem(block.getLocation().add(0.5, 0.7, 0.5), new ItemStack(Material.APPLE, 1));
+				item.setVelocity(EntityUtils.randomOffset());
+			} else {
+				if (rand.nextInt(99) >= game.getAppleRates()) {
+					return;
+				}
+
+				Item item = block.getWorld().dropItem(block.getLocation().add(0.5, 0.7, 0.5), new ItemStack(Material.APPLE, 1));
+				item.setVelocity(EntityUtils.randomOffset());
+			}
+			return;
+		}
+		
+		if (block.getType() == Material.LEAVES_2) {
+			if (rand.nextInt(99) < 5) {
+				Item item = block.getWorld().dropItem(block.getLocation().add(0.5, 0.7, 0.5), BlockUtils.getSaplingFor(Material.LEAVES_2, damage));
+				item.setVelocity(EntityUtils.randomOffset());
+			}
+			
+			if (damage != 1 && damage != 5 && damage != 9 && damage != 13) {
+				return;
+			}
+
+			ItemStack hand = player.getItemInHand();
+			
+			if (game.shears() && hand != null && hand.getType() == Material.SHEARS) {
+				if (rand.nextInt(99) >= game.getShearRates()) {
+					return;
+				}
+				
+				Item item = block.getWorld().dropItem(block.getLocation().add(0.5, 0.7, 0.5), new ItemStack(Material.APPLE, 1));
+				item.setVelocity(EntityUtils.randomOffset());
+			} else {
+				if (rand.nextInt(99) >= game.getAppleRates()) {
+					return;
+				}
+				
+				Item item = block.getWorld().dropItem(block.getLocation().add(0.5, 0.7, 0.5), new ItemStack(Material.APPLE, 1));
+				item.setVelocity(EntityUtils.randomOffset());
 			}
 		}
     }
 
-	@EventHandler(ignoreCancelled = true)
+	@EventHandler
     public void onBlockPlace(BlockPlaceEvent event) {
+		Block block = event.getBlockPlaced();
 		Player player = event.getPlayer();
     	
     	if (State.isState(State.SCATTER)) {
@@ -99,35 +138,21 @@ public class BlockListener implements Listener {
     		return;
     	}
     	
-    	if (event.getBlock().getWorld().getName().equals("lobby") && !player.hasPermission("uhc.build")) {
+    	if (!GameUtils.getGameWorlds().contains(block.getWorld())) {
+    		if (block.getWorld().getName().equals("arena")) {
+    			return;
+    		}
+    		
+    		if (player.hasPermission("uhc.build")) {
+    			return;
+    		}
+    		
     		event.setCancelled(true);
     		return;
     	}
     }
-
+	
 	@EventHandler
-	public void onBlockBurn(BlockBurnEvent event) {
-		if (!Arena.getInstance().isEnabled()) {
-			return;
-		}
-		
-		Location loc = event.getBlock().getLocation();
-
-		for (int x = loc.getBlockX() - 1; x <= loc.getBlockX() + 1; x++) {
-			for (int y = loc.getBlockY() - 1; y <= loc.getBlockY() + 1; y++) {
-				for (int z = loc.getBlockZ() - 1; z <= loc.getBlockZ() + 1; z++) {
-					if (loc.getWorld().getBlockAt(x, y, z).getType() == Material.FIRE) {
-						loc.getWorld().getBlockAt(x, y, z).setType(Material.AIR);
-						loc.getWorld().getBlockAt(x, y, z).getState().update();
-					}
-				}
-			}
-		}
-
-		event.setCancelled(true);
-	}
-
-	@EventHandler(ignoreCancelled = true)
     public void onLeavesDecay(LeavesDecayEvent event) {
 		Block block = event.getBlock();
     	
@@ -135,12 +160,56 @@ public class BlockListener implements Listener {
     		event.setCancelled(true);
     		return;
     	}
-    }
-	
-	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
-	public void onChunkUnloadEvent(ChunkUnloadEvent event) {
-		if (State.isState(State.SCATTER)) {
-			event.setCancelled(true);
+    	
+    	if (block.getType() != Material.LEAVES && block.getType() != Material.LEAVES_2) {
+			return;
 		}
-	}
+    	
+    	Location loc = block.getLocation();
+    	Material type = block.getType();
+    	
+		short damage = block.getState().getData().toItemStack().getDurability();
+		Random rand = new Random();
+
+    	event.setCancelled(true);
+    	block.setType(Material.AIR); 
+    	block.getState().update(true);
+		
+		if (type == Material.LEAVES) {
+			if (rand.nextInt(99) < 5) {
+				Item item = block.getWorld().dropItem(loc.clone().add(0.5, 0.7, 0.5), BlockUtils.getSaplingFor(Material.LEAVES, damage));
+				item.setVelocity(EntityUtils.randomOffset());
+			}
+			
+			if (damage != 0 && damage != 4 && damage != 8 && damage != 12) {
+				return;
+			}
+
+			if (rand.nextInt(99) >= game.getAppleRates()) {
+				return;
+			}
+
+			Item item = block.getWorld().dropItem(loc.clone().add(0.5, 0.7, 0.5), new ItemStack(Material.APPLE, 1));
+			item.setVelocity(EntityUtils.randomOffset());
+			return;
+		}
+		
+		if (type == Material.LEAVES_2) {
+			if (rand.nextInt(99) < 5) {
+				Item item = block.getWorld().dropItem(loc.clone().add(0.5, 0.7, 0.5), BlockUtils.getSaplingFor(Material.LEAVES_2, damage));
+				item.setVelocity(EntityUtils.randomOffset());
+			}
+			
+			if (damage != 1 && damage != 5 && damage != 9 && damage != 13) {
+				return;
+			}
+
+			if (rand.nextInt(99) >= game.getAppleRates()) {
+				return;
+			}
+			
+			Item item = block.getWorld().dropItem(loc.clone().add(0.5, 0.7, 0.5), new ItemStack(Material.APPLE, 1));
+			item.setVelocity(EntityUtils.randomOffset());
+		}
+    }
 }
