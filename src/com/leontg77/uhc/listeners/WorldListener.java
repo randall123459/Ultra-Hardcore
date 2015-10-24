@@ -8,6 +8,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.weather.ThunderChangeEvent;
 import org.bukkit.event.weather.WeatherChangeEvent;
 import org.bukkit.event.world.ChunkPopulateEvent;
+import org.bukkit.event.world.ChunkUnloadEvent;
 import org.bukkit.event.world.WorldInitEvent;
 
 import com.leontg77.uhc.Main;
@@ -63,6 +64,13 @@ public class WorldListener implements Listener {
 		}
     	
 		event.setCancelled(true);
+	}
+	
+	@EventHandler
+	public void onChunkUnloadEvent(ChunkUnloadEvent event) {
+		if (State.isState(State.SCATTER)) {
+			event.setCancelled(true);
+		}
 	}
 
 	@EventHandler
