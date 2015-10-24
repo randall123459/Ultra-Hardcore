@@ -124,7 +124,7 @@ public class Genie extends Scenario implements Listener, CommandExecutor {
 		
 		if (cmd.getName().equalsIgnoreCase("genie")) {
 			if (!isEnabled()) {
-				player.sendMessage(Main.prefix() + "\"Genie\" is not enabled.");
+				player.sendMessage(Main.PREFIX + "\"Genie\" is not enabled.");
 				return true;
 			}
 			
@@ -301,21 +301,13 @@ public class Genie extends Scenario implements Listener, CommandExecutor {
 							if (kills.get(player.getName()) == 0) {
 								item = new ItemStack(Material.GOLDEN_APPLE);
 								
-								if (PlayerUtils.hasSpaceFor(player, item)) {
-									player.getInventory().addItem(item);
-									wishes.put(player.getName(), wishes.get(player.getName()) - 1);
-									
-									player.sendMessage("§7------------------------------------------------");
-									player.sendMessage(prefix() + "You now have §e" + wishes.get(player.getName()) + "§r wishes.");
-									player.sendMessage("§7------------------------------------------------");
-									player.playSound(player.getLocation(), "note.harp", 1, 1);
-								} 
-								else {
-									player.sendMessage("§7------------------------------------------------");
-									player.sendMessage(prefix() + "§cError: You don't have room.");
-									player.sendMessage("§7------------------------------------------------");
-									player.playSound(player.getLocation(), "random.break", 1, 1);
-								}
+								PlayerUtils.giveItem(player, item);
+								wishes.put(player.getName(), wishes.get(player.getName()) - 1);
+								
+								player.sendMessage("§7------------------------------------------------");
+								player.sendMessage(prefix() + "You now have §e" + wishes.get(player.getName()) + "§r wishes.");
+								player.sendMessage("§7------------------------------------------------");
+								player.playSound(player.getLocation(), "note.harp", 1, 1);
 							}
 							else {
 								player.sendMessage("§7------------------------------------------------");
@@ -328,21 +320,13 @@ public class Genie extends Scenario implements Listener, CommandExecutor {
 							if (kills.get(player.getName()) == 0) {
 								item = new ItemStack(Material.DIAMOND_SWORD);
 								
-								if (PlayerUtils.hasSpaceFor(player, item)) {
-									player.getInventory().addItem(item);
-									wishes.put(player.getName(), wishes.get(player.getName()) - 1);
-									
-									player.sendMessage("§7------------------------------------------------");
-									player.sendMessage(prefix() + "You now have §e" + wishes.get(player.getName()) + "§r wishes.");
-									player.sendMessage("§7------------------------------------------------");
-									player.playSound(player.getLocation(), "note.harp", 1, 1);
-								} 
-								else {
-									player.sendMessage("§7------------------------------------------------");
-									player.sendMessage(prefix() + "§cError: You don't have room.");
-									player.sendMessage("§7------------------------------------------------");
-									player.playSound(player.getLocation(), "random.break", 1, 1);
-								}
+								PlayerUtils.giveItem(player, item);
+								wishes.put(player.getName(), wishes.get(player.getName()) - 1);
+								
+								player.sendMessage("§7------------------------------------------------");
+								player.sendMessage(prefix() + "You now have §e" + wishes.get(player.getName()) + "§r wishes.");
+								player.sendMessage("§7------------------------------------------------");
+								player.playSound(player.getLocation(), "note.harp", 1, 1);
 							}
 							else {
 								player.sendMessage("§7------------------------------------------------");
@@ -355,21 +339,13 @@ public class Genie extends Scenario implements Listener, CommandExecutor {
 							if (kills.get(player.getName()) == 0) {
 								item = new ItemStack(Material.ANVIL);
 								
-								if (PlayerUtils.hasSpaceFor(player, item)) {
-									player.getInventory().addItem(item);
-									wishes.put(player.getName(), wishes.get(player.getName()) - 1);
-									
-									player.sendMessage("§7------------------------------------------------");
-									player.sendMessage(prefix() + "You now have §e" + wishes.get(player.getName()) + "§r wishes.");
-									player.sendMessage("§7------------------------------------------------");
-									player.playSound(player.getLocation(), "note.harp", 1, 1);
-								} 
-								else {
-									player.sendMessage("§7------------------------------------------------");
-									player.sendMessage(prefix() + "§cError: You don't have room.");
-									player.sendMessage("§7------------------------------------------------");
-									player.playSound(player.getLocation(), "random.break", 1, 1);
-								}
+								PlayerUtils.giveItem(player, item);
+								wishes.put(player.getName(), wishes.get(player.getName()) - 1);
+								
+								player.sendMessage("§7------------------------------------------------");
+								player.sendMessage(prefix() + "You now have §e" + wishes.get(player.getName()) + "§r wishes.");
+								player.sendMessage("§7------------------------------------------------");
+								player.playSound(player.getLocation(), "note.harp", 1, 1);
 							}
 							else {
 								player.sendMessage("§7------------------------------------------------");
@@ -388,21 +364,13 @@ public class Genie extends Scenario implements Listener, CommandExecutor {
 								meta.setOwner(player.getName());
 								item.setItemMeta(meta);
 								
-								if (PlayerUtils.hasSpaceFor(player, item)) {
-									player.getInventory().addItem(item);
-									wishes.put(player.getName(), wishes.get(player.getName()) - 1);
-									
-									player.sendMessage("§7------------------------------------------------");
-									player.sendMessage(prefix() + "You now have §e" + wishes.get(player.getName()) + "§r wishes.");
-									player.sendMessage("§7------------------------------------------------");
-									player.playSound(player.getLocation(), "note.harp", 1, 1);
-								} 
-								else {
-									player.sendMessage("§7------------------------------------------------");
-									player.sendMessage(prefix() + "§cError: You don't have room.");
-									player.sendMessage("§7------------------------------------------------");
-									player.playSound(player.getLocation(), "random.break", 1, 1);
-								}
+								PlayerUtils.giveItem(player, item);
+								wishes.put(player.getName(), wishes.get(player.getName()) - 1);
+								
+								player.sendMessage("§7------------------------------------------------");
+								player.sendMessage(prefix() + "You now have §e" + wishes.get(player.getName()) + "§r wishes.");
+								player.sendMessage("§7------------------------------------------------");
+								player.playSound(player.getLocation(), "note.harp", 1, 1);
 							}
 							else {
 								player.sendMessage("§7------------------------------------------------");
@@ -415,21 +383,13 @@ public class Genie extends Scenario implements Listener, CommandExecutor {
 							if (kills.get(player.getName()) == 1) {
 								item = new ItemStack(Material.POTION, 1, (short) 8194);
 								
-								if (PlayerUtils.hasSpaceFor(player, new ItemStack(Material.WOOD_SWORD))) {
-									player.getInventory().addItem(item);
-									wishes.put(player.getName(), wishes.get(player.getName()) - 1);
-									
-									player.sendMessage("§7------------------------------------------------");
-									player.sendMessage(prefix() + "You now have §e" + wishes.get(player.getName()) + "§r wishes.");
-									player.sendMessage("§7------------------------------------------------");
-									player.playSound(player.getLocation(), "note.harp", 1, 1);
-								} 
-								else {
-									player.sendMessage("§7------------------------------------------------");
-									player.sendMessage(prefix() + "§cError: You don't have room.");
-									player.sendMessage("§7------------------------------------------------");
-									player.playSound(player.getLocation(), "random.break", 1, 1);
-								}
+								PlayerUtils.giveItem(player, item);
+								wishes.put(player.getName(), wishes.get(player.getName()) - 1);
+								
+								player.sendMessage("§7------------------------------------------------");
+								player.sendMessage(prefix() + "You now have §e" + wishes.get(player.getName()) + "§r wishes.");
+								player.sendMessage("§7------------------------------------------------");
+								player.playSound(player.getLocation(), "note.harp", 1, 1);
 							}
 							else {
 								player.sendMessage("§7------------------------------------------------");
@@ -442,21 +402,13 @@ public class Genie extends Scenario implements Listener, CommandExecutor {
 							if (kills.get(player.getName()) == 1) {
 								item = new ItemStack(Material.POTION, 1, (short) 8201);
 								
-								if (PlayerUtils.hasSpaceFor(player, new ItemStack(Material.WOOD_SWORD))) {
-									player.getInventory().addItem(item);
-									wishes.put(player.getName(), wishes.get(player.getName()) - 1);
-									
-									player.sendMessage("§7------------------------------------------------");
-									player.sendMessage(prefix() + "You now have §e" + wishes.get(player.getName()) + "§r wishes.");
-									player.sendMessage("§7------------------------------------------------");
-									player.playSound(player.getLocation(), "note.harp", 1, 1);
-								} 
-								else {
-									player.sendMessage("§7------------------------------------------------");
-									player.sendMessage(prefix() + "§cError: You don't have room.");
-									player.sendMessage("§7------------------------------------------------");
-									player.playSound(player.getLocation(), "random.break", 1, 1);
-								}
+								PlayerUtils.giveItem(player, item);
+								wishes.put(player.getName(), wishes.get(player.getName()) - 1);
+								
+								player.sendMessage("§7------------------------------------------------");
+								player.sendMessage(prefix() + "You now have §e" + wishes.get(player.getName()) + "§r wishes.");
+								player.sendMessage("§7------------------------------------------------");
+								player.playSound(player.getLocation(), "note.harp", 1, 1);
 							}
 							else {
 								player.sendMessage("§7------------------------------------------------");
@@ -472,21 +424,13 @@ public class Genie extends Scenario implements Listener, CommandExecutor {
 							if (kills.get(player.getName()) == 2) {
 								item = new ItemStack(Material.ENCHANTMENT_TABLE);
 								
-								if (PlayerUtils.hasSpaceFor(player, item)) {
-									player.getInventory().addItem(item);
-									wishes.put(player.getName(), wishes.get(player.getName()) - 1);
-									
-									player.sendMessage("§7------------------------------------------------");
-									player.sendMessage(prefix() + "You now have §e" + wishes.get(player.getName()) + "§r wishes.");
-									player.sendMessage("§7------------------------------------------------");
-									player.playSound(player.getLocation(), "note.harp", 1, 1);
-								} 
-								else {
-									player.sendMessage("§7------------------------------------------------");
-									player.sendMessage(prefix() + "§cError: You don't have room.");
-									player.sendMessage("§7------------------------------------------------");
-									player.playSound(player.getLocation(), "random.break", 1, 1);
-								}
+								PlayerUtils.giveItem(player, item);
+								wishes.put(player.getName(), wishes.get(player.getName()) - 1);
+								
+								player.sendMessage("§7------------------------------------------------");
+								player.sendMessage(prefix() + "You now have §e" + wishes.get(player.getName()) + "§r wishes.");
+								player.sendMessage("§7------------------------------------------------");
+								player.playSound(player.getLocation(), "note.harp", 1, 1);
 							}
 							else {
 								player.sendMessage("§7------------------------------------------------");
@@ -499,21 +443,13 @@ public class Genie extends Scenario implements Listener, CommandExecutor {
 							if (kills.get(player.getName()) == 2) {
 								item = new ItemStack(Material.BREWING_STAND_ITEM);
 								
-								if (PlayerUtils.hasSpaceFor(player, item)) {
-									player.getInventory().addItem(item);
-									wishes.put(player.getName(), wishes.get(player.getName()) - 1);
-									
-									player.sendMessage("§7------------------------------------------------");
-									player.sendMessage(prefix() + "You now have §e" + wishes.get(player.getName()) + "§r wishes.");
-									player.sendMessage("§7------------------------------------------------");
-									player.playSound(player.getLocation(), "note.harp", 1, 1);
-								} 
-								else {
-									player.sendMessage("§7------------------------------------------------");
-									player.sendMessage(prefix() + "§cError: You don't have room.");
-									player.sendMessage("§7------------------------------------------------");
-									player.playSound(player.getLocation(), "random.break", 1, 1);
-								}
+								PlayerUtils.giveItem(player, item);
+								wishes.put(player.getName(), wishes.get(player.getName()) - 1);
+								
+								player.sendMessage("§7------------------------------------------------");
+								player.sendMessage(prefix() + "You now have §e" + wishes.get(player.getName()) + "§r wishes.");
+								player.sendMessage("§7------------------------------------------------");
+								player.playSound(player.getLocation(), "note.harp", 1, 1);
 							}
 							else {
 								player.sendMessage("§7------------------------------------------------");
@@ -529,21 +465,13 @@ public class Genie extends Scenario implements Listener, CommandExecutor {
 						        meta.addStoredEnchant(Enchantment.LOOT_BONUS_BLOCKS, 3, true);
 						        item.setItemMeta(meta);
 								
-								if (PlayerUtils.hasSpaceFor(player, new ItemStack(Material.WOOD_SWORD))) {
-									player.getInventory().addItem(item);
-									wishes.put(player.getName(), wishes.get(player.getName()) - 1);
-									
-									player.sendMessage("§7------------------------------------------------");
-									player.sendMessage(prefix() + "You now have §e" + wishes.get(player.getName()) + "§r wishes.");
-									player.sendMessage("§7------------------------------------------------");
-									player.playSound(player.getLocation(), "note.harp", 1, 1);
-								} 
-								else {
-									player.sendMessage("§7------------------------------------------------");
-									player.sendMessage(prefix() + "§cError: You don't have room.");
-									player.sendMessage("§7------------------------------------------------");
-									player.playSound(player.getLocation(), "random.break", 1, 1);
-								}
+						        PlayerUtils.giveItem(player, item);
+								wishes.put(player.getName(), wishes.get(player.getName()) - 1);
+								
+								player.sendMessage("§7------------------------------------------------");
+								player.sendMessage(prefix() + "You now have §e" + wishes.get(player.getName()) + "§r wishes.");
+								player.sendMessage("§7------------------------------------------------");
+								player.playSound(player.getLocation(), "note.harp", 1, 1);
 							}
 							else {
 								player.sendMessage("§7------------------------------------------------");
@@ -559,21 +487,13 @@ public class Genie extends Scenario implements Listener, CommandExecutor {
 							if (kills.get(player.getName()) == 3) {
 								item = new ItemStack(Material.BOOKSHELF, 15);
 								
-								if (PlayerUtils.hasSpaceFor(player, item)) {
-									player.getInventory().addItem(item);
-									wishes.put(player.getName(), wishes.get(player.getName()) - 1);
-									
-									player.sendMessage("§7------------------------------------------------");
-									player.sendMessage(prefix() + "You now have §e" + wishes.get(player.getName()) + "§r wishes.");
-									player.sendMessage("§7------------------------------------------------");
-									player.playSound(player.getLocation(), "note.harp", 1, 1);
-								} 
-								else {
-									player.sendMessage("§7------------------------------------------------");
-									player.sendMessage(prefix() + "§cError: You don't have room.");
-									player.sendMessage("§7------------------------------------------------");
-									player.playSound(player.getLocation(), "random.break", 1, 1);
-								}
+								PlayerUtils.giveItem(player, item);
+								wishes.put(player.getName(), wishes.get(player.getName()) - 1);
+								
+								player.sendMessage("§7------------------------------------------------");
+								player.sendMessage(prefix() + "You now have §e" + wishes.get(player.getName()) + "§r wishes.");
+								player.sendMessage("§7------------------------------------------------");
+								player.playSound(player.getLocation(), "note.harp", 1, 1);
 							}
 							else {
 								player.sendMessage("§7------------------------------------------------");
@@ -586,21 +506,13 @@ public class Genie extends Scenario implements Listener, CommandExecutor {
 							if (kills.get(player.getName()) == 3) {
 								item = new ItemStack(Material.DIAMOND_ORE, 5);
 								
-								if (PlayerUtils.hasSpaceFor(player, item)) {
-									player.getInventory().addItem(item);
-									wishes.put(player.getName(), wishes.get(player.getName()) - 1);
-									
-									player.sendMessage("§7------------------------------------------------");
-									player.sendMessage(prefix() + "You now have §e" + wishes.get(player.getName()) + "§r wishes.");
-									player.sendMessage("§7------------------------------------------------");
-									player.playSound(player.getLocation(), "note.harp", 1, 1);
-								} 
-								else {
-									player.sendMessage("§7------------------------------------------------");
-									player.sendMessage(prefix() + "§cError: You don't have room.");
-									player.sendMessage("§7------------------------------------------------");
-									player.playSound(player.getLocation(), "random.break", 1, 1);
-								}
+								PlayerUtils.giveItem(player, item);
+								wishes.put(player.getName(), wishes.get(player.getName()) - 1);
+								
+								player.sendMessage("§7------------------------------------------------");
+								player.sendMessage(prefix() + "You now have §e" + wishes.get(player.getName()) + "§r wishes.");
+								player.sendMessage("§7------------------------------------------------");
+								player.playSound(player.getLocation(), "note.harp", 1, 1);
 							}
 							else {
 								player.sendMessage("§7------------------------------------------------");
@@ -613,21 +525,13 @@ public class Genie extends Scenario implements Listener, CommandExecutor {
 							if (kills.get(player.getName()) == 3) {
 								item = new ItemStack(Material.POTION, 1, (short) 8226);
 								
-								if (PlayerUtils.hasSpaceFor(player, new ItemStack(Material.WOOD_SWORD))) {
-									player.getInventory().addItem(item);
-									wishes.put(player.getName(), wishes.get(player.getName()) - 1);
-									
-									player.sendMessage("§7------------------------------------------------");
-									player.sendMessage(prefix() + "You now have §e" + wishes.get(player.getName()) + "§r wishes.");
-									player.sendMessage("§7------------------------------------------------");
-									player.playSound(player.getLocation(), "note.harp", 1, 1);
-								} 
-								else {
-									player.sendMessage("§7------------------------------------------------");
-									player.sendMessage(prefix() + "§cError: You don't have room.");
-									player.sendMessage("§7------------------------------------------------");
-									player.playSound(player.getLocation(), "random.break", 1, 1);
-								}
+								PlayerUtils.giveItem(player, item);
+								wishes.put(player.getName(), wishes.get(player.getName()) - 1);
+								
+								player.sendMessage("§7------------------------------------------------");
+								player.sendMessage(prefix() + "You now have §e" + wishes.get(player.getName()) + "§r wishes.");
+								player.sendMessage("§7------------------------------------------------");
+								player.playSound(player.getLocation(), "note.harp", 1, 1);
 							}
 							else {
 								player.sendMessage("§7------------------------------------------------");
@@ -640,21 +544,13 @@ public class Genie extends Scenario implements Listener, CommandExecutor {
 							if (kills.get(player.getName()) == 3) {
 								item = new ItemStack(Material.NETHER_WARTS, 8);
 								
-								if (PlayerUtils.hasSpaceFor(player, item)) {
-									player.getInventory().addItem(item);
-									wishes.put(player.getName(), wishes.get(player.getName()) - 1);
-									
-									player.sendMessage("§7------------------------------------------------");
-									player.sendMessage(prefix() + "You now have §e" + wishes.get(player.getName()) + "§r wishes.");
-									player.sendMessage("§7------------------------------------------------");
-									player.playSound(player.getLocation(), "note.harp", 1, 1);
-								} 
-								else {
-									player.sendMessage("§7------------------------------------------------");
-									player.sendMessage(prefix() + "§cError: You don't have room.");
-									player.sendMessage("§7------------------------------------------------");
-									player.playSound(player.getLocation(), "random.break", 1, 1);
-								}
+								PlayerUtils.giveItem(player, item);
+								wishes.put(player.getName(), wishes.get(player.getName()) - 1);
+								
+								player.sendMessage("§7------------------------------------------------");
+								player.sendMessage(prefix() + "You now have §e" + wishes.get(player.getName()) + "§r wishes.");
+								player.sendMessage("§7------------------------------------------------");
+								player.playSound(player.getLocation(), "note.harp", 1, 1);
 							}
 							else {
 								player.sendMessage("§7------------------------------------------------");
@@ -670,21 +566,13 @@ public class Genie extends Scenario implements Listener, CommandExecutor {
 							if (kills.get(player.getName()) == 4) {
 								item = new ItemStack(Material.POTION, 1, (short) 8229);
 								
-								if (PlayerUtils.hasSpaceFor(player, new ItemStack(Material.WOOD_SWORD))) {
-									player.getInventory().addItem(item);
-									wishes.put(player.getName(), wishes.get(player.getName()) - 1);
-									
-									player.sendMessage("§7------------------------------------------------");
-									player.sendMessage(prefix() + "You now have §e" + wishes.get(player.getName()) + "§r wishes.");
-									player.sendMessage("§7------------------------------------------------");
-									player.playSound(player.getLocation(), "note.harp", 1, 1);
-								} 
-								else {
-									player.sendMessage("§7------------------------------------------------");
-									player.sendMessage(prefix() + "§cError: You don't have room.");
-									player.sendMessage("§7------------------------------------------------");
-									player.playSound(player.getLocation(), "random.break", 1, 1);
-								}
+								PlayerUtils.giveItem(player, item);
+								wishes.put(player.getName(), wishes.get(player.getName()) - 1);
+								
+								player.sendMessage("§7------------------------------------------------");
+								player.sendMessage(prefix() + "You now have §e" + wishes.get(player.getName()) + "§r wishes.");
+								player.sendMessage("§7------------------------------------------------");
+								player.playSound(player.getLocation(), "note.harp", 1, 1);
 							}
 							else {
 								player.sendMessage("§7------------------------------------------------");
@@ -697,21 +585,13 @@ public class Genie extends Scenario implements Listener, CommandExecutor {
 							if (kills.get(player.getName()) == 4) {
 								item = new ItemStack(Material.EXP_BOTTLE, 128);
 								
-								if (PlayerUtils.hasSpaceFor(player, item)) {
-									player.getInventory().addItem(item);
-									wishes.put(player.getName(), wishes.get(player.getName()) - 1);
-									
-									player.sendMessage("§7------------------------------------------------");
-									player.sendMessage(prefix() + "You now have §e" + wishes.get(player.getName()) + "§r wishes.");
-									player.sendMessage("§7------------------------------------------------");
-									player.playSound(player.getLocation(), "note.harp", 1, 1);
-								} 
-								else {
-									player.sendMessage("§7------------------------------------------------");
-									player.sendMessage(prefix() + "§cError: You don't have room.");
-									player.sendMessage("§7------------------------------------------------");
-									player.playSound(player.getLocation(), "random.break", 1, 1);
-								}
+								PlayerUtils.giveItem(player, item);
+								wishes.put(player.getName(), wishes.get(player.getName()) - 1);
+								
+								player.sendMessage("§7------------------------------------------------");
+								player.sendMessage(prefix() + "You now have §e" + wishes.get(player.getName()) + "§r wishes.");
+								player.sendMessage("§7------------------------------------------------");
+								player.playSound(player.getLocation(), "note.harp", 1, 1);
 							}
 							else {
 								player.sendMessage("§7------------------------------------------------");
@@ -724,21 +604,13 @@ public class Genie extends Scenario implements Listener, CommandExecutor {
 							if (kills.get(player.getName()) == 4) {
 								item = new ItemStack(Material.GLOWSTONE);
 								
-								if (PlayerUtils.hasSpaceFor(player, item)) {
-									player.getInventory().addItem(item);
-									wishes.put(player.getName(), wishes.get(player.getName()) - 1);
-									
-									player.sendMessage("§7------------------------------------------------");
-									player.sendMessage(prefix() + "You now have §e" + wishes.get(player.getName()) + "§r wishes.");
-									player.sendMessage("§7------------------------------------------------");
-									player.playSound(player.getLocation(), "note.harp", 1, 1);
-								} 
-								else {
-									player.sendMessage("§7------------------------------------------------");
-									player.sendMessage(prefix() + "§cError: You don't have room.");
-									player.sendMessage("§7------------------------------------------------");
-									player.playSound(player.getLocation(), "random.break", 1, 1);
-								}
+								PlayerUtils.giveItem(player, item);
+								wishes.put(player.getName(), wishes.get(player.getName()) - 1);
+								
+								player.sendMessage("§7------------------------------------------------");
+								player.sendMessage(prefix() + "You now have §e" + wishes.get(player.getName()) + "§r wishes.");
+								player.sendMessage("§7------------------------------------------------");
+								player.playSound(player.getLocation(), "note.harp", 1, 1);
 							}
 							else {
 								player.sendMessage("§7------------------------------------------------");
@@ -751,21 +623,13 @@ public class Genie extends Scenario implements Listener, CommandExecutor {
 							if (kills.get(player.getName()) == 4) {
 								item = new ItemStack(Material.BLAZE_ROD);
 								
-								if (PlayerUtils.hasSpaceFor(player, item)) {
-									player.getInventory().addItem(item);
-									wishes.put(player.getName(), wishes.get(player.getName()) - 1);
-									
-									player.sendMessage("§7------------------------------------------------");
-									player.sendMessage(prefix() + "You now have §e" + wishes.get(player.getName()) + "§r wishes.");
-									player.sendMessage("§7------------------------------------------------");
-									player.playSound(player.getLocation(), "note.harp", 1, 1);
-								} 
-								else {
-									player.sendMessage("§7------------------------------------------------");
-									player.sendMessage(prefix() + "§cError: You don't have room.");
-									player.sendMessage("§7------------------------------------------------");
-									player.playSound(player.getLocation(), "random.break", 1, 1);
-								}
+								PlayerUtils.giveItem(player, item);
+								wishes.put(player.getName(), wishes.get(player.getName()) - 1);
+								
+								player.sendMessage("§7------------------------------------------------");
+								player.sendMessage(prefix() + "You now have §e" + wishes.get(player.getName()) + "§r wishes.");
+								player.sendMessage("§7------------------------------------------------");
+								player.playSound(player.getLocation(), "note.harp", 1, 1);
 							}
 							else {
 								player.sendMessage("§7------------------------------------------------");
@@ -781,21 +645,13 @@ public class Genie extends Scenario implements Listener, CommandExecutor {
 							if (kills.get(player.getName()) == 5) {
 								item = new ItemStack(Material.OBSIDIAN, 64);
 								
-								if (PlayerUtils.hasSpaceFor(player, item)) {
-									player.getInventory().addItem(item);
-									wishes.put(player.getName(), wishes.get(player.getName()) - 1);
-									
-									player.sendMessage("§7------------------------------------------------");
-									player.sendMessage(prefix() + "You now have §e" + wishes.get(player.getName()) + "§r wishes.");
-									player.sendMessage("§7------------------------------------------------");
-									player.playSound(player.getLocation(), "note.harp", 1, 1);
-								} 
-								else {
-									player.sendMessage("§7------------------------------------------------");
-									player.sendMessage(prefix() + "§cError: You don't have room.");
-									player.sendMessage("§7------------------------------------------------");
-									player.playSound(player.getLocation(), "random.break", 1, 1);
-								}
+								PlayerUtils.giveItem(player, item);
+								wishes.put(player.getName(), wishes.get(player.getName()) - 1);
+								
+								player.sendMessage("§7------------------------------------------------");
+								player.sendMessage(prefix() + "You now have §e" + wishes.get(player.getName()) + "§r wishes.");
+								player.sendMessage("§7------------------------------------------------");
+								player.playSound(player.getLocation(), "note.harp", 1, 1);
 							}
 							else {
 								player.sendMessage("§7------------------------------------------------");
@@ -808,21 +664,13 @@ public class Genie extends Scenario implements Listener, CommandExecutor {
 							if (kills.get(player.getName()) == 5) {
 								item = new ItemStack(Material.SKULL_ITEM, 3, (short) 1);
 								
-								if (PlayerUtils.hasSpaceFor(player, item)) {
-									player.getInventory().addItem(item);
-									wishes.put(player.getName(), wishes.get(player.getName()) - 1);
-									
-									player.sendMessage("§7------------------------------------------------");
-									player.sendMessage(prefix() + "You now have §e" + wishes.get(player.getName()) + "§r wishes.");
-									player.sendMessage("§7------------------------------------------------");
-									player.playSound(player.getLocation(), "note.harp", 1, 1);
-								} 
-								else {
-									player.sendMessage("§7------------------------------------------------");
-									player.sendMessage(prefix() + "§cError: You don't have room.");
-									player.sendMessage("§7------------------------------------------------");
-									player.playSound(player.getLocation(), "random.break", 1, 1);
-								}
+								PlayerUtils.giveItem(player, item);
+								wishes.put(player.getName(), wishes.get(player.getName()) - 1);
+								
+								player.sendMessage("§7------------------------------------------------");
+								player.sendMessage(prefix() + "You now have §e" + wishes.get(player.getName()) + "§r wishes.");
+								player.sendMessage("§7------------------------------------------------");
+								player.playSound(player.getLocation(), "note.harp", 1, 1);
 							}
 							else {
 								player.sendMessage("§7------------------------------------------------");
@@ -835,21 +683,13 @@ public class Genie extends Scenario implements Listener, CommandExecutor {
 							if (kills.get(player.getName()) == 5) {
 								item = new ItemStack(Material.SOUL_SAND, 5);
 								
-								if (PlayerUtils.hasSpaceFor(player, item)) {
-									player.getInventory().addItem(item);
-									wishes.put(player.getName(), wishes.get(player.getName()) - 1);
-									
-									player.sendMessage("§7------------------------------------------------");
-									player.sendMessage(prefix() + "You now have §e" + wishes.get(player.getName()) + "§r wishes.");
-									player.sendMessage("§7------------------------------------------------");
-									player.playSound(player.getLocation(), "note.harp", 1, 1);
-								} 
-								else {
-									player.sendMessage("§7------------------------------------------------");
-									player.sendMessage(prefix() + "§cError: You don't have room.");
-									player.sendMessage("§7------------------------------------------------");
-									player.playSound(player.getLocation(), "random.break", 1, 1);
-								}
+								PlayerUtils.giveItem(player, item);
+								wishes.put(player.getName(), wishes.get(player.getName()) - 1);
+								
+								player.sendMessage("§7------------------------------------------------");
+								player.sendMessage(prefix() + "You now have §e" + wishes.get(player.getName()) + "§r wishes.");
+								player.sendMessage("§7------------------------------------------------");
+								player.playSound(player.getLocation(), "note.harp", 1, 1);
 							}
 							else {
 								player.sendMessage("§7------------------------------------------------");
@@ -862,21 +702,13 @@ public class Genie extends Scenario implements Listener, CommandExecutor {
 							if (kills.get(player.getName()) == 5) {
 								item = new ItemStack(Material.GOLD_INGOT, 8);
 								
-								if (PlayerUtils.hasSpaceFor(player, item)) {
-									player.getInventory().addItem(item);
-									wishes.put(player.getName(), wishes.get(player.getName()) - 1);
-									
-									player.sendMessage("§7------------------------------------------------");
-									player.sendMessage(prefix() + "You now have §e" + wishes.get(player.getName()) + "§r wishes.");
-									player.sendMessage("§7------------------------------------------------");
-									player.playSound(player.getLocation(), "note.harp", 1, 1);
-								} 
-								else {
-									player.sendMessage("§7------------------------------------------------");
-									player.sendMessage(prefix() + "§cError: You don't have room.");
-									player.sendMessage("§7------------------------------------------------");
-									player.playSound(player.getLocation(), "random.break", 1, 1);
-								}
+								PlayerUtils.giveItem(player, item);
+								wishes.put(player.getName(), wishes.get(player.getName()) - 1);
+								
+								player.sendMessage("§7------------------------------------------------");
+								player.sendMessage(prefix() + "You now have §e" + wishes.get(player.getName()) + "§r wishes.");
+								player.sendMessage("§7------------------------------------------------");
+								player.playSound(player.getLocation(), "note.harp", 1, 1);
 							}
 							else {
 								player.sendMessage("§7------------------------------------------------");
