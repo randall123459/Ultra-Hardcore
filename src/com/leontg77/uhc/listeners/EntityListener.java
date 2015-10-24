@@ -13,6 +13,7 @@ import org.bukkit.entity.Creeper;
 import org.bukkit.entity.EnderPearl;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Ghast;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Painting;
@@ -30,6 +31,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent.RegainReason;
+import org.bukkit.event.entity.ItemSpawnEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -51,7 +53,19 @@ import com.leontg77.uhc.utils.PlayerUtils;
  */
 public class EntityListener implements Listener {
 	private Game game = Game.getInstance();
-
+	
+	@EventHandler
+	public void onItemSpawn(ItemSpawnEvent event) {
+		Item item = event.getEntity();
+		ItemStack itemStack = item.getItemStack();
+		Material itemType = itemStack.getType();
+		
+		if (Main.toReplace.containsKey(itemType)) {
+			item.setItemStack(Main.toReplace.get(itemType));
+			Main.toReplace.remove(itemType);
+	    }
+	}
+	 
 	@EventHandler
 	public void onCreatureSpawn(CreatureSpawnEvent event) {
 		SpawnReason reason = event.getSpawnReason();
