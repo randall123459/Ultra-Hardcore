@@ -2,26 +2,21 @@ package com.leontg77.uhc.scenario.types;
 
 import java.util.HashSet;
 
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.ExperienceOrb;
-import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.util.Vector;
 
-import com.leontg77.uhc.Spectator;
-import com.leontg77.uhc.Spectator.SpecInfo;
+import com.leontg77.uhc.Main;
 import com.leontg77.uhc.scenario.Scenario;
 import com.leontg77.uhc.scenario.ScenarioManager;
-import com.leontg77.uhc.utils.BlockUtils;
-import com.leontg77.uhc.utils.PlayerUtils;
 
 /**
  * TripleOres scenario class
@@ -44,169 +39,95 @@ public class TripleOres extends Scenario implements Listener {
 		return enabled;
 	}
 	
-	@EventHandler(priority = EventPriority.LOW)
+	@EventHandler
 	public void onBlockBreak(BlockBreakEvent event) {
+		Player player = event.getPlayer();
 		Block block = event.getBlock();
 		
+		if (player.getGameMode() == GameMode.CREATIVE) {
+			return;
+		}
+		
+		ScenarioManager scen = ScenarioManager.getInstance();
+		
 		if (block.getType() == Material.IRON_ORE) {
-			event.setCancelled(true);
-			BlockUtils.blockCrack(event.getPlayer(), block.getLocation(), 15);
-			block.setType(Material.AIR);
-			block.getState().update();
+			if (block.getDrops(player.getItemInHand()).isEmpty()) {
+				return;
+			}
 
-			if (ScenarioManager.getInstance().getScenario("CutClean").isEnabled()) {
-				Item item = block.getWorld().dropItem(block.getLocation().add(0.5, 0.7, 0.5), new ItemStack (Material.IRON_INGOT, 3));
-				item.setVelocity(new Vector(0, 0.2, 0));
+			if (scen.getScenario("CutClean").isEnabled()) {
+				Main.toReplace.put(Material.IRON_ORE, new ItemStack(Material.IRON_INGOT, 3));
 				
 				ExperienceOrb exp = (ExperienceOrb) event.getBlock().getWorld().spawn(event.getBlock().getLocation().add(0.5, 0.3, 0.5), ExperienceOrb.class);
 				exp.setExperience(3);
 			} else {
 				if (locs.contains(block.getLocation())) {
-					Item item = block.getWorld().dropItem(block.getLocation().add(0.5, 0.7, 0.5), new ItemStack (Material.IRON_ORE, 1));
-					item.setVelocity(new Vector(0, 0.2, 0));
-					locs.remove(block.getLocation());
 					return;
 				}
-				
-				Item item = block.getWorld().dropItem(block.getLocation().add(0.5, 0.7, 0.5), new ItemStack (Material.IRON_ORE, 3));
-				item.setVelocity(new Vector(0, 0.2, 0));
+
+				Main.toReplace.put(Material.IRON_ORE, new ItemStack(Material.IRON_ORE, 3));
 			}
 		}
 		
 		if (block.getType() == Material.GOLD_ORE) {
-			if (ScenarioManager.getInstance().getScenario("Barebones").isEnabled()) {
+			if (block.getDrops(player.getItemInHand()).isEmpty()) {
 				return;
 			}
-			
-			if (ScenarioManager.getInstance().getScenario("Goldless").isEnabled()) {
-				return;
-			}
-			
-			if (!SpecInfo.locs.contains(event.getBlock().getLocation())) {
-				Player player = event.getPlayer();
-				int amount = 0;
-				Location loc = event.getBlock().getLocation();
-				
-				for (int x = loc.getBlockX() - 1; x <= loc.getBlockX() + 1; x++) {
-					for (int y = loc.getBlockY() - 1; y <= loc.getBlockY() + 1; y++) {
-						for (int z = loc.getBlockZ() - 1; z <= loc.getBlockZ() + 1; z++) {
-							if (loc.getWorld().getBlockAt(x, y, z).getType() == Material.GOLD_ORE) {
-								amount++;
-								SpecInfo.locs.add(loc.getWorld().getBlockAt(x, y, z).getLocation());
-							}
-						}
-					}
-				}
-				
-				if (SpecInfo.totalGold.containsKey(player.getName())) {
-					SpecInfo.totalGold.put(player.getName(), SpecInfo.totalGold.get(player.getName()) + amount);
-				} else {
-					SpecInfo.totalGold.put(player.getName(), amount);
-				}
-				
-				for (Player online : PlayerUtils.getPlayers()) {
-					if (Spectator.getInstance().isSpectating(online)) {
-						online.sendMessage(SpecInfo.prefix() + "§7" + player.getName() + "§f:§6GOLD §f[V:§6" + amount + "§f] [T:§6" + SpecInfo.totalGold.get(player.getName()) + "§f]");
-					}
-				}
-				amount = 0;
-			}
-			
-			event.setCancelled(true);
-			BlockUtils.blockCrack(event.getPlayer(), block.getLocation(), 14);
-			block.setType(Material.AIR);
-			block.getState().update();
 
-			if (ScenarioManager.getInstance().getScenario("CutClean").isEnabled()) {
-				Item item = block.getWorld().dropItem(block.getLocation().add(0.5, 0.7, 0.5), new ItemStack (Material.GOLD_INGOT, 3));
-				item.setVelocity(new Vector(0, 0.2, 0));
+			if (scen.getScenario("Barebones").isEnabled()) {
+				return;
+			}
+			
+			if (scen.getScenario("Goldless").isEnabled()) {
+				return;
+			}
+
+			if (scen.getScenario("CutClean").isEnabled()) {
+				Main.toReplace.put(Material.GOLD_ORE, new ItemStack(Material.GOLD_INGOT, 3));
 				
 				ExperienceOrb exp = (ExperienceOrb) event.getBlock().getWorld().spawn(event.getBlock().getLocation().add(0.5, 0.3, 0.5), ExperienceOrb.class);
-				exp.setExperience(7);
+				exp.setExperience(3);
 			} else {
 				if (locs.contains(block.getLocation())) {
-					Item item = block.getWorld().dropItem(block.getLocation().add(0.5, 0.7, 0.5), new ItemStack (Material.GOLD_ORE, 1));
-					item.setVelocity(new Vector(0, 0.2, 0));
-					locs.remove(block.getLocation());
 					return;
 				}
-				
-				Item item = block.getWorld().dropItem(block.getLocation().add(0.5, 0.7, 0.5), new ItemStack (Material.GOLD_ORE, 3));
-				item.setVelocity(new Vector(0, 0.2, 0));
+
+				Main.toReplace.put(Material.GOLD_ORE, new ItemStack(Material.GOLD_ORE, 3));
 			}
+		
 		}
 		
 		if (block.getType() == Material.COAL_ORE) {
-			event.setCancelled(true);
-			BlockUtils.blockCrack(event.getPlayer(), block.getLocation(), 16);
-			block.setType(Material.AIR);
-			block.getState().update();
+			if (block.getDrops(player.getItemInHand()).isEmpty()) {
+				return;
+			}
 
-			Item item = block.getWorld().dropItem(block.getLocation().add(0.5, 0.7, 0.5), new ItemStack (Material.COAL, 3));
-			item.setVelocity(new Vector(0, 0.2, 0));
+			Main.toReplace.put(Material.COAL, new ItemStack(Material.COAL, 3));
 			
 			ExperienceOrb exp = (ExperienceOrb) event.getBlock().getWorld().spawn(event.getBlock().getLocation().add(0.5, 0.3, 0.5), ExperienceOrb.class);
-			exp.setExperience(9);
+			exp.setExperience(3);
 		}
 		
 		if (block.getType() == Material.EMERALD_ORE) {
-			event.setCancelled(true);
-			BlockUtils.blockCrack(event.getPlayer(), block.getLocation(), 129);
-			block.setType(Material.AIR);
-			block.getState().update();
+			if (block.getDrops(player.getItemInHand()).isEmpty()) {
+				return;
+			}
 
-			Item item = block.getWorld().dropItem(block.getLocation().add(0.5, 0.7, 0.5), new ItemStack (Material.EMERALD, 3));
-			item.setVelocity(new Vector(0, 0.2, 0));
+			Main.toReplace.put(Material.EMERALD, new ItemStack(Material.EMERALD, 3));
 			
 			ExperienceOrb exp = (ExperienceOrb) event.getBlock().getWorld().spawn(event.getBlock().getLocation().add(0.5, 0.3, 0.5), ExperienceOrb.class);
-			exp.setExperience(9);
+			exp.setExperience(8);
 		}
 		
 		if (block.getType() == Material.DIAMOND_ORE) {
-			if (ScenarioManager.getInstance().getScenario("Diamondless").isEnabled()) {
+			if (block.getDrops(player.getItemInHand()).isEmpty()) {
 				return;
 			}
-			
-			if (!SpecInfo.locs.contains(event.getBlock().getLocation())) {
-				Location loc = event.getBlock().getLocation();
-				Player player = event.getPlayer();
-				int amount = 0;
-				
-				for (int x = loc.getBlockX() - 1; x <= loc.getBlockX() + 1; x++) {
-					for (int y = loc.getBlockY() - 1; y <= loc.getBlockY() + 1; y++) {
-						for (int z = loc.getBlockZ() - 1; z <= loc.getBlockZ() + 1; z++) {
-							if (loc.getWorld().getBlockAt(x, y, z).getType() == Material.DIAMOND_ORE) {
-								amount++;
-								locs.add(loc.getWorld().getBlockAt(x, y, z).getLocation());
-							}
-						}
-					}
-				}
-				
-				if (SpecInfo.totalDiamonds.containsKey(player.getName())) {
-					SpecInfo.totalDiamonds.put(player.getName(), SpecInfo.totalDiamonds.get(player.getName()) + amount);
-				} else {
-					SpecInfo.totalDiamonds.put(player.getName(), amount);
-				}
-				
-				for (Player online : PlayerUtils.getPlayers()) {
-					if (Spectator.getInstance().isSpectating(online)) {
-						online.sendMessage(SpecInfo.prefix() + "§7" + player.getName() + "§f:§3DIAMOND §f[V:§3" + amount + "§f] [T:§3" + SpecInfo.totalDiamonds.get(player.getName()) + "§f]");
-					}
-				}
-				amount = 0;
-			}
-			
-			event.setCancelled(true);
-			BlockUtils.blockCrack(event.getPlayer(), block.getLocation(), 56);
-			block.setType(Material.AIR);
-			block.getState().update();
 
-			Item item = block.getWorld().dropItem(block.getLocation().add(0.5, 0.7, 0.5), new ItemStack (Material.DIAMOND, 3));
-			item.setVelocity(new Vector(0, 0.2, 0));
+			Main.toReplace.put(Material.DIAMOND, new ItemStack(Material.DIAMOND, 3));
 			
 			ExperienceOrb exp = (ExperienceOrb) event.getBlock().getWorld().spawn(event.getBlock().getLocation().add(0.5, 0.3, 0.5), ExperienceOrb.class);
-			exp.setExperience(11);
+			exp.setExperience(12);
 		}
 	}
 	
