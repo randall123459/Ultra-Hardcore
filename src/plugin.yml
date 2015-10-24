@@ -76,7 +76,7 @@ commands:
     aliases: [ping]
   msg:
     description: Msg a player something secret.
-    aliases: [t, tell, w, whisper, m]
+    aliases: [t, tell, whisper, m]
   mute:
     description: Mute a player or the chat.
   near:
@@ -195,8 +195,6 @@ commands:
     description: Add a king.
   remking:
     description: Remove a king.
-  moles:
-    description: View the moles.
   molehelp:
     description: View mole commands.
   mcl:
