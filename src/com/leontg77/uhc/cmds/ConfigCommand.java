@@ -17,7 +17,6 @@ import com.leontg77.uhc.Main;
 import com.leontg77.uhc.Main.BorderShrink;
 import com.leontg77.uhc.Timers;
 import com.leontg77.uhc.Scoreboards;
-import com.leontg77.uhc.Settings;
 import com.leontg77.uhc.State;
 import com.leontg77.uhc.utils.GameUtils;
 import com.leontg77.uhc.utils.PacketUtils;
@@ -155,8 +154,7 @@ public class ConfigCommand implements CommandExecutor, TabCompleter {
 					game.setGoldenHeadsHeal(heal);
 					break;
 				case HOST:
-					Settings.getInstance().getConfig().set("game.host", args[1]);
-					Settings.getInstance().saveConfig();
+					game.setHost(args[1]);
 					
 					Scoreboards.getInstance().kills.setDisplayName("§4UHC §8- §7" + args[1]);
 					sender.sendMessage(Main.PREFIX + "You set the host to §a" + args[1] + "§7.");
@@ -166,8 +164,7 @@ public class ConfigCommand implements CommandExecutor, TabCompleter {
 					}
 					break;
 				case MATCHPOST:
-					Settings.getInstance().getConfig().set("matchpost", args[1]);
-					Settings.getInstance().saveConfig();
+					game.setMatchPost(args[1]);
 					
 					sender.sendMessage(Main.PREFIX + "You set the matchpost to §a" + args[1] + "§7.");
 					break;
@@ -181,8 +178,7 @@ public class ConfigCommand implements CommandExecutor, TabCompleter {
 						return true;
 					}
 					
-					Settings.getInstance().getConfig().set("maxplayers", max);
-					Settings.getInstance().saveConfig();
+					game.setMaxPlayers(max);
 
 					PlayerUtils.broadcast(Main.PREFIX + "Max player slots are now §a" + max + "§7.");
 					break;
@@ -196,8 +192,7 @@ public class ConfigCommand implements CommandExecutor, TabCompleter {
 						return true;
 					}
 					
-					Settings.getInstance().getConfig().set("time.meetup", meetup);
-					Settings.getInstance().saveConfig();
+					game.setMeetup(meetup);
 
 					Timers.meetup = meetup;
 					PlayerUtils.broadcast(Main.PREFIX + "Meetup is now §a" + meetup + "§7 minutes in.");
@@ -256,8 +251,7 @@ public class ConfigCommand implements CommandExecutor, TabCompleter {
 						return true;
 					}
 					
-					Settings.getInstance().getConfig().set("time.pvp", pvp);
-					Settings.getInstance().saveConfig();
+					game.setPvP(pvp);
 
 					Timers.pvp = pvp;
 					PlayerUtils.broadcast(Main.PREFIX + "PvP is now §a" + pvp + "§7 minutes in.");
@@ -269,8 +263,7 @@ public class ConfigCommand implements CommandExecutor, TabCompleter {
 						bu.append(args[s]).append(" ");
 					}
 					
-					Settings.getInstance().getConfig().set("game.scenarios", ChatColor.translateAlternateColorCodes('&', bu.toString().trim()));
-					Settings.getInstance().saveConfig();
+					game.setScenarios(ChatColor.translateAlternateColorCodes('&', bu.toString().trim()));
 
 					sender.sendMessage(Main.PREFIX + "You set the scenarios to §a" + ChatColor.translateAlternateColorCodes('&', bu.toString().trim()) + "§7.");
 
@@ -370,8 +363,7 @@ public class ConfigCommand implements CommandExecutor, TabCompleter {
 					}
 					break;
 				case WORLD:
-					Settings.getInstance().getConfig().set("game.world", args[1]);
-					Settings.getInstance().saveConfig();
+					game.setWorld(args[1]);
 
 					sender.sendMessage(Main.PREFIX + "You set the game world to §a" + args[1] + "§7.");
 					break;
@@ -385,7 +377,7 @@ public class ConfigCommand implements CommandExecutor, TabCompleter {
 						PlayerUtils.broadcast(Main.PREFIX + "This is no longer an recorded round.");
 						game.setRecordedRound(false);
 						
-						Scoreboards.getInstance().kills.setDisplayName("§4UHC §8- §7" + Settings.getInstance().getConfig().getString("game.host"));
+						Scoreboards.getInstance().kills.setDisplayName("§4UHC §8- §7" + game.getHost());
 					} else {
 						sender.sendMessage(ChatColor.RED + "RR can only be true or false.");
 					}
