@@ -41,7 +41,6 @@ public class Moles extends Scenario implements Listener, CommandExecutor {
 		super("Moles", "There are a mole on each team, moles on each team work together to take out the normal teams.");
 		Main main = Main.plugin;
 		
-		main.getCommand("moles").setExecutor(this);
 		main.getCommand("molehelp").setExecutor(this);
 		main.getCommand("mcc").setExecutor(this);
 		main.getCommand("mcl").setExecutor(this);
@@ -71,11 +70,11 @@ public class Moles extends Scenario implements Listener, CommandExecutor {
 				pls.clear();
 			}
 
-			PlayerUtils.broadcast(Main.prefix() + "Moles has been set.");
+			PlayerUtils.broadcast(Main.PREFIX + "Moles has been set.");
 			
 			for (String m : moles) {
 				Player mole = Bukkit.getServer().getPlayer(m);
-				mole.sendMessage(Main.prefix() + "You are the mole.");
+				mole.sendMessage(Main.PREFIX + "You are the mole.");
 				
 				ItemStack wool1 = new ItemStack (Material.WOOL, 1, (short) 8);
 				ItemMeta wool1meta = wool1.getItemMeta();
@@ -346,6 +345,7 @@ public class Moles extends Scenario implements Listener, CommandExecutor {
 		}
 	}
 
+	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (!(sender instanceof Player)) {
 			sender.sendMessage(ChatColor.RED + "Only players can use mole commands.");
@@ -354,85 +354,55 @@ public class Moles extends Scenario implements Listener, CommandExecutor {
 		
 		Player player = (Player) sender;
 		
-		if (cmd.getName().equalsIgnoreCase("moles")) {
-			if (!isEnabled()) {
-				player.sendMessage(Main.prefix() + "\"Moles\" is not enabled.");
-				return true;
-			}
-			
-			if (Spectator.getInstance().isSpectating(player)) {
-				StringBuilder moleList = new StringBuilder("");
-				int i = 1;
-				
-				for (String mole : moles) {
-					if (moleList.length() > 0) {
-						if (i == moles.size()) {
-							moleList.append(" §7and §a");
-						} else {
-							moleList.append("§7, §a");
-						}
-					}
-					
-					moleList.append(ChatColor.GREEN + mole);
-					i++;
-				}
-				
-				player.sendMessage(Main.prefix() + "The moles are: §a" + (moleList.length() > 0 ? moleList.toString().trim() : "None") + "§7.");
-			} else {
-				player.sendMessage(Main.NO_PERM_MSG);
-			}
-		}
-		
 		if (cmd.getName().equalsIgnoreCase("molehelp")) {
 			if (!isEnabled()) {
-				player.sendMessage(Main.prefix() + "\"Moles\" is not enabled.");
+				player.sendMessage(Main.PREFIX + "\"Moles\" is not enabled.");
 				return true;
 			}
 			
 			if (!moles.contains(player.getName())) {
-				player.sendMessage(Main.prefix().replaceAll("UHC", "Moles") + "You are not a mole.");
+				player.sendMessage(Main.PREFIX.replaceAll("UHC", "Moles") + "You are not a mole.");
 				return true;
 			}
-	
-			player.sendMessage(Main.prefix().replaceAll("UHC", "Moles") + "Mole help:");
-			player.sendMessage("§7- §f/mcl §7- §o(Tell your location to the moles)");
-			player.sendMessage("§7- §f/mcc §7- §o(Chat with the other moles)");
-			player.sendMessage("§7- §f/mcp §7- §o(Display the other moles)");
+			
+			sender.sendMessage("§9/mcc: §eChat to other moles "); 
+			sender.sendMessage("§9/mcl: §eSend your location to other moles"); 
+			sender.sendMessage("§9/mcp: §eList the other moles ");
 		}
 		
 		if (cmd.getName().equalsIgnoreCase("mcl")) {
 			if (!isEnabled()) {
-				player.sendMessage(Main.prefix() + "\"Moles\" is not enabled.");
+				player.sendMessage(Main.PREFIX + "\"Moles\" is not enabled.");
 				return true;
 			}
 			
 			if (!moles.contains(player.getName())) {
-				player.sendMessage(Main.prefix().replaceAll("UHC", "Moles") + "You are not a mole.");
+				player.sendMessage(Main.PREFIX.replaceAll("UHC", "Moles") + "You are not a mole.");
 				return true;
 			}
 			
-			for (String mole : moles) {
-				Player moleP = Bukkit.getServer().getPlayer(mole);
-				
-				if (moleP != null) {
-					moleP.sendMessage(Main.prefix().replaceAll("UHC", "MoleLoc") + player.getName() + ": §fx:" + player.getLocation().getBlockX() + ", y:" + player.getLocation().getBlockY() + ", z:" + player.getLocation().getBlockZ() + " (" + player.getWorld().getEnvironment().name().replaceAll("_", " ").replaceAll("NORMAL", "overworld").toLowerCase().replaceAll("normal", "overworld") + ")");
+			for (Player online : PlayerUtils.getPlayers()) {
+				if (!moles.contains(online.getName())) {
+					continue;
 				}
+				
+				online.sendMessage("§6[" + sender.getName() + "]§cLOC:§a "+ ((int) player.getLocation().getX()) + "," + ((int) player.getLocation().getY()) + "," + ((int) player.getLocation().getZ()));
 			}
 		}
 		
 		if (cmd.getName().equalsIgnoreCase("mcc")) {
 			if (!isEnabled()) {
-				player.sendMessage(Main.prefix() + "\"Moles\" is not enabled.");
+				player.sendMessage(Main.PREFIX + "\"Moles\" is not enabled.");
 				return true;
 			}
 			
 			if (!moles.contains(player.getName())) {
-				player.sendMessage(Main.prefix().replaceAll("UHC", "Moles") + "You are not a mole.");
+				player.sendMessage(Main.PREFIX.replaceAll("UHC", "Moles") + "You are not a mole.");
 				return true;
 			}
 			
 			if (args.length == 0) {
-				player.sendMessage(Main.prefix() + "Usage: /mcc <message>");
+				player.sendMessage(Main.PREFIX + "Usage: /mcc <message>");
 				return true;
 			}
 			
@@ -441,44 +411,37 @@ public class Moles extends Scenario implements Listener, CommandExecutor {
 			for (int i = 0; i < args.length; i++) {
 				message.append(args[i]).append(" ");
 			}
+
+			Spectator spec = Spectator.getInstance();
 			
-			for (String mole : moles) {
-				Player moleP = Bukkit.getServer().getPlayer(mole);
-				
-				if (moleP != null) {
-					moleP.sendMessage(Main.prefix().replaceAll("UHC", "MoleChat") + player.getName() + ": §f" + message.toString().trim());
+			for (Player online : PlayerUtils.getPlayers()) {
+				if (!spec.isSpectating(online) && !moles.contains(online.getName())) {
+					continue;
 				}
+				
+				online.sendMessage("§6[" + sender.getName() + "]§c" + "MOLE PM:§a " + message.toString().trim());
 			}
 		}
 		
 		if (cmd.getName().equalsIgnoreCase("mcp")) {
 			if (!isEnabled()) {
-				player.sendMessage(Main.prefix() + "\"Moles\" is not enabled.");
+				player.sendMessage(Main.PREFIX + "\"Moles\" is not enabled.");
+				return true;
+			}
+
+			Spectator spec = Spectator.getInstance();
+			
+			if (!spec.isSpectating(player) && !moles.contains(player.getName())) {
+				player.sendMessage(Main.PREFIX.replaceFirst("UHC", "Moles") + "You are not a mole.");
 				return true;
 			}
 			
-			if (!moles.contains(player.getName())) {
-				player.sendMessage(Main.prefix().replaceAll("UHC", "Moles") + "You are not a mole.");
-				return true;
-			}
-			
-			StringBuilder moleList = new StringBuilder("");
-			int i = 1;
+			player.sendMessage("§cList of moles:");
 			
 			for (String mole : moles) {
-				if (moleList.length() > 0) {
-					if (i == moles.size()) {
-						moleList.append(" §7and §a");
-					} else {
-						moleList.append("§7, §a");
-					}
-				}
-				
-				moleList.append(ChatColor.GREEN + mole);
-				i++;
+				player.sendMessage("§9MOLE: §e" + mole);
 			}
 			
-			player.sendMessage(Main.prefix() + "The moles are: §a" + (moleList.length() > 0 ? moleList.toString().trim() : "None") + "§7.");
 		}
 		return true;
 	}
