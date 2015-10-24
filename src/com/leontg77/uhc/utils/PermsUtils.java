@@ -65,6 +65,7 @@ public class PermsUtils {
 			perm.setPermission("uhc.invsee", true);
 			perm.setPermission("uhc.kick", true);
 			perm.setPermission("uhc.mute", true);
+			perm.setPermission("uhc.moles", true);
 			perm.setPermission("uhc.pvp", true);
 			perm.setPermission("uhc.scenario", true);
 			perm.setPermission("uhc.sethealth", true);
@@ -83,11 +84,10 @@ public class PermsUtils {
 				perm.setPermission("uhc.clearinv.other", true);
 				perm.setPermission("uhc.clearxp.other", true);
 				perm.setPermission("uhc.setmaxhealth", true);
-				perm.setPermission("uhc.arenaadmin", true);
+				perm.setPermission("uhc.arena", true);
 				perm.setPermission("uhc.heal.other", true);
 				perm.setPermission("uhc.feed.other", true);
 				perm.setPermission("uhc.sethealth", true);
-				perm.setPermission("uhc.teamadmin", true);
 				perm.setPermission("uhc.scenario", true);
 				perm.setPermission("uhc.clearinv", true);
 				perm.setPermission("uhc.gamemode", true);
@@ -108,7 +108,6 @@ public class PermsUtils {
 				if (rank == Rank.HOST) {
 					perm.setPermission("uhc.skull", true);
 					perm.setPermission("uhc.speed", true);
-					perm.setPermission("uhc.moles", true);
 					perm.setPermission("uhc.invsee", true);
 					perm.setPermission("uhc.unban", true);
 					perm.setPermission("uhc.tp", true);
@@ -131,7 +130,7 @@ public class PermsUtils {
 		try {
 			player.removeAttachment(Main.permissions.get(player.getName()));
 		} catch (Exception e) {
-			// uhh?
+			// uhh...?
 		}
 		
 		Main.permissions.remove(player.getName());
