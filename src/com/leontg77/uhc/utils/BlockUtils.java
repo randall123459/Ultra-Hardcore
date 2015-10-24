@@ -1,10 +1,9 @@
 package com.leontg77.uhc.utils;
 
-import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
-import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 /**
  * Block utilities class.
@@ -13,41 +12,54 @@ import org.bukkit.entity.Player;
  * 
  * @author LeonTG77
  */
-@SuppressWarnings("deprecation")
 public class BlockUtils {
-	
+
 	/**
-	 * Display the breaking particles and sound.
+	 * Get the sapling that should be dropped from the leaf.
 	 * 
-	 * @param player the player mining the block.
-	 * @param loc the location of the block.
-	 * @param type the type of the block.
+	 * @param type The leaf type.
+	 * @param damage The leaf durability.
+	 * @return The sapling that should drop.
 	 */
-	public static void blockCrack(Player player, Location loc, Material type) {
-		for (Player online : PlayerUtils.getPlayers()) {
-			if (online == player) {
-				continue;
+	public static ItemStack getSaplingFor(Material type, short damage) {
+		if (type == Material.LEAVES_2) {
+			switch (damage) {
+			case 0:
+			case 4:
+			case 8:
+			case 12:
+				return new ItemStack(Material.SAPLING, 1, (short) 4);
+			case 1:
+			case 5:
+			case 9:
+			case 13:
+				return new ItemStack(Material.SAPLING, 1, (short) 5);
 			}
-				
-			online.playEffect(loc, Effect.STEP_SOUND, type.getId());
-		}
-	}
-	
-	/**
-	 * Display the breaking particles and sound.
-	 * 
-	 * @param player the player mining the block.
-	 * @param loc the location of the block.
-	 * @param id the id of the block.
-	 */
-	public static void blockCrack(Player player, Location loc, int id) {
-		for (Player online : PlayerUtils.getPlayers()) {
-			if (online == player) {
-				continue;
+		} else {
+			switch (damage) {
+			case 0:
+			case 4:
+			case 8:
+			case 12:
+				return new ItemStack(Material.SAPLING);
+			case 1:
+			case 5:
+			case 9:
+			case 13:
+				return new ItemStack(Material.SAPLING, 1, (short) 1);
+			case 2:
+			case 6:
+			case 10:
+			case 14:
+				return new ItemStack(Material.SAPLING, 1, (short) 2);
+			case 3:
+			case 7:
+			case 11:
+			case 15:
+				return new ItemStack(Material.SAPLING, 1, (short) 3);
 			}
-				
-			online.playEffect(loc, Effect.STEP_SOUND, id);
 		}
+		return null;
 	}
 	
 	/**
