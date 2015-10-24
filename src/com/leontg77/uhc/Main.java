@@ -152,6 +152,7 @@ public class Main extends JavaPlugin {
 	public static HashMap<String, Integer> teamKills = new HashMap<String, Integer>();
 	public static HashMap<String, Integer> kills = new HashMap<String, Integer>();
 	
+	public static HashMap<Material, ItemStack> toReplace = new HashMap<Material, ItemStack>();
 	public static HashMap<Player, int[]> rainbow = new HashMap<Player, int[]>();
 	
 	public static Recipe headRecipe;
