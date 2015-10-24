@@ -361,26 +361,46 @@ public class Game {
 	// ############################ RATES ############################
 	// TODO: <-- just for the marker.
 
-	public void setAppleRates(int shearRate) {
-		settings.getConfig().set("rates.apple.rate", shearRate);
+	/**
+	 * Set the apple rates of the game.
+	 * 
+	 * @param appleRate The apple rate.
+	 */
+	public void setAppleRates(int appleRate) {
+		settings.getConfig().set("rates.apple.rate", appleRate);
 		settings.saveConfig();
 	}
 	
+	/**
+	 * Get the apple rates of the game.
+	 * 
+	 * @return The apple rates.
+	 */
 	public int getAppleRates() {
 		return settings.getConfig().getInt("rates.apple.rate", 1);
 	}
 	
+	/**
+	 * Set the flint rates of the game.
+	 * 
+	 * @param flintRate The flint rate.
+	 */
 	public void setFlintRates(int flintRate) {
 		settings.getConfig().set("rates.flint.rate", flintRate);
 		settings.saveConfig();
 	}
-	
+
+	/**
+	 * Get the flint rates of the game.
+	 * 
+	 * @return The flint rates.
+	 */
 	public int getFlintRates() {
 		return settings.getConfig().getInt("rates.flint.rate", 35);
 	}
 
 	/**
-	 * Enable or disable team management.
+	 * Enable or disable shears.
 	 * 
 	 * @param enable True to enable, false to disable.
 	 */
@@ -390,7 +410,7 @@ public class Game {
 	}
 	
 	/**
-	 * Get if team management is enabled.
+	 * Get if shears is enabled.
 	 * 
 	 * @return True if it is, false otherwise.
 	 */
@@ -398,11 +418,23 @@ public class Game {
 		return settings.getConfig().getBoolean("rates.shears.enabled", true);
 	}
 	
+	/**
+	 * Set the shears rates of the game.
+	 * <p>
+	 * Note: This will have no effect if shears are disabled.
+	 * 
+	 * @param shearRate The shears rate.
+	 */
 	public void setShearRates(int shearRate) {
 		settings.getConfig().set("rates.shears.rate", shearRate);
 		settings.saveConfig();
 	}
 	
+	/**
+	 * Get the shear rates of the game.
+	 * 
+	 * @return The shear rates, 0 if shears are disabled.
+	 */
 	public int getShearRates() {
 		if (!shears()) {
 			return 0;
@@ -413,10 +445,30 @@ public class Game {
 	
 	// ############################ FEATURES ############################
 	// TODO: <-- just for the marker.
+	
+	
+	/**
+	 * Everything below is getters and setters, guess yourself what they do by looking above
+	 * I might write the java docs one day..
+	 */
+	
+	/**
+	 * Enable or disable anti stripmine.
+	 * 
+	 * @param enable True to enable, false to disable.
+	 */
+	public void setAntiStripmine(boolean enable) {
+		settings.getConfig().set("feature.antiStripmine.enabled", enable);
+		settings.saveConfig();
+	}
 
+	/**
+	 * Check if anti stripmine is enabled.
+	 * 
+	 * @return True if it is, false otherwise.
+	 */
 	public boolean antiStripmine() {
-		// TODO Auto-generated method stub
-		return false;
+		return settings.getConfig().getBoolean("feature.antiStripmine.enabled", true);
 	}
 	
 	public void setBorderShrink(BorderShrink border) {
@@ -509,12 +561,21 @@ public class Game {
 		settings.saveConfig();
 	}
 
+	public boolean strength() {
+		return settings.getConfig().getBoolean("feature.strength.enabled", true);
+	}
+	
+	public void setStrength(boolean enable) {
+		settings.getConfig().set("feature.strength.enabled", enable);
+		settings.saveConfig();
+	}
+
 	public boolean nerfedStrength() {
-		return settings.getConfig().getBoolean("feature.nerfedStrength.enabled", true);
+		return settings.getConfig().getBoolean("feature.strength.nerfed", true);
 	}
 	
 	public void setNerfedStrength(boolean enable) {
-		settings.getConfig().set("feature.nerfedStrength.enabled", enable);
+		settings.getConfig().set("feature.strength.nerfed", enable);
 		settings.saveConfig();
 	}
 
