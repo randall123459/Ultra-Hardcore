@@ -37,16 +37,25 @@ public class WorldManager {
 	 * Load all the saved worlds.
 	 */
 	public void loadWorlds() {
-		Set<String> worlds = settings.getWorlds().getConfigurationSection("worlds").getKeys(false);
-		
-		for (String world : worlds) {
-			String name = world;
+		try {
+			Set<String> worlds = settings.getWorlds().getConfigurationSection("worlds").getKeys(false);
 			
-			try {
-				loadWorld(name);
-			} catch (Exception e) {
-				e.printStackTrace();
+			for (String world : worlds) {
+				String name = world;
+				
+				try {
+					loadWorld(name);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
+		} catch (Exception e) {
+			settings.getWorlds().set("worlds.arena.name", "arena");
+			settings.getWorlds().set("worlds.arena.radius", 200);
+			settings.getWorlds().set("worlds.arena.seed", 123l);
+			settings.getWorlds().set("worlds.arena.environment", "NORMAL");
+			settings.getWorlds().set("worlds.arena.worldtype", "NORMAL");
+			settings.saveWorlds();
 		}
 	}
 	
