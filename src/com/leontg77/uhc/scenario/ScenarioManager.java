@@ -18,6 +18,7 @@ import com.leontg77.uhc.scenario.types.BigCrack;
 import com.leontg77.uhc.scenario.types.BiomeParanoia;
 import com.leontg77.uhc.scenario.types.BlockRush;
 import com.leontg77.uhc.scenario.types.BloodDiamonds;
+import com.leontg77.uhc.scenario.types.BloodLapis;
 import com.leontg77.uhc.scenario.types.Captains;
 import com.leontg77.uhc.scenario.types.ChunkApocalypse;
 import com.leontg77.uhc.scenario.types.Compensation;
@@ -101,6 +102,7 @@ public class ScenarioManager {
 		scenarios.add(new BiomeParanoia());
 		scenarios.add(new BlockRush());
 		scenarios.add(new BloodDiamonds());
+		scenarios.add(new BloodLapis());
 		scenarios.add(new Captains());
 		scenarios.add(new ChunkApocalypse());
 		scenarios.add(new Compensation());
