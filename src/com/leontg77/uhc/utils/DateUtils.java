@@ -78,19 +78,11 @@ public class DateUtils {
         
         if (hours > 0) {
             output.append(hours).append(" ").append(hours == 1 ? "§7hour§a" : "§7hours§a");
-            
-            if (minutes == 0) {
-                if (output.length() > 0) {
-                    output.append(" ");
-                }
-                
-                output.append(minutes).append(" ").append(minutes == 1 ? "§7minute§a" : "§7minutes§a");
-            }
         }
         
         if (minutes > 0) {
             if (output.length() > 0) {
-                output.append(" ");
+                output.append(" and ");
             }
             
             output.append(minutes).append(" ").append(minutes == 1 ? "§7minute§a" : "§7minutes§a");
@@ -98,7 +90,7 @@ public class DateUtils {
         
         if (seconds > 0) {
             if (output.length() > 0) {
-                output.append(" ");
+                output.append(" and ");
             }
             
             output.append(seconds).append(" ").append(seconds == 1 ? "§7second§a" : "§7seconds§a");
