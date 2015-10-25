@@ -140,7 +140,7 @@ public class PlayerListener implements Listener {
 		final Player killer = player.getKiller();
 
 		if (killer == null) {
-			if (worlds.contains(player.getWorld())) {
+			if (worlds.contains(player.getWorld()) && !game.isRecordedRound()) {
 				board.setScore("§8» §a§lPvE", board.getScore("§8» §a§lPvE") + 1);
 		        board.resetScore(player.getName());
 			}
@@ -600,7 +600,7 @@ public class PlayerListener implements Listener {
 			for (Player online : PlayerUtils.getPlayers()) {
 				World oWorld = online.getWorld();
 				
-				if (!spec.isSpectating(online) && !GameUtils.getGameWorlds().contains(oWorld)) {
+				if (!spec.isSpectating(online) && GameUtils.getGameWorlds().contains(oWorld)) {
 					players.add(online);
 				}
 			}
