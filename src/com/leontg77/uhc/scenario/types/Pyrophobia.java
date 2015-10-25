@@ -88,7 +88,7 @@ public class Pyrophobia extends Scenario implements Listener, CommandExecutor {
 
 	@EventHandler
 	public void CreatureSpawnEvent(CreatureSpawnEvent event) {
-		event.getEntity().addPotionEffect(new PotionEffect(PotionEffectType.FIRE_RESISTANCE, Integer.MAX_VALUE, 2));
+		event.getEntity().addPotionEffect(new PotionEffect(PotionEffectType.FIRE_RESISTANCE, 1726272000, 2));
 	}
 
 	@EventHandler

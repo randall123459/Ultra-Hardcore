@@ -49,7 +49,7 @@ public class SpectatorListener implements Listener {
 			if (player.hasPotionEffect(PotionEffectType.NIGHT_VISION)) {
 				player.removePotionEffect(PotionEffectType.NIGHT_VISION);
 			} else {
-				player.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, Short.MAX_VALUE, 0));
+				player.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, 1726272000, 0));
 			}
 			
 			event.setCancelled(true);
@@ -58,7 +58,7 @@ public class SpectatorListener implements Listener {
 		
 		if (item.getType() == Material.FEATHER) {
 			Location loc = new Location(player.getWorld(), 0.5, 0, 0.5);
-			loc.setY(LocationUtils.highestTeleportableYAtLocation(loc));
+			loc.setY(LocationUtils.highestTeleportableYAtLocation(loc) + 1);
 			
 			player.teleport(loc);
 			event.setCancelled(true);

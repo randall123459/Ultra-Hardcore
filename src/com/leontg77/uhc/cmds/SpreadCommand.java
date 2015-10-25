@@ -229,12 +229,12 @@ public class SpreadCommand implements CommandExecutor {
 													online.playSound(online.getLocation(), "random.pop", 1, 0);
 												}
 											} else {
-												scatter.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 1000000, 128));
-												scatter.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 1000000, 6));
-												scatter.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 1000000, 6));
-												scatter.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 1000000, 10));
-												scatter.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 1000000, 6));
-												scatter.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 1000000, 2));
+												scatter.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 1726272000, 128));
+												scatter.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 1726272000, 6));
+												scatter.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 1726272000, 6));
+												scatter.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 1726272000, 10));
+												scatter.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 1726272000, 6));
+												scatter.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 1726272000, 2));
 												scatter.teleport(scatterLocs.get(names.get(i)));
 												PlayerUtils.broadcast(Main.PREFIX + "- §a" + names.get(i) + " §7has been scattered.");
 												scatterLocs.remove(names.get(i));
@@ -307,12 +307,12 @@ public class SpreadCommand implements CommandExecutor {
 						PlayerUtils.broadcast(Main.PREFIX + "- §c" + target.getName() + " §7offline, scheduled.");
 					} else {
 						if (State.isState(State.SCATTER)) {
-							target.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 1000000, 128));
-							target.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 1000000, 6));
-							target.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 1000000, 6));
-							target.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 1000000, 10));
-							target.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 1000000, 6));
-							target.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 1000000, 2));
+							target.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 1726272000, 128));
+							target.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 1726272000, 6));
+							target.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 1726272000, 6));
+							target.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 1726272000, 10));
+							target.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 1726272000, 6));
+							target.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 1726272000, 2));
 						}
 						
 						target.teleport(scatterLocs.get(target.getName()));

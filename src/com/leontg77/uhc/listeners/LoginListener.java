@@ -105,12 +105,12 @@ public class LoginListener implements Listener {
 		
 		if (scatter.containsKey(player.getName()) && SpreadCommand.isReady) {
 			if (State.isState(State.SCATTER)) {
-				player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, Short.MAX_VALUE, 128));
-				player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, Short.MAX_VALUE, 6));
-				player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, Short.MAX_VALUE, 6));
-				player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, Short.MAX_VALUE, 10));
-				player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, Short.MAX_VALUE, 6));
-				player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Short.MAX_VALUE, 2));
+				player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 1726272000, 128));
+				player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 1726272000, 6));
+				player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 1726272000, 6));
+				player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 1726272000, 10));
+				player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 1726272000, 6));
+				player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 1726272000, 2));
 			}
 			
 			PlayerUtils.broadcast(Main.PREFIX + "- §a" + player.getName() + " §7scheduled scatter.");
