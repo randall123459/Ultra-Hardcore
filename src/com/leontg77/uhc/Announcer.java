@@ -1,7 +1,5 @@
 package com.leontg77.uhc;
 
-import java.util.Random;
-
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.leontg77.uhc.utils.PlayerUtils;
@@ -32,18 +30,20 @@ public class Announcer {
 	public void setup() {
 		task = new BukkitRunnable() {
 			public void run() {
+				if (Game.getInstance().isRecordedRound() || State.isState(State.SCATTER)) {
+					return;
+				}
+				
 				PlayerUtils.broadcast("§8(§6!§8)§7 " + getRandomAnnouncement());
 			}
 		};
 		
-		Random rand = new Random();
-		
-		task.runTaskTimer(Main.plugin, 1200, 1200 + rand.nextInt(6000));
+		task.runTaskTimer(Main.plugin, 6000, 6000);
 		
 		Main.plugin.getLogger().info("The announcer has been setup.");
 	}
 
 	private String getRandomAnnouncement() {
-		return "No announcements setup.";
+		return "FFS leon, you need to add something to me :(";
 	}
 }
