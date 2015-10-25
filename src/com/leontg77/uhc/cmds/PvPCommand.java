@@ -31,6 +31,7 @@ public class PvPCommand implements CommandExecutor, TabCompleter {
 			if (args[1].equalsIgnoreCase("on")) {
 				for (World world : Bukkit.getWorlds()) {
 					world.setPVP(true);
+					world.setSpawnFlags(true, true);
 				}
 				sender.sendMessage(Main.PREFIX + "Global pvp has been enabled.");
 			} else if (args[1].equalsIgnoreCase("off")) {
