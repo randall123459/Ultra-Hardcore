@@ -631,9 +631,11 @@ public class Timers {
 				
 				timerRR();
 				Bukkit.getServer().getPluginManager().registerEvents(new SpecInfo(), Main.plugin);
-				PlayerUtils.broadcast(Main.PREFIX + "Start of episode 1");
+				PlayerUtils.broadcast(Main.PREFIX + "Start of episode §a1 §8| §7glhf!");
 				State.setState(State.INGAME);
 				Scoreboards.getInstance().kills.setDisplayName("§6" + game.getRRName());
+
+				time = 20;
 				pvp = 0;
 				meetup = 1;
 				
@@ -642,7 +644,8 @@ public class Timers {
 					world.setDifficulty(Difficulty.HARD);
 					world.setPVP(false);
 					
-					world.setGameRuleValue("doMobSpawning", "false");
+					world.setGameRuleValue("doMobSpawning", "true");
+					world.setSpawnFlags(true, true);
 					world.setGameRuleValue("doDaylightCycle", "true");
 					
 					world.setThundering(false);
@@ -672,7 +675,7 @@ public class Timers {
 				time--;
 				
 				if (pvp == 20) {
-					PlayerUtils.broadcast(Main.PREFIX + "End of episode 1 | Start of episode 2");
+					PlayerUtils.broadcast(Main.PREFIX + "End of episode §a1 §8| §7Start of episode §a2");
 					PlayerUtils.broadcast(Main.PREFIX + "PvP has been enabled!");
 					
 					for (Player online : PlayerUtils.getPlayers()) {
@@ -687,7 +690,7 @@ public class Timers {
 				}
 				
 				if (pvp == 40) {
-					PlayerUtils.broadcast(Main.PREFIX + "End of episode 2 | Start of episode 3");
+					PlayerUtils.broadcast(Main.PREFIX + "End of episode §a2 §8| §7Start of episode §a3");
 					
 					for (Player online : PlayerUtils.getPlayers()) {
 						online.playSound(online.getLocation(), Sound.FIREWORK_TWINKLE, 1, 1);
@@ -697,7 +700,7 @@ public class Timers {
 				}
 				
 				if (pvp == 60) {
-					PlayerUtils.broadcast(Main.PREFIX + "End of episode 3 | Start of episode 4");
+					PlayerUtils.broadcast(Main.PREFIX + "End of episode §a3 §8| §7Start of episode §a4");
 					
 					for (Player online : PlayerUtils.getPlayers()) {
 						online.playSound(online.getLocation(), Sound.FIREWORK_TWINKLE, 1, 1);
@@ -707,7 +710,7 @@ public class Timers {
 				}
 				
 				if (pvp == 80) {
-					PlayerUtils.broadcast(Main.PREFIX + "End of episode 4 | Start of episode 5");
+					PlayerUtils.broadcast(Main.PREFIX + "End of episode §a4 §8| §7Start of episode §a5");
 					
 					for (Player online : PlayerUtils.getPlayers()) {
 						online.playSound(online.getLocation(), Sound.FIREWORK_TWINKLE, 1, 1);
@@ -717,7 +720,7 @@ public class Timers {
 				}
 				
 				if (pvp == 100) {
-					PlayerUtils.broadcast(Main.PREFIX + "End of episode 5 | Start of episode 6");
+					PlayerUtils.broadcast(Main.PREFIX + "End of episode §a5 §8| §7Start of episode §a6");
 					PlayerUtils.broadcast(Main.PREFIX + "Perma day activated!");
 					
 					for (Player online : PlayerUtils.getPlayers()) {
@@ -737,7 +740,7 @@ public class Timers {
 				}
 				
 				if (pvp == 120) {
-					PlayerUtils.broadcast(Main.PREFIX + "End of episode 6 | Start of episode 7");
+					PlayerUtils.broadcast(Main.PREFIX + "End of episode §a6 §8| §7Start of episode §a7");
 					PlayerUtils.broadcast(Main.PREFIX + "Meetup is now!");
 					
 					for (Player online : PlayerUtils.getPlayers()) {
@@ -748,7 +751,7 @@ public class Timers {
 				}
 				
 				if (pvp == 140) {
-					PlayerUtils.broadcast(Main.PREFIX + "End of episode 7 | Start of episode 8");
+					PlayerUtils.broadcast(Main.PREFIX + "End of episode §a7 §8| §7Start of episode §a8");
 					
 					for (Player online : PlayerUtils.getPlayers()) {
 						online.playSound(online.getLocation(), Sound.FIREWORK_TWINKLE, 1, 1);
@@ -758,7 +761,7 @@ public class Timers {
 				}
 				
 				if (pvp == 160) {
-					PlayerUtils.broadcast(Main.PREFIX + "End of episode 8 | Start of episode 9");
+					PlayerUtils.broadcast(Main.PREFIX + "End of episode §a8 §8| §7Start of episode §a9");
 					
 					for (Player online : PlayerUtils.getPlayers()) {
 						online.playSound(online.getLocation(), Sound.FIREWORK_TWINKLE, 1, 1);
@@ -768,7 +771,7 @@ public class Timers {
 				}
 				
 				if (pvp == 180) {
-					PlayerUtils.broadcast(Main.PREFIX + "End of episode 9 | Start of episode 10");
+					PlayerUtils.broadcast(Main.PREFIX + "End of episode §a9 §8| §7Start of episode §a10");
 					
 					for (Player online : PlayerUtils.getPlayers()) {
 						online.playSound(online.getLocation(), Sound.FIREWORK_TWINKLE, 1, 1);
