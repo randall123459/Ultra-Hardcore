@@ -472,12 +472,12 @@ public class Game {
 	}
 	
 	public void setBorderShrink(BorderShrink border) {
-		settings.getConfig().set("feature.border.shrinkAt", border.name());
+		settings.getConfig().set("feature.border.shrinkAt", border.name().toLowerCase());
 		settings.saveConfig();
 	}
 	
 	public BorderShrink getBorderShrink() {
-		return BorderShrink.valueOf(settings.getConfig().getString("feature.border.shrinkAt", BorderShrink.MEETUP.name()));
+		return BorderShrink.valueOf(settings.getConfig().getString("feature.border.shrinkAt", BorderShrink.MEETUP.name()).toUpperCase());
 	}
 
 	public boolean absorption() {
@@ -596,29 +596,67 @@ public class Game {
 		settings.getConfig().set("feature.goldenMelonNeedsIngots.enabled", enable);
 		settings.saveConfig();
 	}
+	
+	public void setTier2(boolean enable) {
+		settings.getConfig().set("feature.tier2.enabled", enable);
+		settings.saveConfig();
+	}
 
 	public boolean tier2() {
-		// TODO Auto-generated method stub
-		return false;
+		return settings.getConfig().getBoolean("feature.tier2.enabled", true);
+	}
+	
+	public void setSplash(boolean enable) {
+		settings.getConfig().set("feature.splash.enabled", enable);
+		settings.saveConfig();
 	}
 
 	public boolean splash() {
-		// TODO Auto-generated method stub
-		return false;
+		return settings.getConfig().getBoolean("feature.splash.enabled", true);
+	}
+	
+	public void setHorses(boolean enable) {
+		settings.getConfig().set("feature.horse.enabled", enable);
+		settings.saveConfig();
 	}
 
 	public boolean horses() {
-		// TODO Auto-generated method stub
-		return false;
+		return settings.getConfig().getBoolean("feature.horse.enabled", true);
+	}
+	
+	public void setHorseHealing(boolean enable) {
+		settings.getConfig().set("feature.horse.healing", enable);
+		settings.saveConfig();
 	}
 
 	public boolean horseHealing() {
-		// TODO Auto-generated method stub
-		return false;
+		return settings.getConfig().getBoolean("feature.horse.healing", true);
+	}
+	
+	public void setHorseArmor(boolean enable) {
+		settings.getConfig().set("feature.horse.armor", enable);
+		settings.saveConfig();
 	}
 
 	public boolean horseArmor() {
-		// TODO Auto-generated method stub
-		return false;
+		return settings.getConfig().getBoolean("feature.horse.armor", true);
+	}
+	
+	public void setHeartsOnTab(boolean enable) {
+		settings.getConfig().set("feature.heartsOnTab.enabled", enable);
+		settings.saveConfig();
+	}
+
+	public boolean heartsOnTab() {
+		return settings.getConfig().getBoolean("feature.heartsOnTab.enabled", true);
+	}
+	
+	public void setHardcoreHearts(boolean enable) {
+		settings.getConfig().set("feature.hardcoreHearts.enabled", enable);
+		settings.saveConfig();
+	}
+
+	public boolean hardcoreHearts() {
+		return settings.getConfig().getBoolean("feature.hardcoreHearts.enabled", true);
 	}
 }
