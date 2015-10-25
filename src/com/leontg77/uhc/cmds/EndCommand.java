@@ -13,6 +13,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -38,6 +39,7 @@ import com.leontg77.uhc.scenario.Scenario;
 import com.leontg77.uhc.scenario.ScenarioManager;
 import com.leontg77.uhc.utils.GameUtils;
 import com.leontg77.uhc.utils.PlayerUtils;
+import com.leontg77.uhc.worlds.WorldManager;
 
 /**
  * End command class.
@@ -107,13 +109,6 @@ public class EndCommand implements CommandExecutor {
 		settings.getHOF().set(host + "." + matchcount + ".kills", kills);
 		settings.getHOF().set(host + "." + matchcount + ".teamsize", GameUtils.getTeamSize().trim());
 		settings.getHOF().set(host + "." + matchcount + ".scenarios", settings.getConfig().getString("game.scenarios"));
-
-		settings.getConfig().set("game.scenarios", "games scheduled");
-		settings.getConfig().set("game.teamsize", 0);
-		settings.getConfig().set("matchpost", "none");
-		settings.getConfig().set("game.ffa", true);
-		
-		settings.saveConfig();
 		settings.saveHOF();
 		
 		for (Scenario scen : ScenarioManager.getInstance().getEnabledScenarios()) {
@@ -162,7 +157,9 @@ public class EndCommand implements CommandExecutor {
 
 		Bukkit.getServer().setIdleTimeout(60);
 		Main.plugin.saveData();
-		
+
+		game.setScenarios("games scheduled");
+		game.setMatchPost("none");
 		game.setTeamSize(0);
 		game.setFFA(true);
 		
@@ -182,7 +179,7 @@ public class EndCommand implements CommandExecutor {
 				Scoreboards board = Scoreboards.getInstance();
 				
 				for (String entry : board.board.getEntries()) {
-					Scoreboards.getInstance().resetScore(entry);
+					board.resetScore(entry);
 				}
 				
 				Teams teams = Teams.getInstance();
@@ -194,7 +191,14 @@ public class EndCommand implements CommandExecutor {
 				}
 				
 				PlayerUtils.broadcast(Main.PREFIX + "Reset scoreboards and teams.");
+
+				WorldManager manager = WorldManager.getInstance();
 				
+				for (World world : GameUtils.getGameWorlds()) {
+					manager.deleteWorld(world);
+				}
+				
+				PlayerUtils.broadcast(Main.PREFIX + "Deleted used worlds.");
 			}
 		}.runTaskLater(Main.plugin, 600);
 		
