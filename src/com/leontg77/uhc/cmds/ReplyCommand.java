@@ -23,8 +23,8 @@ public class ReplyCommand implements CommandExecutor {
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-    	if (args.length < 2) {
-    		sender.sendMessage(ChatColor.RED + "Usage: /msg <player> <message>");
+    	if (args.length == 0) {
+    		sender.sendMessage(ChatColor.RED + "Usage: /reply <message>");
         	return true;
         }
 		
