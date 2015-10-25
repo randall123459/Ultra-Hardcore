@@ -195,11 +195,16 @@ public class EntityListener implements Listener {
 	public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
 		Entity attacker = event.getDamager();
 		
-		if (attacker instanceof EnderPearl) {
-			if (!game.pearlDamage()) {
-				event.setCancelled(true);
-			}
+		if (!(attacker instanceof EnderPearl)) {
+			return;
 		}
+
+		if (game.pearlDamage()) {
+			event.setDamage(2);
+			return;
+		}
+		
+		event.setCancelled(true);
 	}
 	
 	/**
