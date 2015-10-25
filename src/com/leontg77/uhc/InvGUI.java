@@ -400,8 +400,173 @@ public class InvGUI {
 		return inv;
 	}
 	
-	public void openConfigOptions(Player player) {
+	/**
+	 * Open the config option inventory for the given player.
+	 * 
+	 * @param player The player opening for.
+	 * @return The opened inventory.
+	 */
+	public Inventory openConfigOptions(Player player) {
+		Inventory inv = Bukkit.getServer().createInventory(null, 45, "» §7Game config");
+		Game game = Game.getInstance();
 		
+		ItemStack absorption = new ItemStack (Material.GOLDEN_APPLE);
+		ItemMeta absorptionMeta = absorption.getItemMeta();
+		absorptionMeta.setDisplayName("§aAbsorption");
+		absorptionMeta.setLore(Arrays.asList(" ", "§8» §7Currently: " + (game.absorption() ? "§aEnabled" : "§cDisabled"), " "));
+		absorption.setItemMeta(absorptionMeta);
+		inv.setItem(0, absorption);
+		
+		ItemStack heads = new ItemStack (Material.GOLDEN_APPLE);
+		ItemMeta headsMeta = heads.getItemMeta();
+		headsMeta.setDisplayName("§aGolden Heads");
+		headsMeta.setLore(Arrays.asList(" ", "§8» §7Currently: " + (game.goldenHeads() ? "§aEnabled" : "§cDisabled"), " "));
+		heads.setItemMeta(headsMeta);
+		inv.setItem(1, heads);
+		/*
+		ItemStack absorption = new ItemStack (Material.GOLDEN_APPLE);
+		ItemMeta absorptionMeta = absorption.getItemMeta();
+		absorptionMeta.setDisplayName("§aAbsorption");
+		absorptionMeta.setLore(Arrays.asList(" ", "§8» §7Currently: " + (game.absorption() ? "§aEnabled" : "§cDisabled"), " "));
+		absorption.setItemMeta(absorptionMeta);
+		inv.setItem(0, absorption);
+		
+		ItemStack absorption = new ItemStack (Material.GOLDEN_APPLE);
+		ItemMeta absorptionMeta = absorption.getItemMeta();
+		absorptionMeta.setDisplayName("§aAbsorption");
+		absorptionMeta.setLore(Arrays.asList(" ", "§8» §7Currently: " + (game.absorption() ? "§aEnabled" : "§cDisabled"), " "));
+		absorption.setItemMeta(absorptionMeta);
+		inv.setItem(0, absorption);
+		
+		ItemStack absorption = new ItemStack (Material.GOLDEN_APPLE);
+		ItemMeta absorptionMeta = absorption.getItemMeta();
+		absorptionMeta.setDisplayName("§aAbsorption");
+		absorptionMeta.setLore(Arrays.asList(" ", "§8» §7Currently: " + (game.absorption() ? "§aEnabled" : "§cDisabled"), " "));
+		absorption.setItemMeta(absorptionMeta);
+		inv.setItem(0, absorption);
+		
+		ItemStack absorption = new ItemStack (Material.GOLDEN_APPLE);
+		ItemMeta absorptionMeta = absorption.getItemMeta();
+		absorptionMeta.setDisplayName("§aAbsorption");
+		absorptionMeta.setLore(Arrays.asList(" ", "§8» §7Currently: " + (game.absorption() ? "§aEnabled" : "§cDisabled"), " "));
+		absorption.setItemMeta(absorptionMeta);
+		inv.setItem(0, absorption);
+		
+		ItemStack absorption = new ItemStack (Material.GOLDEN_APPLE);
+		ItemMeta absorptionMeta = absorption.getItemMeta();
+		absorptionMeta.setDisplayName("§aAbsorption");
+		absorptionMeta.setLore(Arrays.asList(" ", "§8» §7Currently: " + (game.absorption() ? "§aEnabled" : "§cDisabled"), " "));
+		absorption.setItemMeta(absorptionMeta);
+		inv.setItem(0, absorption);
+		
+		ItemStack absorption = new ItemStack (Material.GOLDEN_APPLE);
+		ItemMeta absorptionMeta = absorption.getItemMeta();
+		absorptionMeta.setDisplayName("§aAbsorption");
+		absorptionMeta.setLore(Arrays.asList(" ", "§8» §7Currently: " + (game.absorption() ? "§aEnabled" : "§cDisabled"), " "));
+		absorption.setItemMeta(absorptionMeta);
+		inv.setItem(0, absorption);
+		
+		ItemStack absorption = new ItemStack (Material.GOLDEN_APPLE);
+		ItemMeta absorptionMeta = absorption.getItemMeta();
+		absorptionMeta.setDisplayName("§aAbsorption");
+		absorptionMeta.setLore(Arrays.asList(" ", "§8» §7Currently: " + (game.absorption() ? "§aEnabled" : "§cDisabled"), " "));
+		absorption.setItemMeta(absorptionMeta);
+		inv.setItem(0, absorption);
+		
+		ItemStack absorption = new ItemStack (Material.GOLDEN_APPLE);
+		ItemMeta absorptionMeta = absorption.getItemMeta();
+		absorptionMeta.setDisplayName("§aAbsorption");
+		absorptionMeta.setLore(Arrays.asList(" ", "§8» §7Currently: " + (game.absorption() ? "§aEnabled" : "§cDisabled"), " "));
+		absorption.setItemMeta(absorptionMeta);
+		inv.setItem(0, absorption);
+		
+		ItemStack absorption = new ItemStack (Material.GOLDEN_APPLE);
+		ItemMeta absorptionMeta = absorption.getItemMeta();
+		absorptionMeta.setDisplayName("§aAbsorption");
+		absorptionMeta.setLore(Arrays.asList(" ", "§8» §7Currently: " + (game.absorption() ? "§aEnabled" : "§cDisabled"), " "));
+		absorption.setItemMeta(absorptionMeta);
+		inv.setItem(0, absorption);
+		
+		ItemStack absorption = new ItemStack (Material.GOLDEN_APPLE);
+		ItemMeta absorptionMeta = absorption.getItemMeta();
+		absorptionMeta.setDisplayName("§aAbsorption");
+		absorptionMeta.setLore(Arrays.asList(" ", "§8» §7Currently: " + (game.absorption() ? "§aEnabled" : "§cDisabled"), " "));
+		absorption.setItemMeta(absorptionMeta);
+		inv.setItem(0, absorption);
+		
+		ItemStack absorption = new ItemStack (Material.GOLDEN_APPLE);
+		ItemMeta absorptionMeta = absorption.getItemMeta();
+		absorptionMeta.setDisplayName("§aAbsorption");
+		absorptionMeta.setLore(Arrays.asList(" ", "§8» §7Currently: " + (game.absorption() ? "§aEnabled" : "§cDisabled"), " "));
+		absorption.setItemMeta(absorptionMeta);
+		inv.setItem(0, absorption);
+		
+		ItemStack absorption = new ItemStack (Material.GOLDEN_APPLE);
+		ItemMeta absorptionMeta = absorption.getItemMeta();
+		absorptionMeta.setDisplayName("§aAbsorption");
+		absorptionMeta.setLore(Arrays.asList(" ", "§8» §7Currently: " + (game.absorption() ? "§aEnabled" : "§cDisabled"), " "));
+		absorption.setItemMeta(absorptionMeta);
+		inv.setItem(0, absorption);
+		
+		ItemStack absorption = new ItemStack (Material.GOLDEN_APPLE);
+		ItemMeta absorptionMeta = absorption.getItemMeta();
+		absorptionMeta.setDisplayName("§aAbsorption");
+		absorptionMeta.setLore(Arrays.asList(" ", "§8» §7Currently: " + (game.absorption() ? "§aEnabled" : "§cDisabled"), " "));
+		absorption.setItemMeta(absorptionMeta);
+		inv.setItem(0, absorption);
+		
+		ItemStack absorption = new ItemStack (Material.GOLDEN_APPLE);
+		ItemMeta absorptionMeta = absorption.getItemMeta();
+		absorptionMeta.setDisplayName("§aAbsorption");
+		absorptionMeta.setLore(Arrays.asList(" ", "§8» §7Currently: " + (game.absorption() ? "§aEnabled" : "§cDisabled"), " "));
+		absorption.setItemMeta(absorptionMeta);
+		inv.setItem(0, absorption);
+		
+		ItemStack absorption = new ItemStack (Material.GOLDEN_APPLE);
+		ItemMeta absorptionMeta = absorption.getItemMeta();
+		absorptionMeta.setDisplayName("§aAbsorption");
+		absorptionMeta.setLore(Arrays.asList(" ", "§8» §7Currently: " + (game.absorption() ? "§aEnabled" : "§cDisabled"), " "));
+		absorption.setItemMeta(absorptionMeta);
+		inv.setItem(0, absorption);
+		
+		ItemStack absorption = new ItemStack (Material.GOLDEN_APPLE);
+		ItemMeta absorptionMeta = absorption.getItemMeta();
+		absorptionMeta.setDisplayName("§aAbsorption");
+		absorptionMeta.setLore(Arrays.asList(" ", "§8» §7Currently: " + (game.absorption() ? "§aEnabled" : "§cDisabled"), " "));
+		absorption.setItemMeta(absorptionMeta);
+		inv.setItem(0, absorption);
+		
+		ItemStack absorption = new ItemStack (Material.GOLDEN_APPLE);
+		ItemMeta absorptionMeta = absorption.getItemMeta();
+		absorptionMeta.setDisplayName("§aAbsorption");
+		absorptionMeta.setLore(Arrays.asList(" ", "§8» §7Currently: " + (game.absorption() ? "§aEnabled" : "§cDisabled"), " "));
+		absorption.setItemMeta(absorptionMeta);
+		inv.setItem(0, absorption);
+		
+		ItemStack absorption = new ItemStack (Material.GOLDEN_APPLE);
+		ItemMeta absorptionMeta = absorption.getItemMeta();
+		absorptionMeta.setDisplayName("§aAbsorption");
+		absorptionMeta.setLore(Arrays.asList(" ", "§8» §7Currently: " + (game.absorption() ? "§aEnabled" : "§cDisabled"), " "));
+		absorption.setItemMeta(absorptionMeta);
+		inv.setItem(0, absorption);
+		
+		ItemStack absorption = new ItemStack (Material.GOLDEN_APPLE);
+		ItemMeta absorptionMeta = absorption.getItemMeta();
+		absorptionMeta.setDisplayName("§aAbsorption");
+		absorptionMeta.setLore(Arrays.asList(" ", "§8» §7Currently: " + (game.absorption() ? "§aEnabled" : "§cDisabled"), " "));
+		absorption.setItemMeta(absorptionMeta);
+		inv.setItem(0, absorption);
+		
+		ItemStack absorption = new ItemStack (Material.GOLDEN_APPLE);
+		ItemMeta absorptionMeta = absorption.getItemMeta();
+		absorptionMeta.setDisplayName("§aAbsorption");
+		absorptionMeta.setLore(Arrays.asList(" ", "§8» §7Currently: " + (game.absorption() ? "§aEnabled" : "§cDisabled"), " "));
+		absorption.setItemMeta(absorptionMeta);
+		inv.setItem(0, absorption);*/
+		
+		player.openInventory(inv);
+		
+		return inv;
 	}
 	
 	/**
@@ -666,7 +831,7 @@ public class InvGUI {
 		ItemMeta miscIMeta = miscI.getItemMeta();
 		miscIMeta.setDisplayName("§8» §6Misc. Info §8«");
 		lore.add(" ");
-		lore.add("§8» §7Enderpearl Damage: " + (game.pearlDamage() ? "§aEnabled." : "§cDisabled."));
+		lore.add("§8» §7Enderpearl Damage: " + (game.pearlDamage() ? "§aEnabled, 1 heart." : "§cDisabled."));
 		lore.add("§8» §7Death Lightning: " + (game.deathLightning() ? "§aEnabled." : "§cDisabled."));
 		lore.add("§8» §7Saturation Fix: §aEnabled.");
 		lore.add(" ");
