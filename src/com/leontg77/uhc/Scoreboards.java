@@ -19,6 +19,7 @@ public class Scoreboards {
 	public Scoreboard board = Bukkit.getScoreboardManager().getMainScoreboard();
 	public Objective nameHealth = board.getObjective("nameHealth");
 	public Objective tabHealth = board.getObjective("tabHealth");
+	public Objective hearts = board.getObjective("hearts");
 	public Objective kills = board.getObjective("kills");
 	
 	/**
@@ -46,17 +47,30 @@ public class Scoreboards {
 			nameHealth = board.registerNewObjective("nameHealth", "dummy");
 		}
 		
-		Game game = Game.getInstance();
-		kills.setDisplayName("§4UHC §8- §7" + game.getHost());
+		if (board.getObjective("hearts") == null) {
+			hearts = board.registerNewObjective("hearts", "health");
+		}
 		
-		if (!Game.getInstance().arenaBoard()) {
+		Game game = Game.getInstance();
+		
+		if (game.isRecordedRound()) {
+			kills.setDisplayName("§6" + game.getRRName());
+		} else {
+			kills.setDisplayName("§4UHC §8- §7" + game.getHost());
+		}
+		
+		if (!game.arenaBoard()) {
 			kills.setDisplaySlot(DisplaySlot.SIDEBAR);
 		}
 		
 		nameHealth.setDisplaySlot(DisplaySlot.BELOW_NAME);
 		nameHealth.setDisplayName("§4♥");
 		
-		tabHealth.setDisplaySlot(DisplaySlot.PLAYER_LIST);
+		if (game.heartsOnTab()) {
+			hearts.setDisplaySlot(DisplaySlot.PLAYER_LIST);
+		} else {
+			tabHealth.setDisplaySlot(DisplaySlot.PLAYER_LIST);
+		}
 		
 		Main.plugin.getLogger().info("Scoreboards has been setup.");
 	}
