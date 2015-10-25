@@ -197,10 +197,11 @@ public class Main extends JavaPlugin {
 		recoverData();
 		addRecipes();
 
+		@SuppressWarnings("unused")
 		ProtocolManager protocol = ProtocolLibrary.getProtocolManager();
 		PluginManager manager = Bukkit.getServer().getPluginManager();
 		
-	    protocol.addPacketListener(new HardcoreHearts(this));
+	    /*protocol.addPacketListener(new HardcoreHearts(this));*/
 
 		manager.registerEvents(new BlockListener(), this);
 		manager.registerEvents(new EntityListener(), this);
