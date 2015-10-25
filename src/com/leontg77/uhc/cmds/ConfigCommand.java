@@ -3,9 +3,7 @@ package com.leontg77.uhc.cmds;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -13,505 +11,277 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
 import com.leontg77.uhc.Game;
+import com.leontg77.uhc.InvGUI;
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.Main.BorderShrink;
-import com.leontg77.uhc.Timers;
-import com.leontg77.uhc.Scoreboards;
-import com.leontg77.uhc.State;
 import com.leontg77.uhc.utils.GameUtils;
-import com.leontg77.uhc.utils.PacketUtils;
 import com.leontg77.uhc.utils.PlayerUtils;
 
+/**
+ * Config command class.
+ * 
+ * @author LeonTG77
+ */
 public class ConfigCommand implements CommandExecutor, TabCompleter {
 
+	/**
+	 * ConfigValue class
+	 * <p>
+	 * Class used for the config command to 
+	 * get all the possible config options.
+	 * 
+	 * @author LeonTG77
+	 */
+	public enum ConfigValue {
+		APPLERATES, BORDERSHRINK, FLINTRATES, HOST, MATCHPOST, MAXPLAYERS, MEETUP, PVP, RRNAME, SCENARIOS, TEAMSIZE, WORLD, FFA, HEADSHEAL, SHEARRATES;
+	}
+	
+	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-		Game game = Game.getInstance();
-		
-		if (cmd.getName().equalsIgnoreCase("config")) {
-			if (sender.hasPermission("uhc.config")) {
-				if (args.length < 2) {
-					sender.sendMessage(ChatColor.RED + "Usage: /config <type> <value>");
-					return true;
-				}
-				
-				ConfigValue type;
-				
-				try {
-					type = ConfigValue.valueOf(args[0].toUpperCase());
-				} catch (Exception e) {
-					StringBuilder b = new StringBuilder();
-					for (ConfigValue types : ConfigValue.values()) {
-						if (b.length() > 0) {
-							b.append(", ");
-						}
-						b.append(types.name().toLowerCase());
-					}
-					sender.sendMessage(ChatColor.RED + "Available config types: " + b.toString().trim());
-					return true;
-				}
-				
-				switch (type) {
-				case ABSORPTION:
-					if (args[1].equalsIgnoreCase("true")) {
-						PlayerUtils.broadcast(Main.PREFIX + "Absorption has been enabled.");
-						game.setAbsorption(true);
-					} else if (args[1].equalsIgnoreCase("false")) {
-						PlayerUtils.broadcast(Main.PREFIX + "Absorption has been disabled.");
-						game.setAbsorption(false);
-					} else {
-						sender.sendMessage(ChatColor.RED + "Absorption can only be true or false.");
-					}
-					break;
-				case BORDER:
-					BorderShrink border;
-					
-					try {
-						border = BorderShrink.valueOf(args[1].toUpperCase());
-					} catch (Exception e) {
-						sender.sendMessage(ChatColor.RED + "Invaild border type.");
-						return true;
-					}
-					
-					PlayerUtils.broadcast(Main.PREFIX + "Border will now shrink " + border.getPreText() + border.name().toLowerCase());
-					game.setBorderShrink(border);
-					break;
-				case DEATHLIGHTNING:
-					if (args[1].equalsIgnoreCase("true")) {
-						PlayerUtils.broadcast(Main.PREFIX + "DeathLightning has been enabled.");
-						game.setDeathLightning(true);
-					} else if (args[1].equalsIgnoreCase("false")) {
-						PlayerUtils.broadcast(Main.PREFIX + "DeathLightning has been disabled.");
-						game.setDeathLightning(false);
-					} else {
-						sender.sendMessage(ChatColor.RED + "DeathLightning can only be true or false.");
-					}
-					break;
-				case FFA:
-					if (args[1].equalsIgnoreCase("true")) {
-						game.setFFA(true);
-						PlayerUtils.broadcast(Main.PREFIX + "The teamsize is now §a" + GameUtils.getTeamSize().trim() + "§7.");
-						
-						for (Player online : PlayerUtils.getPlayers()) {
-							PacketUtils.setTabList(online);
-						}
-					} else if (args[1].equalsIgnoreCase("false")) {
-						game.setFFA(false);
-						PlayerUtils.broadcast(Main.PREFIX + "The teamsize is now §a" + GameUtils.getTeamSize().trim() + "§7.");
-						
-						for (Player online : PlayerUtils.getPlayers()) {
-							PacketUtils.setTabList(online);
-						}
-					} else {
-						sender.sendMessage(ChatColor.RED + "FFA can only be true or false.");
-					}
-					break;
-				case FLINTRATE:
-					int f;
-					
-					try {
-						f = Integer.parseInt(args[1]);
-					} catch (Exception e) {
-						sender.sendMessage(ChatColor.RED + "Invaild flintrate.");
-						return true;
-					}
-					
-					PlayerUtils.broadcast(Main.PREFIX + "Flint rates are now §a" + f + "%");
-					game.setFlintRates(f);
-					break;
-				case GHASTDROPS:
-					if (args[1].equalsIgnoreCase("true")) {
-						PlayerUtils.broadcast(Main.PREFIX + "Ghasts now drop gold ingots.");
-						game.setGhastDropGold(true);
-					} else if (args[1].equalsIgnoreCase("false")) {
-						PlayerUtils.broadcast(Main.PREFIX + "Ghasts now drop ghast tears.");
-						game.setGhastDropGold(false);
-					} else {
-						sender.sendMessage(ChatColor.RED + "GhastDrops can only be true or false.");
-					}
-					break;
-				case GOLDENHEADS:
-					if (args[1].equalsIgnoreCase("true")) {
-						PlayerUtils.broadcast(Main.PREFIX + "GoldenHeads has been enabled.");
-						game.setGoldenHeads(true);
-					} else if (args[1].equalsIgnoreCase("false")) {
-						PlayerUtils.broadcast(Main.PREFIX + "GoldenHeads has been disabled.");
-						game.setGoldenHeads(false);
-					} else {
-						sender.sendMessage(ChatColor.RED + "GoldenHeads can only be true or false.");
-					}
-					break;
-				case HEADHEALS:
-					int heal;
-					
-					try {
-						heal = Integer.parseInt(args[1]);
-					} catch (Exception e) {
-						sender.sendMessage(ChatColor.RED + "Invaild head heal amount.");
-						return true;
-					}
-					
-					PlayerUtils.broadcast(Main.PREFIX + "GoldenHeads now heal §a" + heal + "§7 hearts.");
-					game.setGoldenHeadsHeal(heal);
-					break;
-				case HOST:
-					game.setHost(args[1]);
-					
-					Scoreboards.getInstance().kills.setDisplayName("§4UHC §8- §7" + args[1]);
-					sender.sendMessage(Main.PREFIX + "You set the host to §a" + args[1] + "§7.");
+		if (!sender.hasPermission("uhc.config")) {
+			sender.sendMessage(Main.NO_PERM_MSG); 
+			return true;
+		}
 
-					for (Player online : PlayerUtils.getPlayers()) {
-						PacketUtils.setTabList(online);
-					}
-					break;
-				case MATCHPOST:
-					game.setMatchPost(args[1]);
-					
-					sender.sendMessage(Main.PREFIX + "You set the matchpost to §a" + args[1] + "§7.");
-					break;
-				case MAXPLAYERS:
-					int max;
-					
-					try {
-						max = Integer.parseInt(args[1]);
-					} catch (Exception e) {
-						sender.sendMessage(ChatColor.RED + "Invaild maxplayers.");
-						return true;
-					}
-					
-					game.setMaxPlayers(max);
-
-					PlayerUtils.broadcast(Main.PREFIX + "Max player slots are now §a" + max + "§7.");
-					break;
-				case MEETUP:
-					int meetup;
-					
-					try {
-						meetup = Integer.parseInt(args[1]);
-					} catch (Exception e) {
-						sender.sendMessage(ChatColor.RED + "Invaild meetup time.");
-						return true;
-					}
-					
-					game.setMeetup(meetup);
-
-					Timers.meetup = meetup;
-					PlayerUtils.broadcast(Main.PREFIX + "Meetup is now §a" + meetup + "§7 minutes in.");
-					break;
-				case NERFEDSTRENGTH:
-					if (args[1].equalsIgnoreCase("true")) {
-						PlayerUtils.broadcast(Main.PREFIX + "Strength is now nerfed.");
-						game.setNerfedStrength(true);
-					} else if (args[1].equalsIgnoreCase("false")) {
-						PlayerUtils.broadcast(Main.PREFIX + "Strength is no longer nerfed.");
-						game.setNerfedStrength(false);
-					} else {
-						sender.sendMessage(ChatColor.RED + "NerfedStrength can only be true or false.");
-					}
-					break;
-				case NETHER:
-					if (args[1].equalsIgnoreCase("true")) {
-						PlayerUtils.broadcast(Main.PREFIX + "Nether has been enabled.");
-						game.setNether(true);
-					} else if (args[1].equalsIgnoreCase("false")) {
-						PlayerUtils.broadcast(Main.PREFIX + "Nether has been disabled.");
-						game.setNether(false);
-					} else {
-						sender.sendMessage(ChatColor.RED + "Nether can only be true or false.");
-					}
-					break;
-				case NOTCHAPPLES:
-					if (args[1].equalsIgnoreCase("true")) {
-						PlayerUtils.broadcast(Main.PREFIX + "NotchApples has been enabled.");
-						game.setNotchApples(true);
-					} else if (args[1].equalsIgnoreCase("false")) {
-						PlayerUtils.broadcast(Main.PREFIX + "NotchApples has been disabled.");
-						game.setNotchApples(false);
-					} else {
-						sender.sendMessage(ChatColor.RED + "NotchApples can only be true or false.");
-					}
-					break;
-				case PEARLDAMAGE:
-					if (args[1].equalsIgnoreCase("true")) {
-						PlayerUtils.broadcast(Main.PREFIX + "PearlDamage has been enabled.");
-						game.setPearlDamage(true);
-					} else if (args[1].equalsIgnoreCase("false")) {
-						PlayerUtils.broadcast(Main.PREFIX + "PearlDamage has been disabled.");
-						game.setPearlDamage(false);
-					} else {
-						sender.sendMessage(ChatColor.RED + "PearlDamage can only be true or false.");
-					}
-					break;
-				case PVP:
-					int pvp;
-					
-					try {
-						pvp = Integer.parseInt(args[1]);
-					} catch (Exception e) {
-						sender.sendMessage(ChatColor.RED + "Invaild pvp time.");
-						return true;
-					}
-					
-					game.setPvP(pvp);
-
-					Timers.pvp = pvp;
-					PlayerUtils.broadcast(Main.PREFIX + "PvP is now §a" + pvp + "§7 minutes in.");
-					break;
-				case SCENARIOS:
-					StringBuilder bu = new StringBuilder();
-											
-					for (int s = 1; s < args.length; s++) {
-						bu.append(args[s]).append(" ");
-					}
-					
-					game.setScenarios(ChatColor.translateAlternateColorCodes('&', bu.toString().trim()));
-
-					sender.sendMessage(Main.PREFIX + "You set the scenarios to §a" + ChatColor.translateAlternateColorCodes('&', bu.toString().trim()) + "§7.");
-
-					for (Player online : PlayerUtils.getPlayers()) {
-						PacketUtils.setTabList(online);
-					}
-					break;
-				case SHEARRATE:
-					int s;
-					
-					try {
-						s = Integer.parseInt(args[1]);
-					} catch (Exception e) {
-						sender.sendMessage(ChatColor.RED + "Invaild teamsize.");
-						return true;
-					}
-					
-					PlayerUtils.broadcast(Main.PREFIX + "Shear rates are now §a" + s + "%");
-					game.setShearRates(s);
-					break;
-				case SHEARS:
-					if (args[1].equalsIgnoreCase("true")) {
-						PlayerUtils.broadcast(Main.PREFIX + "Shears has been enabled.");
-						game.setShears(true);
-					} else if (args[1].equalsIgnoreCase("false")) {
-						PlayerUtils.broadcast(Main.PREFIX + "Shears has been disabled.");
-						game.setShears(false);
-					} else {
-						sender.sendMessage(ChatColor.RED + "Shears can only be true or false.");
-					}
-					break;
-				case STATE:
-					State st;
-					
-					try {
-						st = State.valueOf(args[1].toUpperCase());
-					} catch (Exception e) {
-						sender.sendMessage(ChatColor.RED + "That is not a vaild state.");
-						return true;
-					}
-					
-					State.setState(st);
-					sender.sendMessage(Main.PREFIX + "You set the state to §a" + args[1] + "§7.");
-					break;
-				case TEAMSIZE:
-					int tz;
-					
-					try {
-						tz = Integer.parseInt(args[1]);
-					} catch (Exception e) {
-						sender.sendMessage(ChatColor.RED + "Invaild teamsize.");
-						return true;
-					}
-					
-					game.setTeamSize(tz);
-					PlayerUtils.broadcast(Main.PREFIX + "The teamsize is now §a" + GameUtils.getTeamSize().trim() + "§7.");
-					
-					for (Player online : PlayerUtils.getPlayers()) {
-						PacketUtils.setTabList(online);
-					}
-					break;
-				case TABCOLORS:
-					if (args[1].equalsIgnoreCase("true")) {
-						PlayerUtils.broadcast(Main.PREFIX + "Tab will now have the color of your health.");
-						game.setTabShowsHealthColor(true);
-					} else if (args[1].equalsIgnoreCase("false")) {
-						PlayerUtils.broadcast(Main.PREFIX + "Tab will no longer have the color of your health.");
-						game.setTabShowsHealthColor(false);
-						
-						for (Player online : PlayerUtils.getPlayers()) {
-							online.setPlayerListName(null);
-						}
-					} else {
-						sender.sendMessage(ChatColor.RED + "TheEnd can only be true or false.");
-					}
-					break;
-				case HARDERCRAFTING:
-					if (args[1].equalsIgnoreCase("true")) {
-						PlayerUtils.broadcast(Main.PREFIX + "HarderCrafting has been enabled.");
-						game.setGoldenMelonNeedsIngots(true);
-					} else if (args[1].equalsIgnoreCase("false")) {
-						PlayerUtils.broadcast(Main.PREFIX + "HarderCrafting has been disabled.");
-						game.setGoldenMelonNeedsIngots(false);
-					} else {
-						sender.sendMessage(ChatColor.RED + "TheEnd can only be true or false.");
-					}
-					break;
-				case THEEND:
-					if (args[1].equalsIgnoreCase("true")) {
-						PlayerUtils.broadcast(Main.PREFIX + "TheEnd has been enabled.");
-						game.setTheEnd(true);
-					} else if (args[1].equalsIgnoreCase("false")) {
-						PlayerUtils.broadcast(Main.PREFIX + "TheEnd has been disabled.");
-						game.setTheEnd(false);
-					} else {
-						sender.sendMessage(ChatColor.RED + "TheEnd can only be true or false.");
-					}
-					break;
-				case WORLD:
-					game.setWorld(args[1]);
-
-					sender.sendMessage(Main.PREFIX + "You set the game world to §a" + args[1] + "§7.");
-					break;
-				case RR:
-					if (args[1].equalsIgnoreCase("true")) {
-						PlayerUtils.broadcast(Main.PREFIX + "This is now an recorded round.");
-						game.setRecordedRound(true);
-						
-						Scoreboards.getInstance().kills.setDisplayName("§6" + game.getRRName());
-					} else if (args[1].equalsIgnoreCase("false")) {
-						PlayerUtils.broadcast(Main.PREFIX + "This is no longer an recorded round.");
-						game.setRecordedRound(false);
-						
-						Scoreboards.getInstance().kills.setDisplayName("§4UHC §8- §7" + game.getHost());
-					} else {
-						sender.sendMessage(ChatColor.RED + "RR can only be true or false.");
-					}
-					break;
-				case RRNAME:
-					sender.sendMessage(Main.PREFIX + "You set the RR name to §a" + args[1].replaceAll("_", " ") + "§7.");
-					game.setRRName(args[1].replaceAll("_", " "));
-					
-					if (game.isRecordedRound()) {
-						Scoreboards.getInstance().kills.setDisplayName("§6" + game.getRRName());
-					}
-					break;
-				default:
-					sender.sendMessage(ChatColor.RED + "You typed the wrong type or value.");
-					break;
-				}
-			} else {
-				sender.sendMessage(ChatColor.RED + "You do not have access to that command.");
+		if (args.length == 0) {
+			if (!(sender instanceof Player)) {
+				sender.sendMessage(Main.PREFIX + "Usage: /config <type> <value>");
+				return true;
 			}
+			
+			Player player = (Player) sender;
+
+			InvGUI inv = InvGUI.getInstance();
+			inv.openConfigOptions(player);
+			return true;
+		}
+		
+		if (args.length == 1) {
+			sender.sendMessage(Main.PREFIX + "Usage: /config <type> <value>");
+			return true;
+		}
+		
+		Game game = Game.getInstance();
+		ConfigValue type;
+		
+		try {
+			type = ConfigValue.valueOf(args[0].toUpperCase());
+		} catch (Exception e) {
+			StringBuilder types = new StringBuilder();
+			int i = 1;
+			
+			for (ConfigValue value : ConfigValue.values()) {
+				if (types.length() > 0) {
+					if (i == ConfigValue.values().length) {
+						types.append(" §7and§a ");
+					} else {
+						types.append("§7, §a");
+					}
+				}
+				
+				types.append(value.name().toLowerCase());
+				i++;
+			}
+			
+			sender.sendMessage(Main.PREFIX + "Available config types: §a" + types.toString().trim() + "§7.");
+			return true;
+		}
+		
+		switch (type) {
+		case APPLERATES:
+			int appleRate;
+			
+			try {
+				appleRate = Integer.parseInt(args[1]);
+			} catch (Exception e) {
+				sender.sendMessage(ChatColor.RED + args[1] + " is not a vaild apple rate.");
+				return true;
+			}
+			
+			PlayerUtils.broadcast(Main.PREFIX + "Apple rates has been changed to §a" + appleRate + "%");
+			game.setAppleRates(appleRate);
+			break;
+		case BORDERSHRINK:
+			BorderShrink border;
+			
+			try {
+				border = BorderShrink.valueOf(args[1].toUpperCase());
+			} catch (Exception e) {
+				sender.sendMessage(ChatColor.RED + args[1] + " is not a vaild bordertype.");
+				return true;
+			}
+			
+			if (border == BorderShrink.NEVER) {
+				PlayerUtils.broadcast(Main.PREFIX + "Border will no longer shrink.");
+			} else {
+				PlayerUtils.broadcast(Main.PREFIX + "Border will now shrink " + border.getPreText() + border.name().toLowerCase());
+			}
+			game.setBorderShrink(border);
+			break;
+		case FFA:
+			if (args[1].equalsIgnoreCase("true")) {
+				game.setFFA(true);
+
+				PlayerUtils.broadcast(Main.PREFIX + "The gamemode is now §a" + GameUtils.getTeamSize() + game.getScenarios() + "§7.");
+			} else if (args[1].equalsIgnoreCase("false")) {
+				game.setFFA(false);
+
+				PlayerUtils.broadcast(Main.PREFIX + "The gamemode is now §a" + GameUtils.getTeamSize() + game.getScenarios() + "§7.");
+			} else {
+				sender.sendMessage(ChatColor.RED + "FFA can only be true or false, not " + args[1] + ".");
+			}
+			break;
+		case FLINTRATES:
+			int flintRate;
+			
+			try {
+				flintRate = Integer.parseInt(args[1]);
+			} catch (Exception e) {
+				sender.sendMessage(ChatColor.RED + args[1] + " is not a vaild flint rate.");
+				return true;
+			}
+			
+			PlayerUtils.broadcast(Main.PREFIX + "Flint rates has been changed to §a" + flintRate + "%");
+			game.setFlintRates(flintRate);
+			break;
+		case HEADSHEAL:
+			int headheals;
+			
+			try {
+				headheals = Integer.parseInt(args[1]);
+			} catch (Exception e) {
+				sender.sendMessage(ChatColor.RED + args[1] + " is not a vaild heal amount.");
+				return true;
+			}
+			
+			PlayerUtils.broadcast(Main.PREFIX + "Golden heads now heal §a" + headheals + "§7 hearts.");
+			game.setShearRates(headheals);
+			break;
+		case HOST:
+			PlayerUtils.broadcast(Main.PREFIX + "The host has been changed to §a" + args[1] + "§7.");
+			game.setHost(args[1]);
+			break;
+		case MATCHPOST:
+			PlayerUtils.broadcast(Main.PREFIX + "The matchpost has been changed to §a" + args[1] + "§7.");
+			game.setMatchPost(args[1]);
+			break;
+		case MAXPLAYERS:
+			int maxplayers;
+			
+			try {
+				maxplayers = Integer.parseInt(args[1]);
+			} catch (Exception e) {
+				sender.sendMessage(ChatColor.RED + args[1] + " is not a vaild player limit.");
+				return true;
+			}
+			
+			PlayerUtils.broadcast(Main.PREFIX + "The max player limit is now §a" + maxplayers + "§7.");
+			game.setMaxPlayers(maxplayers);
+			break;
+		case MEETUP:
+			int meetup;
+			
+			try {
+				meetup = Integer.parseInt(args[1]);
+			} catch (Exception e) {
+				sender.sendMessage(ChatColor.RED + args[1] + " is not a vaild meetup time.");
+				return true;
+			}
+
+			PlayerUtils.broadcast(Main.PREFIX + "Meetup is now §a" + meetup + " §7minutes in.");
+			game.setMeetup(meetup);
+			break;
+		case PVP:
+			int pvp;
+			
+			try {
+				pvp = Integer.parseInt(args[1]);
+			} catch (Exception e) {
+				sender.sendMessage(ChatColor.RED + args[1] + " is not a vaild pvp time.");
+				return true;
+			}
+			
+			PlayerUtils.broadcast(Main.PREFIX + "PvP will now be enabled §a" + pvp + " §7minutes in.");
+			game.setPvP(pvp);
+			break;
+		case RRNAME:
+			StringBuilder nameBuilder = new StringBuilder();
+			
+			for (int ni = 1; ni < args.length; ni++) {
+				nameBuilder.append(args[ni]).append(" ");
+			}
+			
+			game.setRRName(nameBuilder.toString().trim());
+			PlayerUtils.broadcast(Main.PREFIX + "The recorded round is now called §a" + game.getRRName() + "§7.");
+			break;
+		case SCENARIOS:
+			StringBuilder scenarioBuilder = new StringBuilder();
+			
+			for (int ni = 1; ni < args.length; ni++) {
+				scenarioBuilder.append(args[ni]).append(" ");
+			}
+			
+			game.setScenarios(scenarioBuilder.toString().trim());
+			PlayerUtils.broadcast(Main.PREFIX + "The gamemode is now §a" + GameUtils.getTeamSize() + game.getScenarios() + "§7.");
+			break;
+		case SHEARRATES:
+			int shearRate;
+			
+			try {
+				shearRate = Integer.parseInt(args[1]);
+			} catch (Exception e) {
+				sender.sendMessage(ChatColor.RED + args[1] + " is not a vaild shear rate.");
+				return true;
+			}
+			
+			PlayerUtils.broadcast(Main.PREFIX + "Shear rates has been changed to §a" + shearRate + "%");
+			game.setShearRates(shearRate);
+			break;
+		case TEAMSIZE:
+			int teamSize;
+			
+			try {
+				teamSize = Integer.parseInt(args[1]);
+			} catch (Exception e) {
+				sender.sendMessage(ChatColor.RED + args[1] + " is not a vaild teamsize.");
+				return true;
+			}
+			
+			game.setTeamSize(teamSize);
+			PlayerUtils.broadcast(Main.PREFIX + "The gamemode is now §a" + GameUtils.getTeamSize() + game.getScenarios() + "§7.");
+			break;
+		case WORLD:
+			PlayerUtils.broadcast(Main.PREFIX + "The game will now be played in '§a" + args[1] + "§7'.");
+			game.setWorld(args[1]);
+			break;
+		default:
+			return true;
 		}
 		return true;
 	}
-
-	public List<String> onTabComplete(CommandSender sender, Command cmd, String alias, String[] args) {
-		if (cmd.getName().equalsIgnoreCase("config")) {
-			if (sender.hasPermission("uhc.config")) {
-				if (args.length == 1) {
-		        	ArrayList<String> arg = new ArrayList<String>();
-		        	
-		        	if (!args[0].equals("")) {
-		        		for (ConfigValue type : ConfigValue.values()) {
-		        			if (type.name().toLowerCase().startsWith(args[0].toLowerCase())) {
-		        				arg.add(type.name().toLowerCase());
-		        			}
-		        		}
-		        	}
-		        	else {
-		        		for (ConfigValue type : ConfigValue.values()) {
-		        			arg.add(type.name().toLowerCase());
-		        		}
-		        	}
-		        	return arg;
-		        }
-				
-				if (args.length == 2) {
-		        	ArrayList<String> arg = new ArrayList<String>();
-		        	
-		        	ConfigValue type;
-					
-					try {
-						type = ConfigValue.valueOf(args[0].toUpperCase());
-					} catch (Exception e) {
-						return null;
-					}
-		        	
-		        	switch (type) {
-					case ABSORPTION:
-						arg.add("true");
-						arg.add("false");
-						break;
-					case BORDER:
-						for (BorderShrink border : BorderShrink.values()) {
-							arg.add(border.name().toLowerCase());
-						}
-						break;
-					case DEATHLIGHTNING:
-						arg.add("true");
-						arg.add("false");
-						break;
-					case FFA:
-						arg.add("true");
-						arg.add("false");
-						break;
-					case GHASTDROPS:
-						arg.add("true");
-						arg.add("false");
-						break;
-					case GOLDENHEADS:
-						arg.add("true");
-						arg.add("false");
-						break;
-					case NERFEDSTRENGTH:
-						arg.add("true");
-						arg.add("false");
-						break;
-					case NETHER:
-						arg.add("true");
-						arg.add("false");
-						break;
-					case NOTCHAPPLES:
-						arg.add("true");
-						arg.add("false");
-						break;
-					case PEARLDAMAGE:
-						arg.add("true");
-						arg.add("false");
-						break;
-					case SHEARS:
-						arg.add("true");
-						arg.add("false");
-						break;
-					case TABCOLORS:
-						arg.add("true");
-						arg.add("false");
-						break;
-					case HARDERCRAFTING:
-						arg.add("true");
-						arg.add("false");
-						break;
-					case STATE:
-						for (State state : State.values()) {
-							arg.add(state.name().toLowerCase());
-						}
-						break;
-					case THEEND:
-						arg.add("true");
-						arg.add("false");
-						break;
-					case WORLD:
-						for (World world : Bukkit.getWorlds()) {
-							arg.add(world.getName());
-						}
-						break;
-					default:
-						break;
-					}
-		        	return arg;
-		        }
-			}
-		}
-		return null;
-	}
 	
-	public enum ConfigValue {
-		HOST, WORLD, FFA, TEAMSIZE, SCENARIOS, SHEARS, SHEARRATE, FLINTRATE, BORDER, ABSORPTION, GOLDENHEADS, HEADHEALS, NOTCHAPPLES, PEARLDAMAGE, DEATHLIGHTNING, NETHER, THEEND, GHASTDROPS, NERFEDSTRENGTH, TABCOLORS, HARDERCRAFTING, PVP, MEETUP, MATCHPOST, MAXPLAYERS, STATE, RR, RRNAME;
+	@Override
+	public List<String> onTabComplete(CommandSender sender, Command cmd, String alias, String[] args) {
+		if (!sender.hasPermission("uhc.config")) {
+			return null;
+		}
+		
+    	ArrayList<String> toReturn = new ArrayList<String>();
+    	
+		if (args.length == 1) {
+        	if (args[0].equals("")) {
+        		for (ConfigValue type : ConfigValue.values()) {
+        			toReturn.add(type.name().toLowerCase());
+        		}
+        	} else {
+        		for (ConfigValue type : ConfigValue.values()) {
+        			if (type.name().toLowerCase().startsWith(args[0].toLowerCase())) {
+        				toReturn.add(type.name().toLowerCase());
+        			}
+        		}
+        	}
+        }
+		
+    	return toReturn;
 	}
 }
