@@ -108,7 +108,7 @@ public class EndCommand implements CommandExecutor {
 		settings.getHOF().set(host + "." + matchcount + ".winners", winners);
 		settings.getHOF().set(host + "." + matchcount + ".kills", kills);
 		settings.getHOF().set(host + "." + matchcount + ".teamsize", GameUtils.getTeamSize().trim());
-		settings.getHOF().set(host + "." + matchcount + ".scenarios", settings.getConfig().getString("game.scenarios"));
+		settings.getHOF().set(host + "." + matchcount + ".scenarios", Game.getInstance().getScenarios());
 		settings.saveHOF();
 		
 		for (Scenario scen : ScenarioManager.getInstance().getEnabledScenarios()) {
@@ -158,7 +158,7 @@ public class EndCommand implements CommandExecutor {
 		Bukkit.getServer().setIdleTimeout(60);
 		Main.plugin.saveData();
 
-		game.setScenarios("games scheduled");
+		game.setScenarios("games running");
 		game.setMatchPost("none");
 		game.setTeamSize(0);
 		game.setFFA(true);
