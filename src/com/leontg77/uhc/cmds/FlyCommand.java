@@ -8,11 +8,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.leontg77.uhc.Main;
-import com.leontg77.uhc.User;
-import com.leontg77.uhc.utils.PlayerUtils;
 
 /**
- * Feed command class.
+ * Fly command class.
  * 
  * @author LeonTG77
  */
@@ -20,50 +18,51 @@ public class FlyCommand implements CommandExecutor {
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-		if (!sender.hasPermission("uhc.feed")) {
+		if (!sender.hasPermission("uhc.fly")) {
 			sender.sendMessage(Main.NO_PERM_MSG);
 			return true;
 		}
 		
 		if (args.length == 0) {
 			if (!(sender instanceof Player)) {
-				sender.sendMessage(ChatColor.RED + "Only players can feed themselves.");
+				sender.sendMessage(ChatColor.RED + "Only players can can toggle flymode.");
 				return true;
 			}
 			
 			Player player = (Player) sender;
-			User user = User.get(player);
 			
-			player.sendMessage(Main.PREFIX + "You have been fed.");
-			user.resetFood();
-			return true;
-		}
-		
-		if (!sender.hasPermission("uhc.feed.other")) {
-			sender.sendMessage(Main.PREFIX + "§cYou cannot feed other players.");
-			return true;
-		}
-		
-		if (args[0].equals("*")) {
-			for (Player online : PlayerUtils.getPlayers()) {
-				User user = User.get(online);
-				user.resetFood();
+			if (player.getAllowFlight()) {
+				player.sendMessage(Main.PREFIX + "Your fly mode is now disabled.");
+				player.setAllowFlight(false);
+				player.setFlying(false);
+			} else {
+				player.sendMessage(Main.PREFIX + "Your fly mode is now enabled.");
+				player.setAllowFlight(true);
 			}
-			
-			PlayerUtils.broadcast(Main.PREFIX + "All players have been fed.");
+			return true;
+		}
+		
+		if (!sender.hasPermission("uhc.fly.other")) {
+			sender.sendMessage(Main.PREFIX + "§cYou cannot toggle other fly mode.");
+			return true;
+		}
+		
+		Player target = Bukkit.getServer().getPlayer(args[0]);
+		
+		if (target == null) {
+			sender.sendMessage(ChatColor.RED + args[0] + " is not online.");
+			return true;
+		}
+		
+		if (target.getAllowFlight()) {
+			sender.sendMessage(Main.PREFIX + "You disabled §a" + target.getName() + "'s §7 fly mode.");
+			target.sendMessage(Main.PREFIX + "Your fly mode is now disabled.");
+			target.setAllowFlight(false);
+			target.setFlying(false);
 		} else {
-			Player target = Bukkit.getServer().getPlayer(args[0]);
-			
-			if (target == null) {
-				sender.sendMessage(ChatColor.RED + args[0] + " is not online.");
-				return true;
-			}
-			
-			User user = User.get(target);
-			user.resetFood();
-
-			sender.sendMessage(Main.PREFIX + "You fed §a" + target.getName() + "§7.");
-			target.sendMessage(Main.PREFIX + "You have been fed.");
+			sender.sendMessage(Main.PREFIX + "You enabled §a" + target.getName() + "'s §7 fly mode.");
+			target.sendMessage(Main.PREFIX + "Your fly mode is now enabled.");
+			target.setAllowFlight(true);
 		}
 		return true;
 	}
