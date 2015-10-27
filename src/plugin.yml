@@ -1,6 +1,6 @@
 name: UHC
 main: com.leontg77.uhc.Main
-version: 1.7.6
+version: 1.8
 author: LeonTG77
 description: UHC plugin made for Leons UHC
 softdepend: [ProtocolLib]
@@ -41,6 +41,8 @@ commands:
     description: End the game and reset everything.
   feed:
     description: Feed someone.
+  fly:
+    description: Toggle fly mode.
   gamemode:
     description: Change your gamemode.
     aliases: [gm]
