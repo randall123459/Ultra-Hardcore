@@ -1,5 +1,8 @@
 package com.leontg77.uhc.cmds;
 
+import static com.leontg77.uhc.Main.plugin;
+
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,6 +52,23 @@ public class RankCommand implements CommandExecutor, TabCompleter {
 		OfflinePlayer offline = PlayerUtils.getOfflinePlayer(args[0]);
 		
 		if (target == null) {
+			File folder = new File(plugin.getDataFolder() + File.separator + "users" + File.separator);
+	        boolean found = false;
+			
+	        if (folder.exists()) {
+	    		for (File file : folder.listFiles()) {
+	    			if (file.getName().substring(0, file.getName().length() - 4).equals(offline.getUniqueId().toString())) {
+	    				found = true;
+	    				break;
+	    			}
+	    		}
+	        }
+			
+			if (!found) {
+				sender.sendMessage(Main.PREFIX + args[0] + " has never joined this server.");
+				return true;
+			}
+			
 			PlayerUtils.broadcast(Main.PREFIX + "§6" + offline.getName() + " §7has been given §a" + NameUtils.fixString(rank.name(), false) + " §7rank.");
 			User.get(offline).setRank(rank);
 			return true;
