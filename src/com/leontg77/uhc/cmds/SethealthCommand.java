@@ -56,7 +56,7 @@ public class SethealthCommand implements CommandExecutor {
 			}
 			
 			player.setHealth(health);
-			player.sendMessage(Main.PREFIX + "You set your health to §6" + NumberUtils.makePercent(health) + "%");
+			player.sendMessage(Main.PREFIX + "You set your health to §6" + NumberUtils.makePercent(health).substring(2) + "%");
 			return true;
 		}
 		
@@ -71,7 +71,7 @@ public class SethealthCommand implements CommandExecutor {
 				online.setHealth(health);
 			}
 			
-			PlayerUtils.broadcast(Main.PREFIX + "All players health was set to §6" + NumberUtils.makePercent(health) + "%");
+			PlayerUtils.broadcast(Main.PREFIX + "All players health was set to §6" + NumberUtils.makePercent(health).substring(2) + "%");
 			return true;
 		}
 		
@@ -86,8 +86,8 @@ public class SethealthCommand implements CommandExecutor {
 			health = target.getMaxHealth();
 		}
 
-		sender.sendMessage(Main.PREFIX + "You set §6" + target.getName() + "'s §7health to §6" + NumberUtils.makePercent(health) + "%");
-		target.sendMessage(Main.PREFIX + "Your health was set to §6" + NumberUtils.makePercent(health) + "%");
+		sender.sendMessage(Main.PREFIX + "You set §6" + target.getName() + "'s §7health to §6" + NumberUtils.makePercent(health).substring(2) + "%");
+		target.sendMessage(Main.PREFIX + "Your health was set to §6" + NumberUtils.makePercent(health).substring(2) + "%");
 		target.setHealth(health);
 		return true;
 	}
