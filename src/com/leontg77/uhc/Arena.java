@@ -204,14 +204,6 @@ public class Arena {
 		world.setTime(6000);
 		
 		PlayerUtils.broadcast(Main.PREFIX + "Options setup, pregenning arena world.");
-		
-		// TODO: Pregen code...
-		
-		PlayerUtils.broadcast(Main.PREFIX + "Arena reset complete.");
-		
-		if (wasEnabled) {
-			enable();
-		}
 	}
 
 	/**
