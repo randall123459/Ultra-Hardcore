@@ -27,6 +27,7 @@ import com.leontg77.uhc.Spectator.SpecInfo;
 import com.leontg77.uhc.User.Stat;
 import com.leontg77.uhc.cmds.TeamCommand;
 import com.leontg77.uhc.scenario.ScenarioManager;
+import com.leontg77.uhc.scenario.types.Kings;
 import com.leontg77.uhc.utils.DateUtils;
 import com.leontg77.uhc.utils.EntityUtils;
 import com.leontg77.uhc.utils.GameUtils;
@@ -105,7 +106,7 @@ public class Timers {
 
 		new BukkitRunnable() {
 			public void run() {
-				PlayerUtils.broadcast(Main.PREFIX + "Useful commands can be found in the tab list.");
+				PlayerUtils.broadcast(Main.PREFIX + "This is a §a" + GameUtils.getTeamSize() + game.getScenarios());
 			}
 		}.runTaskLater(Main.plugin, 400);
 
@@ -246,24 +247,32 @@ public class Timers {
 						}
 					}
 					
+					User user = User.get(online);
+					
 					if (spec.isSpectating(online)) {
 						PacketUtils.sendTitle(online, "§aGo!", "§7Have fun spectating!", 1, 20, 1);
 					} else {
 						PacketUtils.sendTitle(online, "§aGo!", "§7Good luck, have fun!", 1, 20, 1);
+						user.increaseStat(Stat.GAMESPLAYED);
 						
 						if (online.getGameMode() != GameMode.SURVIVAL) {
 							online.setGameMode(GameMode.SURVIVAL);
 						}
 					}
-					
-					User user = User.get(online);
-					user.increaseStat(Stat.GAMESPLAYED);
 
 					user.resetHealth();
 					user.resetFood();
 					user.resetExp();
+
+					online.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 100, 100));
+					Main.kills.put(online.getName(), 0);
 					
 					if (scen.getScenario("Kings").isEnabled()) {
+						if (!Kings.getKings().contains(online.getName())) {
+							user.resetEffects();
+							continue;
+						}
+						
 						for (PotionEffect effect : online.getActivePotionEffects()) {
 							if (effect.getType().equals(PotionEffectType.DAMAGE_RESISTANCE)) {
 								continue;
@@ -281,6 +290,10 @@ public class Timers {
 						}
 					} else {
 						user.resetEffects();
+					}
+					
+					if (spec.isSpectating(online)) {
+						continue;
 					}
 					
 					if (scen.getScenario("SlaveMarket").isEnabled()) {
@@ -309,9 +322,6 @@ public class Timers {
 					} else {
 						user.resetInventory();
 					}
-
-					online.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 100, 100));
-					Main.kills.put(online.getName(), 0);
 				}
 			}
 		}.runTaskLater(Main.plugin, 600);
@@ -460,7 +470,7 @@ public class Timers {
 		
 		taskSeconds = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(Main.plugin, new Runnable() {
 			int finalHeal = 20;
-			int timeToBorder = 120;
+			int timeToBorder = 121;
 			
 			public void run() {
 				timeSeconds++;
