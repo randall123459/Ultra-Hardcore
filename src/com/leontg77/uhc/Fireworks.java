@@ -2,7 +2,6 @@ package com.leontg77.uhc;
 
 import java.util.Random;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
 import org.bukkit.FireworkEffect.Type;
@@ -63,7 +62,7 @@ public class Fireworks {
 				int x = ran.nextInt(50 * 2) - 50;
 				int z = ran.nextInt(50 * 2) - 50;
 
-				Location loc = new Location(Bukkit.getWorld("lobby"), x + 0.5, 34, z + 0.5);
+				Location loc = Main.getSpawn().clone().add(x, 0, z);
 				loc.setY(LocationUtils.getHighestBlock(loc).getY());
 				
 				launchRandomFirework(loc.add(0, 1, 0));
