@@ -93,7 +93,7 @@ public class Game {
 	}
 
 	public String getScenarios() {
-		return settings.getConfig().getString("scenarios", "games scheduled");
+		return settings.getConfig().getString("scenarios", "games running");
 	}
 	
 	/**
@@ -104,6 +104,12 @@ public class Game {
 	public void setHost(String host) {
 		settings.getConfig().set("host", host);
 		settings.saveConfig();
+		
+		if (!isRecordedRound()) {
+			Scoreboards board = Scoreboards.getInstance();
+			
+			board.kills.setDisplayName("§4§lUHC §r§8- §7§o" + host + "§r");
+		}
 		
 		for (Player online : PlayerUtils.getPlayers()) {
 			PacketUtils.setTabList(online);
@@ -274,7 +280,7 @@ public class Game {
 	 * @return True if it is, false otherwise.
 	 */
 	public boolean arenaBoard() {
-		return settings.getData().getBoolean("misc.board.arena", false);
+		return settings.getConfig().getBoolean("misc.board.arena", false);
 	}
 
 	/**
@@ -586,6 +592,10 @@ public class Game {
 	public void setTabShowsHealthColor(boolean enable) {
 		settings.getConfig().set("feature.tabShowsHealthColor.enabled", enable);
 		settings.saveConfig();
+		
+		for (Player online : PlayerUtils.getPlayers()) {
+			online.setPlayerListName(null);
+		}
 	}
 
 	public boolean goldenMelonNeedsIngots() {
@@ -648,7 +658,7 @@ public class Game {
 	}
 
 	public boolean heartsOnTab() {
-		return settings.getConfig().getBoolean("feature.heartsOnTab.enabled", true);
+		return settings.getConfig().getBoolean("feature.heartsOnTab.enabled", false);
 	}
 	
 	public void setHardcoreHearts(boolean enable) {
