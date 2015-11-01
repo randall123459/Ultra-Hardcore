@@ -1,4 +1,4 @@
-package com.leontg77.uhc.worlds.terrain;
+package com.leontg77.uhc.worlds;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
