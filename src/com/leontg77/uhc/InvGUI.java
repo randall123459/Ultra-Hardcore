@@ -72,7 +72,7 @@ public class InvGUI {
 		lore.add(" ");
 		lore.add("§8» §7Hostile kills: §a" + user.getStat(Stat.HOSTILEMOBKILLS));
 		lore.add("§8» §7Animal kills: §a" + user.getStat(Stat.ANIMALKILLS));
-		lore.add("§8» §7Damage taken: §a" + user.getStat(Stat.DAMAGETAKEN));
+		lore.add("§8» §7Damage taken: §a" + (((double) user.getStat(Stat.DAMAGETAKEN)) / 2));
 		lore.add(" ");
 		generalMeta.setLore(lore);
 		general.setItemMeta(generalMeta);
@@ -146,7 +146,7 @@ public class InvGUI {
 		Inventory inv = null;
 
 		for (Player online : PlayerUtils.getPlayers()) {
-			if (Spectator.getInstance().isSpectating(online) || !GameUtils.getGameWorlds().contains(player.getWorld())) {
+			if (Spectator.getInstance().isSpectating(online) || !GameUtils.getGameWorlds().contains(online.getWorld())) {
 				list.remove(online);
 			}
 		}
@@ -412,157 +412,135 @@ public class InvGUI {
 		
 		ItemStack absorption = new ItemStack (Material.GOLDEN_APPLE);
 		ItemMeta absorptionMeta = absorption.getItemMeta();
-		absorptionMeta.setDisplayName("§aAbsorption");
-		absorptionMeta.setLore(Arrays.asList(" ", "§8» §7Currently: " + (game.absorption() ? "§aEnabled" : "§cDisabled"), " "));
+		absorptionMeta.setDisplayName((game.absorption() ? "§a" : "§c") + "Absorption");
 		absorption.setItemMeta(absorptionMeta);
 		inv.setItem(0, absorption);
 		
-		ItemStack heads = new ItemStack (Material.GOLDEN_APPLE);
+		ItemStack heads = new ItemStack (Material.SKULL_ITEM, 1, (short) 3);
 		ItemMeta headsMeta = heads.getItemMeta();
-		headsMeta.setDisplayName("§aGolden Heads");
-		headsMeta.setLore(Arrays.asList(" ", "§8» §7Currently: " + (game.goldenHeads() ? "§aEnabled" : "§cDisabled"), " "));
+		headsMeta.setDisplayName((game.goldenHeads() ? "§a" : "§c") + "Golden Heads");
 		heads.setItemMeta(headsMeta);
 		inv.setItem(1, heads);
-		/*
-		ItemStack absorption = new ItemStack (Material.GOLDEN_APPLE);
-		ItemMeta absorptionMeta = absorption.getItemMeta();
-		absorptionMeta.setDisplayName("§aAbsorption");
-		absorptionMeta.setLore(Arrays.asList(" ", "§8» §7Currently: " + (game.absorption() ? "§aEnabled" : "§cDisabled"), " "));
-		absorption.setItemMeta(absorptionMeta);
-		inv.setItem(0, absorption);
 		
-		ItemStack absorption = new ItemStack (Material.GOLDEN_APPLE);
-		ItemMeta absorptionMeta = absorption.getItemMeta();
-		absorptionMeta.setDisplayName("§aAbsorption");
-		absorptionMeta.setLore(Arrays.asList(" ", "§8» §7Currently: " + (game.absorption() ? "§aEnabled" : "§cDisabled"), " "));
-		absorption.setItemMeta(absorptionMeta);
-		inv.setItem(0, absorption);
+		ItemStack pearl = new ItemStack (Material.ENDER_PEARL);
+		ItemMeta peralMeta = pearl.getItemMeta();
+		peralMeta.setDisplayName((game.goldenHeads() ? "§a" : "§c") + "Pearl Damage");
+		pearl.setItemMeta(peralMeta);
+		inv.setItem(2, pearl);
 		
-		ItemStack absorption = new ItemStack (Material.GOLDEN_APPLE);
-		ItemMeta absorptionMeta = absorption.getItemMeta();
-		absorptionMeta.setDisplayName("§aAbsorption");
-		absorptionMeta.setLore(Arrays.asList(" ", "§8» §7Currently: " + (game.absorption() ? "§aEnabled" : "§cDisabled"), " "));
-		absorption.setItemMeta(absorptionMeta);
-		inv.setItem(0, absorption);
+		ItemStack notchApples = new ItemStack (Material.GOLDEN_APPLE, 1, (short) 1);
+		ItemMeta notchMeta = notchApples.getItemMeta();
+		notchMeta.setDisplayName((game.notchApples() ? "§a" : "§c") + "Notch Apples");
+		notchApples.setItemMeta(notchMeta);
+		inv.setItem(3, notchApples);
 		
-		ItemStack absorption = new ItemStack (Material.GOLDEN_APPLE);
-		ItemMeta absorptionMeta = absorption.getItemMeta();
-		absorptionMeta.setDisplayName("§aAbsorption");
-		absorptionMeta.setLore(Arrays.asList(" ", "§8» §7Currently: " + (game.absorption() ? "§aEnabled" : "§cDisabled"), " "));
-		absorption.setItemMeta(absorptionMeta);
-		inv.setItem(0, absorption);
+		ItemStack hearts = new ItemStack (Material.INK_SACK, 1, (short) 1);
+		ItemMeta heartsMeta = hearts.getItemMeta();
+		heartsMeta.setDisplayName((game.heartsOnTab() ? "§a" : "§c") + "Hearts on tab");
+		hearts.setItemMeta(heartsMeta);
+		inv.setItem(5, hearts);
 		
-		ItemStack absorption = new ItemStack (Material.GOLDEN_APPLE);
-		ItemMeta absorptionMeta = absorption.getItemMeta();
-		absorptionMeta.setDisplayName("§aAbsorption");
-		absorptionMeta.setLore(Arrays.asList(" ", "§8» §7Currently: " + (game.absorption() ? "§aEnabled" : "§cDisabled"), " "));
-		absorption.setItemMeta(absorptionMeta);
-		inv.setItem(0, absorption);
+		ItemStack hardcore = new ItemStack (Material.REDSTONE);
+		ItemMeta hardcoreMeta = hardcore.getItemMeta();
+		hardcoreMeta.setDisplayName((game.hardcoreHearts() ? "§a" : "§c") + "Hardcore Hearts");
+		hardcore.setItemMeta(hardcoreMeta);
+		inv.setItem(6, hardcore);
 		
-		ItemStack absorption = new ItemStack (Material.GOLDEN_APPLE);
-		ItemMeta absorptionMeta = absorption.getItemMeta();
-		absorptionMeta.setDisplayName("§aAbsorption");
-		absorptionMeta.setLore(Arrays.asList(" ", "§8» §7Currently: " + (game.absorption() ? "§aEnabled" : "§cDisabled"), " "));
-		absorption.setItemMeta(absorptionMeta);
-		inv.setItem(0, absorption);
+		ItemStack tab = new ItemStack (Material.SIGN);
+		ItemMeta tabMeta = tab.getItemMeta();
+		tabMeta.setDisplayName((game.tabShowsHealthColor() ? "§a" : "§c") + "Tab health color");
+		tab.setItemMeta(tabMeta);
+		inv.setItem(7, tab);
 		
-		ItemStack absorption = new ItemStack (Material.GOLDEN_APPLE);
-		ItemMeta absorptionMeta = absorption.getItemMeta();
-		absorptionMeta.setDisplayName("§aAbsorption");
-		absorptionMeta.setLore(Arrays.asList(" ", "§8» §7Currently: " + (game.absorption() ? "§aEnabled" : "§cDisabled"), " "));
-		absorption.setItemMeta(absorptionMeta);
-		inv.setItem(0, absorption);
+		ItemStack rr = new ItemStack (Material.PAINTING);
+		ItemMeta rrMeta = rr.getItemMeta();
+		rrMeta.setDisplayName((game.isRecordedRound() ? "§a" : "§c") + "Recorded Round");
+		rr.setItemMeta(rrMeta);
+		inv.setItem(8, rr);
 		
-		ItemStack absorption = new ItemStack (Material.GOLDEN_APPLE);
-		ItemMeta absorptionMeta = absorption.getItemMeta();
-		absorptionMeta.setDisplayName("§aAbsorption");
-		absorptionMeta.setLore(Arrays.asList(" ", "§8» §7Currently: " + (game.absorption() ? "§aEnabled" : "§cDisabled"), " "));
-		absorption.setItemMeta(absorptionMeta);
-		inv.setItem(0, absorption);
+		ItemStack nether = new ItemStack (Material.NETHER_STALK);
+		ItemMeta netherMeta = nether.getItemMeta();
+		netherMeta.setDisplayName((game.nether() ? "§a" : "§c") + "Nether");
+		nether.setItemMeta(netherMeta);
+		inv.setItem(18, nether);
 		
-		ItemStack absorption = new ItemStack (Material.GOLDEN_APPLE);
-		ItemMeta absorptionMeta = absorption.getItemMeta();
-		absorptionMeta.setDisplayName("§aAbsorption");
-		absorptionMeta.setLore(Arrays.asList(" ", "§8» §7Currently: " + (game.absorption() ? "§aEnabled" : "§cDisabled"), " "));
-		absorption.setItemMeta(absorptionMeta);
-		inv.setItem(0, absorption);
+		ItemStack end = new ItemStack (Material.ENDER_PORTAL_FRAME);
+		ItemMeta endMeta = end.getItemMeta();
+		endMeta.setDisplayName((game.theEnd() ? "§a" : "§c") + "The End");
+		end.setItemMeta(endMeta);
+		inv.setItem(19, end);
 		
-		ItemStack absorption = new ItemStack (Material.GOLDEN_APPLE);
-		ItemMeta absorptionMeta = absorption.getItemMeta();
-		absorptionMeta.setDisplayName("§aAbsorption");
-		absorptionMeta.setLore(Arrays.asList(" ", "§8» §7Currently: " + (game.absorption() ? "§aEnabled" : "§cDisabled"), " "));
-		absorption.setItemMeta(absorptionMeta);
-		inv.setItem(0, absorption);
+		ItemStack strip = new ItemStack (Material.DIAMOND_PICKAXE);
+		ItemMeta stripMeta = strip.getItemMeta();
+		stripMeta.setDisplayName((game.antiStripmine() ? "§a" : "§c") + "Anti Stripmine");
+		strip.setItemMeta(stripMeta);
+		inv.setItem(21, strip);
 		
-		ItemStack absorption = new ItemStack (Material.GOLDEN_APPLE);
-		ItemMeta absorptionMeta = absorption.getItemMeta();
-		absorptionMeta.setDisplayName("§aAbsorption");
-		absorptionMeta.setLore(Arrays.asList(" ", "§8» §7Currently: " + (game.absorption() ? "§aEnabled" : "§cDisabled"), " "));
-		absorption.setItemMeta(absorptionMeta);
-		inv.setItem(0, absorption);
+		ItemStack death = new ItemStack (Material.BLAZE_ROD);
+		ItemMeta deathMeta = death.getItemMeta();
+		deathMeta.setDisplayName((game.deathLightning() ? "§a" : "§c") + "Death Lightning");
+		death.setItemMeta(deathMeta);
+		inv.setItem(22, death);
 		
-		ItemStack absorption = new ItemStack (Material.GOLDEN_APPLE);
-		ItemMeta absorptionMeta = absorption.getItemMeta();
-		absorptionMeta.setDisplayName("§aAbsorption");
-		absorptionMeta.setLore(Arrays.asList(" ", "§8» §7Currently: " + (game.absorption() ? "§aEnabled" : "§cDisabled"), " "));
-		absorption.setItemMeta(absorptionMeta);
-		inv.setItem(0, absorption);
+		ItemStack horse = new ItemStack (Material.SADDLE);
+		ItemMeta horseMeta = horse.getItemMeta();
+		horseMeta.setDisplayName((game.horses() ? "§a" : "§c") + "Horses");
+		horse.setItemMeta(horseMeta);
+		inv.setItem(24, horse);
 		
-		ItemStack absorption = new ItemStack (Material.GOLDEN_APPLE);
-		ItemMeta absorptionMeta = absorption.getItemMeta();
-		absorptionMeta.setDisplayName("§aAbsorption");
-		absorptionMeta.setLore(Arrays.asList(" ", "§8» §7Currently: " + (game.absorption() ? "§aEnabled" : "§cDisabled"), " "));
-		absorption.setItemMeta(absorptionMeta);
-		inv.setItem(0, absorption);
+		ItemStack armor = new ItemStack (Material.IRON_BARDING);
+		ItemMeta armorMeta = armor.getItemMeta();
+		armorMeta.setDisplayName((game.horseArmor() ? "§a" : "§c") + "Horse Armor");
+		armor.setItemMeta(armorMeta);
+		inv.setItem(25, armor);
 		
-		ItemStack absorption = new ItemStack (Material.GOLDEN_APPLE);
-		ItemMeta absorptionMeta = absorption.getItemMeta();
-		absorptionMeta.setDisplayName("§aAbsorption");
-		absorptionMeta.setLore(Arrays.asList(" ", "§8» §7Currently: " + (game.absorption() ? "§aEnabled" : "§cDisabled"), " "));
-		absorption.setItemMeta(absorptionMeta);
-		inv.setItem(0, absorption);
+		ItemStack healing = new ItemStack (Material.BREAD);
+		ItemMeta healingMeta = healing.getItemMeta();
+		healingMeta.setDisplayName((game.horseHealing() ? "§a" : "§c") + "Horse Healing");
+		healing.setItemMeta(healingMeta);
+		inv.setItem(26, healing);
 		
-		ItemStack absorption = new ItemStack (Material.GOLDEN_APPLE);
-		ItemMeta absorptionMeta = absorption.getItemMeta();
-		absorptionMeta.setDisplayName("§aAbsorption");
-		absorptionMeta.setLore(Arrays.asList(" ", "§8» §7Currently: " + (game.absorption() ? "§aEnabled" : "§cDisabled"), " "));
-		absorption.setItemMeta(absorptionMeta);
-		inv.setItem(0, absorption);
+		ItemStack shears = new ItemStack (Material.SHEARS);
+		ItemMeta shearsMeta = shears.getItemMeta();
+		shearsMeta.setDisplayName((game.shears() ? "§a" : "§c") + "Shears");
+		shears.setItemMeta(shearsMeta);
+		inv.setItem(36, shears);
 		
-		ItemStack absorption = new ItemStack (Material.GOLDEN_APPLE);
-		ItemMeta absorptionMeta = absorption.getItemMeta();
-		absorptionMeta.setDisplayName("§aAbsorption");
-		absorptionMeta.setLore(Arrays.asList(" ", "§8» §7Currently: " + (game.absorption() ? "§aEnabled" : "§cDisabled"), " "));
-		absorption.setItemMeta(absorptionMeta);
-		inv.setItem(0, absorption);
+		ItemStack ghast = new ItemStack (Material.GHAST_TEAR);
+		ItemMeta ghastMeta = ghast.getItemMeta();
+		ghastMeta.setDisplayName((game.ghastDropGold() ? "§a" : "§c") + "Ghast drop gold");
+		ghast.setItemMeta(ghastMeta);
+		inv.setItem(37, ghast);
 		
-		ItemStack absorption = new ItemStack (Material.GOLDEN_APPLE);
-		ItemMeta absorptionMeta = absorption.getItemMeta();
-		absorptionMeta.setDisplayName("§aAbsorption");
-		absorptionMeta.setLore(Arrays.asList(" ", "§8» §7Currently: " + (game.absorption() ? "§aEnabled" : "§cDisabled"), " "));
-		absorption.setItemMeta(absorptionMeta);
-		inv.setItem(0, absorption);
+		ItemStack melon = new ItemStack (Material.SPECKLED_MELON);
+		ItemMeta melonMeta = melon.getItemMeta();
+		melonMeta.setDisplayName((game.goldenMelonNeedsIngots() ? "§a" : "§c") + "Golden Melon needs ingots");
+		melon.setItemMeta(melonMeta);
+		inv.setItem(38, melon);
 		
-		ItemStack absorption = new ItemStack (Material.GOLDEN_APPLE);
-		ItemMeta absorptionMeta = absorption.getItemMeta();
-		absorptionMeta.setDisplayName("§aAbsorption");
-		absorptionMeta.setLore(Arrays.asList(" ", "§8» §7Currently: " + (game.absorption() ? "§aEnabled" : "§cDisabled"), " "));
-		absorption.setItemMeta(absorptionMeta);
-		inv.setItem(0, absorption);
+		ItemStack tier2 = new ItemStack (Material.GLOWSTONE_DUST);
+		ItemMeta tier2Meta = tier2.getItemMeta();
+		tier2Meta.setDisplayName((game.tier2() ? "§a" : "§c") + "Tier 2");
+		tier2.setItemMeta(tier2Meta);
+		inv.setItem(41, tier2);
 		
-		ItemStack absorption = new ItemStack (Material.GOLDEN_APPLE);
-		ItemMeta absorptionMeta = absorption.getItemMeta();
-		absorptionMeta.setDisplayName("§aAbsorption");
-		absorptionMeta.setLore(Arrays.asList(" ", "§8» §7Currently: " + (game.absorption() ? "§aEnabled" : "§cDisabled"), " "));
-		absorption.setItemMeta(absorptionMeta);
-		inv.setItem(0, absorption);
+		ItemStack splash = new ItemStack (Material.POTION, 1, (short) 16424);
+		ItemMeta splashMeta = splash.getItemMeta();
+		splashMeta.setDisplayName((game.splash() ? "§a" : "§c") + "Splash");
+		splash.setItemMeta(splashMeta);
+		inv.setItem(42, splash);
 		
-		ItemStack absorption = new ItemStack (Material.GOLDEN_APPLE);
-		ItemMeta absorptionMeta = absorption.getItemMeta();
-		absorptionMeta.setDisplayName("§aAbsorption");
-		absorptionMeta.setLore(Arrays.asList(" ", "§8» §7Currently: " + (game.absorption() ? "§aEnabled" : "§cDisabled"), " "));
-		absorption.setItemMeta(absorptionMeta);
-		inv.setItem(0, absorption);*/
+		ItemStack str = new ItemStack (Material.BLAZE_POWDER);
+		ItemMeta strMeta = str.getItemMeta();
+		strMeta.setDisplayName((game.strength() ? "§a" : "§c") + "Strength");
+		str.setItemMeta(strMeta);
+		inv.setItem(43, str);
+		
+		ItemStack nerf = new ItemStack (Material.POTION, 1, (short) 8233);
+		ItemMeta nerfMeta = nerf.getItemMeta();
+		nerfMeta.setDisplayName((game.nerfedStrength() ? "§a" : "§c") + "Nerfed Strength");
+		nerf.setItemMeta(nerfMeta);
+		inv.setItem(44, nerf);
 		
 		player.openInventory(inv);
 		
@@ -593,13 +571,10 @@ public class InvGUI {
 		lore.add("§8» §7You can follow our twitter @ArcticUHC to find");
 		lore.add(" §7out when our next games are.");
 		lore.add(" ");
-		lore.add("§8» §7Final heal is 30 seconds after start, ");
+		lore.add("§8» §7Final heal is 20 seconds after start, ");
 		lore.add(" §7no more are given after that.");
 		lore.add(" ");
 		lore.add("§8» §7Our UHC plugin is custom coded by LeonTG77.");
-		lore.add(" ");
-		lore.add("§8» §7VIP's are trusted players, they can spectate");
-		lore.add(" §7and join before whitelist is off");
 		lore.add(" ");
 		generalMeta.setLore(lore);
 		general.setItemMeta(generalMeta);
@@ -635,7 +610,7 @@ public class InvGUI {
 		pvpMeta.setDisplayName("§8» §6PvP Rules §8«");
 		lore.add(" ");
 		lore.add("§8» §7iPvP: §cNot Allowed before pvp.");
-		lore.add("§8» §7Team Killing: " + (GameUtils.getTeamSize().startsWith("r") && !ScenarioManager.getInstance().getScenario("Moles").isEnabled() ? "§cNot Allowed." : "§aAllowed."));
+		lore.add("§8» §7Team Killing: " + ((GameUtils.getTeamSize().startsWith("r") || GameUtils.getTeamSize().isEmpty()) && !ScenarioManager.getInstance().getScenario("Moles").isEnabled() ? "§cNot Allowed." : "§aAllowed."));
 		lore.add("§8» §7Stalking: §aAllowed. §c(Not excessive)");
 		lore.add("§8» §7Stealing: §aAllowed.");
 		lore.add("§8» §7Crossteaming: §cNot Allowed.");
@@ -717,8 +692,8 @@ public class InvGUI {
 		ItemMeta commandsMeta = commands.getItemMeta();
 		commandsMeta.setDisplayName("§8» §6Useful commands §8«");
 		lore.add(" ");
+		lore.add("§a/uhc §8» §7§oView this menu :o");
 		lore.add("§a/helpop §8» §7§oAsk for help by the staff.");
-		lore.add("§a/rules §8» §7§oView this menu :o");
 		lore.add("§a/post §8» §7§oGet a link to the matchpost.");
 		lore.add("§a/team §8» §7§oView the team help menu.");
 		lore.add("§a/scen §8» §7§oView the enabled scenarios.");
@@ -755,7 +730,7 @@ public class InvGUI {
 		inv.setItem(23, scenario);
 		lore.clear();
 		
-		ItemStack nether = new ItemStack (Material.NETHERRACK);
+		ItemStack nether = new ItemStack (Material.NETHER_STALK);
 		ItemMeta netherMeta = nether.getItemMeta();
 		netherMeta.setDisplayName("§8» §6Nether Info §8«");
 		lore.add(" ");
@@ -766,7 +741,7 @@ public class InvGUI {
 			lore.add("§8» §7Trapping: " + (game.theEnd() ? "§cNot allowed." : "§aAllowed."));
 			lore.add("§8» §7Camping: §aAllowed.");
 			lore.add(" ");
-			lore.add("§8» §7Strength: " + (game.nerfedStrength() ? "§cNerfed" : "§aVanilla"));
+			lore.add("§8» §7Strength: " + (game.strength() ? (game.nerfedStrength() ? "§cNerfed" : "§aVanilla") : "§cDisabled"));
 			lore.add("§8» §7Tier 2: " + (game.tier2() ? "§aEnabled." : "§cDisabled."));
 			lore.add("§8» §7Splash: " + (game.splash() ? "§aEnabled." : "§cDisabled."));
 			lore.add(" ");
@@ -819,8 +794,10 @@ public class InvGUI {
 		horseMeta.setDisplayName("§8» §6Horse Info §8«");
 		lore.add(" ");
 		lore.add("§8» §7Horses: " + (game.horses() ? "§aEnabled." : "§cDisabled."));
-		lore.add("§8» §7Horse Healing: " + (game.horseHealing() ? "§aEnabled." : "§cDisabled."));
-		lore.add("§8» §7Horse Armor: " + (game.horseArmor() ? "§aEnabled." : "§cDisabled."));
+		if (game.horses()) {
+			lore.add("§8» §7Horse Healing: " + (game.horseHealing() ? "§aEnabled." : "§cDisabled."));
+			lore.add("§8» §7Horse Armor: " + (game.horseArmor() ? "§aEnabled." : "§cDisabled."));
+		}
 		lore.add(" ");
 		horseMeta.setLore(lore);
 		horse.setItemMeta(horseMeta);
@@ -831,7 +808,7 @@ public class InvGUI {
 		ItemMeta miscIMeta = miscI.getItemMeta();
 		miscIMeta.setDisplayName("§8» §6Misc. Info §8«");
 		lore.add(" ");
-		lore.add("§8» §7Enderpearl Damage: " + (game.pearlDamage() ? "§aEnabled, 1 heart." : "§cDisabled."));
+		lore.add("§8» §7Enderpearl Damage: " + (game.pearlDamage() ? "§aEnabled, deals 1 heart." : "§cDisabled."));
 		lore.add("§8» §7Death Lightning: " + (game.deathLightning() ? "§aEnabled." : "§cDisabled."));
 		lore.add("§8» §7Saturation Fix: §aEnabled.");
 		lore.add(" ");
@@ -852,14 +829,21 @@ public class InvGUI {
 		StringBuilder staffs = new StringBuilder();
 		StringBuilder owners = new StringBuilder();
 		StringBuilder hosts = new StringBuilder();
+		StringBuilder specs = new StringBuilder();
 		
 		ArrayList<String> hostL = new ArrayList<String>();
 		ArrayList<String> staffL = new ArrayList<String>();
+		ArrayList<String> specL = new ArrayList<String>();
 		
 		int i = 1;
+		int j = 0;
 		
 		for (File file : folder.listFiles()) {
 			FileConfiguration config = YamlConfiguration.loadConfiguration(file);
+
+			if (config.getString("rank").equals(Rank.ADMIN.name())) {
+				hostL.add(config.getString("username"));
+			}
 
 			if (config.getString("rank").equals(Rank.HOST.name())) {
 				hostL.add(config.getString("username"));
@@ -872,6 +856,10 @@ public class InvGUI {
 			if (config.getString("rank").equals(Rank.STAFF.name())) {
 				staffL.add(config.getString("username"));
 			}
+			
+			if (config.getString("rank").equals(Rank.SPEC.name())) {
+				specL.add(config.getString("username"));
+			}
 		}
 		
 		for (String sL : hostL) {
@@ -883,11 +871,19 @@ public class InvGUI {
 				}
 			}
 			
+			if (j == 2) {
+				hosts.append("-");
+				j = 0;
+			} else {
+				j++;
+			}
+			
 			hosts.append(sL);
 			i++;
 		}
 		
 		i = 1;
+		j = 0;
 		
 		for (String sL : staffL) {
 			if (staffs.length() > 0) {
@@ -898,11 +894,42 @@ public class InvGUI {
 				}
 			}
 			
+			if (j == 2) {
+				staffs.append("-");
+				j = 0;
+			} else {
+				j++;
+			}
+			
 			staffs.append(sL);
 			i++;
 		}
 		
 		i = 1;
+		j = 0;
+		
+		for (String pL : specL) {
+			if (specs.length() > 0) {
+				if (specL.size() == i) {
+					specs.append(" and ");
+				} else {
+					specs.append(", ");
+				}
+			}
+			
+			if (j == 2) {
+				specs.append("-");
+				j = 0;
+			} else {
+				j++;
+			}
+			
+			specs.append(pL);
+			i++;
+		}
+		
+		i = 1;
+		j = 0;
 		
 		for (OfflinePlayer ops : Bukkit.getServer().getOperators()) {
 			if (owners.length() > 0) {
@@ -913,19 +940,37 @@ public class InvGUI {
 				}
 			}
 			
+			if (j == 2) {
+				hosts.append("-");
+				j = 0;
+			} else {
+				j++;
+			}
+			
 			owners.append(ops.getName());
 			i++;
 		}
 		
 		lore.add(" ");
 		lore.add("§8» §4Owners:");
-		lore.add("§8» §7" + owners.toString());
+		for (String split : owners.toString().split("-")) {
+			lore.add("§8» §7" + split);
+		}
 		lore.add(" ");
 		lore.add("§8» §4Hosts:");
-		lore.add("§8» §7" + hosts.toString());
+		for (String split : hosts.toString().split("-")) {
+			lore.add("§8» §7" + split);
+		}
 		lore.add(" ");
 		lore.add("§8» §cStaff:");
-		lore.add("§8» §7" + staffs.toString());
+		for (String split : staffs.toString().split("-")) {
+			lore.add("§8» §7" + split);
+		}
+		lore.add(" ");
+		lore.add("§8» §7Specs:");
+		for (String split : specs.toString().split("-")) {
+			lore.add("§8» §7" + split);
+		}
 		lore.add(" ");
 		staffMeta.setLore(lore);
 		staffMeta.setOwner("LeonTG77");
