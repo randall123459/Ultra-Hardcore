@@ -59,6 +59,7 @@ import com.leontg77.uhc.cmds.ConfigCommand;
 import com.leontg77.uhc.cmds.EditCommand;
 import com.leontg77.uhc.cmds.EndCommand;
 import com.leontg77.uhc.cmds.FeedCommand;
+import com.leontg77.uhc.cmds.FlyCommand;
 import com.leontg77.uhc.cmds.GamemodeCommand;
 import com.leontg77.uhc.cmds.GiveCommand;
 import com.leontg77.uhc.cmds.GiveallCommand;
@@ -110,10 +111,12 @@ import com.leontg77.uhc.cmds.WhitelistCommand;
 import com.leontg77.uhc.cmds.WorldCommand;
 import com.leontg77.uhc.listeners.BlockListener;
 import com.leontg77.uhc.listeners.EntityListener;
+import com.leontg77.uhc.listeners.InventoryListener;
 import com.leontg77.uhc.listeners.LoginListener;
 import com.leontg77.uhc.listeners.PlayerListener;
 import com.leontg77.uhc.listeners.PortalListener;
 import com.leontg77.uhc.listeners.WorldListener;
+import com.leontg77.uhc.listeners.inventory.ConfigListener;
 import com.leontg77.uhc.listeners.inventory.HOFListener;
 import com.leontg77.uhc.listeners.inventory.InfoListener;
 import com.leontg77.uhc.listeners.inventory.InvseeListener;
@@ -125,9 +128,9 @@ import com.leontg77.uhc.scenario.ScenarioManager;
 import com.leontg77.uhc.utils.NumberUtils;
 import com.leontg77.uhc.utils.PermsUtils;
 import com.leontg77.uhc.utils.PlayerUtils;
+import com.leontg77.uhc.worlds.AntiStripmine;
+import com.leontg77.uhc.worlds.BiomeSwap;
 import com.leontg77.uhc.worlds.WorldManager;
-import com.leontg77.uhc.worlds.terrain.AntiStripmine;
-import com.leontg77.uhc.worlds.terrain.BiomeSwap;
 
 /**
  * Main class of the UHC plugin.
@@ -178,6 +181,8 @@ public class Main extends JavaPlugin {
 		
 		plugin = this;
 		settings.setup();
+	    
+		WorldManager.getInstance().loadWorlds();
 
 		AntiStripmine.getInstance().setup();
 		Announcer.getInstance().setup();
@@ -191,25 +196,27 @@ public class Main extends JavaPlugin {
 		
 		ScenarioManager.getInstance().setup();
 		Scoreboards.getInstance().setup();
-	    
-		WorldManager.getInstance().loadWorlds();
+		Game game = Game.getInstance();
 		
 		recoverData();
 		addRecipes();
 
-		@SuppressWarnings("unused")
 		ProtocolManager protocol = ProtocolLibrary.getProtocolManager();
 		PluginManager manager = Bukkit.getServer().getPluginManager();
 		
-	    /*protocol.addPacketListener(new HardcoreHearts(this));*/
+		if (game.hardcoreHearts()) {
+		    protocol.addPacketListener(new HardcoreHearts(this));
+		}
 
 		manager.registerEvents(new BlockListener(), this);
 		manager.registerEvents(new EntityListener(), this);
+		manager.registerEvents(new InventoryListener(), this);
 		manager.registerEvents(new LoginListener(), this);
 		manager.registerEvents(new PlayerListener(), this);
 		manager.registerEvents(new PortalListener(), this);
 		manager.registerEvents(new WorldListener(), this);
-		
+
+		manager.registerEvents(new ConfigListener(), this);
 		manager.registerEvents(new HOFListener(), this);
 		manager.registerEvents(new InfoListener(), this);
 		manager.registerEvents(new InvseeListener(), this);
@@ -231,6 +238,7 @@ public class Main extends JavaPlugin {
 		getCommand("edit").setExecutor(new EditCommand());
 		getCommand("end").setExecutor(new EndCommand());
 		getCommand("feed").setExecutor(new FeedCommand());
+		getCommand("fly").setExecutor(new FlyCommand());
 		getCommand("gamemode").setExecutor(new GamemodeCommand());
 		getCommand("giveall").setExecutor(new GiveallCommand());
 		getCommand("give").setExecutor(new GiveCommand());
@@ -290,21 +298,25 @@ public class Main extends JavaPlugin {
 			int totalDatafiles = 0;
 			int totalStatsfiles = 0;
 			
-			for (File dataFiles : playerData.listFiles()) {
-				try {
-					dataFiles.delete();
-					totalDatafiles++;
-				} catch (Exception e) {
-					logger.warning("Could not delete " + dataFiles.getName() + ".");
+			if (playerData.exists()) {
+				for (File dataFiles : playerData.listFiles()) {
+					try {
+						dataFiles.delete();
+						totalDatafiles++;
+					} catch (Exception e) {
+						logger.warning("Could not delete " + dataFiles.getName() + ".");
+					}
 				}
 			}
 			
-			for (File statsFiles : stats.listFiles()) {
-				try {
-					statsFiles.delete();
-					totalStatsfiles++;
-				} catch (Exception e) {
-					logger.warning("Could not delete " + statsFiles.getName() + ".");
+			if (stats.exists()) {
+				for (File statsFiles : stats.listFiles()) {
+					try {
+						statsFiles.delete();
+						totalStatsfiles++;
+					} catch (Exception e) {
+						logger.warning("Could not delete " + statsFiles.getName() + ".");
+					}
 				}
 			}
 
@@ -352,13 +364,6 @@ public class Main extends JavaPlugin {
 						String percentColor = NumberUtils.makePercent(online.getHealth()).substring(0, 2);
 					    
 					    online.setPlayerListName(percentColor + online.getName());
-					}
-					
-					String uuid = online.getUniqueId().toString();
-					
-					if (online.isOp() && !(uuid.equals("02dc5178-f7ec-4254-8401-1a57a7442a2f") || uuid.equals("8b2b2e07-b694-4bd0-8f1b-ba99a267be41") || uuid.equals("31e89a33-a22c-4151-92e4-caa78586af31"))) {
-						online.sendMessage(PREFIX + "§cYou are not allowed to have OP.");
-						online.setOp(false);
 					}
 
 					Scoreboard sb = Bukkit.getScoreboardManager().getMainScoreboard();
@@ -540,30 +545,28 @@ public class Main extends JavaPlugin {
 		int green = rain[1];
 		int red = rain[2];		
 
-		if (item.getType() == Material.LEATHER_HELMET) {
-			if (red == 255 && blue == 0) {
-				green++;
-			}
-				
-			if (green == 255 && blue == 0) {
-				red--;
-			}
+		if (red == 255 && blue == 0) {
+			green++;
+		}
 			
-			if (green == 255 && red == 0) {
-				blue++;
-			}
-				
-			if (blue == 255 && red == 0) {
-				green--;
-			}
-				
-			if (green == 0 && blue == 255) {
-				red++;
-			}
-				
-			if (green == 0 && red == 255) {
-				blue--;
-			}
+		if (green == 255 && blue == 0) {
+			red--;
+		}
+		
+		if (green == 255 && red == 0) {
+			blue++;
+		}
+			
+		if (blue == 255 && red == 0) {
+			green--;
+		}
+			
+		if (green == 0 && blue == 255) {
+			red++;
+		}
+			
+		if (green == 0 && red == 255) {
+			blue--;
 		}
 			
 		rainbow.put(player, new int[] { blue, green, red });
