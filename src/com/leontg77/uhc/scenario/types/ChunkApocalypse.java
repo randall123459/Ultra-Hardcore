@@ -5,6 +5,7 @@ import java.util.Random;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.command.Command;
@@ -27,9 +28,12 @@ import com.leontg77.uhc.utils.PlayerUtils;
  * @author LeonTG77
  */
 public class ChunkApocalypse extends Scenario implements Listener, CommandExecutor {
-	private ArrayList<Chunk> finished = new ArrayList<Chunk>();
-	private ArrayList<Chunk> chunks = new ArrayList<Chunk>();
 	private boolean enabled = false;
+	
+	private ArrayList<Location> locations = new ArrayList<Location>();
+	private int totalChunks;
+	
+	public static BukkitRunnable task = null;
 	
 	public ChunkApocalypse() {
 		super("ChunkApocalypse", "Every chunk has a 30% chance of being replaced with air");
@@ -57,7 +61,7 @@ public class ChunkApocalypse extends Scenario implements Listener, CommandExecut
 			return true;
 		}
 		
-		Player player = (Player) sender;
+		final Player player = (Player) sender;
 		
 		if (!isEnabled()) {
 			sender.sendMessage(Main.PREFIX + "\"ChunkApocalypse\" is not enabled.");
@@ -79,38 +83,35 @@ public class ChunkApocalypse extends Scenario implements Listener, CommandExecut
 		try {
 			radius = Integer.parseInt(args[0]);
 		} catch (Exception e) {
-			player.sendMessage(ChatColor.RED + "That is not an vaild radius.");
+			player.sendMessage(ChatColor.RED + args[0] + " is not an vaild radius.");
 			return true;
 		}
 		
-		int radiusX = (radius / 16);
-		int radiusZ = (radius / 16);
+		locations = new ArrayList<Location>();
 		
-		chunks.clear();
-		PlayerUtils.broadcast(Main.PREFIX + "ChunkApocalypse generation started.");
-		
-		for (int cx = (0 - radiusX); cx < radiusX; cx++) {
-			for (int cz = (0 - radiusZ); cz < radiusZ; cz++) {
-				Chunk chunk = player.getWorld().getChunkAt(cx, cz);
-				
+		for (int x = -1 * radius; x < radius; x += 16) {
+			for (int z = -1 * radius; z < radius; z += 16) {
 				if (new Random().nextInt(99) < 30) {
-					finished.add(chunk);
-					chunks.add(chunk);
+					locations.add(new Location(player.getWorld(), x, 1, z));
 				}
 			}
 		}
-	
-		new BukkitRunnable() {
-			int i = 0;
-			
+		
+		totalChunks = locations.size();
+
+		PlayerUtils.broadcast(Main.PREFIX + "ChunkApocalypse generation started.");
+		
+		task = new BukkitRunnable() {
 			public void run() {
-				if (i >= chunks.size()) {
-					cancel();
+				if (locations.size() == 0) {
 					PlayerUtils.broadcast(Main.PREFIX + "ChunkApocalypse generation finished.");
+					cancel();
+					task = null;
 					return;
 				}
-				
-				Chunk chunk = chunks.get(i);
+
+				Location loc = locations.remove(locations.size() - 1);
+				Chunk chunk = player.getWorld().getChunkAt(loc);
 				
 				for (int y = 0; y < 128; y++) {
 					for (int x = 0; x < 16; x++) {
@@ -122,17 +123,15 @@ public class ChunkApocalypse extends Scenario implements Listener, CommandExecut
 					}
 				}
 
-				finished.remove(chunk);
-
-				int one = ((chunks.size() - finished.size())*100 / chunks.size());
+				int percentCompleted = ((totalChunks - locations.size())*100 / totalChunks);
 				
 				for (Player online : PlayerUtils.getPlayers()) {
-					PacketUtils.sendAction(online, Main.PREFIX + "Removed chunk at x:" + chunk.getX() + " z:" + chunk.getZ() + ", §6" + one + "% §7finished");
+					PacketUtils.sendAction(online, Main.PREFIX + "Removed chunk at x:" + chunk.getX() + " z:" + chunk.getZ() + ", §6" + percentCompleted + "% §7finished");
 				}
-				
-				i++;
 			}
-		}.runTaskTimer(Main.plugin, 2, 2);
+		};
+		
+		task.runTaskTimer(Main.plugin, 1, 1);
 		return true;
 	}
 }
