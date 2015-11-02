@@ -1,6 +1,7 @@
 package com.leontg77.uhc.scenario.types;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -25,7 +26,7 @@ import com.leontg77.uhc.utils.PlayerUtils;
  * @author LeonTG77
  */
 public class Kings extends Scenario implements Listener, CommandExecutor {
-	private ArrayList<String> kings = new ArrayList<String>();
+	private static ArrayList<String> kings = new ArrayList<String>();
 	private boolean enabled = false;
 	
 	public Kings() {
@@ -58,6 +59,10 @@ public class Kings extends Scenario implements Listener, CommandExecutor {
 
 	public boolean isEnabled() {
 		return enabled;
+	}
+	
+	public static List<String> getKings() {
+		return kings;
 	}
 	
 	@EventHandler
