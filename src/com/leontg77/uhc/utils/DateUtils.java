@@ -82,7 +82,7 @@ public class DateUtils {
         
         if (minutes > 0) {
             if (output.length() > 0) {
-                output.append(" and ");
+                output.append(" §7and§a ");
             }
             
             output.append(minutes).append(" ").append(minutes == 1 ? "§7minute§a" : "§7minutes§a");
@@ -90,7 +90,7 @@ public class DateUtils {
         
         if (seconds > 0) {
             if (output.length() > 0) {
-                output.append(" and ");
+                output.append("§7 and§a ");
             }
             
             output.append(seconds).append(" ").append(seconds == 1 ? "§7second§a" : "§7seconds§a");
