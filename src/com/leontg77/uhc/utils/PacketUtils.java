@@ -39,8 +39,8 @@ public class PacketUtils {
 		CraftPlayer craft = (CraftPlayer) player;
 		
 		IChatBaseComponent headerJSON = ChatSerializer.a(
-	      	"{text:'§4§lArctic UHC§r\n" +
-	       	"§a/rules §8- §a/ms §8- §a/lag §8- §a/post §8- §a/hof\n'}"
+	      	"{text:'§4§lArctic UHC§r §8- §a§o@ArcticUHC§r\n"
+	      	+ "§7Follow us for games and updates!\n'}"
 	    );
 
 		String gamemode = GameUtils.getTeamSize() + game.getScenarios();
