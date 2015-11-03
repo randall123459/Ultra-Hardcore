@@ -29,12 +29,14 @@ public class PermsUtils {
 		File folder = new File(plugin.getDataFolder() + File.separator + "users" + File.separator);
         boolean found = false;
 		
-		for (File file : folder.listFiles()) {
-			if (file.getName().startsWith(player.getUniqueId().toString())) {
-				found = true;
-				break;
-			}
-		}
+        if (folder.exists()) {
+    		for (File file : folder.listFiles()) {
+    			if (file.getName().substring(0, file.getName().length() - 4).equals(player.getUniqueId().toString())) {
+    				found = true;
+    				break;
+    			}
+    		}
+        }
 		
 		if (!found) {
 			return;
@@ -48,13 +50,17 @@ public class PermsUtils {
 		
 		User user = User.get(player);
 		Rank rank = user.getRank();
-	
-		perm.setPermission("mv.bypass.gamemode.*", true);
 		
 		if (rank == Rank.USER) {
 			return;
 		}
+		
+		if (rank == Rank.ADMIN) {
+			player.setOp(true);
+			return;
+		}
 
+		perm.setPermission("uhc.spectate", true);
 		perm.setPermission("uhc.prelist", true);
 		
 		if (rank == Rank.STAFF || rank == Rank.TRIAL || rank == Rank.HOST) {
@@ -65,7 +71,6 @@ public class PermsUtils {
 			perm.setPermission("uhc.invsee", true);
 			perm.setPermission("uhc.kick", true);
 			perm.setPermission("uhc.mute", true);
-			perm.setPermission("uhc.moles", true);
 			perm.setPermission("uhc.pvp", true);
 			perm.setPermission("uhc.scenario", true);
 			perm.setPermission("uhc.sethealth", true);
@@ -77,16 +82,21 @@ public class PermsUtils {
 			perm.setPermission("uhc.admin", true);
 			perm.setPermission("uhc.team", true);
 			perm.setPermission("uhc.tempban", true);
+			perm.setPermission("uhc.info", true);
 			perm.setPermission("uhc.tp", true);
 			perm.setPermission("uhc.whitelist", true);
 			
 			if (rank == Rank.TRIAL || rank == Rank.HOST) {
+				perm.setPermission("uhc.clearinv", true);
+				perm.setPermission("uhc.clearxp", true);
 				perm.setPermission("uhc.clearinv.other", true);
 				perm.setPermission("uhc.clearxp.other", true);
 				perm.setPermission("uhc.setmaxhealth", true);
 				perm.setPermission("uhc.arena", true);
 				perm.setPermission("uhc.heal.other", true);
 				perm.setPermission("uhc.feed.other", true);
+				perm.setPermission("uhc.heal", true);
+				perm.setPermission("uhc.feed", true);
 				perm.setPermission("uhc.sethealth", true);
 				perm.setPermission("uhc.scenario", true);
 				perm.setPermission("uhc.clearinv", true);
@@ -102,15 +112,16 @@ public class PermsUtils {
 				perm.setPermission("uhc.board", true);
 				perm.setPermission("uhc.vote", true);
 				perm.setPermission("uhc.heal", true);
-				perm.setPermission("uhc.feed", true);
+				perm.setPermission("uhc.world", true);
+				perm.setPermission("uhc.pregen", true);
 				perm.setPermission("uhc.end", true);
+				perm.setPermission("uhc.feed", true);
 				
 				if (rank == Rank.HOST) {
 					perm.setPermission("uhc.skull", true);
 					perm.setPermission("uhc.speed", true);
 					perm.setPermission("uhc.invsee", true);
 					perm.setPermission("uhc.unban", true);
-					perm.setPermission("uhc.tp", true);
 					perm.setPermission("uhc.spectate.other", true);
 				}
 			}
