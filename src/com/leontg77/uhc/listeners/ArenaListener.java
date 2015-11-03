@@ -110,6 +110,10 @@ public class ArenaListener implements Listener {
 		User uKiller = User.get(killer);
 		uKiller.increaseStat(Stat.ARENAKILLS);
 		
+		if (uKiller.getStat(Stat.ARENAKILLS) > uKiller.getStat(Stat.ARENAKILLSTREAK)) {
+			uKiller.increaseStat(Stat.ARENAKILLSTREAK);
+		}
+		
 		for (Player players : arena.getPlayers()) {
 			players.sendMessage("§8» " + (team == null ? "§f" : team.getPrefix()) + player.getName() + " §fwas killed by " + (kTeam == null ? "§f" : kTeam.getPrefix()) + killer.getName());
 		}   
